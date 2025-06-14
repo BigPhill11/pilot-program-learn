@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -6,7 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import InteractiveQuiz from '@/components/InteractiveQuiz';
-import { BookOpen, HelpCircle, Award, TrendingUp, Zap } from 'lucide-react';
+import CompanyDiscoveryTab from '@/components/learn/CompanyDiscoveryTab';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { BookOpen, HelpCircle, Award, TrendingUp, Zap, Briefcase } from 'lucide-react';
 
 interface LearningTopic {
   id: string;
@@ -92,8 +93,6 @@ const LearnPage = () => {
     if (isCorrect) {
       setCorrectlyAnsweredQuizzes(prev => new Set(prev).add(topicId));
     }
-    // Potentially add logic for incorrect answers if needed globally,
-    // like tracking attempts. For now, quiz handles its own visual feedback.
   };
 
   const progressValue = useMemo(() => {
@@ -107,84 +106,100 @@ const LearnPage = () => {
     { id: 'consistency1', title: 'Daily Learner', icon: <Award className="h-5 w-5 text-blue-500" />, description: 'Visited Learn page 7 days in a row.' },
   ];
 
-
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">Learn About Finance</h1>
         <p className="mt-4 text-lg text-muted-foreground">
-          Expand your financial knowledge with our curated learning modules.
+          Expand your financial knowledge with our curated learning modules and tools.
         </p>
       </div>
 
-      <div className="mb-10">
-        <h2 className="text-2xl font-semibold text-foreground mb-3 text-left">Your Learning Progress</h2>
-        <Progress value={progressValue} className="w-full h-4 accent-orange-500" />
-        <p className="text-sm text-muted-foreground mt-1 text-right">{Math.round(progressValue)}% Complete</p>
-      </div>
+      <Tabs defaultValue="core-concepts" className="w-full">
+        <TabsList className="grid w-full grid-cols-1 md:grid-cols-2 mb-8">
+          <TabsTrigger value="core-concepts">
+            <BookOpen className="h-5 w-5 mr-2" /> Core Concepts
+          </TabsTrigger>
+          <TabsTrigger value="company-discovery">
+            <Briefcase className="h-5 w-5 mr-2" /> Company Discovery
+          </TabsTrigger>
+        </TabsList>
 
-      <div className="space-y-8">
-        {learningTopics.map((topic) => (
-          <Card key={topic.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="flex items-center space-x-3 mb-2">
-                {topic.icon}
-                <CardTitle>{topic.title}</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3 text-sm">
-                <div>
-                  <h3 className="font-semibold text-foreground mb-1">Definition:</h3>
-                  <p className="text-muted-foreground">{topic.definition}</p>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-foreground mb-1 flex items-center">
-                    <HelpCircle className="h-4 w-4 mr-1.5 text-blue-500" />
-                    Easy Explanation:
-                  </h3>
-                  <p className="text-muted-foreground italic">{topic.easyExplanation}</p>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-foreground mb-1">Analogy:</h3>
-                  <p className="text-muted-foreground">{topic.analogy}</p>
-                </div>
-              </div>
-              <InteractiveQuiz
-                topicId={topic.id}
-                question={topic.quiz.question}
-                options={topic.quiz.options}
-                correctAnswerIndex={topic.quiz.correctAnswerIndex}
-                feedbackForIncorrect={topic.quiz.feedbackForIncorrect}
-                onQuizComplete={handleQuizComplete}
-                isCompleted={correctlyAnsweredQuizzes.has(topic.id)}
-              />
-               <Button variant="outline" className="w-full mt-6" disabled>
-                Mark as Learned (Functionality coming soon)
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+        <TabsContent value="core-concepts">
+          <div className="mb-10">
+            <h2 className="text-2xl font-semibold text-foreground mb-3 text-left">Your Learning Progress</h2>
+            <Progress value={progressValue} className="w-full h-4 accent-orange-500" />
+            <p className="text-sm text-muted-foreground mt-1 text-right">{Math.round(progressValue)}% Complete</p>
+          </div>
 
-      <div className="mt-16">
-        <h2 className="text-3xl font-bold tracking-tight text-foreground text-center mb-8">Achievements</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {achievementBadges.map(badge => (
-            <Card key={badge.id} className="flex flex-col items-center text-center p-6 hover:shadow-md transition-shadow">
-              <div className="p-3 rounded-full bg-muted mb-3">
-                {badge.icon}
-              </div>
-              <CardTitle className="text-lg mb-1">{badge.title}</CardTitle>
-              <CardDescription className="text-xs">{badge.description}</CardDescription>
-              <Badge variant="outline" className="mt-3">Coming Soon</Badge>
-            </Card>
-          ))}
-        </div>
-         <p className="text-muted-foreground mt-6 text-center">
-          Unlock badges by completing quizzes, engaging daily, and (soon) succeeding in paper trading!
-        </p>
-      </div>
+          <div className="space-y-8">
+            {learningTopics.map((topic) => (
+              <Card key={topic.id} className="hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="flex items-center space-x-3 mb-2">
+                    {topic.icon}
+                    <CardTitle>{topic.title}</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3 text-sm">
+                    <div>
+                      <h3 className="font-semibold text-foreground mb-1">Definition:</h3>
+                      <p className="text-muted-foreground">{topic.definition}</p>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground mb-1 flex items-center">
+                        <HelpCircle className="h-4 w-4 mr-1.5 text-blue-500" />
+                        Easy Explanation:
+                      </h3>
+                      <p className="text-muted-foreground italic">{topic.easyExplanation}</p>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground mb-1">Analogy:</h3>
+                      <p className="text-muted-foreground">{topic.analogy}</p>
+                    </div>
+                  </div>
+                  <InteractiveQuiz
+                    topicId={topic.id}
+                    question={topic.quiz.question}
+                    options={topic.quiz.options}
+                    correctAnswerIndex={topic.quiz.correctAnswerIndex}
+                    feedbackForIncorrect={topic.quiz.feedbackForIncorrect}
+                    onQuizComplete={handleQuizComplete}
+                    isCompleted={correctlyAnsweredQuizzes.has(topic.id)}
+                  />
+                  <Button variant="outline" className="w-full mt-6" disabled>
+                    Mark as Learned (Functionality coming soon)
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="mt-16">
+            <h2 className="text-3xl font-bold tracking-tight text-foreground text-center mb-8">Achievements</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {achievementBadges.map(badge => (
+                <Card key={badge.id} className="flex flex-col items-center text-center p-6 hover:shadow-md transition-shadow">
+                  <div className="p-3 rounded-full bg-muted mb-3">
+                    {badge.icon}
+                  </div>
+                  <CardTitle className="text-lg mb-1">{badge.title}</CardTitle>
+                  <CardDescription className="text-xs">{badge.description}</CardDescription>
+                  <Badge variant="outline" className="mt-3">Coming Soon</Badge>
+                </Card>
+              ))}
+            </div>
+            <p className="text-muted-foreground mt-6 text-center">
+              Unlock badges by completing quizzes, engaging daily, and (soon) succeeding in paper trading!
+            </p>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="company-discovery">
+          <CompanyDiscoveryTab />
+        </TabsContent>
+      </Tabs>
 
       <div className="mt-16 text-center">
         <p className="text-muted-foreground mb-4">
