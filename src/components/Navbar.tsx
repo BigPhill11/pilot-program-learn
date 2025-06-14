@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PandaLogo from './icons/PandaLogo';
-import { Button } from '@/components/ui/button'; // Using shadcn button
+import { Button, buttonVariants } from '@/components/ui/button'; // Using shadcn button
 
 const Navbar = () => {
   return (
@@ -23,9 +23,13 @@ const Navbar = () => {
             <Button variant="ghost" asChild>
               <Link to="/paper-trading">Paper Trading</Link>
             </Button>
-            <Button variant="ghost" asChild>
-              <Link to="/#sources">Sources</Link> {/* Placeholder link for now */}
-            </Button>
+            {/* Changed to a regular <a> tag styled as a button for in-page hash link */}
+            <a
+              href="/#sources"
+              className={buttonVariants({ variant: "ghost" })}
+            >
+              Sources
+            </a>
           </nav>
           <div className="md:hidden">
             {/* Mobile menu button can be added here later */}
@@ -37,4 +41,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
