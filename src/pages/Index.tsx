@@ -76,8 +76,7 @@ const Index = () => {
             <FeatureCard
               icon={<LayoutDashboard className="h-8 w-8 text-primary" />}
               title="Market Today"
-              description="Get a quick recap of today's market movements, key headlines, M&A deals, and IPOs. (Coming Soon)"
-              comingSoon
+              description="Get a daily snapshot of market movements, key headlines (e.g., 'Tech stocks rally on AI news'), M&A deals, and IPOs. (Live data coming soon)"
             />
             <FeatureCard
               icon={<BookOpen className="h-8 w-8 text-primary" />}
@@ -89,15 +88,14 @@ const Index = () => {
             <FeatureCard
               icon={<TrendingUp className="h-8 w-8 text-primary" />}
               title="Paper Trading"
-              description="Practice investing with a virtual portfolio. Learn without the risk."
+              description="Practice investing with a virtual portfolio. Learn without the risk. (Static demo available)"
               linkTo="/paper-trading"
               linkText="Try Demo"
             />
             <FeatureCard
               icon={<Calendar className="h-8 w-8 text-primary" />}
               title="Economic Calendar"
-              description="Stay updated on important economic events and announcements. (Coming Soon)"
-              comingSoon
+              description="Stay updated on important economic events like 'CPI Release - July 15 (Est.)' and 'FOMC Meeting - July 30 (Est.)'. (Full calendar coming soon)"
             />
             <FeatureCard
               icon={<FileText className="h-8 w-8 text-primary" />}
@@ -108,8 +106,7 @@ const Index = () => {
              <FeatureCard
               icon={<DollarSign className="h-8 w-8 text-primary" />}
               title="Industry Insights"
-              description="Deep dive into different sectors and understand their financial dynamics. (Coming Soon)"
-              comingSoon
+              description="Deep dive into different sectors like 'Renewable Energy' or 'Biotechnology' and understand their financial dynamics. (More insights coming soon)"
             />
           </div>
         </div>

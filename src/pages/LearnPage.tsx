@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BookOpen, HelpCircle } from 'lucide-react';
-import QuizPlaceholder from '@/components/QuizPlaceholder'; // New import
+import QuizPlaceholder from '@/components/QuizPlaceholder';
 
 interface LearningTopic {
   title: string;
@@ -83,8 +82,8 @@ const LearnPage = () => {
                 </div>
               </div>
               <QuizPlaceholder question={topic.quiz.question} options={topic.quiz.options} />
-               <Button variant="outline" className="w-full mt-6">
-                Mark as Learned (Coming Soon)
+               <Button variant="outline" className="w-full mt-6" disabled>
+                Mark as Learned (Functionality coming soon)
               </Button>
             </CardContent>
           </Card>

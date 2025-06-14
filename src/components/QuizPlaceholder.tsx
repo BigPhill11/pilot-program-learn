@@ -13,12 +13,12 @@ const QuizPlaceholder: React.FC<QuizPlaceholderProps> = ({ question, options }) 
       <p className="font-semibold mb-2 text-sm">{question}</p>
       <div className="space-y-2">
         {options.map((option, index) => (
-          <Button key={index} variant="outline" size="sm" className="w-full justify-start text-left">
+          <Button key={index} variant="outline" size="sm" className="w-full justify-start text-left" disabled>
             {option}
           </Button>
         ))}
       </div>
-      <p className="text-xs text-muted-foreground mt-3 text-center">Interactive quiz coming soon!</p>
+      <p className="text-xs text-muted-foreground mt-3 text-center">Select an option to test your knowledge. (Interactive quiz functionality coming soon)</p>
     </div>
   );
 };
