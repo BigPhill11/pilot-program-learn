@@ -6,8 +6,10 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import InteractiveQuiz from '@/components/InteractiveQuiz';
 import CompanyDiscoveryTab from '@/components/learn/CompanyDiscoveryTab';
+import PersonalFinanceTab from '@/components/learn/PersonalFinanceTab';
+import IndustryDeepDiveTab from '@/components/learn/IndustryDeepDiveTab';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen, HelpCircle, Award, TrendingUp, Zap, Briefcase } from 'lucide-react';
+import { BookOpen, HelpCircle, Award, TrendingUp, Zap, Briefcase, User, BarChartBig } from 'lucide-react';
 
 interface LearningTopic {
   id: string;
@@ -116,12 +118,18 @@ const LearnPage = () => {
       </div>
 
       <Tabs defaultValue="core-concepts" className="w-full">
-        <TabsList className="grid w-full grid-cols-1 md:grid-cols-2 mb-8">
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 mb-8">
           <TabsTrigger value="core-concepts">
             <BookOpen className="h-5 w-5 mr-2" /> Core Concepts
           </TabsTrigger>
           <TabsTrigger value="company-discovery">
             <Briefcase className="h-5 w-5 mr-2" /> Company Discovery
+          </TabsTrigger>
+          <TabsTrigger value="personal-finance">
+            <User className="h-5 w-5 mr-2" /> Personal Finance
+          </TabsTrigger>
+          <TabsTrigger value="industry-deep-dives">
+            <BarChartBig className="h-5 w-5 mr-2" /> Industry Deep Dives
           </TabsTrigger>
         </TabsList>
 
@@ -199,6 +207,15 @@ const LearnPage = () => {
         <TabsContent value="company-discovery">
           <CompanyDiscoveryTab />
         </TabsContent>
+
+        <TabsContent value="personal-finance">
+          <PersonalFinanceTab />
+        </TabsContent>
+
+        <TabsContent value="industry-deep-dives">
+            <IndustryDeepDiveTab />
+        </TabsContent>
+
       </Tabs>
 
       <div className="mt-16 text-center">
