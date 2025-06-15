@@ -1,10 +1,10 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar } from "@/components/ui/calendar";
 import HighlightableTerm from '@/components/HighlightableTerm';
-import { Rss, Calendar as CalendarIcon, Briefcase, Lightbulb, BarChart3 } from 'lucide-react';
+import { Rss, Calendar as CalendarIcon, Briefcase, Lightbulb, BarChart3, MessageSquare } from 'lucide-react';
+import AskPhilTab from './AskPhilTab';
 
 const TabbedContentSection = () => {
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date());
@@ -34,7 +34,7 @@ const TabbedContentSection = () => {
     <section className="py-16 bg-muted/40">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <Tabs defaultValue="market-recap" className="w-full">
-          <TabsList className="grid w-full grid-cols-1 md:grid-cols-3 mb-8">
+          <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-4 mb-8">
             <TabsTrigger value="market-recap">
               <Rss className="h-5 w-5 mr-2" /> Market Recap
             </TabsTrigger>
@@ -43,6 +43,9 @@ const TabbedContentSection = () => {
             </TabsTrigger>
             <TabsTrigger value="industry-insights">
               <Briefcase className="h-5 w-5 mr-2" /> Industry Insights
+            </TabsTrigger>
+            <TabsTrigger value="ask-phil">
+              <MessageSquare className="h-5 w-5 mr-2" /> Ask Phil
             </TabsTrigger>
           </TabsList>
 
@@ -118,6 +121,10 @@ const TabbedContentSection = () => {
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="ask-phil">
+            <AskPhilTab />
+          </TabsContent>
         </Tabs>
       </div>
     </section>
@@ -125,4 +132,3 @@ const TabbedContentSection = () => {
 };
 
 export default TabbedContentSection;
-
