@@ -37,11 +37,18 @@ const availableStocksForSearch: StockHolding[] = [
   { id: '6', ticker: 'AMZN', name: 'Amazon.com, Inc.', shares: 0, avgPrice: 184.65, currentPrice: 184.65, dayChange: 2.15, dayChangePercent: 1.18, type: 'Stock' },
 ];
 
+const COLOR_PALETTES: { [key in StockHolding['type'] | 'Default']: string[] } = {
+  Stock: ['#60a5fa', '#3b82f6', '#2563eb', '#1d4ed8', '#1e40af'], // Shades of Blue for stocks
+  ETF: ['#86efac', '#4ade80', '#22c55e', '#16a34a', '#15803d'],   // Shades of Green for ETFs
+  Bond: ['#fcd34d', '#fbbf24', '#f59e0b', '#d97706', '#b45309'],  // Shades of Amber/Orange for bonds
+  Default: ['#cbd5e1', '#94a3b8', '#64748b', '#475569', '#334155'], // Shades of Slate for others
+};
+
 const ASSET_TYPE_COLORS: { [key in StockHolding['type'] | string]: string } = {
-  Stock: 'hsl(var(--chart-1))',
-  ETF: 'hsl(var(--chart-2))',
-  Bond: 'hsl(var(--chart-3))',
-  Default: 'hsl(var(--chart-4))',
+  Stock: COLOR_PALETTES.Stock[2],
+  ETF: COLOR_PALETTES.ETF[2],
+  Bond: COLOR_PALETTES.Bond[2],
+  Default: COLOR_PALETTES.Default[2],
 };
 
 const PaperTradingPage = () => {
@@ -171,20 +178,25 @@ const PaperTradingPage = () => {
     if (!selectedAssetType) return { data: [], config: {} };
     
     const filteredHoldings = holdings.filter(h => h.type === selectedAssetType);
+    const colorPalette = COLOR_PALETTES[selectedAssetType] || COLOR_PALETTES.Default;
     
     const config: ChartConfig = {};
     filteredHoldings.forEach((stock, index) => {
+      const color = colorPalette[index % colorPalette.length];
       config[stock.ticker.toLowerCase()] = {
         label: stock.ticker,
-        color: `hsl(var(--chart-${index + 1}))`,
+        color: color,
       };
     });
 
-    const data = filteredHoldings.map((h, index) => ({
-        name: h.ticker,
-        value: h.shares * h.currentPrice,
-        fill: `hsl(var(--chart-${index + 1}))`,
-    }));
+    const data = filteredHoldings.map((h, index) => {
+        const color = colorPalette[index % colorPalette.length];
+        return {
+            name: h.ticker,
+            value: h.shares * h.currentPrice,
+            fill: color,
+        };
+    });
 
     return { data, config };
   }, [holdings, selectedAssetType]);
