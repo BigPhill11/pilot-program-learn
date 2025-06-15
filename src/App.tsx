@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import LearnPage from "./pages/LearnPage";
 import PaperTradingPage from "./pages/PaperTradingPage";
+import AskPhilPage from "./pages/AskPhilPage";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 
@@ -36,6 +37,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/learn" element={<LearnPage />} />
             <Route path="/paper-trading" element={<PaperTradingPage />} />
+            <Route path="/ask-phil" element={<AskPhilPage />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
@@ -45,4 +47,3 @@ const App = () => (
 );
 
 export default App;
-

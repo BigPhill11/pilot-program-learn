@@ -23,6 +23,9 @@ const Navbar = () => {
             <Button variant="ghost" asChild>
               <Link to="/paper-trading">Paper Trading</Link>
             </Button>
+            <Button variant="ghost" asChild>
+              <Link to="/ask-phil">Ask Phil</Link>
+            </Button>
             {/* Changed to a regular <a> tag styled as a button for in-page hash link */}
             <a
               href="/#sources"

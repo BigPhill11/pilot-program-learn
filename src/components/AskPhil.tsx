@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Loader2, Wand2 } from 'lucide-react';
 
-const AskPhilTab = () => {
+const AskPhil = () => {
     const [apiKey, setApiKey] = useState('');
     const [question, setQuestion] = useState('');
     const [answer, setAnswer] = useState('');
@@ -166,4 +165,4 @@ const AskPhilTab = () => {
     );
 };
 
-export default AskPhilTab;
+export default AskPhil;
