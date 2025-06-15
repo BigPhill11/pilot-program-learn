@@ -40,8 +40,8 @@ const TabbedContentSection = () => {
     hasEvent: eventDates,
   };
 
-  const eventModifierClassNames = {
-    day_hasEvent: "bg-primary/10 text-primary font-semibold rounded-md",
+  const modifiersClassNames = {
+    hasEvent: "bg-primary/10 text-primary font-semibold rounded-md",
   };
 
   const selectedDateString = selectedDate
@@ -96,7 +96,7 @@ const TabbedContentSection = () => {
                     className="rounded-md border"
                     disabled={(date) => date < new Date("2025-06-01") || date > new Date("2025-07-31") }
                     modifiers={eventModifiers}
-                    classNames={eventModifierClassNames}
+                    modifiersClassNames={modifiersClassNames}
                   />
                 </div>
                 <div className="md:w-1/2 space-y-3">
