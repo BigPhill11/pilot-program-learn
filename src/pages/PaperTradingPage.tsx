@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -31,6 +32,12 @@ const initialHoldings: StockHolding[] = [
   { id: '5', ticker: 'BND', name: 'Vanguard Total Bond ETF', shares: 20, avgPrice: 72.00, currentPrice: 72.50, dayChange: 0.10, dayChangePercent: 0.14, type: 'Bond' },
 ];
 
+const availableStocksForSearch: StockHolding[] = [
+  ...initialHoldings,
+  { id: '6', ticker: 'AMZN', name: 'Amazon.com, Inc.', shares: 0, avgPrice: 184.65, currentPrice: 184.65, dayChange: 2.15, dayChangePercent: 1.18, type: 'Stock' },
+];
+
+
 const PaperTradingPage = () => {
   const { toast } = useToast();
   const [holdings, setHoldings] = useState<StockHolding[]>([]);
@@ -40,6 +47,8 @@ const PaperTradingPage = () => {
   const [selectedStock, setSelectedStock] = useState<StockHolding | null>(null);
   const [tradeType, setTradeType] = useState<'buy' | 'sell'>('buy');
   const [sharesToTrade, setSharesToTrade] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<StockHolding[]>([]);
 
   useEffect(() => {
     const savedHoldings = localStorage.getItem('paper_holdings');
@@ -61,6 +70,19 @@ const PaperTradingPage = () => {
   useEffect(() => {
     localStorage.setItem('paper_cash_balance', JSON.stringify(cashBalance));
   }, [cashBalance]);
+
+  useEffect(() => {
+    if (searchQuery.trim() === '') {
+      setSearchResults([]);
+      return;
+    }
+    const filtered = availableStocksForSearch.filter(stock =>
+      (stock.ticker.toLowerCase().includes(searchQuery.toLowerCase()) ||
+       stock.name.toLowerCase().includes(searchQuery.toLowerCase())) &&
+      !holdings.some(h => h.id === stock.id)
+    );
+    setSearchResults(filtered);
+  }, [searchQuery, holdings]);
 
   const { totalPortfolioValue, totalInvestedValue, overallGainLoss, overallGainLossPercent } = useMemo(() => {
     const totalPortfolioValue = holdings.reduce((acc, stock) => acc + stock.shares * stock.currentPrice, 0);
@@ -170,7 +192,7 @@ const PaperTradingPage = () => {
       </Dialog>
       <div className="text-center mb-12">
         <TrendingUp className="h-16 w-16 text-primary mx-auto mb-4" />
-        <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">Paper Trading Portfolio</h1>
+        <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">Panda Trading Portfolio</h1>
         <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
           Practice your trading strategies. Your portfolio is saved in your browser.
         </p>
@@ -183,14 +205,40 @@ const PaperTradingPage = () => {
             <CardDescription>Overview of your current mock investments.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="mb-4 flex items-center gap-2">
-              <Search className="h-5 w-5 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Search and add stocks (e.g., AAPL) - Feature coming soon"
-                className="w-full p-2 border rounded-md bg-background text-sm"
-                disabled
-              />
+            <div className="mb-4 relative">
+              <div className="flex items-center gap-2">
+                <Search className="h-5 w-5 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Search to add stocks (e.g., AAPL, AMZN)"
+                  className="w-full p-2 bg-background text-sm"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              {searchResults.length > 0 && (
+                <Card className="absolute top-full left-0 right-0 z-10 mt-1 shadow-lg">
+                  <CardContent className="p-0">
+                    <ul className="py-1">
+                      {searchResults.map(stock => (
+                        <li key={stock.id} className="px-3 py-2 hover:bg-muted flex justify-between items-center">
+                          <div>
+                            <span className="font-bold">{stock.ticker}</span>
+                            <span className="text-sm text-muted-foreground ml-2">{stock.name}</span>
+                          </div>
+                          <Button variant="ghost" size="sm" onClick={() => {
+                            handleOpenTradeDialog(stock, 'buy');
+                            setSearchQuery('');
+                          }}>
+                            <ShoppingCart className="h-4 w-4 mr-1" />
+                            Buy
+                          </Button>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              )}
             </div>
             <Table>
               <TableHeader>

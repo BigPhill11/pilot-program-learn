@@ -21,7 +21,7 @@ const Navbar = () => {
               <Link to="/learn">Learn</Link>
             </Button>
             <Button variant="ghost" asChild>
-              <Link to="/paper-trading">Paper Trading</Link>
+              <Link to="/paper-trading">Panda Trading</Link>
             </Button>
             <Button variant="ghost" asChild>
               <Link to="/ask-phil">Ask Phil</Link>
