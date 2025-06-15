@@ -14,9 +14,7 @@ const PandaLogo = ({ className }: { className?: string }) => (
     <circle cx="40" cy="50" r="5" fill="black" />
     <circle cx="60" cy="50" r="5" fill="black" />
     <path d="M45 65 Q50 70 55 65" stroke="black" strokeWidth="2" fill="none" />
-    <circle cx="50" cy="40" r="8" fill="green" /> 
   </svg>
 );
 
 export default PandaLogo;
-
