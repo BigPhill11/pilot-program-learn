@@ -1,16 +1,16 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { TrendingUp, Lightbulb, ArrowUp, ArrowDown, PieChart, ShoppingCart, MinusCircle, Search } from 'lucide-react';
+import { TrendingUp, Lightbulb, ArrowUp, ArrowDown, PieChart, ShoppingCart, MinusCircle, Search, ArrowLeft } from 'lucide-react';
 import { Pie as RechartsPie, PieChart as RechartsPieChart, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from "@/components/ui/chart";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
 
 interface StockHolding {
   id: string;
@@ -37,6 +37,12 @@ const availableStocksForSearch: StockHolding[] = [
   { id: '6', ticker: 'AMZN', name: 'Amazon.com, Inc.', shares: 0, avgPrice: 184.65, currentPrice: 184.65, dayChange: 2.15, dayChangePercent: 1.18, type: 'Stock' },
 ];
 
+const ASSET_TYPE_COLORS: { [key in StockHolding['type'] | string]: string } = {
+  Stock: 'hsl(var(--chart-1))',
+  ETF: 'hsl(var(--chart-2))',
+  Bond: 'hsl(var(--chart-3))',
+  Default: 'hsl(var(--chart-4))',
+};
 
 const PaperTradingPage = () => {
   const { toast } = useToast();
@@ -49,6 +55,7 @@ const PaperTradingPage = () => {
   const [sharesToTrade, setSharesToTrade] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<StockHolding[]>([]);
+  const [selectedAssetType, setSelectedAssetType] = useState<StockHolding['type'] | null>(null);
 
   useEffect(() => {
     const savedHoldings = localStorage.getItem('paper_holdings');
@@ -146,17 +153,41 @@ const PaperTradingPage = () => {
     fill: `var(--color-${stock.ticker.toLowerCase()})`,
   })), [holdings]);
 
-  const chartConfig = useMemo(() => {
+  const assetTypeAllocation = useMemo(() => {
+    const typeMap: Map<StockHolding['type'], number> = new Map();
+    holdings.forEach(h => {
+        const value = h.shares * h.currentPrice;
+        typeMap.set(h.type, (typeMap.get(h.type) || 0) + value);
+    });
+
+    return Array.from(typeMap.entries()).map(([name, value]) => ({
+        name,
+        value,
+        fill: ASSET_TYPE_COLORS[name] || ASSET_TYPE_COLORS.Default,
+    }));
+  }, [holdings]);
+
+  const individualHoldingAllocation = useMemo(() => {
+    if (!selectedAssetType) return { data: [], config: {} };
+    
+    const filteredHoldings = holdings.filter(h => h.type === selectedAssetType);
+    
+    const data = filteredHoldings.map(h => ({
+        name: h.ticker,
+        value: h.shares * h.currentPrice,
+        fill: `var(--color-${h.ticker.toLowerCase()})`,
+    }));
+
     const config: ChartConfig = {};
-    holdings.forEach((stock, index) => {
+    filteredHoldings.forEach((stock, index) => {
       config[stock.ticker.toLowerCase()] = {
         label: stock.ticker,
         color: `hsl(var(--chart-${index + 1}))`,
       };
     });
-    return config;
-  }, [holdings]);
 
+    return { data, config };
+  }, [holdings, selectedAssetType]);
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -327,33 +358,88 @@ const PaperTradingPage = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <PieChart className="h-5 w-5 mr-2 text-primary" />
-                Allocation
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <PieChart className="h-5 w-5 mr-2 text-primary" />
+                  Allocation
+                </div>
+                {selectedAssetType && (
+                  <Button variant="ghost" size="sm" onClick={() => setSelectedAssetType(null)}>
+                    <ArrowLeft className="h-4 w-4 mr-1" />
+                    Overview
+                  </Button>
+                )}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {pieChartData.length > 0 ? (
-                <ChartContainer config={chartConfig} className="mx-auto aspect-square h-48">
-                  <RechartsPieChart>
-                    <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-                    <RechartsPie data={pieChartData} dataKey="value" nameKey="name" innerRadius={40} strokeWidth={5}>
-                       {pieChartData.map((entry) => (
-                        <Cell key={entry.name} fill={entry.fill} />
-                      ))}
-                    </RechartsPie>
-                    <Legend content={({ payload }) => (
-                      <div className="flex flex-wrap gap-x-4 gap-y-1 justify-center mt-4 text-xs">
-                        {payload?.map((entry, index) => (
-                          <div key={`item-${index}`} className="flex items-center gap-1.5">
-                            <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
-                            <span>{entry.value}</span>
+              {holdings.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                  <div className="md:col-span-1 space-y-2">
+                    <h3 className="font-semibold text-muted-foreground mb-2 px-3">
+                      {selectedAssetType ? `${selectedAssetType} Holdings` : 'Asset Types'}
+                    </h3>
+                    {selectedAssetType ? (
+                      individualHoldingAllocation.data.map(item => {
+                        const totalForType = individualHoldingAllocation.data.reduce((acc, i) => acc + i.value, 0);
+                        const percentage = totalForType > 0 ? (item.value / totalForType) * 100 : 0;
+                        const itemConfig = individualHoldingAllocation.config[item.name.toLowerCase()];
+                        return (
+                          <div key={item.name} className="w-full text-left p-3 rounded-lg flex justify-between items-center bg-muted/50">
+                            <div className="flex items-center gap-2">
+                              <span className="h-3 w-3 rounded-full" style={{ backgroundColor: itemConfig?.color }} />
+                              <span className="font-medium">{item.name}</span>
+                            </div>
+                            <span className="font-semibold">{percentage.toFixed(1)}%</span>
                           </div>
-                        ))}
-                      </div>
-                    )} />
-                  </RechartsPieChart>
-                </ChartContainer>
+                        )
+                      })
+                    ) : (
+                      assetTypeAllocation.map(item => {
+                        const percentage = totalPortfolioValue > 0 ? (item.value / totalPortfolioValue) * 100 : 0;
+                        return (
+                          <button
+                            key={item.name}
+                            onClick={() => setSelectedAssetType(item.name)}
+                            className={cn(
+                              "w-full text-left p-3 rounded-lg flex justify-between items-center transition-all hover:bg-muted/50",
+                              selectedAssetType === item.name ? 'bg-muted ring-2 ring-primary' : ''
+                            )}
+                          >
+                            <div className="flex items-center gap-2">
+                              <span className="h-3 w-3 rounded-full" style={{ backgroundColor: item.fill }} />
+                              <span className="font-medium">{item.name}</span>
+                            </div>
+                            <span className="font-semibold">{percentage.toFixed(1)}%</span>
+                          </button>
+                        );
+                      })
+                    )}
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <ChartContainer
+                      config={selectedAssetType ? individualHoldingAllocation.config : {}}
+                      className="mx-auto aspect-square h-48"
+                    >
+                      <RechartsPieChart>
+                        <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+                        {selectedAssetType ? (
+                          <RechartsPie data={individualHoldingAllocation.data} dataKey="value" nameKey="name" innerRadius={40} strokeWidth={5}>
+                            {individualHoldingAllocation.data.map((entry) => (
+                              <Cell key={entry.name} fill={entry.fill} />
+                            ))}
+                          </RechartsPie>
+                        ) : (
+                          <RechartsPie data={assetTypeAllocation} dataKey="value" nameKey="name" innerRadius={40} strokeWidth={5}>
+                            {assetTypeAllocation.map((entry) => (
+                              <Cell key={entry.name} fill={entry.fill} />
+                            ))}
+                          </RechartsPie>
+                        )}
+                      </RechartsPieChart>
+                    </ChartContainer>
+                  </div>
+                </div>
               ) : (
                 <div className="h-48 w-full border-2 border-dashed border-muted-foreground/30 rounded-md flex items-center justify-center bg-muted/20">
                   <p className="text-sm text-muted-foreground">No holdings to display in chart.</p>
