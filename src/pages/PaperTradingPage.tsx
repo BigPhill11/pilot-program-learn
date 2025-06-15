@@ -172,12 +172,6 @@ const PaperTradingPage = () => {
     
     const filteredHoldings = holdings.filter(h => h.type === selectedAssetType);
     
-    const data = filteredHoldings.map(h => ({
-        name: h.ticker,
-        value: h.shares * h.currentPrice,
-        fill: `var(--color-${h.ticker.toLowerCase()})`,
-    }));
-
     const config: ChartConfig = {};
     filteredHoldings.forEach((stock, index) => {
       config[stock.ticker.toLowerCase()] = {
@@ -185,6 +179,12 @@ const PaperTradingPage = () => {
         color: `hsl(var(--chart-${index + 1}))`,
       };
     });
+
+    const data = filteredHoldings.map((h, index) => ({
+        name: h.ticker,
+        value: h.shares * h.currentPrice,
+        fill: `hsl(var(--chart-${index + 1}))`,
+    }));
 
     return { data, config };
   }, [holdings, selectedAssetType]);
