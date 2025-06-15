@@ -3,3 +3,6 @@ project_id = "aqqbxivolegafwuurxxm"
 
 [functions.market-data]
 verify_jwt = false
+
+[functions.market-headlines]
+verify_jwt = false

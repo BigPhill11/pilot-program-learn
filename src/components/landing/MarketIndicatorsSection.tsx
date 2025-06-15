@@ -1,18 +1,17 @@
-
 import React from 'react';
 import MarketIndicatorCard from '@/components/MarketIndicatorCard';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
 
-// Static data is kept as a fallback in case the live API fails
+// Static data is updated to match the new indicators and serve as a fallback
 const fallbackIndicators = [
-  { title: "NASDAQ", value: "17,850.23", change: 120.55 },
-  { title: "S&P 500", value: "5,470.10", change: -15.20 },
-  { title: "Dow Jones", value: "39,110.76", change: 80.00 },
-  { title: "Brent Crude", value: "$85.20", change: 0.75, changeSuffix: "/bbl" },
-  { title: "Gold", value: "$2,330.50", change: -5.10, changeSuffix: "/oz" },
-  { title: "Volatility (VIX)", value: "12.75", change: 0.25 },
+  { title: "Apple", value: "$214.29", change: 2.50 },
+  { title: "Microsoft", value: "$442.57", change: -1.10 },
+  { title: "Alphabet", value: "$179.22", change: 5.60 },
+  { title: "Amazon", value: "$183.83", change: -0.75 },
+  { title: "S&P 500 ETF", value: "$546.33", change: 1.20 },
+  { title: "Nasdaq 100 ETF", value: "$482.15", change: 0.25 },
 ];
 
 const MarketIndicatorsSection = () => {

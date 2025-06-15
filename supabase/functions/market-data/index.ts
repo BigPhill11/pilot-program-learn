@@ -11,14 +11,14 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Define the indicators we want to fetch
+// Define the indicators we want to fetch - switched to US stocks/ETFs for free plan compatibility
 const indicators = [
-  { symbol: "^IXIC", title: "NASDAQ", type: "index" },
-  { symbol: "^GSPC", title: "S&P 500", type: "index" },
-  { symbol: "^DJI", title: "Dow Jones", type: "index" },
-  { symbol: "BZ=F", title: "Brent Crude", type: "commodity", suffix: "/bbl" },
-  { symbol: "GC=F", title: "Gold", type: "commodity", suffix: "/oz" },
-  { symbol: "^VIX", title: "Volatility (VIX)", type: "index" },
+  { symbol: "AAPL", title: "Apple", type: "stock" },
+  { symbol: "MSFT", title: "Microsoft", type: "stock" },
+  { symbol: "GOOGL", title: "Alphabet", type: "stock" },
+  { symbol: "AMZN", title: "Amazon", type: "stock" },
+  { symbol: "SPY", title: "S&P 500 ETF", type: "etf" },
+  { symbol: "QQQ", title: "Nasdaq 100 ETF", type: "etf" },
 ];
 
 serve(async (req) => {
@@ -61,9 +61,9 @@ serve(async (req) => {
       }
       return {
         title: indicatorInfo.title,
-        value: (indicatorInfo.type === 'commodity' ? '$' : '') + (apiData.price?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || 'N/A'),
+        value: '$' + (apiData.price?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || 'N/A'),
         change: apiData.change || 0,
-        changeSuffix: indicatorInfo.suffix || "",
+        changeSuffix: "", // Not needed for stocks
       };
     }).filter(Boolean); // remove nulls for symbols not found
 
