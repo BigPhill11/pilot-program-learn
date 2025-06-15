@@ -9,13 +9,21 @@ export interface CompanyProfile {
   id: string;
   name: string;
   ticker: string;
-  logoUrl?: string; // Placeholder for actual logo, we'll use an icon for now
+  logoUrl?: string;
   industry: string;
-  professionalOverview: string;
-  datingProfile: string;
+  professional: {
+    overview: string;
+    kpis: { title: string; value: string }[];
+    financials: { title: string; value: string }[];
+  };
+  dating: {
+    marketSentiment: string;
+    analystSentiment: string;
+    historicalPerformance: string;
+  };
   marketCap: string;
-  revenueTTM: string; // Trailing Twelve Months
-  peRatio: string; // Price-to-Earnings Ratio
+  revenueTTM: string;
+  peRatio: string;
   headquarters: string;
 }
 
@@ -54,11 +62,46 @@ const CompanySwipeCard: React.FC<CompanySwipeCardProps> = ({ company, onSwipe })
               Dating Profile
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="professional" className="mt-4 border-t pt-4">
-            <p className="text-sm text-muted-foreground">{company.professionalOverview}</p>
+          <TabsContent value="professional" className="mt-4 border-t pt-4 text-sm space-y-4">
+            <p className="text-muted-foreground">{company.professional.overview}</p>
+            
+            <div>
+              <h4 className="font-semibold text-foreground mb-2">Key Performance Indicators (KPIs)</h4>
+              <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                {company.professional.kpis.map((kpi, index) => (
+                  <li key={index}>
+                    <span className="font-medium text-foreground">{kpi.title}:</span> {kpi.value}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-foreground mb-2">Financials</h4>
+              <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                {company.professional.financials.map((fin, index) => (
+                  <li key={index}>
+                    <span className="font-medium text-foreground">{fin.title}:</span> {fin.value}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </TabsContent>
-          <TabsContent value="dating" className="mt-4 border-t pt-4">
-            <p className="text-sm text-muted-foreground italic">{company.datingProfile}</p>
+          <TabsContent value="dating" className="mt-4 border-t pt-4 text-sm space-y-4">
+            <div className="space-y-3 italic text-muted-foreground">
+              <div>
+                <h4 className="font-semibold text-foreground not-italic mb-1">Vibe Check (Market Sentiment)</h4>
+                <p>"{company.dating.marketSentiment}"</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground not-italic mb-1">What the Experts Say (Analyst Sentiment)</h4>
+                <p>"{company.dating.analystSentiment}"</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground not-italic mb-1">My Relationship History (Performance)</h4>
+                <p>"{company.dating.historicalPerformance}"</p>
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
         
