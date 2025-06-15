@@ -2,7 +2,8 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ThumbsUp, ThumbsDown, Building2, Briefcase, DollarSign, BarChart2, MapPin } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Building2, Briefcase, DollarSign, BarChart2, MapPin, User } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export interface CompanyProfile {
   id: string;
@@ -10,7 +11,8 @@ export interface CompanyProfile {
   ticker: string;
   logoUrl?: string; // Placeholder for actual logo, we'll use an icon for now
   industry: string;
-  overview: string;
+  professionalOverview: string;
+  datingProfile: string;
   marketCap: string;
   revenueTTM: string; // Trailing Twelve Months
   peRatio: string; // Price-to-Earnings Ratio
@@ -41,12 +43,26 @@ const CompanySwipeCard: React.FC<CompanySwipeCardProps> = ({ company, onSwipe })
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div>
-          <h4 className="font-semibold text-sm mb-1 text-foreground">Overview:</h4>
-          <p className="text-sm text-muted-foreground line-clamp-3">{company.overview}</p>
-        </div>
+        <Tabs defaultValue="professional" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="professional">
+              <Briefcase className="h-4 w-4 mr-2" />
+              Professional
+            </TabsTrigger>
+            <TabsTrigger value="dating">
+              <User className="h-4 w-4 mr-2" />
+              Dating Profile
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="professional" className="mt-4 border-t pt-4">
+            <p className="text-sm text-muted-foreground">{company.professionalOverview}</p>
+          </TabsContent>
+          <TabsContent value="dating" className="mt-4 border-t pt-4">
+            <p className="text-sm text-muted-foreground italic">{company.datingProfile}</p>
+          </TabsContent>
+        </Tabs>
         
-        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm pt-4 border-t">
           <div className="flex items-center">
             <DollarSign className="h-4 w-4 mr-1.5 text-green-500" />
             <span className="font-medium">Market Cap:</span>&nbsp;{company.marketCap}
