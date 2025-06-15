@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar } from "@/components/ui/calendar";
 import HighlightableTerm from '@/components/HighlightableTerm';
 import { Rss, Calendar as CalendarIcon, Briefcase, Lightbulb, BarChart3 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const TabbedContentSection = () => {
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date());
@@ -28,6 +29,24 @@ const TabbedContentSection = () => {
     { title: "Biotechnology", icon: BarChart3, description: "Insights into pharmaceutical breakthroughs, M&A activities, and regulatory landscapes affecting biotech companies.", tldr: "New medicines and health tech are hot areas for investors." },
     { title: "Artificial Intelligence", icon: Briefcase, description: "Exploring the impact of AI on various industries, from software development to manufacturing, and identifying key players.", tldr: "AI is changing everything, creating big chances for growth." },
   ];
+
+  const eventDates = React.useMemo(() => 
+    economicEvents.map(event => {
+      const [year, month, day] = event.date.split('-').map(Number);
+      return new Date(year, month - 1, day);
+    }), [economicEvents]);
+
+  const eventModifiers = {
+    hasEvent: eventDates,
+  };
+
+  const eventModifierClassNames = {
+    day_hasEvent: "bg-primary/10 text-primary font-semibold rounded-md",
+  };
+
+  const selectedDateString = selectedDate
+    ? `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`
+    : null;
 
   return (
     <section className="py-16 bg-muted/40">
@@ -76,12 +95,17 @@ const TabbedContentSection = () => {
                     onSelect={setSelectedDate}
                     className="rounded-md border"
                     disabled={(date) => date < new Date("2025-06-01") || date > new Date("2025-07-31") }
+                    modifiers={eventModifiers}
+                    classNames={eventModifierClassNames}
                   />
                 </div>
                 <div className="md:w-1/2 space-y-3">
                   <h4 className="font-semibold text-foreground mb-2">Key Events for June/July 2025:</h4>
                   {economicEvents.map(event => (
-                     <div key={event.event} className="p-3 bg-background rounded-md border">
+                     <div key={event.event} className={cn(
+                       "p-3 bg-background rounded-md border transition-all duration-300",
+                       event.date === selectedDateString && "ring-2 ring-primary shadow-lg"
+                     )}>
                        <p className="font-medium text-sm text-primary">{event.date} - {event.event}</p>
                        <p className="text-xs text-muted-foreground">{event.description}</p>
                      </div>
