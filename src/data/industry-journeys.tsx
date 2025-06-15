@@ -11,7 +11,7 @@ export interface JourneyLevel {
 export interface IndustryJourneyData {
     id: string;
     name: string;
-    icon: React.ReactNode;
+    icon: React.ReactElement;
     levels: JourneyLevel[];
 }
 
