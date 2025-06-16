@@ -178,13 +178,15 @@ const EnhancedHeadlinesSection = () => {
     {
       id: '1',
       title: "Market Reaches New Heights",
-      summary: "Stock prices continue to rise as investors show confidence in the market's future performance.",
+      summary: "Stock prices continue to rise as investors show confidence in the market's future performance. Major indices are posting significant gains across multiple sectors. Analysts attribute the growth to strong economic indicators and corporate earnings reports.",
+      tldr: "Stock markets are up significantly due to positive investor sentiment and strong economic data.",
       url: "https://finance.yahoo.com"
     },
     {
       id: '2',
       title: "Tech Companies Report Strong Earnings",
-      summary: "Major technology companies exceeded profit expectations, driving significant trading volume.",
+      summary: "Major technology companies exceeded profit expectations, driving significant trading volume. Revenue growth has been particularly strong in cloud computing and artificial intelligence sectors. Investors are responding positively to future growth projections and innovation investments.",
+      tldr: "Tech giants beat earnings expectations, boosting investor confidence in the sector.",
       url: "https://finance.yahoo.com"
     }
   ] : headlines;
@@ -218,12 +220,22 @@ const EnhancedHeadlinesSection = () => {
                   {highlightTerms(headline.title, userLevel)}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="flex-grow">
-                <CardDescription className="text-sm leading-relaxed mb-4">
+              <CardContent className="flex-grow space-y-3">
+                <CardDescription className="text-sm leading-relaxed">
                   {highlightTerms(headline.summary, userLevel)}
                 </CardDescription>
+                
+                {headline.tldr && (
+                  <div className="bg-primary/5 p-3 rounded-lg border-l-4 border-primary">
+                    <p className="text-xs font-semibold text-primary mb-1">TL;DR</p>
+                    <p className="text-sm text-muted-foreground">
+                      {highlightTerms(headline.tldr, userLevel)}
+                    </p>
+                  </div>
+                )}
+                
                 {headline.url && headline.url !== "#" && (
-                  <div className="flex items-center text-primary text-sm font-medium group-hover:text-primary/80">
+                  <div className="flex items-center text-primary text-sm font-medium group-hover:text-primary/80 pt-2">
                     Click to read full article
                     <ExternalLink className="ml-1 h-3 w-3" />
                   </div>
