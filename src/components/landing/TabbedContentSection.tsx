@@ -1,9 +1,10 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar } from "@/components/ui/calendar";
 import HighlightableTerm from '@/components/HighlightableTerm';
-import { Rss, Calendar as CalendarIcon, Briefcase, Lightbulb, BarChart3 } from 'lucide-react';
+import { Rss, Calendar as CalendarIcon, Briefcase, Lightbulb, BarChart3, Heart, ShoppingCart, Banknote, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const TabbedContentSection = () => {
@@ -25,9 +26,41 @@ const TabbedContentSection = () => {
   ];
 
   const industryInsightsData = [
-    { title: "Renewable Energy", icon: Lightbulb, description: "Analysis of growth trends, investment opportunities, and policy impacts in the solar, wind, and alternative energy sectors.", tldr: "Clean energy is booming thanks to new tech and government help." },
-    { title: "Biotechnology", icon: BarChart3, description: "Insights into pharmaceutical breakthroughs, M&A activities, and regulatory landscapes affecting biotech companies.", tldr: "New medicines and health tech are hot areas for investors." },
-    { title: "Artificial Intelligence", icon: Briefcase, description: "Exploring the impact of AI on various industries, from software development to manufacturing, and identifying key players.", tldr: "AI is changing everything, creating big chances for growth." },
+    { 
+      title: "Renewable Energy", 
+      icon: Lightbulb, 
+      description: "Renewable energy encompasses solar, wind, hydroelectric, and other sustainable power sources that are transforming the global energy landscape. The sector has experienced unprecedented growth driven by declining technology costs, government incentives, and increasing corporate commitments to carbon neutrality. Investment in renewable infrastructure continues to accelerate as countries seek energy independence and environmental sustainability.",
+      prediction: "Renewable energy is expected to see explosive growth in 2024-2025 as battery storage technology improves and grid infrastructure modernizes. Government policies supporting clean energy transitions and corporate ESG mandates will drive massive capital deployment into solar, wind, and energy storage projects.",
+      stocksToWatch: ["ENPH", "SEDG", "NEE", "BEP", "ICLN"]
+    },
+    { 
+      title: "Biotechnology", 
+      icon: BarChart3, 
+      description: "Biotechnology combines biological processes with advanced technology to develop medicines, therapies, and diagnostic tools that address critical health challenges. The industry focuses on breakthrough treatments including gene therapy, immunotherapy, and personalized medicine approaches. Biotech companies range from early-stage research firms to established pharmaceutical giants developing next-generation treatments.",
+      prediction: "Biotechnology will benefit from an aging population driving demand for innovative therapies and breakthrough technologies like AI-powered drug discovery. M&A activity will increase as large pharma seeks promising pipeline assets, while personalized medicine and gene therapies will create new market opportunities.",
+      stocksToWatch: ["GILD", "AMGN", "BIIB", "REGN", "MRNA"]
+    },
+    { 
+      title: "Artificial Intelligence", 
+      icon: Briefcase, 
+      description: "Artificial Intelligence represents the development of computer systems that can perform tasks typically requiring human intelligence, including learning, reasoning, and pattern recognition. AI is revolutionizing industries from healthcare and finance to manufacturing and transportation through automation, predictive analytics, and decision-making capabilities. The technology spans machine learning, natural language processing, computer vision, and robotics applications.",
+      prediction: "AI will continue its rapid expansion as enterprises integrate AI solutions into core business processes and new AI applications emerge across industries. Infrastructure demand for AI computing will drive semiconductor and cloud service growth, while regulatory frameworks will begin to shape the industry's development.",
+      stocksToWatch: ["NVDA", "MSFT", "GOOGL", "AMZN", "AMD"]
+    },
+    { 
+      title: "Healthcare", 
+      icon: Heart, 
+      description: "Healthcare encompasses hospitals, pharmaceutical companies, medical device manufacturers, and healthcare services, all requiring specialized financial analysis due to regulatory requirements and unique business models. The sector combines traditional healthcare delivery with cutting-edge medical technology, telemedicine, and digital health solutions. Healthcare professionals analyze everything from drug development pipelines to hospital operations and insurance reimbursement models.",
+      prediction: "Healthcare will benefit from an aging population driving demand for medical services and breakthrough technologies like AI-powered diagnostics and personalized medicine. Biotech M&A activity will increase as large pharma seeks innovation, while digital health and telemedicine adoption will accelerate, creating new investment opportunities.",
+      stocksToWatch: ["UNH", "JNJ", "PFE", "ABBV", "TMO"]
+    },
+    { 
+      title: "Consumer", 
+      icon: ShoppingCart, 
+      description: "Consumer industry covers companies that sell goods and services directly to end consumers, from retail and restaurants to consumer packaged goods and luxury brands. Consumer analysts must understand brand value, supply chain dynamics, and changing consumer preferences across demographics and geographies. The sector requires analysis of seasonal patterns, inventory management, and the impact of economic cycles on discretionary spending.",
+      prediction: "Consumer companies will benefit from resilient spending on experiences and premium products, while value retailers may outperform in an uncertain economic environment. E-commerce growth continues with omnichannel strategies becoming essential, and sustainability and Gen Z preferences will drive innovation in product development.",
+      stocksToWatch: ["AMZN", "COST", "NKE", "SBUX", "HD"]
+    }
   ];
 
   const eventDates = React.useMemo(() => 
@@ -116,28 +149,40 @@ const TabbedContentSection = () => {
           </TabsContent>
 
           <TabsContent value="industry-insights">
-            <Card className="max-w-3xl mx-auto">
+            <Card className="max-w-4xl mx-auto">
               <CardHeader>
-                <CardTitle>Industry Insights Prototype</CardTitle>
-                <CardDescription>Exploring key sectors and their financial dynamics. (Static data)</CardDescription>
+                <CardTitle>Industry Insights & Market Predictions</CardTitle>
+                <CardDescription>Exploring key sectors and their financial dynamics with AI-powered market forecasts.</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-6">
                 {industryInsightsData.map((insight) => (
-                  <Card key={insight.title}>
-                    <CardHeader className="flex flex-row items-center space-x-3 pb-2">
+                  <Card key={insight.title} className="border-l-4 border-l-primary">
+                    <CardHeader className="flex flex-row items-center space-x-3 pb-3">
                       <insight.icon className="h-6 w-6 text-primary" />
-                      <CardTitle className="text-lg">{insight.title}</CardTitle>
+                      <CardTitle className="text-xl">{insight.title}</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground mb-2">{insight.description}</p>
-                      <div>
-                        <h4 className="font-semibold text-foreground text-xs mb-1">TL;DR:</h4>
-                        <p className="text-muted-foreground italic text-xs bg-blue-50 p-2 rounded-md border border-blue-200">{insight.tldr}</p>
+                    <CardContent className="space-y-4">
+                      <p className="text-sm text-muted-foreground leading-relaxed">{insight.description}</p>
+                      
+                      <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                        <p className="text-sm font-semibold text-blue-700 mb-2">🤖 AI Market Prediction</p>
+                        <p className="text-sm text-blue-600 leading-relaxed">{insight.prediction}</p>
+                      </div>
+                      
+                      <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
+                        <p className="text-sm font-semibold text-green-700 mb-2">📈 Stocks to Watch</p>
+                        <div className="flex flex-wrap gap-2">
+                          {insight.stocksToWatch.map(stock => (
+                            <span key={stock} className="inline-block bg-green-200 text-green-800 text-sm px-3 py-1 rounded-full font-medium">
+                              {stock}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
                 ))}
-                 <p className="text-center text-sm text-muted-foreground pt-4">More detailed industry analyses and data coming soon!</p>
+                <p className="text-center text-sm text-muted-foreground pt-4">Market predictions based on current trends and AI analysis. Always do your own research before investing.</p>
               </CardContent>
             </Card>
           </TabsContent>

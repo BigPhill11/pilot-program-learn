@@ -17,7 +17,7 @@ const IndustryDeepDiveTab = () => {
             <div className="text-center mb-12">
                 <h2 className="text-3xl font-bold tracking-tight text-foreground">Industry Deep Dives</h2>
                 <p className="mt-3 max-w-2xl mx-auto text-lg text-muted-foreground">
-                    Choose an industry to start your learning journey with AI-powered insights and predictions.
+                    Choose an industry to start your learning journey with structured learning paths.
                 </p>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -36,27 +36,9 @@ const IndustryDeepDiveTab = () => {
                             <CardTitle className="text-xl mb-2 text-center">{industry.name}</CardTitle>
                             <Badge variant="outline" className="mx-auto block w-fit mb-4">{industry.levels.length} Levels</Badge>
                             
-                            <CardDescription className="text-sm leading-relaxed mb-4">
+                            <CardDescription className="text-sm leading-relaxed">
                                 {industry.description}
                             </CardDescription>
-                            
-                            <div className="bg-blue-50 p-3 rounded-lg border-l-4 border-blue-500 mb-4">
-                                <p className="text-xs font-semibold text-blue-700 mb-1">🤖 AI Market Prediction</p>
-                                <p className="text-xs text-blue-600 leading-relaxed">
-                                    {industry.prediction}
-                                </p>
-                            </div>
-                            
-                            <div className="bg-green-50 p-3 rounded-lg border-l-4 border-green-500">
-                                <p className="text-xs font-semibold text-green-700 mb-1">📈 Stocks to Watch</p>
-                                <div className="flex flex-wrap gap-1">
-                                    {industry.stocksToWatch.map(stock => (
-                                        <span key={stock} className="inline-block bg-green-200 text-green-800 text-xs px-2 py-1 rounded font-medium">
-                                            {stock}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
                         </div>
                     </Card>
                 ))}
