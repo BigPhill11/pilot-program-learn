@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -33,7 +32,7 @@ const BigPurchasesLevelComponent: React.FC<BigPurchasesLevelProps> = ({
     setMasteredFlashcards(prev => new Set(prev).add(index));
   };
 
-  const handleQuizComplete = (isCorrect: boolean) => {
+  const handleQuizComplete = (topicId: string, isCorrect: boolean) => {
     setQuizCompleted(true);
     onQuizComplete(isCorrect);
     checkLevelCompletion(true, activityCompleted);
