@@ -10,6 +10,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import LearnPage from "./pages/LearnPage";
+import SoftSkillsPage from "./pages/SoftSkillsPage";
 import PaperTradingPage from "./pages/PaperTradingPage";
 import AskPhilPage from "./pages/AskPhilPage";
 import Navbar from "./components/Navbar";
@@ -52,6 +53,7 @@ const App: React.FC = () => {
               }>
                 <Route path="/" element={<Index />} />
                 <Route path="/learn" element={<LearnPage />} />
+                <Route path="/soft-skills" element={<SoftSkillsPage />} />
                 <Route path="/paper-trading" element={<PaperTradingPage />} />
                 <Route path="/ask-phil" element={<AskPhilPage />} />
                 <Route path="*" element={<NotFound />} />

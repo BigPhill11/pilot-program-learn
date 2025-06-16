@@ -189,6 +189,9 @@ export type Database = {
           email: string | null
           id: string
           last_login_date: string | null
+          linkedin_connected_at: string | null
+          linkedin_url: string | null
+          linkedin_verified: boolean | null
           longest_streak: number | null
           onboarding_completed: boolean | null
           updated_at: string | null
@@ -201,6 +204,9 @@ export type Database = {
           email?: string | null
           id: string
           last_login_date?: string | null
+          linkedin_connected_at?: string | null
+          linkedin_url?: string | null
+          linkedin_verified?: boolean | null
           longest_streak?: number | null
           onboarding_completed?: boolean | null
           updated_at?: string | null
@@ -213,12 +219,92 @@ export type Database = {
           email?: string | null
           id?: string
           last_login_date?: string | null
+          linkedin_connected_at?: string | null
+          linkedin_url?: string | null
+          linkedin_verified?: boolean | null
           longest_streak?: number | null
           onboarding_completed?: boolean | null
           updated_at?: string | null
           username?: string | null
         }
         Relationships: []
+      }
+      soft_skills_courses: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string | null
+          difficulty_level: string
+          estimated_duration: number
+          id: string
+          thumbnail_url: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          description?: string | null
+          difficulty_level: string
+          estimated_duration: number
+          id?: string
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          difficulty_level?: string
+          estimated_duration?: number
+          id?: string
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      soft_skills_lessons: {
+        Row: {
+          content: string
+          course_id: string | null
+          created_at: string | null
+          id: string
+          lesson_order: number
+          resources: Json | null
+          title: string
+          video_url: string | null
+        }
+        Insert: {
+          content: string
+          course_id?: string | null
+          created_at?: string | null
+          id?: string
+          lesson_order: number
+          resources?: Json | null
+          title: string
+          video_url?: string | null
+        }
+        Update: {
+          content?: string
+          course_id?: string | null
+          created_at?: string | null
+          id?: string
+          lesson_order?: number
+          resources?: Json | null
+          title?: string
+          video_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "soft_skills_lessons_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "soft_skills_courses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_progress: {
         Row: {
@@ -264,6 +350,54 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      user_soft_skills_progress: {
+        Row: {
+          completed: boolean | null
+          completed_at: string | null
+          course_id: string | null
+          created_at: string | null
+          id: string
+          lesson_id: string | null
+          notes: string | null
+          user_id: string | null
+        }
+        Insert: {
+          completed?: boolean | null
+          completed_at?: string | null
+          course_id?: string | null
+          created_at?: string | null
+          id?: string
+          lesson_id?: string | null
+          notes?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          completed?: boolean | null
+          completed_at?: string | null
+          course_id?: string | null
+          created_at?: string | null
+          id?: string
+          lesson_id?: string | null
+          notes?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_soft_skills_progress_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "soft_skills_courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_soft_skills_progress_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "soft_skills_lessons"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
