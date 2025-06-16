@@ -32,8 +32,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     );
   }
 
-  // Check if user needs to take assessment
-  if (!profile.app_version || profile.app_version === 'beginner') {
+  // Check if user needs to take assessment - only for users who don't have an app_version set at all
+  if (!profile.app_version) {
     return (
       <SkillsAssessmentQuiz 
         onComplete={(level) => {
