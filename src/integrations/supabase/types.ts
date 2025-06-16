@@ -36,6 +36,151 @@ export type Database = {
         }
         Relationships: []
       }
+      market_predictions: {
+        Row: {
+          actual_price: number | null
+          created_at: string
+          id: string
+          points_earned: number | null
+          predicted_price: number | null
+          reasoning: string
+          sentiment: string
+          updated_at: string
+          user_id: string
+          week_ending: string
+        }
+        Insert: {
+          actual_price?: number | null
+          created_at?: string
+          id?: string
+          points_earned?: number | null
+          predicted_price?: number | null
+          reasoning: string
+          sentiment: string
+          updated_at?: string
+          user_id: string
+          week_ending: string
+        }
+        Update: {
+          actual_price?: number | null
+          created_at?: string
+          id?: string
+          points_earned?: number | null
+          predicted_price?: number | null
+          reasoning?: string
+          sentiment?: string
+          updated_at?: string
+          user_id?: string
+          week_ending?: string
+        }
+        Relationships: []
+      }
+      paper_portfolios: {
+        Row: {
+          cash: number
+          created_at: string
+          id: string
+          total_value: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cash?: number
+          created_at?: string
+          id?: string
+          total_value?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cash?: number
+          created_at?: string
+          id?: string
+          total_value?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      paper_positions: {
+        Row: {
+          avg_price: number
+          created_at: string
+          id: string
+          portfolio_id: string
+          shares: number
+          symbol: string
+          updated_at: string
+        }
+        Insert: {
+          avg_price: number
+          created_at?: string
+          id?: string
+          portfolio_id: string
+          shares: number
+          symbol: string
+          updated_at?: string
+        }
+        Update: {
+          avg_price?: number
+          created_at?: string
+          id?: string
+          portfolio_id?: string
+          shares?: number
+          symbol?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "paper_positions_portfolio_id_fkey"
+            columns: ["portfolio_id"]
+            isOneToOne: false
+            referencedRelation: "paper_portfolios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      paper_transactions: {
+        Row: {
+          created_at: string
+          id: string
+          portfolio_id: string
+          price: number
+          shares: number
+          symbol: string
+          total_amount: number
+          transaction_type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          portfolio_id: string
+          price: number
+          shares: number
+          symbol: string
+          total_amount: number
+          transaction_type: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          portfolio_id?: string
+          price?: number
+          shares?: number
+          symbol?: string
+          total_amount?: number
+          transaction_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "paper_transactions_portfolio_id_fkey"
+            columns: ["portfolio_id"]
+            isOneToOne: false
+            referencedRelation: "paper_portfolios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           app_version: string | null

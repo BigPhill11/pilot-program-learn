@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { TrendingUp, TrendingDown, DollarSign, Target } from 'lucide-react';
+import { usePaperTrading } from '@/hooks/usePaperTrading';
 
 interface Stock {
   symbol: string;
@@ -14,18 +15,14 @@ interface Stock {
   changePercent: number;
 }
 
-interface Portfolio {
-  cash: number;
-  positions: Record<string, { shares: number; avgPrice: number }>;
-  totalValue: number;
-}
-
 const MarketSimulation: React.FC = () => {
-  const [portfolio, setPortfolio] = useState<Portfolio>({
-    cash: 10000,
-    positions: {},
-    totalValue: 10000
-  });
+  const {
+    portfolio,
+    positions,
+    loading,
+    executeTrade,
+    calculateTotalValue
+  } = usePaperTrading();
 
   const [stocks] = useState<Stock[]>([
     { symbol: 'AAPL', name: 'Apple Inc.', price: 150.25, change: 2.15, changePercent: 1.45 },
@@ -38,78 +35,46 @@ const MarketSimulation: React.FC = () => {
   const [tradeAmount, setTradeAmount] = useState<number>(1);
   const [tradeType, setTradeType] = useState<'buy' | 'sell'>('buy');
 
-  const executeTrade = () => {
-    if (!selectedStock) return;
+  const stockPrices = stocks.reduce((acc, stock) => {
+    acc[stock.symbol] = stock.price;
+    return acc;
+  }, {} as Record<string, number>);
 
-    const totalCost = selectedStock.price * tradeAmount;
+  const totalValue = portfolio ? calculateTotalValue(stockPrices) : 0;
+  const portfolioReturn = totalValue - 10000;
+  const portfolioReturnPercent = ((totalValue - 10000) / 10000) * 100;
 
-    if (tradeType === 'buy') {
-      if (portfolio.cash >= totalCost) {
-        setPortfolio(prev => {
-          const newPositions = { ...prev.positions };
-          if (newPositions[selectedStock.symbol]) {
-            const currentShares = newPositions[selectedStock.symbol].shares;
-            const currentAvgPrice = newPositions[selectedStock.symbol].avgPrice;
-            const newShares = currentShares + tradeAmount;
-            const newAvgPrice = ((currentAvgPrice * currentShares) + totalCost) / newShares;
-            newPositions[selectedStock.symbol] = { shares: newShares, avgPrice: newAvgPrice };
-          } else {
-            newPositions[selectedStock.symbol] = { shares: tradeAmount, avgPrice: selectedStock.price };
-          }
+  const handleExecuteTrade = async () => {
+    if (!selectedStock || !portfolio) return;
 
-          return {
-            ...prev,
-            cash: prev.cash - totalCost,
-            positions: newPositions
-          };
-        });
-      }
-    } else {
-      // Sell logic
-      const position = portfolio.positions[selectedStock.symbol];
-      if (position && position.shares >= tradeAmount) {
-        setPortfolio(prev => {
-          const newPositions = { ...prev.positions };
-          newPositions[selectedStock.symbol] = {
-            ...position,
-            shares: position.shares - tradeAmount
-          };
-          
-          if (newPositions[selectedStock.symbol].shares === 0) {
-            delete newPositions[selectedStock.symbol];
-          }
-
-          return {
-            ...prev,
-            cash: prev.cash + totalCost,
-            positions: newPositions
-          };
-        });
-      }
-    }
-
+    await executeTrade(selectedStock.symbol, tradeAmount, selectedStock.price, tradeType);
     setSelectedStock(null);
     setTradeAmount(1);
   };
 
-  useEffect(() => {
-    // Calculate total portfolio value
-    const positionsValue = Object.entries(portfolio.positions).reduce((total, [symbol, position]) => {
-      const stock = stocks.find(s => s.symbol === symbol);
-      if (stock) {
-        return total + (stock.price * position.shares);
-      }
-      return total;
-    }, 0);
+  const getPositionForStock = (symbol: string) => {
+    return positions.find(p => p.symbol === symbol);
+  };
 
-    setPortfolio(prev => ({
-      ...prev,
-      totalValue: prev.cash + positionsValue
-    }));
-  }, [portfolio.positions, portfolio.cash, stocks]);
+  if (loading) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="text-center">Loading your portfolio...</div>
+        </CardContent>
+      </Card>
+    );
+  }
 
-  const portfolioReturn = portfolio.totalValue - 10000;
-  const portfolioReturnPercent = ((portfolio.totalValue - 10000) / 10000) * 100;
+  if (!portfolio) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="text-center">Unable to load portfolio</div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -124,7 +89,7 @@ const MarketSimulation: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="text-center">
               <p className="text-sm text-muted-foreground">Total Value</p>
-              <p className="text-2xl font-bold">${portfolio.totalValue.toFixed(2)}</p>
+              <p className="text-2xl font-bold">${totalValue.toFixed(2)}</p>
             </div>
             <div className="text-center">
               <p className="text-sm text-muted-foreground">Cash</p>
@@ -153,35 +118,43 @@ const MarketSimulation: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {stocks.map((stock) => (
-                <div
-                  key={stock.symbol}
-                  className={`p-3 border rounded cursor-pointer transition-colors ${
-                    selectedStock?.symbol === stock.symbol ? 'border-primary bg-primary/5' : 'hover:bg-muted'
-                  }`}
-                  onClick={() => setSelectedStock(stock)}
-                >
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="font-semibold">{stock.symbol}</p>
-                      <p className="text-xs text-muted-foreground">{stock.name}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-semibold">${stock.price}</p>
-                      <div className="flex items-center gap-1">
-                        {stock.change >= 0 ? (
-                          <TrendingUp className="h-3 w-3 text-green-600" />
-                        ) : (
-                          <TrendingDown className="h-3 w-3 text-red-600" />
+              {stocks.map((stock) => {
+                const position = getPositionForStock(stock.symbol);
+                return (
+                  <div
+                    key={stock.symbol}
+                    className={`p-3 border rounded cursor-pointer transition-colors ${
+                      selectedStock?.symbol === stock.symbol ? 'border-primary bg-primary/5' : 'hover:bg-muted'
+                    }`}
+                    onClick={() => setSelectedStock(stock)}
+                  >
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="font-semibold">{stock.symbol}</p>
+                        <p className="text-xs text-muted-foreground">{stock.name}</p>
+                        {position && (
+                          <p className="text-xs text-blue-600">
+                            Owned: {position.shares} shares @ ${position.avg_price.toFixed(2)}
+                          </p>
                         )}
-                        <span className={`text-xs ${stock.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          {stock.changePercent.toFixed(2)}%
-                        </span>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold">${stock.price}</p>
+                        <div className="flex items-center gap-1">
+                          {stock.change >= 0 ? (
+                            <TrendingUp className="h-3 w-3 text-green-600" />
+                          ) : (
+                            <TrendingDown className="h-3 w-3 text-red-600" />
+                          )}
+                          <span className={`text-xs ${stock.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            {stock.changePercent.toFixed(2)}%
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </CardContent>
         </Card>
@@ -197,6 +170,17 @@ const MarketSimulation: React.FC = () => {
                   <p className="font-semibold">{selectedStock.symbol}</p>
                   <p className="text-sm text-muted-foreground">{selectedStock.name}</p>
                   <p className="text-lg font-bold">${selectedStock.price}</p>
+                  
+                  {(() => {
+                    const position = getPositionForStock(selectedStock.symbol);
+                    return position ? (
+                      <p className="text-sm text-blue-600">
+                        You own {position.shares} shares (avg: ${position.avg_price.toFixed(2)})
+                      </p>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">You don't own this stock</p>
+                    );
+                  })()}
                 </div>
 
                 <div className="flex gap-2">
@@ -211,6 +195,7 @@ const MarketSimulation: React.FC = () => {
                     variant={tradeType === 'sell' ? 'default' : 'outline'}
                     onClick={() => setTradeType('sell')}
                     className="flex-1"
+                    disabled={!getPositionForStock(selectedStock.symbol)}
                   >
                     Sell
                   </Button>
@@ -221,17 +206,37 @@ const MarketSimulation: React.FC = () => {
                   <input
                     type="number"
                     min="1"
+                    max={tradeType === 'sell' ? getPositionForStock(selectedStock.symbol)?.shares || 0 : undefined}
                     value={tradeAmount}
                     onChange={(e) => setTradeAmount(parseInt(e.target.value) || 1)}
                     className="w-full mt-1 px-3 py-2 border rounded-md"
                   />
+                  {tradeType === 'sell' && (() => {
+                    const position = getPositionForStock(selectedStock.symbol);
+                    return position ? (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Max: {position.shares} shares
+                      </p>
+                    ) : null;
+                  })()}
                 </div>
 
                 <div className="p-3 bg-muted rounded">
                   <p className="text-sm">Total: ${(selectedStock.price * tradeAmount).toFixed(2)}</p>
+                  {tradeType === 'buy' && portfolio.cash < (selectedStock.price * tradeAmount) && (
+                    <p className="text-xs text-red-600 mt-1">Insufficient cash</p>
+                  )}
                 </div>
 
-                <Button onClick={executeTrade} className="w-full">
+                <Button 
+                  onClick={handleExecuteTrade} 
+                  className="w-full"
+                  disabled={
+                    tradeType === 'buy' ? portfolio.cash < (selectedStock.price * tradeAmount) :
+                    !getPositionForStock(selectedStock.symbol) || 
+                    (getPositionForStock(selectedStock.symbol)?.shares || 0) < tradeAmount
+                  }
+                >
                   Execute {tradeType === 'buy' ? 'Buy' : 'Sell'} Order
                 </Button>
               </div>
@@ -244,27 +249,30 @@ const MarketSimulation: React.FC = () => {
         </Card>
       </div>
 
-      {Object.keys(portfolio.positions).length > 0 && (
+      {positions.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle>Your Positions</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {Object.entries(portfolio.positions).map(([symbol, position]) => {
-                const stock = stocks.find(s => s.symbol === symbol);
+              {positions.map((position) => {
+                const stock = stocks.find(s => s.symbol === position.symbol);
                 if (!stock) return null;
 
                 const currentValue = stock.price * position.shares;
-                const gainLoss = currentValue - (position.avgPrice * position.shares);
-                const gainLossPercent = ((currentValue - (position.avgPrice * position.shares)) / (position.avgPrice * position.shares)) * 100;
+                const costBasis = position.avg_price * position.shares;
+                const gainLoss = currentValue - costBasis;
+                const gainLossPercent = ((currentValue - costBasis) / costBasis) * 100;
 
                 return (
-                  <div key={symbol} className="p-3 border rounded">
+                  <div key={position.id} className="p-3 border rounded">
                     <div className="flex justify-between items-center">
                       <div>
-                        <p className="font-semibold">{symbol}</p>
-                        <p className="text-xs text-muted-foreground">{position.shares} shares @ ${position.avgPrice.toFixed(2)}</p>
+                        <p className="font-semibold">{position.symbol}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {position.shares} shares @ ${position.avg_price.toFixed(2)}
+                        </p>
                       </div>
                       <div className="text-right">
                         <p className="font-semibold">${currentValue.toFixed(2)}</p>
