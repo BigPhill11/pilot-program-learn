@@ -4,6 +4,12 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+interface DailyLoginResponse {
+  login_recorded: boolean;
+  streak: number;
+  points_earned: number;
+}
+
 export const useDailyLogin = () => {
   const { user } = useAuth();
 
@@ -21,11 +27,13 @@ export const useDailyLogin = () => {
           return;
         }
 
-        if (data?.login_recorded && data?.points_earned > 0) {
-          toast.success(`Welcome back! +${data.points_earned} points earned! 🎉`);
+        const result = data as DailyLoginResponse;
+
+        if (result?.login_recorded && result?.points_earned > 0) {
+          toast.success(`Welcome back! +${result.points_earned} points earned! 🎉`);
           
-          if (data.streak > 1) {
-            toast.success(`${data.streak} day streak! Keep it up! 🔥`);
+          if (result.streak > 1) {
+            toast.success(`${result.streak} day streak! Keep it up! 🔥`);
           }
         }
       } catch (error) {

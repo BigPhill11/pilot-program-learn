@@ -11,7 +11,7 @@ import PortfolioCharts from '@/components/trading/PortfolioCharts';
 import { usePaperTrading } from '@/hooks/usePaperTrading';
 
 const PaperTradingPage = () => {
-  const { portfolio, positions, transactions, loading, buyStock, sellStock } = usePaperTrading();
+  const { portfolio, positions, transactions, loading, executeTrade } = usePaperTrading();
   const [selectedStock, setSelectedStock] = useState<string>('');
 
   // Mock current prices for demonstration

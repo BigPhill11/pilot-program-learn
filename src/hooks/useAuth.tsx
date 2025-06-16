@@ -25,6 +25,12 @@ interface AuthProviderProps {
   children: React.ReactNode;
 }
 
+interface DailyLoginResponse {
+  login_recorded: boolean;
+  streak: number;
+  points_earned: number;
+}
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -61,8 +67,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return;
       }
 
+      const result = data as DailyLoginResponse;
+
       // Refresh profile after daily login to get updated streak
-      if (data?.login_recorded) {
+      if (result?.login_recorded) {
         await fetchProfile(userId);
       }
     } catch (error) {
