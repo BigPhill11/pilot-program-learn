@@ -5,10 +5,13 @@ import PersonalFinanceTab from "@/components/learn/PersonalFinanceTab";
 import CompanyDiscoveryTab from "@/components/learn/CompanyDiscoveryTab";
 import IndustryDeepDiveTab from "@/components/learn/IndustryDeepDiveTab";
 import AdaptiveLearningContent from "@/components/learning/AdaptiveLearningContent";
+import TermOfTheDay from "@/components/learn/TermOfTheDay";
 
 const LearnPage = () => {
   return (
     <div className="container mx-auto px-4 py-8">
+      <TermOfTheDay />
+      
       <Tabs defaultValue="adaptive" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="adaptive">Adaptive Learning</TabsTrigger>

@@ -89,8 +89,13 @@ const EnhancedHeadlinesSection = () => {
   const { profile } = useAuth();
   
   const fetchHeadlines = async () => {
+    console.log('Fetching headlines...');
     const { data, error } = await supabase.functions.invoke('market-headlines');
-    if (error) throw new Error(error.message);
+    if (error) {
+      console.error('Headlines fetch error:', error);
+      throw new Error(error.message);
+    }
+    console.log('Headlines data received:', data);
     return data || { headlines: [] };
   };
 
@@ -174,6 +179,8 @@ const EnhancedHeadlinesSection = () => {
 
   // Extract headlines from the response, with proper fallback handling
   const headlines = headlinesData?.headlines || [];
+  console.log('Processing headlines:', headlines);
+  
   const displayHeadlines = isError || !Array.isArray(headlines) || headlines.length === 0 ? [
     {
       id: '1',
@@ -191,9 +198,28 @@ const EnhancedHeadlinesSection = () => {
     }
   ] : headlines;
 
-  const handleHeadlineClick = (url: string) => {
-    if (url && url !== "#" && url !== "") {
-      window.open(url, '_blank', 'noopener,noreferrer');
+  const handleHeadlineClick = (headline: any) => {
+    console.log('Clicking headline:', headline);
+    console.log('URL:', headline.url);
+    
+    if (headline.url && headline.url !== "#" && headline.url !== "") {
+      // Try to open the URL
+      const newWindow = window.open(headline.url, '_blank', 'noopener,noreferrer');
+      
+      // If popup was blocked, try a fallback
+      if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
+        console.warn('Popup blocked, trying fallback method');
+        // Fallback: create a temporary link element
+        const link = document.createElement('a');
+        link.href = headline.url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } else {
+      console.warn('No valid URL found for headline:', headline);
     }
   };
 
@@ -215,7 +241,7 @@ const EnhancedHeadlinesSection = () => {
             <Card 
               key={headline.id || index} 
               className="h-full hover:shadow-lg transition-shadow cursor-pointer group"
-              onClick={() => handleHeadlineClick(headline.url)}
+              onClick={() => handleHeadlineClick(headline)}
             >
               <CardHeader>
                 <CardTitle className="text-lg line-clamp-2 group-hover:text-primary transition-colors">
