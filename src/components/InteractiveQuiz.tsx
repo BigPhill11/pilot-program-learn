@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
+import { CheckCircle2, XCircle, AlertTriangle, RotateCcw } from 'lucide-react';
 
 interface InteractiveQuizProps {
   topicId: string;
@@ -32,6 +32,11 @@ const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({
     setHasAttempted(true);
     const isCorrect = index === correctAnswerIndex;
     onQuizComplete(topicId, isCorrect);
+  };
+
+  const handleRetry = () => {
+    setSelectedAnswerIndex(null);
+    setHasAttempted(false);
   };
 
   const getButtonVariant = (index: number) => {
@@ -72,12 +77,28 @@ const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({
           </Button>
         ))}
       </div>
+      
       {(hasAttempted && selectedAnswerIndex !== correctAnswerIndex && feedbackForIncorrect) && (
         <div className="mt-3 p-3 text-sm bg-destructive/10 text-destructive border border-destructive/30 rounded-md flex items-start">
           <AlertTriangle className="h-5 w-5 mr-2 flex-shrink-0" />
           <p>{feedbackForIncorrect}</p>
         </div>
       )}
+
+      {(hasAttempted || isCompleted) && (
+        <div className="mt-3 flex justify-center">
+          <Button
+            onClick={handleRetry}
+            variant="outline"
+            size="sm"
+            className="text-xs"
+          >
+            <RotateCcw className="h-3 w-3 mr-1" />
+            Try Again
+          </Button>
+        </div>
+      )}
+      
       {(isCompleted && !hasAttempted) && (
          <div className="mt-3 p-2 text-sm bg-green-500/10 text-green-700 border border-green-500/30 rounded-md flex items-center">
             <CheckCircle2 className="h-5 w-5 mr-2 flex-shrink-0" />

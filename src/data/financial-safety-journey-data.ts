@@ -64,6 +64,10 @@ export const financialSafetyJourneyData = {
       {
         term: "Coverage",
         definition: "What your insurance will pay for when something bad happens, like medical bills or stolen property."
+      },
+      {
+        term: "Policy",
+        definition: "The contract between you and the insurance company that outlines what's covered and what you pay."
       }
     ],
     dragDropActivity: {
@@ -106,6 +110,10 @@ export const financialSafetyJourneyData = {
       {
         term: "Rainy Day Fund",
         definition: "Another term for emergency fund - money set aside for when 'rainy days' (bad situations) happen."
+      },
+      {
+        term: "Financial Buffer",
+        definition: "A safety net of money that protects you from financial stress during unexpected events."
       }
     ],
     dragDropActivity: {
@@ -115,10 +123,11 @@ export const financialSafetyJourneyData = {
         { id: "hospital", text: "Emergency room visit" },
         { id: "vacation", text: "Spring break trip" },
         { id: "repair", text: "Car breaks down" },
-        { id: "concert", text: "Concert tickets" }
+        { id: "concert", text: "Concert tickets" },
+        { id: "medicine", text: "Prescription medication" }
       ],
       categories: [
-        { id: "emergency", title: "True Emergencies", correctItems: ["hospital", "repair"] },
+        { id: "emergency", title: "True Emergencies", correctItems: ["hospital", "repair", "medicine"] },
         { id: "wants", title: "Wants (Not Emergencies)", correctItems: ["vacation", "concert"] }
       ]
     },
@@ -152,6 +161,10 @@ export const financialSafetyJourneyData = {
       {
         term: "Contactless Payment",
         definition: "Safer way to pay using your phone or tapping your card instead of swiping, reducing fraud risk."
+      },
+      {
+        term: "Skimming",
+        definition: "When criminals attach devices to card readers to steal your card information when you swipe."
       }
     ],
     dragDropActivity: {
@@ -161,10 +174,11 @@ export const financialSafetyJourneyData = {
         { id: "https", text: "Shopping on HTTPS websites" },
         { id: "public", text: "Buying online using coffee shop Wi-Fi" },
         { id: "tap", text: "Using contactless payment" },
-        { id: "email", text: "Clicking payment links in emails" }
+        { id: "email", text: "Clicking payment links in emails" },
+        { id: "atm", text: "Using ATMs in well-lit areas" }
       ],
       categories: [
-        { id: "safe", title: "Safe Practices", correctItems: ["https", "tap"] },
+        { id: "safe", title: "Safe Practices", correctItems: ["https", "tap", "atm"] },
         { id: "risky", title: "Risky Practices", correctItems: ["public", "email"] }
       ]
     },
@@ -198,6 +212,10 @@ export const financialSafetyJourneyData = {
       {
         term: "Chargeback",
         definition: "Process to reverse a credit card charge when you've been scammed or didn't receive what you paid for."
+      },
+      {
+        term: "Warranty",
+        definition: "Guarantee from the manufacturer or seller that a product will work properly for a certain period."
       }
     ],
     dragDropActivity: {
@@ -207,10 +225,11 @@ export const financialSafetyJourneyData = {
         { id: "return", text: "Right to return defective products" },
         { id: "dispute", text: "Right to dispute fraudulent charges" },
         { id: "fdic", text: "Right to protected bank deposits" },
-        { id: "complaint", text: "Right to file complaints with CFPB" }
+        { id: "complaint", text: "Right to file complaints with CFPB" },
+        { id: "warranty", text: "Right to warranty coverage" }
       ],
       categories: [
-        { id: "shopping", title: "Shopping Rights", correctItems: ["return"] },
+        { id: "shopping", title: "Shopping Rights", correctItems: ["return", "warranty"] },
         { id: "banking", title: "Banking Rights", correctItems: ["dispute", "fdic", "complaint"] }
       ]
     },
@@ -253,6 +272,12 @@ export const financialSafetyJourneyData = {
         message: "Hi! Thanks for shopping with us. Your order #12345 will arrive Thursday. Track it on our website.",
         isScam: false,
         redFlags: []
+      },
+      {
+        id: 5,
+        message: "Your credit card has suspicious activity. Call this number immediately: 555-SCAM-NOW",
+        isScam: true,
+        redFlags: ["urgency", "suspicious phone number", "fear tactics"]
       }
     ]
   }

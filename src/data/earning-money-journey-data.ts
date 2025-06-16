@@ -64,6 +64,10 @@ export const earningMoneyJourneyData = {
       {
         term: "W-2 Form",
         definition: "Annual tax document from your employer showing total wages and taxes withheld for the year."
+      },
+      {
+        term: "Payroll Deductions",
+        definition: "Money taken out of your paycheck for taxes, insurance, or other benefits before you receive it."
       }
     ],
     dragDropActivity: {
@@ -107,6 +111,10 @@ export const earningMoneyJourneyData = {
       {
         term: "Time and a Half",
         definition: "Overtime rate that equals your regular hourly rate multiplied by 1.5 (e.g., $10/hour becomes $15/hour)."
+      },
+      {
+        term: "Exempt Employee",
+        definition: "Salaried employee who doesn't receive overtime pay, typically in professional or managerial roles."
       }
     ],
     dragDropActivity: {
@@ -148,6 +156,10 @@ export const earningMoneyJourneyData = {
       {
         term: "Side Hustle",
         definition: "A secondary job or business you do alongside school or your main job to earn extra income."
+      },
+      {
+        term: "1099 Form",
+        definition: "Tax form for independent contractors showing how much you earned from freelance or gig work."
       }
     ],
     dragDropActivity: {
@@ -189,6 +201,10 @@ export const earningMoneyJourneyData = {
       {
         term: "Financial Records",
         definition: "Organized documents of your income and expenses that help you file taxes and track your money."
+      },
+      {
+        term: "Standard Deduction",
+        definition: "Fixed amount you can subtract from your income to reduce taxes owed, available to all taxpayers."
       }
     ],
     dragDropActivity: {
