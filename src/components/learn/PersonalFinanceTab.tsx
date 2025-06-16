@@ -7,13 +7,9 @@ import { Badge } from '@/components/ui/badge';
 import { Trophy, Play, CheckCircle2 } from 'lucide-react';
 import PodcastCard from './PodcastCard';
 import TaxesJourney from './TaxesJourney';
+import BudgetJourney from './BudgetJourney';
 
 const personalFinanceTopics = [
-    {
-        value: "budgeting",
-        title: "Budgeting 101",
-        content: "Budgeting is the process of creating a plan to spend your money. This spending plan is called a budget. Creating this spending plan allows you to determine in advance whether you will have enough money to do the things you need to do or would like to do."
-    },
     {
         value: "roth-ira",
         title: "What is a Roth IRA?",
@@ -59,6 +55,7 @@ const podcastRecommendations = [
 
 const PersonalFinanceTab = () => {
     const [showTaxesJourney, setShowTaxesJourney] = useState(false);
+    const [showBudgetJourney, setShowBudgetJourney] = useState(false);
 
     // Check if taxes journey has been completed
     const getTaxesProgress = () => {
@@ -74,10 +71,29 @@ const PersonalFinanceTab = () => {
         return { completed: false, levelsCompleted: 0, totalLevels: 5 };
     };
 
+    // Check if budget journey has been completed
+    const getBudgetProgress = () => {
+        const saved = localStorage.getItem('budgetJourneyProgress');
+        if (saved) {
+            const progress = JSON.parse(saved);
+            return {
+                completed: progress.journeyCompleted || false,
+                levelsCompleted: progress.completedLevels?.length || 0,
+                totalLevels: 5
+            };
+        }
+        return { completed: false, levelsCompleted: 0, totalLevels: 5 };
+    };
+
     const taxesProgress = getTaxesProgress();
+    const budgetProgress = getBudgetProgress();
 
     if (showTaxesJourney) {
         return <TaxesJourney onBack={() => setShowTaxesJourney(false)} />;
+    }
+
+    if (showBudgetJourney) {
+        return <BudgetJourney onBack={() => setShowBudgetJourney(false)} />;
     }
 
     return (
@@ -85,6 +101,81 @@ const PersonalFinanceTab = () => {
             <div>
                 <h2 className="text-3xl font-bold tracking-tight text-foreground text-center mb-8">Personal Finance Essentials</h2>
                 <Accordion type="single" collapsible className="w-full max-w-4xl mx-auto">
+                    {/* Budgeting Journey Section */}
+                    <AccordionItem value="budgeting" className="border-2 border-blue-500/20">
+                        <AccordionTrigger className="text-lg text-left">
+                            <div className="flex items-center gap-2">
+                                Budgeting 101
+                                {budgetProgress.completed && (
+                                    <Badge className="bg-blue-500 text-white">
+                                        <Trophy className="h-3 w-3 mr-1" />
+                                        Complete
+                                    </Badge>
+                                )}
+                                {!budgetProgress.completed && budgetProgress.levelsCompleted > 0 && (
+                                    <Badge variant="outline">
+                                        {budgetProgress.levelsCompleted}/{budgetProgress.totalLevels} levels
+                                    </Badge>
+                                )}
+                            </div>
+                        </AccordionTrigger>
+                        <AccordionContent>
+                            <Card className="bg-gradient-to-r from-blue-50 to-green-50 border border-blue-500/30">
+                                <CardContent className="p-6">
+                                    <div className="flex items-start justify-between mb-4">
+                                        <div className="flex-1">
+                                            <h4 className="font-semibold text-lg mb-2">💰 Interactive Budgeting Learning Journey</h4>
+                                            <p className="text-muted-foreground text-sm mb-4">
+                                                Master budgeting through 5 gamified levels with flashcards, quizzes, and real-world scenarios. 
+                                                Complete all levels to unlock the budget builder simulation game!
+                                            </p>
+                                            
+                                            <div className="space-y-2 mb-4">
+                                                <div className="flex items-center gap-2 text-sm">
+                                                    <CheckCircle2 className="h-4 w-4 text-blue-500" />
+                                                    <span>Learn needs vs wants</span>
+                                                </div>
+                                                <div className="flex items-center gap-2 text-sm">
+                                                    <CheckCircle2 className="h-4 w-4 text-blue-500" />
+                                                    <span>50/30/20 budgeting rule</span>
+                                                </div>
+                                                <div className="flex items-center gap-2 text-sm">
+                                                    <CheckCircle2 className="h-4 w-4 text-blue-500" />
+                                                    <span>Budgeting for goals</span>
+                                                </div>
+                                                <div className="flex items-center gap-2 text-sm">
+                                                    <Trophy className="h-4 w-4 text-blue-500" />
+                                                    <span>Final budget builder simulation</span>
+                                                </div>
+                                            </div>
+
+                                            {budgetProgress.completed && (
+                                                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                                    <div className="flex items-center gap-2">
+                                                        <Trophy className="h-5 w-5 text-blue-600" />
+                                                        <span className="font-semibold text-blue-800">Badge Earned: Budget Boss!</span>
+                                                    </div>
+                                                    <p className="text-sm text-blue-700 mt-1">
+                                                        You've completed the entire budgeting journey and earned your achievement badge.
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                    
+                                    <Button 
+                                        onClick={() => setShowBudgetJourney(true)}
+                                        className="w-full bg-blue-500 hover:bg-blue-600"
+                                        size="lg"
+                                    >
+                                        <Play className="h-4 w-4 mr-2" />
+                                        {budgetProgress.levelsCompleted > 0 ? 'Continue Budgeting Journey' : 'Start Budgeting Journey'}
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        </AccordionContent>
+                    </AccordionItem>
+
                     {personalFinanceTopics.map((topic) => (
                         <AccordionItem value={topic.value} key={topic.value}>
                             <AccordionTrigger className="text-lg text-left">{topic.title}</AccordionTrigger>
@@ -94,7 +185,7 @@ const PersonalFinanceTab = () => {
                         </AccordionItem>
                     ))}
                     
-                    {/* Special Taxes Journey Section */}
+                    {/* Taxes Journey Section */}
                     <AccordionItem value="taxes" className="border-2 border-primary/20">
                         <AccordionTrigger className="text-lg text-left">
                             <div className="flex items-center gap-2">
@@ -162,7 +253,7 @@ const PersonalFinanceTab = () => {
                                         size="lg"
                                     >
                                         <Play className="h-4 w-4 mr-2" />
-                                        {taxesProgress.levelsCompleted > 0 ? 'Continue Journey' : 'Start Taxes Journey'}
+                                        {taxesProgress.levelsCompleted > 0 ? 'Continue Taxes Journey' : 'Start Taxes Journey'}
                                     </Button>
                                 </CardContent>
                             </Card>
