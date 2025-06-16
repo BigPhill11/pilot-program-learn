@@ -29,7 +29,7 @@ export const useDailyLogin = () => {
 
         // Safe type checking instead of direct casting
         if (data && typeof data === 'object' && 'login_recorded' in data) {
-          const result = data as DailyLoginResponse;
+          const result = data as unknown as DailyLoginResponse;
 
           if (result?.login_recorded && result?.points_earned > 0) {
             toast.success(`Welcome back! +${result.points_earned} points earned! 🎉`);

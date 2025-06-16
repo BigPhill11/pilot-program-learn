@@ -69,7 +69,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // Safe type checking instead of direct casting
       if (data && typeof data === 'object' && 'login_recorded' in data) {
-        const result = data as DailyLoginResponse;
+        const result = data as unknown as DailyLoginResponse;
         
         // Refresh profile after daily login to get updated streak
         if (result?.login_recorded) {
