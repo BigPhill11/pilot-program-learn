@@ -9,7 +9,117 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      initial_assessments: {
+        Row: {
+          assigned_version: string | null
+          calculated_score: number
+          completed_at: string | null
+          id: string
+          responses: Json
+          user_id: string | null
+        }
+        Insert: {
+          assigned_version?: string | null
+          calculated_score: number
+          completed_at?: string | null
+          id?: string
+          responses: Json
+          user_id?: string | null
+        }
+        Update: {
+          assigned_version?: string | null
+          calculated_score?: number
+          completed_at?: string | null
+          id?: string
+          responses?: Json
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          app_version: string | null
+          created_at: string | null
+          current_streak: number | null
+          email: string | null
+          id: string
+          last_login_date: string | null
+          longest_streak: number | null
+          onboarding_completed: boolean | null
+          updated_at: string | null
+          username: string | null
+        }
+        Insert: {
+          app_version?: string | null
+          created_at?: string | null
+          current_streak?: number | null
+          email?: string | null
+          id: string
+          last_login_date?: string | null
+          longest_streak?: number | null
+          onboarding_completed?: boolean | null
+          updated_at?: string | null
+          username?: string | null
+        }
+        Update: {
+          app_version?: string | null
+          created_at?: string | null
+          current_streak?: number | null
+          email?: string | null
+          id?: string
+          last_login_date?: string | null
+          longest_streak?: number | null
+          onboarding_completed?: boolean | null
+          updated_at?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
+      user_progress: {
+        Row: {
+          achievements: Json | null
+          created_at: string | null
+          daily_activities: Json | null
+          engagement_score: number | null
+          id: string
+          learning_progress: number | null
+          level_progress: number | null
+          quiz_scores: Json | null
+          total_points: number | null
+          trading_performance: Json | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          achievements?: Json | null
+          created_at?: string | null
+          daily_activities?: Json | null
+          engagement_score?: number | null
+          id?: string
+          learning_progress?: number | null
+          level_progress?: number | null
+          quiz_scores?: Json | null
+          total_points?: number | null
+          trading_performance?: Json | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          achievements?: Json | null
+          created_at?: string | null
+          daily_activities?: Json | null
+          engagement_score?: number | null
+          id?: string
+          learning_progress?: number | null
+          level_progress?: number | null
+          quiz_scores?: Json | null
+          total_points?: number | null
+          trading_performance?: Json | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
