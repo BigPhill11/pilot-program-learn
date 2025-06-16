@@ -48,12 +48,12 @@ export const useProgressTracking = () => {
 
       if (data) {
         setProgress({
-          quiz_scores: data.quiz_scores || {},
+          quiz_scores: (data.quiz_scores as Record<string, boolean>) || {},
           learning_progress: data.learning_progress || 0,
           engagement_score: data.engagement_score || 0,
           total_points: data.total_points || 0,
           level_progress: data.level_progress || 0,
-          achievements: data.achievements || []
+          achievements: (data.achievements as string[]) || []
         });
       }
     } catch (error) {
