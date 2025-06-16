@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import PandaLogo from '@/components/icons/PandaLogo';
+import ProfileSettings from '@/components/profile/ProfileSettings';
 import { useAuth } from '@/hooks/useAuth';
 import { useProgressTracking } from '@/hooks/useProgressTracking';
 import { LogOut, User, Trophy, Flame } from 'lucide-react';
@@ -30,7 +31,7 @@ const Navbar = () => {
   };
 
   const formatLevel = (level: string) => {
-    return `${level.charAt(0).toUpperCase() + level.slice(1)} Phil`;
+    return level === 'advanced' ? 'Pro Phil' : `${level.charAt(0).toUpperCase() + level.slice(1)} Phil`;
   };
 
   return (
@@ -86,6 +87,10 @@ const Navbar = () => {
                   <User className="h-4 w-4" />
                   <span>{profile.username || 'User'}</span>
                 </div>
+                
+                {/* Profile Settings */}
+                <ProfileSettings />
+                
                 <Button
                   variant="ghost"
                   size="sm"
