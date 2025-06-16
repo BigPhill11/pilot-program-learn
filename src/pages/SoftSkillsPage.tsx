@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,9 +9,11 @@ import { Clock, Users, MessageSquare, Shirt, Handshake, Star, Play, BookOpen } f
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import CourseDetailView from '@/components/softskills/CourseDetailView';
 
 const SoftSkillsPage = () => {
   const { user } = useAuth();
+  const [selectedCourse, setSelectedCourse] = useState<any>(null);
 
   const { data: courses, isLoading } = useQuery({
     queryKey: ['soft-skills-courses'],
@@ -41,6 +43,18 @@ const SoftSkillsPage = () => {
     },
     enabled: !!user
   });
+
+  // If a course is selected, show the detail view
+  if (selectedCourse) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <CourseDetailView 
+          course={selectedCourse} 
+          onBack={() => setSelectedCourse(null)}
+        />
+      </div>
+    );
+  }
 
   const categoryIcons = {
     interviewing: MessageSquare,
@@ -89,6 +103,55 @@ const SoftSkillsPage = () => {
     );
   }
 
+  const CourseCard = ({ course }: { course: any }) => {
+    const IconComponent = categoryIcons[course.category as keyof typeof categoryIcons];
+    const progress = getCourseProgress(course.id);
+    
+    return (
+      <Card key={course.id} className="hover:shadow-lg transition-shadow">
+        <CardHeader>
+          <div className="flex items-start justify-between">
+            <div className={`p-2 rounded-lg ${categoryColors[course.category as keyof typeof categoryColors]} text-white`}>
+              <IconComponent className="h-5 w-5" />
+            </div>
+            <Badge className={getDifficultyColor(course.difficulty_level)}>
+              {course.difficulty_level}
+            </Badge>
+          </div>
+          <CardTitle className="text-lg">{course.title}</CardTitle>
+          <CardDescription>{course.description}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between text-sm text-muted-foreground">
+            <div className="flex items-center space-x-1">
+              <Clock className="h-4 w-4" />
+              <span>{course.estimated_duration} mins</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+              <span>{progress > 0 ? `${progress.toFixed(0)}%` : 'Not started'}</span>
+            </div>
+          </div>
+          
+          {progress > 0 && (
+            <Progress value={progress} className="h-2" />
+          )}
+          
+          <Button 
+            className="w-full" 
+            variant={progress > 0 ? "outline" : "default"}
+            onClick={() => setSelectedCourse(course)}
+          >
+            <div className="flex items-center space-x-2">
+              {progress > 0 ? <BookOpen className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+              <span>{progress > 0 ? 'Continue Course' : 'Explore Course'}</span>
+            </div>
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
@@ -111,100 +174,18 @@ const SoftSkillsPage = () => {
 
         <TabsContent value="all" className="space-y-6">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {courses?.map((course) => {
-              const IconComponent = categoryIcons[course.category as keyof typeof categoryIcons];
-              const progress = getCourseProgress(course.id);
-              
-              return (
-                <Card key={course.id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className={`p-2 rounded-lg ${categoryColors[course.category as keyof typeof categoryColors]} text-white`}>
-                        <IconComponent className="h-5 w-5" />
-                      </div>
-                      <Badge className={getDifficultyColor(course.difficulty_level)}>
-                        {course.difficulty_level}
-                      </Badge>
-                    </div>
-                    <CardTitle className="text-lg">{course.title}</CardTitle>
-                    <CardDescription>{course.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <div className="flex items-center space-x-1">
-                        <Clock className="h-4 w-4" />
-                        <span>{course.estimated_duration} mins</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        <span>{progress > 0 ? `${progress.toFixed(0)}%` : 'Not started'}</span>
-                      </div>
-                    </div>
-                    
-                    {progress > 0 && (
-                      <Progress value={progress} className="h-2" />
-                    )}
-                    
-                    <Button className="w-full" variant={progress > 0 ? "outline" : "default"}>
-                      <div className="flex items-center space-x-2">
-                        {progress > 0 ? <BookOpen className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-                        <span>{progress > 0 ? 'Continue Course' : 'Start Course'}</span>
-                      </div>
-                    </Button>
-                  </CardContent>
-                </Card>
-              );
-            })}
+            {courses?.map((course) => (
+              <CourseCard key={course.id} course={course} />
+            ))}
           </div>
         </TabsContent>
 
         {Object.entries(groupedCourses).map(([category, categoryCourses]) => (
           <TabsContent key={category} value={category} className="space-y-6">
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {categoryCourses.map((course) => {
-                const IconComponent = categoryIcons[category as keyof typeof categoryIcons];
-                const progress = getCourseProgress(course.id);
-                
-                return (
-                  <Card key={course.id} className="hover:shadow-lg transition-shadow">
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div className={`p-2 rounded-lg ${categoryColors[category as keyof typeof categoryColors]} text-white`}>
-                          <IconComponent className="h-5 w-5" />
-                        </div>
-                        <Badge className={getDifficultyColor(course.difficulty_level)}>
-                          {course.difficulty_level}
-                        </Badge>
-                      </div>
-                      <CardTitle className="text-lg">{course.title}</CardTitle>
-                      <CardDescription>{course.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="flex items-center justify-between text-sm text-muted-foreground">
-                        <div className="flex items-center space-x-1">
-                          <Clock className="h-4 w-4" />
-                          <span>{course.estimated_duration} mins</span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                          <span>{progress > 0 ? `${progress.toFixed(0)}%` : 'Not started'}</span>
-                        </div>
-                      </div>
-                      
-                      {progress > 0 && (
-                        <Progress value={progress} className="h-2" />
-                      )}
-                      
-                      <Button className="w-full" variant={progress > 0 ? "outline" : "default"}>
-                        <div className="flex items-center space-x-2">
-                          {progress > 0 ? <BookOpen className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-                          <span>{progress > 0 ? 'Continue Course' : 'Start Course'}</span>
-                        </div>
-                      </Button>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+              {categoryCourses.map((course) => (
+                <CourseCard key={course.id} course={course} />
+              ))}
             </div>
           </TabsContent>
         ))}
