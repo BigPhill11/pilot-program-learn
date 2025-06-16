@@ -9,6 +9,27 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      daily_logins: {
+        Row: {
+          created_at: string
+          id: string
+          login_date: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          login_date?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          login_date?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       initial_assessments: {
         Row: {
           assigned_version: string | null
@@ -185,6 +206,7 @@ export type Database = {
         Row: {
           app_version: string | null
           created_at: string | null
+          current_level: number | null
           current_streak: number | null
           email: string | null
           id: string
@@ -194,12 +216,14 @@ export type Database = {
           linkedin_verified: boolean | null
           longest_streak: number | null
           onboarding_completed: boolean | null
+          points_to_next_level: number | null
           updated_at: string | null
           username: string | null
         }
         Insert: {
           app_version?: string | null
           created_at?: string | null
+          current_level?: number | null
           current_streak?: number | null
           email?: string | null
           id: string
@@ -209,12 +233,14 @@ export type Database = {
           linkedin_verified?: boolean | null
           longest_streak?: number | null
           onboarding_completed?: boolean | null
+          points_to_next_level?: number | null
           updated_at?: string | null
           username?: string | null
         }
         Update: {
           app_version?: string | null
           created_at?: string | null
+          current_level?: number | null
           current_streak?: number | null
           email?: string | null
           id?: string
@@ -224,6 +250,7 @@ export type Database = {
           linkedin_verified?: boolean | null
           longest_streak?: number | null
           onboarding_completed?: boolean | null
+          points_to_next_level?: number | null
           updated_at?: string | null
           username?: string | null
         }
@@ -404,7 +431,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      calculate_user_streak: {
+        Args: { p_user_id: string }
+        Returns: number
+      }
+      handle_daily_login: {
+        Args: { p_user_id: string }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never

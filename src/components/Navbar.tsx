@@ -5,20 +5,23 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import PandaLogo from '@/components/icons/PandaLogo';
 import ProfileSettings from '@/components/profile/ProfileSettings';
+import LevelProgress from '@/components/ui/level-progress';
 import { useAuth } from '@/hooks/useAuth';
 import { useProgressTracking } from '@/hooks/useProgressTracking';
-import { LogOut, User, Trophy, Flame } from 'lucide-react';
+import { useTheme } from '@/contexts/ThemeContext';
+import { LogOut, User, Flame, Moon, Sun } from 'lucide-react';
 
 const Navbar = () => {
   const location = useLocation();
   const { user, profile, signOut } = useAuth();
   const { progress } = useProgressTracking();
+  const { isDark, toggleTheme } = useTheme();
 
   const navItems = [
     { label: 'Home', path: '/' },
     { label: 'Learn', path: '/learn' },
     { label: 'Soft Skills', path: '/soft-skills' },
-    { label: 'Paper Trading', path: '/paper-trading' },
+    { label: 'Panda Trading', path: '/paper-trading' },
     { label: 'Ask Phil', path: '/ask-phil' },
   ];
 
@@ -41,7 +44,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center space-x-2">
             <PandaLogo className="h-8 w-8" />
-            <span className="font-bold text-xl">Phil Finance</span>
+            <span className="font-bold text-xl">Phil's Financials</span>
           </Link>
           
           <div className="hidden md:flex items-center space-x-6">
@@ -60,49 +63,57 @@ const Navbar = () => {
             ))}
           </div>
 
-          {user && profile && (
-            <div className="flex items-center space-x-4">
-              {/* User Level Badge */}
-              <Badge 
-                className={`${getLevelBadgeColor(profile.app_version)} text-white px-3 py-1`}
-                variant="secondary"
-              >
-                {formatLevel(profile.app_version)}
-              </Badge>
+          <div className="flex items-center space-x-4">
+            {/* Theme Toggle */}
+            <Button variant="ghost" size="sm" onClick={toggleTheme}>
+              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
 
-              {/* Points Display */}
-              <div className="flex items-center space-x-1 text-sm">
-                <Trophy className="h-4 w-4 text-yellow-500" />
-                <span className="font-medium">{progress.total_points}</span>
-              </div>
-
-              {/* Streak Display */}
-              <div className="flex items-center space-x-1 text-sm">
-                <Flame className="h-4 w-4 text-orange-500" />
-                <span className="font-medium">{profile.current_streak}</span>
-              </div>
-
-              {/* User Menu */}
-              <div className="flex items-center space-x-2">
-                <div className="flex items-center space-x-1 text-sm">
-                  <User className="h-4 w-4" />
-                  <span>{profile.username || 'User'}</span>
-                </div>
-                
-                {/* Profile Settings */}
-                <ProfileSettings />
-                
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={signOut}
-                  className="text-muted-foreground hover:text-foreground"
+            {user && profile && (
+              <>
+                {/* User Level Badge */}
+                <Badge 
+                  className={`${getLevelBadgeColor(profile.app_version)} text-white px-3 py-1`}
+                  variant="secondary"
                 >
-                  <LogOut className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          )}
+                  {formatLevel(profile.app_version)}
+                </Badge>
+
+                {/* Level Progress Bar */}
+                <LevelProgress 
+                  currentLevel={profile.current_level || 1}
+                  totalPoints={progress.total_points}
+                  pointsToNextLevel={profile.points_to_next_level || 200}
+                />
+
+                {/* Streak Display */}
+                <div className="flex items-center space-x-1 text-sm">
+                  <Flame className="h-4 w-4 text-orange-500" />
+                  <span className="font-medium">{profile.current_streak}</span>
+                </div>
+
+                {/* User Menu */}
+                <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-1 text-sm">
+                    <User className="h-4 w-4" />
+                    <span>{profile.username || 'User'}</span>
+                  </div>
+                  
+                  {/* Profile Settings */}
+                  <ProfileSettings />
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={signOut}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <LogOut className="h-4 w-4" />
+                  </Button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </nav>

@@ -50,6 +50,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const handleDailyLogin = async (userId: string) => {
+    try {
+      const { data, error } = await supabase.rpc('handle_daily_login', {
+        p_user_id: userId
+      });
+
+      if (error) {
+        console.error('Error handling daily login:', error);
+        return;
+      }
+
+      // Refresh profile after daily login to get updated streak
+      if (data?.login_recorded) {
+        await fetchProfile(userId);
+      }
+    } catch (error) {
+      console.error('Error in daily login:', error);
+    }
+  };
+
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
@@ -71,9 +91,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         
         if (session?.user) {
           // Use setTimeout to prevent potential deadlock
-          setTimeout(() => {
+          setTimeout(async () => {
             if (mounted) {
-              fetchProfile(session.user.id);
+              await fetchProfile(session.user.id);
+              await handleDailyLogin(session.user.id);
             }
           }, 0);
         } else {
@@ -92,9 +113,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        setTimeout(() => {
+        setTimeout(async () => {
           if (mounted) {
-            fetchProfile(session.user.id);
+            await fetchProfile(session.user.id);
+            await handleDailyLogin(session.user.id);
           }
         }, 0);
       }

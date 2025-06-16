@@ -71,9 +71,10 @@ export const useProgressTracking = () => {
       [topicId]: isCorrect
     };
 
-    const pointsEarned = isCorrect ? 10 : 0;
+    // Updated point system: 5 points for correct answers
+    const pointsEarned = isCorrect ? 5 : 0;
     const newTotalPoints = progress.total_points + pointsEarned;
-    const newEngagementScore = progress.engagement_score + 5;
+    const newEngagementScore = progress.engagement_score + 2;
 
     try {
       const { error } = await supabase
@@ -98,9 +99,71 @@ export const useProgressTracking = () => {
       if (isCorrect) {
         toast.success(`+${pointsEarned} points! Great job! 🎉`);
       }
+
+      // Check for level up
+      await checkLevelUp(newTotalPoints);
     } catch (error) {
       console.error('Error updating quiz score:', error);
       toast.error('Failed to save progress');
+    }
+  };
+
+  const updateMarketPrediction = async () => {
+    if (!user) return;
+
+    // 15 points for market predictions
+    const pointsEarned = 15;
+    const newTotalPoints = progress.total_points + pointsEarned;
+
+    try {
+      const { error } = await supabase
+        .from('user_progress')
+        .update({
+          total_points: newTotalPoints,
+          updated_at: new Date().toISOString()
+        })
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      setProgress(prev => ({
+        ...prev,
+        total_points: newTotalPoints
+      }));
+
+      toast.success(`+${pointsEarned} points for market prediction! 📈`);
+      
+      // Check for level up
+      await checkLevelUp(newTotalPoints);
+    } catch (error) {
+      console.error('Error updating market prediction points:', error);
+    }
+  };
+
+  const checkLevelUp = async (totalPoints: number) => {
+    if (!user) return;
+
+    const currentLevel = Math.floor(totalPoints / 200) + 1;
+    
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          current_level: currentLevel,
+          points_to_next_level: 200 - (totalPoints % 200),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      // Check if user leveled up
+      const previousLevel = Math.floor((totalPoints - 5) / 200) + 1; // Assuming last action was worth 5 points
+      if (currentLevel > previousLevel) {
+        toast.success(`🎉 Level Up! You're now Level ${currentLevel}! 🎉`);
+      }
+    } catch (error) {
+      console.error('Error checking level up:', error);
     }
   };
 
@@ -133,6 +196,7 @@ export const useProgressTracking = () => {
     progress,
     loading,
     updateQuizScore,
+    updateMarketPrediction,
     updateLearningProgress,
     refreshProgress: fetchProgress
   };
