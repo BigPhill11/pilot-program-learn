@@ -91,10 +91,10 @@ const EnhancedHeadlinesSection = () => {
   const fetchHeadlines = async () => {
     const { data, error } = await supabase.functions.invoke('market-headlines');
     if (error) throw new Error(error.message);
-    return data || [];
+    return data || { headlines: [] };
   };
 
-  const { data: headlines, isLoading, isError } = useQuery({
+  const { data: headlinesData, isLoading, isError } = useQuery({
     queryKey: ['marketHeadlines'],
     queryFn: fetchHeadlines,
     staleTime: 1000 * 60 * 15, // 15 minutes
@@ -172,15 +172,17 @@ const EnhancedHeadlinesSection = () => {
     );
   }
 
-  const displayHeadlines = isError || !headlines || headlines.length === 0 ? [
+  // Extract headlines from the response, with proper fallback handling
+  const headlines = headlinesData?.headlines || [];
+  const displayHeadlines = isError || !Array.isArray(headlines) || headlines.length === 0 ? [
     {
-      id: 1,
+      id: '1',
       title: "Market Reaches New Heights",
       summary: "Stock prices continue to rise as investors show confidence in the market's future performance.",
       url: "#"
     },
     {
-      id: 2,
+      id: '2',
       title: "Tech Companies Report Strong Earnings",
       summary: "Major technology companies exceeded profit expectations, driving significant trading volume.",
       url: "#"
@@ -201,8 +203,8 @@ const EnhancedHeadlinesSection = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {displayHeadlines.map((headline) => (
-            <Card key={headline.id} className="h-full hover:shadow-lg transition-shadow">
+          {displayHeadlines.map((headline, index) => (
+            <Card key={headline.id || index} className="h-full hover:shadow-lg transition-shadow">
               <CardHeader>
                 <CardTitle className="text-lg line-clamp-2">
                   {highlightTerms(headline.title, userLevel)}
