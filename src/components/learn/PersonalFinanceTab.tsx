@@ -8,6 +8,7 @@ import { Trophy, Play, CheckCircle2 } from 'lucide-react';
 import PodcastCard from './PodcastCard';
 import TaxesJourney from './TaxesJourney';
 import BudgetJourney from './BudgetJourney';
+import CreditJourney from './CreditJourney';
 
 const personalFinanceTopics = [
     {
@@ -24,11 +25,6 @@ const personalFinanceTopics = [
         value: "buying-house",
         title: "How to Buy a House",
         content: "Buying a house involves several key steps: determining your budget, getting pre-approved for a mortgage, finding a real estate agent, house hunting, making an offer, getting an inspection and appraisal, and finally, closing the sale."
-    },
-    {
-        value: "building-credit",
-        title: "How to Build Credit",
-        content: "Building credit is essential for your financial health. You can build credit by opening a new credit account, making payments on time, keeping your credit utilization low, and regularly monitoring your credit report for errors."
     }
 ];
 
@@ -56,6 +52,7 @@ const podcastRecommendations = [
 const PersonalFinanceTab = () => {
     const [showTaxesJourney, setShowTaxesJourney] = useState(false);
     const [showBudgetJourney, setShowBudgetJourney] = useState(false);
+    const [showCreditJourney, setShowCreditJourney] = useState(false);
 
     // Check if taxes journey has been completed
     const getTaxesProgress = () => {
@@ -85,8 +82,23 @@ const PersonalFinanceTab = () => {
         return { completed: false, levelsCompleted: 0, totalLevels: 5 };
     };
 
+    // Check if credit journey has been completed
+    const getCreditProgress = () => {
+        const saved = localStorage.getItem('creditJourneyProgress');
+        if (saved) {
+            const progress = JSON.parse(saved);
+            return {
+                completed: progress.journeyCompleted || false,
+                levelsCompleted: progress.completedLevels?.length || 0,
+                totalLevels: 5
+            };
+        }
+        return { completed: false, levelsCompleted: 0, totalLevels: 5 };
+    };
+
     const taxesProgress = getTaxesProgress();
     const budgetProgress = getBudgetProgress();
+    const creditProgress = getCreditProgress();
 
     if (showTaxesJourney) {
         return <TaxesJourney onBack={() => setShowTaxesJourney(false)} />;
@@ -94,6 +106,10 @@ const PersonalFinanceTab = () => {
 
     if (showBudgetJourney) {
         return <BudgetJourney onBack={() => setShowBudgetJourney(false)} />;
+    }
+
+    if (showCreditJourney) {
+        return <CreditJourney onBack={() => setShowCreditJourney(false)} />;
     }
 
     return (
@@ -184,6 +200,81 @@ const PersonalFinanceTab = () => {
                             </AccordionContent>
                         </AccordionItem>
                     ))}
+
+                    {/* Credit Journey Section */}
+                    <AccordionItem value="credit" className="border-2 border-green-500/20">
+                        <AccordionTrigger className="text-lg text-left">
+                            <div className="flex items-center gap-2">
+                                How to Build Credit
+                                {creditProgress.completed && (
+                                    <Badge className="bg-green-500 text-white">
+                                        <Trophy className="h-3 w-3 mr-1" />
+                                        Complete
+                                    </Badge>
+                                )}
+                                {!creditProgress.completed && creditProgress.levelsCompleted > 0 && (
+                                    <Badge variant="outline">
+                                        {creditProgress.levelsCompleted}/{creditProgress.totalLevels} levels
+                                    </Badge>
+                                )}
+                            </div>
+                        </AccordionTrigger>
+                        <AccordionContent>
+                            <Card className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-500/30">
+                                <CardContent className="p-6">
+                                    <div className="flex items-start justify-between mb-4">
+                                        <div className="flex-1">
+                                            <h4 className="font-semibold text-lg mb-2">🏆 Interactive Credit Building Journey</h4>
+                                            <p className="text-muted-foreground text-sm mb-4">
+                                                Master credit through 5 gamified levels with flashcards, quizzes, and real-world scenarios. 
+                                                Complete all levels to unlock the credit score builder simulation game!
+                                            </p>
+                                            
+                                            <div className="space-y-2 mb-4">
+                                                <div className="flex items-center gap-2 text-sm">
+                                                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                                                    <span>Understanding credit basics</span>
+                                                </div>
+                                                <div className="flex items-center gap-2 text-sm">
+                                                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                                                    <span>Credit scores and reports</span>
+                                                </div>
+                                                <div className="flex items-center gap-2 text-sm">
+                                                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                                                    <span>Building credit responsibly</span>
+                                                </div>
+                                                <div className="flex items-center gap-2 text-sm">
+                                                    <Trophy className="h-4 w-4 text-green-500" />
+                                                    <span>Final credit score builder simulation</span>
+                                                </div>
+                                            </div>
+
+                                            {creditProgress.completed && (
+                                                <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                                                    <div className="flex items-center gap-2">
+                                                        <Trophy className="h-5 w-5 text-green-600" />
+                                                        <span className="font-semibold text-green-800">Badge Earned: Credit Champ!</span>
+                                                    </div>
+                                                    <p className="text-sm text-green-700 mt-1">
+                                                        You've completed the entire credit journey and earned your achievement badge.
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                    
+                                    <Button 
+                                        onClick={() => setShowCreditJourney(true)}
+                                        className="w-full bg-green-500 hover:bg-green-600"
+                                        size="lg"
+                                    >
+                                        <Play className="h-4 w-4 mr-2" />
+                                        {creditProgress.levelsCompleted > 0 ? 'Continue Credit Journey' : 'Start Credit Journey'}
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        </AccordionContent>
+                    </AccordionItem>
                     
                     {/* Taxes Journey Section */}
                     <AccordionItem value="taxes" className="border-2 border-primary/20">
@@ -191,7 +282,7 @@ const PersonalFinanceTab = () => {
                             <div className="flex items-center gap-2">
                                 Understanding Taxes
                                 {taxesProgress.completed && (
-                                    <Badge className="bg-green-500 text-white">
+                                    <Badge className="bg-primary text-white">
                                         <Trophy className="h-3 w-3 mr-1" />
                                         Complete
                                     </Badge>
@@ -204,7 +295,7 @@ const PersonalFinanceTab = () => {
                             </div>
                         </AccordionTrigger>
                         <AccordionContent>
-                            <Card className="bg-gradient-to-r from-green-50 to-blue-50 border border-primary/30">
+                            <Card className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-primary/30">
                                 <CardContent className="p-6">
                                     <div className="flex items-start justify-between mb-4">
                                         <div className="flex-1">
@@ -216,15 +307,15 @@ const PersonalFinanceTab = () => {
                                             
                                             <div className="space-y-2 mb-4">
                                                 <div className="flex items-center gap-2 text-sm">
-                                                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                                                    <CheckCircle2 className="h-4 w-4 text-orange-500" />
                                                     <span>Interactive flashcards & quizzes</span>
                                                 </div>
                                                 <div className="flex items-center gap-2 text-sm">
-                                                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                                                    <CheckCircle2 className="h-4 w-4 text-orange-500" />
                                                     <span>Drag-and-drop activities</span>
                                                 </div>
                                                 <div className="flex items-center gap-2 text-sm">
-                                                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                                                    <CheckCircle2 className="h-4 w-4 text-orange-500" />
                                                     <span>Real-world tax scenarios</span>
                                                 </div>
                                                 <div className="flex items-center gap-2 text-sm">
