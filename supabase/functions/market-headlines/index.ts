@@ -76,17 +76,32 @@ serve(async (req) => {
     const processedHeadlines = relevantNews.slice(0, 10).map(article => {
       const sentences = article.text?.split('.').filter(s => s.trim().length > 20) || []
       
-      // Create 3-sentence summary
-      const summary = sentences.slice(0, 3).join('. ').trim()
+      // Create exactly 3-sentence summary
+      let summary = ''
+      if (sentences.length >= 3) {
+        summary = sentences.slice(0, 3).map(s => s.trim()).join('. ') + '.'
+      } else if (sentences.length > 0) {
+        // If less than 3 sentences, use what we have and pad with title info
+        summary = sentences.join('. ').trim()
+        if (!summary.endsWith('.')) summary += '.'
+        // Add more context from title if needed
+        if (sentences.length < 3) {
+          summary += ` This news relates to ${article.title.toLowerCase()}.`
+        }
+      } else {
+        // Fallback to title-based summary
+        summary = `${article.title}. This is a developing story in the financial markets. More details are expected to emerge as the situation unfolds.`
+      }
       
       // Create TL;DR (extract key points)
       const tldr = extractKeyPoints(article.title, article.text)
       
       return {
+        id: article.id || Math.random().toString(36).substr(2, 9),
         title: article.title,
-        summary: summary || article.title,
+        summary: summary,
         tldr: tldr,
-        url: article.url,
+        url: article.url || '#',
         publishedDate: article.publishedDate || article.date,
         site: article.site || 'Financial News',
         image: article.image

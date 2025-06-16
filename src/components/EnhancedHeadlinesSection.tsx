@@ -191,6 +191,12 @@ const EnhancedHeadlinesSection = () => {
     }
   ] : headlines;
 
+  const handleHeadlineClick = (url: string) => {
+    if (url && url !== "#" && url !== "") {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  };
+
   return (
     <section className="py-16 bg-muted/30">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -209,11 +215,7 @@ const EnhancedHeadlinesSection = () => {
             <Card 
               key={headline.id || index} 
               className="h-full hover:shadow-lg transition-shadow cursor-pointer group"
-              onClick={() => {
-                if (headline.url && headline.url !== "#") {
-                  window.open(headline.url, '_blank', 'noopener,noreferrer');
-                }
-              }}
+              onClick={() => handleHeadlineClick(headline.url)}
             >
               <CardHeader>
                 <CardTitle className="text-lg line-clamp-2 group-hover:text-primary transition-colors">
