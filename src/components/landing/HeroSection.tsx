@@ -13,7 +13,7 @@ const HeroSection = () => {
         <h1 className="text-4xl font-bold tracking-tight text-green-700 sm:text-6xl">
           Welcome to Phil's Financials
         </h1>
-        <p className="mt-6 text-lg leading-8 text-gray-700 max-w-2xl mx-auto">
+        <p className="mt-6 text-lg leading-8 text-green-600 max-w-2xl mx-auto">
           Your friendly guide to understanding the world of finance. Tailored for high schoolers and beginners ready to learn about markets, investments, and economic concepts.
         </p>
         <div className="mt-10 flex items-center justify-center gap-x-6">
@@ -34,4 +34,3 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
-

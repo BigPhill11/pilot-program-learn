@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -227,7 +227,7 @@ const EnhancedHeadlinesSection = () => {
     <section className="py-16 bg-muted/30">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-foreground">Market Headlines</h2>
+          <h2 className="text-3xl font-bold text-green-700">Market Headlines</h2>
           <p className="mt-2 text-muted-foreground">
             Stay updated with financial news - terms are highlighted based on your level!
           </p>
@@ -240,11 +240,10 @@ const EnhancedHeadlinesSection = () => {
           {displayHeadlines.map((headline, index) => (
             <Card 
               key={headline.id || index} 
-              className="h-full hover:shadow-lg transition-shadow cursor-pointer group"
-              onClick={() => handleHeadlineClick(headline)}
+              className="h-full hover:shadow-lg transition-shadow"
             >
               <CardHeader>
-                <CardTitle className="text-lg line-clamp-2 group-hover:text-primary transition-colors">
+                <CardTitle className="text-lg line-clamp-2">
                   {highlightTerms(headline.title, userLevel)}
                 </CardTitle>
               </CardHeader>
@@ -254,19 +253,24 @@ const EnhancedHeadlinesSection = () => {
                 </CardDescription>
                 
                 {headline.tldr && (
-                  <div className="bg-primary/5 p-3 rounded-lg border-l-4 border-primary">
-                    <p className="text-xs font-semibold text-primary mb-1">TL;DR</p>
-                    <p className="text-sm text-muted-foreground">
+                  <div className="bg-green-50 p-3 rounded-lg border-l-4 border-green-500">
+                    <p className="text-xs font-semibold text-green-700 mb-1">TL;DR</p>
+                    <p className="text-sm text-green-600">
                       {highlightTerms(headline.tldr, userLevel)}
                     </p>
                   </div>
                 )}
                 
                 {headline.url && headline.url !== "#" && (
-                  <div className="flex items-center text-primary text-sm font-medium group-hover:text-primary/80 pt-2">
-                    Click to read full article
-                    <ExternalLink className="ml-1 h-3 w-3" />
-                  </div>
+                  <Button 
+                    onClick={() => handleHeadlineClick(headline)}
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full mt-4 border-green-600 text-green-600 hover:bg-green-50"
+                  >
+                    Read Full Article
+                    <ExternalLink className="ml-2 h-4 w-4" />
+                  </Button>
                 )}
               </CardContent>
             </Card>
