@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -60,8 +59,8 @@ const CreditJourney: React.FC<CreditJourneyProps> = ({ onBack }) => {
     updateLearningProgress(20); // 20% progress per level
   };
 
-  const handleQuizComplete = (topicId: string, isCorrect: boolean) => {
-    updateQuizScore(topicId, isCorrect);
+  const handleQuizComplete = (isCorrect: boolean) => {
+    updateQuizScore('credit-journey', isCorrect);
   };
 
   const handleMiniGameComplete = () => {
