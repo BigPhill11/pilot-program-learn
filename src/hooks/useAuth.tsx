@@ -67,11 +67,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return;
       }
 
-      const result = data as DailyLoginResponse;
-
-      // Refresh profile after daily login to get updated streak
-      if (result?.login_recorded) {
-        await fetchProfile(userId);
+      // Safe type checking instead of direct casting
+      if (data && typeof data === 'object' && 'login_recorded' in data) {
+        const result = data as DailyLoginResponse;
+        
+        // Refresh profile after daily login to get updated streak
+        if (result?.login_recorded) {
+          await fetchProfile(userId);
+        }
       }
     } catch (error) {
       console.error('Error in daily login:', error);

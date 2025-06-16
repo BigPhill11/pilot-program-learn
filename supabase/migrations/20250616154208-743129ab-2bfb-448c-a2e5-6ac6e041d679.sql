@@ -67,6 +67,7 @@ DECLARE
   points_earned INTEGER := 0;
   bonus_points INTEGER := 0;
   result JSON;
+  row_count INTEGER;
 BEGIN
   -- Insert daily login record (ignore if already exists for today)
   INSERT INTO public.daily_logins (user_id, login_date)
@@ -74,8 +75,8 @@ BEGIN
   ON CONFLICT (user_id, login_date) DO NOTHING;
   
   -- Check if a new login was recorded
-  GET DIAGNOSTICS login_recorded = ROW_COUNT;
-  login_recorded := login_recorded > 0;
+  GET DIAGNOSTICS row_count = ROW_COUNT;
+  login_recorded := row_count > 0;
   
   IF login_recorded THEN
     -- Calculate new streak

@@ -53,7 +53,7 @@ export const useProgressTracking = () => {
           engagement_score: data.engagement_score || 0,
           total_points: data.total_points || 0,
           level_progress: data.level_progress || 0,
-          achievements: (data.achievements as string[]) || []
+          achievements: Array.isArray(data.achievements) ? (data.achievements as string[]) : []
         });
       }
     } catch (error) {
