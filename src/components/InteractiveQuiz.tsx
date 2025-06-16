@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, XCircle, AlertTriangle } from 'lucide-react'; // Added AlertTriangle for general feedback
+import { CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
 
 interface InteractiveQuizProps {
   topicId: string;
@@ -10,7 +10,7 @@ interface InteractiveQuizProps {
   correctAnswerIndex: number;
   feedbackForIncorrect?: string;
   onQuizComplete: (topicId: string, isCorrect: boolean) => void;
-  isCompleted: boolean; // To show if already correctly answered
+  isCompleted: boolean;
 }
 
 const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({
@@ -36,7 +36,7 @@ const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({
 
   const getButtonVariant = (index: number) => {
     if (!hasAttempted && !isCompleted) return "outline";
-    if (index === correctAnswerIndex) return "default"; // Will be styled green
+    if (index === correctAnswerIndex) return "default";
     if (index === selectedAnswerIndex && index !== correctAnswerIndex) return "destructive";
     return "outline";
   };
@@ -72,7 +72,7 @@ const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({
           </Button>
         ))}
       </div>
-      {(hasAttempted && selectedAnswerIndex !== correctAnswerIndex && feedbackForIncorrect) && (
+      {(hasAttempted && selectedAnswerIndex !== correctAnswerIndex && feedbackForIncorrected) && (
         <div className="mt-3 p-3 text-sm bg-destructive/10 text-destructive border border-destructive/30 rounded-md flex items-start">
           <AlertTriangle className="h-5 w-5 mr-2 flex-shrink-0" />
           <p>{feedbackForIncorrect}</p>
