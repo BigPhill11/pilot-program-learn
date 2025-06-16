@@ -179,13 +179,13 @@ const EnhancedHeadlinesSection = () => {
       id: '1',
       title: "Market Reaches New Heights",
       summary: "Stock prices continue to rise as investors show confidence in the market's future performance.",
-      url: "#"
+      url: "https://finance.yahoo.com"
     },
     {
       id: '2',
       title: "Tech Companies Report Strong Earnings",
       summary: "Major technology companies exceeded profit expectations, driving significant trading volume.",
-      url: "#"
+      url: "https://finance.yahoo.com"
     }
   ] : headlines;
 
@@ -204,9 +204,17 @@ const EnhancedHeadlinesSection = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {displayHeadlines.map((headline, index) => (
-            <Card key={headline.id || index} className="h-full hover:shadow-lg transition-shadow">
+            <Card 
+              key={headline.id || index} 
+              className="h-full hover:shadow-lg transition-shadow cursor-pointer group"
+              onClick={() => {
+                if (headline.url && headline.url !== "#") {
+                  window.open(headline.url, '_blank', 'noopener,noreferrer');
+                }
+              }}
+            >
               <CardHeader>
-                <CardTitle className="text-lg line-clamp-2">
+                <CardTitle className="text-lg line-clamp-2 group-hover:text-primary transition-colors">
                   {highlightTerms(headline.title, userLevel)}
                 </CardTitle>
               </CardHeader>
@@ -215,15 +223,10 @@ const EnhancedHeadlinesSection = () => {
                   {highlightTerms(headline.summary, userLevel)}
                 </CardDescription>
                 {headline.url && headline.url !== "#" && (
-                  <a
-                    href={headline.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center text-primary hover:text-primary/80 text-sm font-medium"
-                  >
-                    Read more
+                  <div className="flex items-center text-primary text-sm font-medium group-hover:text-primary/80">
+                    Click to read full article
                     <ExternalLink className="ml-1 h-3 w-3" />
-                  </a>
+                  </div>
                 )}
               </CardContent>
             </Card>
