@@ -3,19 +3,9 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { Tables } from '@/integrations/supabase/types';
 
-interface MarketPrediction {
-  id: string;
-  user_id: string;
-  week_ending: string;
-  predicted_price: number | null;
-  sentiment: 'bullish' | 'bearish' | 'neutral';
-  reasoning: string;
-  actual_price: number | null;
-  points_earned: number;
-  created_at: string;
-  updated_at: string;
-}
+type MarketPrediction = Tables<'market_predictions'>;
 
 export const useMarketPredictions = () => {
   const { user } = useAuth();

@@ -3,36 +3,11 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { Tables } from '@/integrations/supabase/types';
 
-interface Portfolio {
-  id: string;
-  user_id: string;
-  cash: number;
-  total_value: number;
-  created_at: string;
-  updated_at: string;
-}
-
-interface Position {
-  id: string;
-  portfolio_id: string;
-  symbol: string;
-  shares: number;
-  avg_price: number;
-  created_at: string;
-  updated_at: string;
-}
-
-interface Transaction {
-  id: string;
-  portfolio_id: string;
-  symbol: string;
-  transaction_type: 'buy' | 'sell';
-  shares: number;
-  price: number;
-  total_amount: number;
-  created_at: string;
-}
+type Portfolio = Tables<'paper_portfolios'>;
+type Position = Tables<'paper_positions'>;
+type Transaction = Tables<'paper_transactions'>;
 
 export const usePaperTrading = () => {
   const { user } = useAuth();
