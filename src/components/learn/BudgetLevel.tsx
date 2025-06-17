@@ -26,8 +26,10 @@ const BudgetLevelComponent: React.FC<BudgetLevelProps> = ({
   const [currentStep, setCurrentStep] = useState(0);
   const [masteredFlashcards, setMasteredFlashcards] = useState<Set<string>>(new Set());
   const [quizCompleted, setQuizCompleted] = useState(false);
+  const [quizCorrect, setQuizCorrect] = useState(false);
   const [activityCompleted, setActivityCompleted] = useState(false);
   const [challengeCompleted, setChallengeCompleted] = useState(false);
+  const [challengeCorrect, setChallengeCorrect] = useState(false);
 
   const steps = [
     'intro',
@@ -59,11 +61,11 @@ const BudgetLevelComponent: React.FC<BudgetLevelProps> = ({
       case 'flashcards':
         return masteredFlashcards.size >= Math.ceil(level.flashcards.length / 2);
       case 'quiz':
-        return quizCompleted;
+        return quizCompleted && quizCorrect;
       case 'activity':
         return activityCompleted;
       case 'challenge':
-        return challengeCompleted;
+        return challengeCompleted && challengeCorrect;
       default:
         return false;
     }
@@ -73,12 +75,16 @@ const BudgetLevelComponent: React.FC<BudgetLevelProps> = ({
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      onComplete(level.id);
+      // Only complete if all requirements are met
+      if (canProceedToNext()) {
+        onComplete(level.id);
+      }
     }
   };
 
   const handleQuizComplete = (topicId: string, isCorrect: boolean) => {
-    setQuizCompleted(isCorrect);
+    setQuizCompleted(true);
+    setQuizCorrect(isCorrect);
   };
 
   const handleActivityComplete = (isCorrect: boolean) => {
@@ -86,7 +92,8 @@ const BudgetLevelComponent: React.FC<BudgetLevelProps> = ({
   };
 
   const handleChallengeComplete = (isCorrect: boolean) => {
-    setChallengeCompleted(isCorrect);
+    setChallengeCompleted(true);
+    setChallengeCorrect(isCorrect);
   };
 
   if (!isUnlocked) {
@@ -145,6 +152,7 @@ const BudgetLevelComponent: React.FC<BudgetLevelProps> = ({
           <div>
             <div className="text-center mb-4">
               <h4 className="font-semibold text-lg mb-2">Knowledge Check</h4>
+              <p className="text-sm text-muted-foreground">You must answer correctly to continue</p>
             </div>
             <InteractiveQuiz
               topicId={`budget-level-${level.id}-quiz`}
@@ -153,7 +161,7 @@ const BudgetLevelComponent: React.FC<BudgetLevelProps> = ({
               correctAnswerIndex={level.quiz.correctAnswer}
               feedbackForIncorrect={level.quiz.explanation}
               onQuizComplete={handleQuizComplete}
-              isCompleted={quizCompleted}
+              isCompleted={quizCompleted && quizCorrect}
             />
           </div>
         );
@@ -172,6 +180,7 @@ const BudgetLevelComponent: React.FC<BudgetLevelProps> = ({
             <div className="text-center mb-4">
               <h4 className="font-semibold text-lg mb-2">Real-World Challenge</h4>
               <p className="text-muted-foreground">{level.challenge.description}</p>
+              <p className="text-sm text-muted-foreground mt-2">You must answer correctly to complete the level</p>
             </div>
             <InteractiveQuiz
               topicId={`budget-level-${level.id}-challenge`}
@@ -179,7 +188,7 @@ const BudgetLevelComponent: React.FC<BudgetLevelProps> = ({
               options={level.challenge.options || []}
               correctAnswerIndex={typeof level.challenge.correctAnswer === 'number' ? level.challenge.correctAnswer : 0}
               onQuizComplete={(_, isCorrect) => handleChallengeComplete(isCorrect)}
-              isCompleted={challengeCompleted}
+              isCompleted={challengeCompleted && challengeCorrect}
             />
           </div>
         );

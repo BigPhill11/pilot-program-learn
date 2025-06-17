@@ -44,11 +44,17 @@ const BudgetJourney: React.FC<BudgetJourneyProps> = ({ onBack }) => {
   };
 
   const handleLevelComplete = (levelId: number) => {
-    const newCompletedLevels = [...progress.completedLevels, levelId];
+    const newCompletedLevels = [...progress.completedLevels];
+    
+    // Only add if not already completed
+    if (!newCompletedLevels.includes(levelId)) {
+      newCompletedLevels.push(levelId);
+    }
+    
     const newProgress = {
       ...progress,
       completedLevels: newCompletedLevels,
-      currentLevel: Math.min(levelId + 1, budgetJourneyData.length + 1),
+      currentLevel: Math.max(progress.currentLevel, levelId + 1), // Unlock next level
       totalPointsEarned: progress.totalPointsEarned + 5
     };
 
@@ -176,7 +182,7 @@ const BudgetJourney: React.FC<BudgetJourneyProps> = ({ onBack }) => {
     );
   }
 
-  // Main level selection screen
+  // Main level selection screen with grid layout
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -189,9 +195,9 @@ const BudgetJourney: React.FC<BudgetJourneyProps> = ({ onBack }) => {
       {/* Header Section */}
       <div className="text-center bg-gradient-to-r from-blue-50 to-green-50 rounded-lg p-8">
         <div className="text-4xl mb-4">💰</div>
-        <h1 className="text-3xl font-bold mb-2">Budgeting Learning Journey</h1>
+        <h1 className="text-3xl font-bold mb-2">Budgeting 101</h1>
         <p className="text-muted-foreground mb-6">
-          Master the art of managing your money through 5 interactive levels and unlock the budget builder simulation!
+          Master the art of managing your money through 5 interactive levels!
         </p>
         
         {/* Progress Section */}
@@ -210,7 +216,7 @@ const BudgetJourney: React.FC<BudgetJourneyProps> = ({ onBack }) => {
       </div>
 
       {/* Levels Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {budgetJourneyData.map((level) => {
           const isUnlocked = isLevelUnlocked(level.id);
           const isCompleted = isLevelCompleted(level.id);
@@ -218,77 +224,41 @@ const BudgetJourney: React.FC<BudgetJourneyProps> = ({ onBack }) => {
           return (
             <Card
               key={level.id}
-              className={`cursor-pointer transition-all hover:shadow-lg ${
+              className={`aspect-square cursor-pointer transition-all hover:shadow-lg relative ${
                 isCompleted 
-                  ? 'border-2 border-blue-500/50 bg-blue-50/50' 
+                  ? 'border-2 border-blue-500 bg-blue-50' 
                   : isUnlocked 
-                    ? 'border border-blue-500/30 hover:border-blue-500/50' 
-                    : 'opacity-50 cursor-not-allowed'
+                    ? 'border-2 border-blue-200 hover:border-blue-400 bg-white' 
+                    : 'opacity-50 cursor-not-allowed bg-gray-50'
               }`}
               onClick={() => isUnlocked && setSelectedLevel(level.id)}
             >
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
+              <CardContent className="p-4 h-full flex flex-col justify-between">
+                <div className="text-center flex-1 flex flex-col justify-center">
+                  <div className="text-2xl mb-2">
                     {isCompleted ? (
-                      <Badge className="bg-blue-500 text-white">
-                        <CheckCircle2 className="h-3 w-3 mr-1" />
-                        Level {level.id}
-                      </Badge>
+                      <CheckCircle2 className="h-8 w-8 text-blue-600 mx-auto" />
                     ) : isUnlocked ? (
-                      <Badge variant="outline">Level {level.id}</Badge>
+                      <Play className="h-8 w-8 text-blue-600 mx-auto" />
                     ) : (
-                      <Badge variant="outline" className="opacity-50">
-                        <Lock className="h-3 w-3 mr-1" />
-                        Level {level.id}
-                      </Badge>
+                      <Lock className="h-8 w-8 text-gray-400 mx-auto" />
                     )}
                   </div>
+                  <h3 className="font-semibold text-sm mb-1">Level {level.id}</h3>
+                  <p className="text-xs text-muted-foreground leading-tight">{level.title}</p>
+                </div>
+                
+                <div className="text-center">
                   {isCompleted && (
-                    <CheckCircle2 className="h-5 w-5 text-blue-600" />
+                    <Badge className="text-xs bg-blue-500 text-white">Complete</Badge>
+                  )}
+                  {!isCompleted && isUnlocked && (
+                    <Badge variant="outline" className="text-xs">Start</Badge>
+                  )}
+                  {!isUnlocked && (
+                    <Badge variant="outline" className="text-xs opacity-50">Locked</Badge>
                   )}
                 </div>
-                <CardTitle className="text-lg">{level.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-                  {level.description}
-                </p>
-                
-                {isCompleted && (
-                  <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-blue-600" />
-                      <span className="text-sm font-medium text-blue-800">Level Complete!</span>
-                    </div>
-                  </div>
-                )}
-                
-                <Button 
-                  className={`w-full ${
-                    isCompleted 
-                      ? 'bg-blue-500 hover:bg-blue-600' 
-                      : isUnlocked 
-                        ? 'bg-blue-500 hover:bg-blue-600' 
-                        : 'bg-gray-300 cursor-not-allowed'
-                  }`}
-                  size="sm"
-                  disabled={!isUnlocked}
-                >
-                  {!isUnlocked ? (
-                    <>
-                      <Lock className="h-4 w-4 mr-2" />
-                      Locked
-                    </>
-                  ) : isCompleted ? (
-                    'Review Level'
-                  ) : (
-                    <>
-                      <Play className="h-4 w-4 mr-2" />
-                      Start Level
-                    </>
-                  )}
-                </Button>
               </CardContent>
             </Card>
           );
@@ -296,25 +266,16 @@ const BudgetJourney: React.FC<BudgetJourneyProps> = ({ onBack }) => {
 
         {/* Mini-Game Card */}
         {progress.completedLevels.length === budgetJourneyData.length && (
-          <Card className="border-2 border-yellow-400 bg-gradient-to-r from-yellow-50 to-orange-50 md:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Trophy className="h-5 w-5 text-yellow-500" />
-                Final Challenge: Budget Builder
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground mb-4">
-                You've completed all 5 levels! Test your skills in the interactive budget builder simulation.
-              </p>
-              <Button 
-                onClick={() => setShowMiniGame(true)} 
-                size="lg" 
-                className="w-full bg-yellow-500 hover:bg-yellow-600"
-              >
-                <Play className="h-4 w-4 mr-2" />
-                Start Budget Challenge
-              </Button>
+          <Card className="aspect-square border-2 border-yellow-400 bg-gradient-to-br from-yellow-50 to-orange-50 cursor-pointer hover:shadow-lg">
+            <CardContent className="p-4 h-full flex flex-col justify-between" onClick={() => setShowMiniGame(true)}>
+              <div className="text-center flex-1 flex flex-col justify-center">
+                <Trophy className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
+                <h3 className="font-semibold text-sm mb-1">Final Challenge</h3>
+                <p className="text-xs text-muted-foreground leading-tight">Budget Builder</p>
+              </div>
+              <div className="text-center">
+                <Badge className="text-xs bg-yellow-500 text-white">Available</Badge>
+              </div>
             </CardContent>
           </Card>
         )}
