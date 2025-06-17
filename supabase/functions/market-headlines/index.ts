@@ -12,36 +12,35 @@ serve(async (req) => {
   }
 
   try {
-    const YAHOO_FINANCE_API_KEY = Deno.env.get('YAHOO_FINANCE_API_KEY')
+    const NEWSDATA_IO_API_KEY = Deno.env.get('NEWSDATA_IO_API_KEY')
     
-    if (!YAHOO_FINANCE_API_KEY) {
-      throw new Error('YAHOO_FINANCE_API_KEY not found')
+    if (!NEWSDATA_IO_API_KEY) {
+      throw new Error('NEWSDATA_IO_API_KEY not found')
     }
 
-    console.log('Fetching headlines from Yahoo Finance API...')
+    console.log('Fetching headlines from newsdata.io API...')
 
-    // Use Yahoo Finance API for financial news
+    // Use newsdata.io API for financial news
     const response = await fetch(
-      'https://yahoo-finance15.p.rapidapi.com/api/v1/markets/news',
+      `https://newsdata.io/api/1/news?apikey=${NEWSDATA_IO_API_KEY}&category=business&language=en&country=us&size=15`,
       {
         method: 'GET',
         headers: {
-          'X-RapidAPI-Key': YAHOO_FINANCE_API_KEY,
-          'X-RapidAPI-Host': 'yahoo-finance15.p.rapidapi.com'
+          'Accept': 'application/json',
         }
       }
     )
     
     if (!response.ok) {
-      console.error('Yahoo Finance API error:', response.status, response.statusText)
-      throw new Error(`Yahoo Finance API error: ${response.status}`)
+      console.error('Newsdata.io API error:', response.status, response.statusText)
+      throw new Error(`Newsdata.io API error: ${response.status}`)
     }
 
     const data = await response.json()
-    console.log('Yahoo Finance API response received')
+    console.log('Newsdata.io API response received')
 
     // Transform the data to match our expected format
-    const articles = data.body || []
+    const articles = data.results || []
     
     // Process headlines with enhanced summaries
     const processedHeadlines = articles.slice(0, 10).map((article: any, index: number) => {
@@ -57,30 +56,34 @@ serve(async (req) => {
         if (!summary.endsWith('.') && !summary.endsWith('...')) {
           summary += '.'
         }
-      } else if (article.summary) {
-        summary = article.summary
+      } else if (article.description) {
+        summary = article.description
       } else {
         summary = `${article.title}. This is a developing story in the financial markets. More details are expected to emerge as the situation unfolds.`
       }
       
       // Create TL;DR (extract key points)
-      const tldr = extractKeyPoints(article.title, article.content || article.summary || '')
+      const tldr = extractKeyPoints(article.title, article.content || article.description || '')
       
       return {
-        id: article.uuid || `headline-${index}`,
+        id: article.article_id || `headline-${index}`,
         title: article.title || 'Market Update',
         summary: summary,
         tldr: tldr,
         url: article.link || '#',
-        publishedDate: article.published_at || new Date().toISOString(),
-        site: article.publisher || 'Yahoo Finance',
-        image: article.thumbnail?.resolutions?.[0]?.url || null
+        publishedDate: article.pubDate || new Date().toISOString(),
+        site: article.source_id || 'News Source',
+        image: article.image_url || null
       }
     })
+
+    // Generate market recap from the headlines
+    const marketRecap = generateMarketRecap(processedHeadlines)
 
     return new Response(
       JSON.stringify({ 
         headlines: processedHeadlines,
+        marketRecap: marketRecap,
         lastUpdated: new Date().toISOString()
       }),
       { 
@@ -136,4 +139,78 @@ function extractKeyPoints(title: string, text: string): string {
   }
   
   return keyPoints.join(', ')
+}
+
+function generateMarketRecap(headlines: any[]): any {
+  // Analyze headlines to create market recap
+  const topics = {
+    tech: 0,
+    finance: 0,
+    energy: 0,
+    healthcare: 0,
+    general: 0
+  }
+  
+  const sentiments = {
+    positive: 0,
+    negative: 0,
+    neutral: 0
+  }
+  
+  headlines.forEach(headline => {
+    const titleLower = headline.title.toLowerCase()
+    const summaryLower = headline.summary.toLowerCase()
+    const content = titleLower + ' ' + summaryLower
+    
+    // Categorize by sector
+    if (content.includes('tech') || content.includes('apple') || content.includes('microsoft') || content.includes('google') || content.includes('meta')) {
+      topics.tech++
+    } else if (content.includes('bank') || content.includes('fed') || content.includes('interest') || content.includes('finance')) {
+      topics.finance++
+    } else if (content.includes('oil') || content.includes('energy') || content.includes('gas')) {
+      topics.energy++
+    } else if (content.includes('health') || content.includes('pharma') || content.includes('drug')) {
+      topics.healthcare++
+    } else {
+      topics.general++
+    }
+    
+    // Analyze sentiment
+    if (content.includes('gain') || content.includes('rise') || content.includes('up') || content.includes('positive') || content.includes('growth')) {
+      sentiments.positive++
+    } else if (content.includes('fall') || content.includes('decline') || content.includes('down') || content.includes('negative') || content.includes('loss')) {
+      sentiments.negative++
+    } else {
+      sentiments.neutral++
+    }
+  })
+  
+  // Create dynamic market recap based on the news
+  const dominantTopic = Object.keys(topics).reduce((a, b) => topics[a] > topics[b] ? a : b)
+  const dominantSentiment = Object.keys(sentiments).reduce((a, b) => sentiments[a] > sentiments[b] ? a : b)
+  
+  let recap = `Today's market news shows ${dominantSentiment === 'positive' ? 'optimistic' : dominantSentiment === 'negative' ? 'cautious' : 'mixed'} sentiment across major sectors. `
+  
+  if (topics.tech > 0) {
+    recap += `Technology companies are in focus with ${topics.tech} major stories emerging. `
+  }
+  
+  if (topics.finance > 0) {
+    recap += `Financial sector developments, including Federal Reserve activities and banking news, are driving ${topics.finance} key stories. `
+  }
+  
+  if (topics.energy > 0) {
+    recap += `Energy markets continue to be volatile with ${topics.energy} significant developments. `
+  }
+  
+  recap += `Investors are closely monitoring these developments as they assess market conditions and future investment opportunities.`
+  
+  const tldr = `Markets showing ${dominantSentiment} sentiment today with focus on ${dominantTopic} sector. Key developments in ${Object.keys(topics).filter(t => topics[t] > 0).join(', ')} sectors.`
+  
+  return {
+    paragraphs: [recap],
+    tldr: tldr,
+    sentiment: dominantSentiment,
+    dominantSector: dominantTopic
+  }
 }
