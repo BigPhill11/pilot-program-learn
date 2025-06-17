@@ -2,10 +2,10 @@
 import { NewsArticle } from './types.ts';
 
 export async function fetchNewsFromAPI(apiKey: string): Promise<NewsArticle[]> {
-  console.log('Fetching headlines from newsdata.io API...');
+  console.log('Fetching finance-specific headlines from newsdata.io API...');
 
   const response = await fetch(
-    `https://newsdata.io/api/1/news?apikey=${apiKey}&category=business&language=en&country=us&size=10`,
+    `https://newsdata.io/api/1/news?apikey=${apiKey}&category=business&q=finance OR economics OR stock OR market OR investment OR trading OR earnings OR revenue OR GDP OR inflation OR interest rate OR Federal Reserve OR Wall Street&language=en&country=us&size=12`,
     {
       method: 'GET',
       headers: {
@@ -26,7 +26,7 @@ export async function fetchNewsFromAPI(apiKey: string): Promise<NewsArticle[]> {
   console.log('Newsdata.io API response received:', data);
 
   const articles = data.results || [];
-  console.log(`Processing ${articles.length} articles from newsdata.io`);
+  console.log(`Processing ${articles.length} finance-focused articles from newsdata.io`);
   
   return articles;
 }
