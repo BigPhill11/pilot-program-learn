@@ -28,7 +28,7 @@ const OnboardingTour: React.FC<OnboardingTourProps> = ({ onComplete }) => {
 
   const questions = [
     {
-      id: 'experience',
+      id: 'experienceLevel',
       title: 'What\'s your experience with personal finance?',
       type: 'single',
       options: [
@@ -65,7 +65,7 @@ const OnboardingTour: React.FC<OnboardingTourProps> = ({ onComplete }) => {
       ]
     },
     {
-      id: 'time',
+      id: 'timeCommitment',
       title: 'How much time can you dedicate to learning?',
       type: 'single',
       options: [
@@ -113,6 +113,7 @@ const OnboardingTour: React.FC<OnboardingTourProps> = ({ onComplete }) => {
     if (currentStep < questions.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
+      console.log('Onboarding complete with answers:', answers);
       onComplete(answers);
     }
   };

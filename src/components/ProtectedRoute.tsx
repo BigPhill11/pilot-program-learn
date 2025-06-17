@@ -4,6 +4,8 @@ import { useAuth } from '@/hooks/useAuth';
 import AuthPage from '@/components/auth/AuthPage';
 import SkillsAssessmentQuiz from '@/components/assessment/SkillsAssessmentQuiz';
 import OnboardingTour from '@/components/onboarding/OnboardingTour';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -48,9 +50,45 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   if (!profile.onboarding_completed) {
     return (
       <OnboardingTour 
-        onComplete={() => {
-          // Refresh profile after onboarding
-          window.location.reload();
+        onComplete={async (onboardingData) => {
+          try {
+            // Categorize user based on their responses
+            let assignedLevel = 'beginner';
+            
+            // Calculate level based on experience and other factors
+            if (onboardingData.experienceLevel === 'advanced') {
+              assignedLevel = 'pro';
+            } else if (onboardingData.experienceLevel === 'intermediate') {
+              assignedLevel = 'intermediate';
+            } else if (onboardingData.experienceLevel === 'some' && 
+                      onboardingData.interests.length >= 3 && 
+                      onboardingData.goals.includes('invest')) {
+              assignedLevel = 'intermediate';
+            }
+
+            // Update profile with onboarding completion and level
+            const { error } = await supabase
+              .from('profiles')
+              .update({
+                onboarding_completed: true,
+                app_version: assignedLevel,
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', user.id);
+
+            if (error) {
+              console.error('Error updating profile:', error);
+              toast.error('Failed to complete onboarding');
+              return;
+            }
+
+            toast.success(`Welcome! You've been placed in the ${assignedLevel} level.`);
+            // Refresh to show the main app
+            window.location.reload();
+          } catch (error) {
+            console.error('Error completing onboarding:', error);
+            toast.error('Failed to complete onboarding');
+          }
         }} 
       />
     );
