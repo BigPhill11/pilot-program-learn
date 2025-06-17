@@ -14,15 +14,6 @@ serve(async (req) => {
   }
 
   try {
-    const alphaVantageApiKey = Deno.env.get('ALPHA_VANTAGE_API_KEY');
-    
-    if (!alphaVantageApiKey) {
-      return new Response(
-        JSON.stringify({ error: 'Alpha Vantage API key not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
     const { searchParams } = new URL(req.url);
     const query = searchParams.get('query');
     
@@ -35,53 +26,54 @@ serve(async (req) => {
 
     console.log(`Searching for securities: ${query}`);
 
-    // Search using Alpha Vantage SYMBOL_SEARCH endpoint
+    // Use Yahoo Finance search API (free, no API key required)
     const response = await fetch(
-      `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${encodeURIComponent(query)}&apikey=${alphaVantageApiKey}`,
+      `https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(query)}&quotesCount=20&newsCount=0`,
       {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          'Accept': 'application/json',
         },
       }
     );
 
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Alpha Vantage API error:', errorData);
+      console.error('Yahoo Finance API error:', response.status, response.statusText);
       return new Response(
-        JSON.stringify({ error: errorData.error?.message || 'Failed to search securities' }),
+        JSON.stringify({ error: 'Failed to search securities' }),
         { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     const data = await response.json();
-    console.log('Alpha Vantage search response received');
+    console.log('Yahoo Finance search response received');
 
     // Transform the data to match our expected format
-    const bestMatches = data.bestMatches || [];
-    const transformedData = bestMatches.slice(0, 20).map((item: any) => {
-      // Determine asset type based on symbol patterns
+    const quotes = data.quotes || [];
+    const transformedData = quotes.slice(0, 20).map((item: any) => {
+      // Determine asset type based on quote type
       let assetType = 'stock';
-      const symbol = item['1. symbol'];
-      const name = item['2. name'];
+      const quoteType = item.quoteType?.toLowerCase() || '';
       
-      if (name.toLowerCase().includes('etf')) {
+      if (quoteType.includes('etf')) {
         assetType = 'etf';
-      } else if (name.toLowerCase().includes('bond')) {
-        assetType = 'bond';
-      } else if (['DJI', 'SPX', 'IXIC', 'VIX'].includes(symbol)) {
+      } else if (quoteType.includes('index')) {
         assetType = 'index';
+      } else if (quoteType.includes('future') || quoteType.includes('commodity')) {
+        assetType = 'commodity';
+      } else if (quoteType.includes('bond')) {
+        assetType = 'bond';
       }
 
       return {
-        symbol: symbol,
-        name: name,
-        exchange: item['4. region'] || 'US',
+        symbol: item.symbol || '',
+        name: item.longname || item.shortname || item.symbol || '',
+        exchange: item.exchange || item.exchDisp || 'US',
         assetType,
-        currency: item['8. currency'] || 'USD'
+        currency: item.currency || 'USD'
       };
-    });
+    }).filter(item => item.symbol && item.name); // Filter out items without symbol or name
 
     return new Response(
       JSON.stringify(transformedData),

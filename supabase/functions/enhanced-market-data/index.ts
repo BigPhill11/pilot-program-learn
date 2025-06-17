@@ -14,11 +14,10 @@ serve(async (req) => {
   }
 
   try {
-    const alphaVantageApiKey = Deno.env.get('ALPHA_VANTAGE_API_KEY');
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     
-    if (!alphaVantageApiKey || !supabaseUrl || !supabaseKey) {
+    if (!supabaseUrl || !supabaseKey) {
       return new Response(
         JSON.stringify({ error: 'Required environment variables not configured' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -27,16 +26,16 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    console.log('Fetching market data from Alpha Vantage...');
+    console.log('Fetching market data from Yahoo Finance...');
 
-    // Define the symbols we want to fetch with their Alpha Vantage symbols
+    // Define the symbols we want to fetch with their Yahoo Finance symbols
     const symbols = [
-      { symbol: 'IXIC', name: 'NASDAQ', type: 'index' },
-      { symbol: 'DJI', name: 'Dow Jones', type: 'index' },
-      { symbol: 'SPX', name: 'S&P 500', type: 'index' },
-      { symbol: 'GLD', name: 'Gold', type: 'commodity' }, // Gold ETF as proxy
-      { symbol: 'USO', name: 'Crude Oil', type: 'commodity' }, // Oil ETF as proxy
-      { symbol: 'VIX', name: 'Volatility Index', type: 'index' }
+      { symbol: '^IXIC', name: 'NASDAQ', type: 'index' },
+      { symbol: '^DJI', name: 'Dow Jones', type: 'index' },
+      { symbol: '^GSPC', name: 'S&P 500', type: 'index' },
+      { symbol: 'GLD', name: 'Gold', type: 'commodity' },
+      { symbol: 'CL=F', name: 'Crude Oil', type: 'commodity' },
+      { symbol: '^VIX', name: 'Volatility Index', type: 'index' }
     ];
 
     const marketData = [];
@@ -45,26 +44,28 @@ serve(async (req) => {
       try {
         console.log(`Fetching data for ${item.name} (${item.symbol})`);
         
-        // Use Alpha Vantage GLOBAL_QUOTE function for real-time data
+        // Use Yahoo Finance API (free, no API key required)
         const response = await fetch(
-          `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${item.symbol}&apikey=${alphaVantageApiKey}`,
+          `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(item.symbol)}?interval=1d&range=1d`,
           {
             method: 'GET',
             headers: {
-              'Content-Type': 'application/json',
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+              'Accept': 'application/json',
             },
           }
         );
 
         if (response.ok) {
           const data = await response.json();
-          console.log(`Response for ${item.name}:`, data);
+          console.log(`Response for ${item.name}:`, JSON.stringify(data).substring(0, 200));
           
-          const quote = data['Global Quote'];
-          if (quote && quote['05. price']) {
-            const price = parseFloat(quote['05. price']) || 0;
-            const change = parseFloat(quote['09. change']) || 0;
-            const changePercent = parseFloat(quote['10. change percent']?.replace('%', '')) || 0;
+          if (data?.chart?.result?.[0]?.meta) {
+            const meta = data.chart.result[0].meta;
+            const price = meta.regularMarketPrice || meta.previousClose || 0;
+            const previousClose = meta.previousClose || price;
+            const change = price - previousClose;
+            const changePercent = previousClose !== 0 ? (change / previousClose) * 100 : 0;
             
             const marketItem = {
               symbol: item.symbol,
@@ -97,8 +98,8 @@ serve(async (req) => {
           console.error(`Failed to fetch ${item.name}: ${response.status} ${response.statusText}`);
         }
         
-        // Add delay to respect rate limits (5 calls per minute for free tier)
-        await new Promise(resolve => setTimeout(resolve, 12000)); // 12 second delay
+        // Small delay to be respectful to the API
+        await new Promise(resolve => setTimeout(resolve, 100));
         
       } catch (error) {
         console.error(`Error fetching ${item.name}:`, error);
@@ -107,7 +108,7 @@ serve(async (req) => {
     }
 
     console.log('Final market data array:', marketData);
-    console.log('Market data fetched and cached successfully with Alpha Vantage');
+    console.log('Market data fetched and cached successfully with Yahoo Finance');
 
     return new Response(
       JSON.stringify(marketData),
