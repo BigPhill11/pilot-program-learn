@@ -72,17 +72,22 @@ const AuthPage = () => {
     setLoading(true);
     
     try {
-      // Sign in with a predefined guest account
-      const { error } = await supabase.auth.signInWithPassword({
-        email: 'guest@philfinance.app',
-        password: 'guest123456',
+      // Use a proper email format for the guest account
+      const guestEmail = 'guest.user@example.com';
+      const guestPassword = 'guest123456789';
+
+      // Try to sign in first
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: guestEmail,
+        password: guestPassword,
       });
 
-      if (error) {
+      if (signInError) {
         // If guest account doesn't exist, create it
+        console.log('Guest account not found, creating new one...');
         const { error: signUpError } = await supabase.auth.signUp({
-          email: 'guest@philfinance.app',
-          password: 'guest123456',
+          email: guestEmail,
+          password: guestPassword,
           options: {
             emailRedirectTo: `${window.location.origin}/`,
             data: {
@@ -92,26 +97,32 @@ const AuthPage = () => {
         });
 
         if (signUpError) {
-          toast.error('Failed to create guest account');
+          console.error('SignUp error:', signUpError);
+          toast.error('Failed to create guest account: ' + signUpError.message);
           return;
-        } else {
-          // Try signing in again after creating the account
-          const { error: signInError } = await supabase.auth.signInWithPassword({
-            email: 'guest@philfinance.app',
-            password: 'guest123456',
-          });
-          
-          if (signInError) {
-            toast.error('Failed to sign in as guest');
-            return;
-          }
+        }
+
+        // For development/testing, we'll try to sign in immediately
+        // In production, this would require email confirmation
+        const { error: secondSignInError } = await supabase.auth.signInWithPassword({
+          email: guestEmail,
+          password: guestPassword,
+        });
+        
+        if (secondSignInError) {
+          console.error('Second sign in error:', secondSignInError);
+          toast.success('Guest account created! Please check email for confirmation link, or disable email confirmation in Supabase Auth settings for testing.');
+          return;
         }
       }
 
-      // Reset the guest user's onboarding status to allow retesting
+      // Reset the guest user's data to allow retesting onboarding
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        await supabase
+        console.log('Resetting guest user data for user:', user.id);
+        
+        // Reset profile data
+        const { error: profileError } = await supabase
           .from('profiles')
           .update({ 
             app_version: null,
@@ -119,16 +130,25 @@ const AuthPage = () => {
           })
           .eq('id', user.id);
 
-        // Also clear any existing assessment data
-        await supabase
+        if (profileError) {
+          console.error('Profile update error:', profileError);
+        }
+
+        // Clear any existing assessment data
+        const { error: assessmentError } = await supabase
           .from('initial_assessments')
           .delete()
           .eq('user_id', user.id);
-      }
 
-      toast.success('Signed in as guest! Starting onboarding...');
-      navigate('/');
+        if (assessmentError) {
+          console.error('Assessment deletion error:', assessmentError);
+        }
+
+        toast.success('Signed in as guest! Starting onboarding...');
+        navigate('/');
+      }
     } catch (error) {
+      console.error('Guest sign in error:', error);
       toast.error('An unexpected error occurred');
     } finally {
       setLoading(false);
