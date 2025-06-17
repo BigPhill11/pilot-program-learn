@@ -25,7 +25,16 @@ const MarketIndicatorsSection = () => {
     if (!data || !Array.isArray(data)) {
         throw new Error("Invalid data format received from enhanced market data");
     }
-    return data;
+    
+    // Transform the enhanced market data to match component expectations
+    return data.map(item => ({
+      title: item.name || item.symbol,
+      value: item.asset_type === 'commodity' && !item.name?.includes('$') 
+        ? `$${(item.price || 0).toFixed(2)}`
+        : (item.price || 0).toFixed(2),
+      change: item.change_percent || 0,
+      changeSuffix: '%'
+    }));
   };
 
   // Function to fetch cached data from database
@@ -42,9 +51,9 @@ const MarketIndicatorsSection = () => {
     return data.map(item => ({
       title: item.name,
       value: item.asset_type === 'commodity' && !item.name.includes('$') 
-        ? `$${item.price.toFixed(2)}`
-        : item.price.toFixed(2),
-      change: item.change_percent,
+        ? `$${(item.price || 0).toFixed(2)}`
+        : (item.price || 0).toFixed(2),
+      change: item.change_percent || 0,
       changeSuffix: '%'
     }));
   };
