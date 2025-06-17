@@ -31,18 +31,20 @@ serve(async (req) => {
 
     // Define the symbols we want to fetch with their display names and types
     const symbols = [
-      { symbol: '^IXIC', name: 'NASDAQ', type: 'index' },
-      { symbol: '^DJI', name: 'Dow Jones', type: 'index' },
-      { symbol: '^GSPC', name: 'S&P 500', type: 'index' },
-      { symbol: 'GC=F', name: 'Gold', type: 'commodity' },
-      { symbol: 'CL=F', name: 'Crude Oil', type: 'commodity' },
-      { symbol: '^VIX', name: 'Volatility Index', type: 'index' }
+      { symbol: 'IXIC', name: 'NASDAQ', type: 'index' },
+      { symbol: 'DJI', name: 'Dow Jones', type: 'index' },
+      { symbol: 'SPX', name: 'S&P 500', type: 'index' },
+      { symbol: 'GCUSD', name: 'Gold', type: 'commodity' },
+      { symbol: 'CLUSD', name: 'Crude Oil', type: 'commodity' },
+      { symbol: 'VIX', name: 'Volatility Index', type: 'index' }
     ];
 
     const marketData = [];
 
     for (const item of symbols) {
       try {
+        console.log(`Fetching data for ${item.name} (${item.symbol})`);
+        
         // Use FMP's quote endpoint for real-time data
         const response = await fetch(
           `https://financialmodelingprep.com/api/v3/quote/${item.symbol}?apikey=${fmpApiKey}`,
@@ -56,6 +58,8 @@ serve(async (req) => {
 
         if (response.ok) {
           const data = await response.json();
+          console.log(`Response for ${item.name}:`, data);
+          
           if (data && data.length > 0) {
             const quote = data[0];
             
@@ -69,6 +73,7 @@ serve(async (req) => {
             };
 
             marketData.push(marketItem);
+            console.log(`Added ${item.name} to market data:`, marketItem);
 
             // Update cache in database
             await supabase
@@ -82,7 +87,11 @@ serve(async (req) => {
                 asset_type: item.type,
                 last_updated: new Date().toISOString()
               });
+          } else {
+            console.log(`No data returned for ${item.name}`);
           }
+        } else {
+          console.error(`Failed to fetch ${item.name}: ${response.status} ${response.statusText}`);
         }
       } catch (error) {
         console.error(`Error fetching ${item.name}:`, error);
@@ -90,6 +99,7 @@ serve(async (req) => {
       }
     }
 
+    console.log('Final market data array:', marketData);
     console.log('Enhanced market data fetched and cached successfully');
 
     return new Response(
