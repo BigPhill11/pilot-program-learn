@@ -3,7 +3,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Send, Bot, User, Lightbulb, TrendingUp, DollarSign } from 'lucide-react';
+import { Send, Bot, User, Lightbulb, TrendingUp, DollarSign, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Message {
   id: string;
@@ -41,32 +42,6 @@ const PhilChatAssistant: React.FC = () => {
     scrollToBottom();
   }, [messages]);
 
-  const generatePhilResponse = (userMessage: string): string => {
-    const lowerMessage = userMessage.toLowerCase();
-    
-    if (lowerMessage.includes('stock')) {
-      return "Great question! 🐼 A stock is like owning a tiny piece of a company. Think of it like this: if a company were a pizza, buying stock would be like buying a slice of that pizza. The more slices (stocks) you own, the bigger your piece of the company! Companies sell stocks to raise money, and if the company does well, your 'pizza slice' becomes more valuable. Pretty cool, right?";
-    }
-    
-    if (lowerMessage.includes('invest')) {
-      return "Starting to invest is exciting! 🎯 Here's Phil's simple guide: 1) Start with an emergency fund (3-6 months of expenses), 2) Pay off high-interest debt, 3) Consider opening a retirement account like a 401k or IRA, 4) Start with broad market index funds - they're like buying a little bit of many companies at once. Remember: time is your best friend in investing, so start early even with small amounts!";
-    }
-    
-    if (lowerMessage.includes('compound')) {
-      return "Compound interest is AMAZING! 🚀 It's like magic money that grows on money. Imagine you plant a money tree that gives you $10. Then that $10 grows its own little money trees, and those grow more trees... that's compound interest! Your money makes money, and then that money makes even more money. Einstein supposedly called it the 8th wonder of the world!";
-    }
-    
-    if (lowerMessage.includes('401k')) {
-      return "A 401k is like a special piggy bank for retirement! 🐷 Your employer helps you save money for when you're older by taking some from your paycheck (before taxes!) and putting it in this special account. Many employers even match what you put in - that's FREE MONEY! You can't touch it until you're around 59½, but by then it will have grown a lot thanks to compound interest!";
-    }
-    
-    if (lowerMessage.includes('budget')) {
-      return "Budgeting is like being the boss of your money! 💰 Phil's easy formula: Track where your money goes for a month, then use the 50/30/20 rule - 50% for needs (rent, food), 30% for wants (fun stuff), and 20% for savings and debt payments. Remember, a budget isn't about restriction, it's about giving your money a job so you can reach your dreams!";
-    }
-    
-    return "That's a thoughtful question! 🤔 While I'd love to help with everything, I'm best at explaining finance basics in simple terms. Could you ask me about stocks, investing, budgeting, or other money topics? I promise to explain them in the most panda-friendly way possible! 🐼";
-  };
-
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
 
@@ -78,14 +53,26 @@ const PhilChatAssistant: React.FC = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentInput = inputMessage;
     setInputMessage('');
     setIsTyping(true);
 
-    // Simulate typing delay
-    setTimeout(() => {
+    try {
+      const { data, error } = await supabase.functions.invoke('phil-chat', {
+        body: { message: currentInput }
+      });
+
+      if (error) {
+        throw new Error(error.message || 'Failed to get response from Phil');
+      }
+
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
       const philResponse: Message = {
         id: (Date.now() + 1).toString(),
-        text: generatePhilResponse(inputMessage),
+        text: data.response,
         sender: 'phil',
         timestamp: new Date(),
         suggestions: [
@@ -97,8 +84,20 @@ const PhilChatAssistant: React.FC = () => {
       };
 
       setMessages(prev => [...prev, philResponse]);
+    } catch (error: any) {
+      console.error('Error getting Phil response:', error);
+      
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: "Sorry, I'm having trouble responding right now. Please try again in a moment! 🐼",
+        sender: 'phil',
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   const handleSuggestionClick = (suggestion: string) => {
@@ -140,7 +139,12 @@ const PhilChatAssistant: React.FC = () => {
                         : 'bg-muted'
                     }`}
                   >
-                    <p className="whitespace-pre-wrap">{message.text}</p>
+                    <p 
+                      className="whitespace-pre-wrap"
+                      dangerouslySetInnerHTML={{ 
+                        __html: message.sender === 'phil' ? message.text.replace(/\n/g, '<br />') : message.text 
+                      }}
+                    />
                   </div>
                   
                   {message.suggestions && (
@@ -180,10 +184,9 @@ const PhilChatAssistant: React.FC = () => {
                   </div>
                 </div>
                 <div className="bg-muted p-3 rounded-lg">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                    <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="flex items-center space-x-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span className="text-sm text-muted-foreground">Phil is thinking...</span>
                   </div>
                 </div>
               </div>
@@ -199,6 +202,7 @@ const PhilChatAssistant: React.FC = () => {
               placeholder="Ask Phil anything about finance..."
               className="flex-1 resize-none border rounded-lg px-3 py-2 min-h-[44px] max-h-32"
               rows={1}
+              disabled={isTyping}
             />
             <Button 
               onClick={handleSendMessage}
