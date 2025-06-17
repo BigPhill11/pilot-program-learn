@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ExternalLink, TrendingUp } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import PandaTermTooltip from '@/components/PandaTermTooltip';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -160,19 +160,6 @@ const EnhancedHeadlinesSection = () => {
             <p className="mt-2 text-muted-foreground">Stay updated with the latest financial news</p>
           </div>
           
-          {/* Market Recap Skeleton */}
-          <div className="mb-8">
-            <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
-              <CardHeader>
-                <Skeleton className="h-6 w-48" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-20 w-full mb-4" />
-                <Skeleton className="h-16 w-full" />
-              </CardContent>
-            </Card>
-          </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array.from({ length: 6 }).map((_, index) => (
               <Card key={index} className="h-full">
@@ -191,11 +178,9 @@ const EnhancedHeadlinesSection = () => {
     );
   }
 
-  // Extract headlines and market recap from the response
+  // Extract headlines from the response
   const headlines = headlinesData?.headlines || [];
-  const marketRecap = headlinesData?.marketRecap;
   console.log('Processing headlines:', headlines);
-  console.log('Market recap data:', marketRecap);
   
   const displayHeadlines = isError || !Array.isArray(headlines) || headlines.length === 0 ? [
     {
@@ -251,50 +236,6 @@ const EnhancedHeadlinesSection = () => {
             🐼 Current Level: {userLevel.charAt(0).toUpperCase() + userLevel.slice(1)} Phil
           </div>
         </div>
-
-        {/* Market Recap Section */}
-        {marketRecap && (
-          <div className="mb-8">
-            <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-green-700">
-                  <TrendingUp className="h-5 w-5" />
-                  Today's Market Overview
-                  <span className="text-sm font-normal text-green-600">
-                    (Powered by newsdata.io)
-                  </span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="text-sm text-green-800">
-                  {marketRecap.paragraphs?.map((paragraph, index) => (
-                    <p key={index} className="mb-3">
-                      {highlightTerms(paragraph, userLevel)}
-                    </p>
-                  ))}
-                </div>
-                
-                {marketRecap.tldr && (
-                  <div className="bg-green-100 p-3 rounded-lg border-l-4 border-green-600">
-                    <p className="text-xs font-semibold text-green-700 mb-1">Market TL;DR</p>
-                    <p className="text-sm text-green-700 font-medium">
-                      {highlightTerms(marketRecap.tldr, userLevel)}
-                    </p>
-                  </div>
-                )}
-
-                <div className="flex gap-2 text-xs">
-                  <span className="bg-green-200 text-green-800 px-2 py-1 rounded">
-                    Sentiment: {marketRecap.sentiment || 'Neutral'}
-                  </span>
-                  <span className="bg-green-200 text-green-800 px-2 py-1 rounded">
-                    Focus: {marketRecap.dominantSector || 'Mixed'} sector
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {displayHeadlines.map((headline, index) => (
