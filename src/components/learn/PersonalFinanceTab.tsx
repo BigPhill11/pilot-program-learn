@@ -8,12 +8,14 @@ import { Trophy, Lock, CheckCircle2, Play } from 'lucide-react';
 import TaxesJourney from './TaxesJourney';
 import BudgetJourney from './BudgetJourney';
 import CreditJourney from './CreditJourney';
+import FuturePlanningJourney from './FuturePlanningJourney';
 import PodcastRecommendationsSection from './sections/PodcastRecommendationsSection';
 
 const PersonalFinanceTab = () => {
     const [showTaxesJourney, setShowTaxesJourney] = useState(false);
     const [showBudgetJourney, setShowBudgetJourney] = useState(false);
     const [showCreditJourney, setShowCreditJourney] = useState(false);
+    const [showFuturePlanningJourney, setShowFuturePlanningJourney] = useState(false);
 
     // Helper functions to get progress for each journey
     const getTaxesProgress = () => {
@@ -55,6 +57,19 @@ const PersonalFinanceTab = () => {
         return { completed: false, levelsCompleted: 0, totalLevels: 5 };
     };
 
+    const getFuturePlanningProgress = () => {
+        const saved = localStorage.getItem('futurePlanningJourneyProgress');
+        if (saved) {
+            const progress = JSON.parse(saved);
+            return {
+                completed: progress.journeyCompleted || false,
+                levelsCompleted: progress.completedLevels?.length || 0,
+                totalLevels: 5
+            };
+        }
+        return { completed: false, levelsCompleted: 0, totalLevels: 5 };
+    };
+
     // Render journey components if active
     if (showTaxesJourney) {
         return <TaxesJourney onBack={() => setShowTaxesJourney(false)} />;
@@ -68,9 +83,14 @@ const PersonalFinanceTab = () => {
         return <CreditJourney onBack={() => setShowCreditJourney(false)} />;
     }
 
+    if (showFuturePlanningJourney) {
+        return <FuturePlanningJourney onBack={() => setShowFuturePlanningJourney(false)} />;
+    }
+
     const taxesProgress = getTaxesProgress();
     const budgetProgress = getBudgetProgress();
     const creditProgress = getCreditProgress();
+    const futurePlanningProgress = getFuturePlanningProgress();
 
     const journeys = [
         {
@@ -105,6 +125,17 @@ const PersonalFinanceTab = () => {
             gradient: 'from-yellow-50 to-orange-50',
             borderColor: 'border-primary/30',
             buttonColor: 'bg-primary hover:bg-primary/90'
+        },
+        {
+            id: 'future-planning',
+            title: 'Plan for Later, Start Now',
+            description: 'Master future planning and build generational wealth',
+            emoji: '🔮',
+            progress: futurePlanningProgress,
+            onClick: () => setShowFuturePlanningJourney(true),
+            gradient: 'from-indigo-50 to-purple-50',
+            borderColor: 'border-indigo-500/30',
+            buttonColor: 'bg-indigo-500 hover:bg-indigo-600'
         }
     ];
 
@@ -113,7 +144,7 @@ const PersonalFinanceTab = () => {
             <div>
                 <h2 className="text-3xl font-bold tracking-tight journey-header text-center mb-8">Personal Finance Essentials</h2>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 max-w-6xl mx-auto">
                     {journeys.map((journey) => (
                         <Card
                             key={journey.id}

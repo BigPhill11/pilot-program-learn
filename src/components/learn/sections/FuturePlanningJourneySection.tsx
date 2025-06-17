@@ -1,29 +1,47 @@
 
-import React from 'react';
-import { AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Trophy, Play, CheckCircle2 } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { Trophy, CheckCircle2, Play } from 'lucide-react';
+import FuturePlanningJourney from '../FuturePlanningJourney';
 
-interface FuturePlanningJourneySectionProps {
-  onStartJourney: () => void;
-  progress: {
-    completed: boolean;
-    levelsCompleted: number;
-    totalLevels: number;
+const FuturePlanningJourneySection: React.FC = () => {
+  const [showJourney, setShowJourney] = useState(false);
+
+  const getFuturePlanningProgress = () => {
+    const saved = localStorage.getItem('futurePlanningJourneyProgress');
+    if (saved) {
+      const progress = JSON.parse(saved);
+      return {
+        completed: progress.journeyCompleted || false,
+        levelsCompleted: progress.completedLevels?.length || 0,
+        totalLevels: 5
+      };
+    }
+    return { completed: false, levelsCompleted: 0, totalLevels: 5 };
   };
-}
 
-const FuturePlanningJourneySection: React.FC<FuturePlanningJourneySectionProps> = ({
-  onStartJourney,
-  progress
-}) => {
+  if (showJourney) {
+    return <FuturePlanningJourney onBack={() => setShowJourney(false)} />;
+  }
+
+  const progress = getFuturePlanningProgress();
+
   return (
-    <AccordionItem value="future-planning" className="border-2 border-indigo-500/20">
-      <AccordionTrigger className="text-lg text-left">
-        <div className="flex items-center gap-2">
-          Plan for Later, Start Now
+    <Card
+      className={`cursor-pointer transition-all hover:shadow-lg border-indigo-500/30 ${
+        progress.completed ? 'border-2' : 'border'
+      }`}
+      onClick={() => setShowJourney(true)}
+    >
+      <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-t-lg">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">🔮</span>
+            <CardTitle className="text-lg">Plan for Later, Start Now</CardTitle>
+          </div>
           {progress.completed && (
             <Badge className="bg-indigo-500 text-white">
               <Trophy className="h-3 w-3 mr-1" />
@@ -32,67 +50,48 @@ const FuturePlanningJourneySection: React.FC<FuturePlanningJourneySectionProps> 
           )}
           {!progress.completed && progress.levelsCompleted > 0 && (
             <Badge variant="outline">
-              {progress.levelsCompleted}/{progress.totalLevels} levels
+              {progress.levelsCompleted}/{progress.totalLevels}
             </Badge>
           )}
         </div>
-      </AccordionTrigger>
-      <AccordionContent>
-        <Card className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-500/30">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex-1">
-                <h4 className="font-semibold text-lg mb-2">🔮 Interactive Future Planning Journey</h4>
-                <p className="text-muted-foreground text-sm mb-4">
-                  Master future planning through 5 gamified levels covering retirement, insurance, and legacy building. 
-                  Complete all levels to unlock the Future Plan Folder builder!
-                </p>
-                
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="h-4 w-4 text-indigo-500" />
-                    <span>Retirement accounts (401k, IRA)</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="h-4 w-4 text-indigo-500" />
-                    <span>Life insurance basics</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="h-4 w-4 text-indigo-500" />
-                    <span>Estate planning essentials</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Trophy className="h-4 w-4 text-indigo-500" />
-                    <span>Final Future Plan Folder builder</span>
-                  </div>
-                </div>
+      </CardHeader>
+      <CardContent className="p-6">
+        <p className="text-muted-foreground text-sm mb-4 leading-relaxed">
+          Master future planning and build generational wealth through retirement, insurance, and estate planning
+        </p>
+        
+        <div className="space-y-3 mb-4">
+          <div className="flex justify-between text-xs text-muted-foreground">
+            <span>Progress</span>
+            <span>{progress.levelsCompleted}/{progress.totalLevels} levels</span>
+          </div>
+          <Progress 
+            value={(progress.levelsCompleted / progress.totalLevels) * 100} 
+            className="h-2"
+          />
+        </div>
 
-                {progress.completed && (
-                  <div className="mb-4 p-3 bg-indigo-50 border border-indigo-200 rounded-lg">
-                    <div className="flex items-center gap-2">
-                      <Trophy className="h-5 w-5 text-indigo-600" />
-                      <span className="font-semibold text-indigo-800">Badge Earned: Future Ready!</span>
-                    </div>
-                    <p className="text-sm text-indigo-700 mt-1">
-                      You've completed the entire future planning journey and earned your achievement badge.
-                    </p>
-                  </div>
-                )}
-              </div>
+        {progress.completed && (
+          <div className="mb-4 p-3 bg-indigo-50 border border-indigo-200 rounded-lg">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-indigo-600" />
+              <span className="text-sm font-medium text-indigo-800">Journey Complete!</span>
             </div>
-            
-            <Button 
-              onClick={onStartJourney}
-              className="w-full bg-indigo-500 hover:bg-indigo-600"
-              size="lg"
-            >
-              <Play className="h-4 w-4 mr-2" />
-              {progress.levelsCompleted > 0 ? 'Continue Future Planning Journey' : 'Start Future Planning Journey'}
-            </Button>
-          </CardContent>
-        </Card>
-      </AccordionContent>
-    </AccordionItem>
+            <p className="text-xs text-indigo-700 mt-1">
+              You've earned your "Future Ready" achievement badge.
+            </p>
+          </div>
+        )}
+        
+        <Button 
+          className="w-full bg-indigo-500 hover:bg-indigo-600"
+          size="sm"
+        >
+          <Play className="h-4 w-4 mr-2" />
+          {progress.levelsCompleted > 0 ? 'Continue Journey' : 'Start Journey'}
+        </Button>
+      </CardContent>
+    </Card>
   );
 };
 
