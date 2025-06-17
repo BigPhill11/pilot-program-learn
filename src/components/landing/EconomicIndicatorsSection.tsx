@@ -45,7 +45,7 @@ const EconomicIndicatorsSection = () => {
     <section className="py-16 bg-muted/30">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-semibold text-foreground">Economic Indicators</h2>
+          <h2 className="text-3xl font-semibold text-emerald-700">Economic Indicators</h2>
           <p className="mt-2 text-muted-foreground">{subtitle}</p>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">

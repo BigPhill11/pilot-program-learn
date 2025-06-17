@@ -57,6 +57,42 @@ export type Database = {
         }
         Relationships: []
       }
+      market_data_cache: {
+        Row: {
+          asset_type: string
+          change_amount: number
+          change_percent: number
+          created_at: string
+          id: string
+          last_updated: string
+          name: string
+          price: number
+          symbol: string
+        }
+        Insert: {
+          asset_type: string
+          change_amount: number
+          change_percent: number
+          created_at?: string
+          id?: string
+          last_updated?: string
+          name: string
+          price: number
+          symbol: string
+        }
+        Update: {
+          asset_type?: string
+          change_amount?: number
+          change_percent?: number
+          created_at?: string
+          id?: string
+          last_updated?: string
+          name?: string
+          price?: number
+          symbol?: string
+        }
+        Relationships: []
+      }
       market_predictions: {
         Row: {
           actual_price: number | null
@@ -125,6 +161,7 @@ export type Database = {
       }
       paper_positions: {
         Row: {
+          asset_type: string | null
           avg_price: number
           created_at: string
           id: string
@@ -134,6 +171,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          asset_type?: string | null
           avg_price: number
           created_at?: string
           id?: string
@@ -143,6 +181,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          asset_type?: string | null
           avg_price?: number
           created_at?: string
           id?: string
@@ -163,6 +202,7 @@ export type Database = {
       }
       paper_transactions: {
         Row: {
+          asset_type: string | null
           created_at: string
           id: string
           portfolio_id: string
@@ -173,6 +213,7 @@ export type Database = {
           transaction_type: string
         }
         Insert: {
+          asset_type?: string | null
           created_at?: string
           id?: string
           portfolio_id: string
@@ -183,6 +224,7 @@ export type Database = {
           transaction_type: string
         }
         Update: {
+          asset_type?: string | null
           created_at?: string
           id?: string
           portfolio_id?: string

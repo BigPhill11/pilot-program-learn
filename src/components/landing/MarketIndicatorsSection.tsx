@@ -5,56 +5,65 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
 
-// Static data is updated to match the new indicators and serve as a fallback
+// Static data updated to match the new indicators and serve as a fallback
 const fallbackIndicators = [
-  { title: "Apple", value: "$214.29", change: 2.50 },
-  { title: "Microsoft", value: "$442.57", change: -1.10 },
-  { title: "Alphabet", value: "$179.22", change: 5.60 },
-  { title: "Amazon", value: "$183.83", change: -0.75 },
-  { title: "S&P 500 ETF", value: "$546.33", change: 1.20 },
-  { title: "Nasdaq 100 ETF", value: "$482.15", change: 0.25 },
+  { title: "NASDAQ", value: "15,832.80", change: 1.25 },
+  { title: "Dow Jones", value: "37,248.90", change: -0.45 },
+  { title: "S&P 500", value: "4,783.45", change: 0.85 },
+  { title: "Gold", value: "$2,042.30", change: 2.10 },
+  { title: "Crude Oil", value: "$73.85", change: -1.55 },
+  { title: "Volatility Index", value: "13.42", change: -0.75 },
 ];
 
 const MarketIndicatorsSection = () => {
-  // Function to fetch data from MarketStack
-  const fetchMarketStackData = async () => {
-    const { data, error } = await supabase.functions.invoke('marketstack-data');
+  // Function to fetch data from enhanced market data
+  const fetchEnhancedMarketData = async () => {
+    const { data, error } = await supabase.functions.invoke('enhanced-market-data');
     if (error) {
       throw new Error(error.message);
     }
     if (!data || !Array.isArray(data)) {
-        throw new Error("Invalid data format received from MarketStack");
+        throw new Error("Invalid data format received from enhanced market data");
     }
     return data;
   };
 
-  // Function to fetch data from our original market-data function
-  const fetchOriginalMarketData = async () => {
-    const { data, error } = await supabase.functions.invoke('market-data');
+  // Function to fetch cached data from database
+  const fetchCachedMarketData = async () => {
+    const { data, error } = await supabase
+      .from('market_data_cache')
+      .select('*')
+      .order('last_updated', { ascending: false });
+    
     if (error) {
       throw new Error(error.message);
     }
-    if (!data || !Array.isArray(data)) {
-        throw new Error("Invalid data format received from original function");
-    }
-    return data;
+    
+    return data.map(item => ({
+      title: item.name,
+      value: item.asset_type === 'commodity' && !item.name.includes('$') 
+        ? `$${item.price.toFixed(2)}`
+        : item.price.toFixed(2),
+      change: item.change_percent,
+      changeSuffix: '%'
+    }));
   };
 
-  // Try MarketStack first, fallback to original market-data function
+  // Try enhanced market data first, fallback to cached data
   const { data: marketIndicators, isLoading, isError, error } = useQuery({
-    queryKey: ['marketData'],
+    queryKey: ['enhancedMarketData'],
     queryFn: async () => {
       try {
-        // Try MarketStack first
-        return await fetchMarketStackData();
-      } catch (marketStackError) {
-        console.log("MarketStack failed, trying original market-data:", marketStackError);
+        // Try enhanced market data first
+        return await fetchEnhancedMarketData();
+      } catch (enhancedError) {
+        console.log("Enhanced market data failed, trying cached data:", enhancedError);
         try {
-          // Fallback to original function
-          return await fetchOriginalMarketData();
-        } catch (originalError) {
-          console.error("Both market data sources failed:", originalError);
-          throw originalError;
+          // Fallback to cached data
+          return await fetchCachedMarketData();
+        } catch (cachedError) {
+          console.error("Both enhanced and cached data failed:", cachedError);
+          throw cachedError;
         }
       }
     },
@@ -72,7 +81,7 @@ const MarketIndicatorsSection = () => {
     <section className="py-16 bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-semibold text-foreground">Market Snapshot</h2>
+          <h2 className="text-3xl font-semibold text-emerald-700">Market Snapshot</h2>
           <p className="mt-2 text-muted-foreground">{subtitle}</p>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
