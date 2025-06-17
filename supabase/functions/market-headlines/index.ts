@@ -29,11 +29,21 @@ serve(async (req) => {
       throw new Error('NEWSDATA_IO_API_KEY not found')
     }
 
+    // Get user level from request
+    let userLevel = 'beginner';
+    try {
+      const requestData = await req.json();
+      userLevel = requestData.userLevel || 'beginner';
+    } catch {
+      // Default to beginner if no body or parsing fails
+      userLevel = 'beginner';
+    }
+
     // Fetch headlines from NewsAPI
     const headlineArticles = await fetchNewsFromAPI(NEWS_API_KEY);
     
-    // Process headlines with enhanced summaries
-    const processedHeadlines = processNewsArticles(headlineArticles);
+    // Process headlines with enhanced summaries based on user level
+    const processedHeadlines = processNewsArticles(headlineArticles, userLevel);
     console.log(`Processed ${processedHeadlines.length} headlines from NewsAPI successfully`);
 
     // Fetch market overview data from newsdata.io for recap generation
@@ -46,9 +56,9 @@ serve(async (req) => {
       marketRecapData = headlineArticles; // Fallback to headlines data
     }
 
-    // Generate market recap from newsdata.io market overview data
-    const processedOverviewData = processNewsArticles(marketRecapData);
-    const marketRecap = generateMarketRecap(processedOverviewData);
+    // Generate market recap from newsdata.io market overview data with user level
+    const processedOverviewData = processNewsArticles(marketRecapData, userLevel);
+    const marketRecap = generateMarketRecap(processedOverviewData, userLevel);
 
     const response: HeadlinesResponse = {
       headlines: processedHeadlines,
@@ -71,7 +81,7 @@ serve(async (req) => {
     
     // Return fallback headlines if API fails
     const fallbackHeadlines = getFallbackHeadlines();
-    const fallbackRecap = generateMarketRecap(fallbackHeadlines);
+    const fallbackRecap = generateMarketRecap(fallbackHeadlines, 'beginner');
 
     const fallbackResponse: HeadlinesResponse = {
       headlines: fallbackHeadlines,

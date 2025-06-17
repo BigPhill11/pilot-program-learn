@@ -1,34 +1,18 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TrendingUp } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import TermHighlighter from '@/components/headlines/TermHighlighter';
+import useHeadlines from '@/hooks/useHeadlines';
 
 const MarketRecapTab = () => {
   const { profile } = useAuth();
-  
-  const fetchMarketData = async () => {
-    console.log('Fetching market data for recap...');
-    const { data, error } = await supabase.functions.invoke('market-headlines');
-    if (error) {
-      console.error('Market data fetch error:', error);
-      throw new Error(error.message);
-    }
-    console.log('Market data received:', data);
-    return data || { marketRecap: null };
-  };
-
-  const { data: marketData, isLoading } = useQuery({
-    queryKey: ['marketRecap'],
-    queryFn: fetchMarketData,
-    staleTime: 1000 * 60 * 60 * 24, // 24 hours - refresh once daily
-  });
-
   const userLevel = profile?.app_version || 'beginner';
+  
+  const { data: marketData, isLoading } = useHeadlines(userLevel);
+
   const marketRecap = marketData?.marketRecap;
 
   const getComplexityDescription = (level: string) => {
@@ -85,9 +69,9 @@ const MarketRecapTab = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="text-gray-700 leading-relaxed">
+          <div className="text-gray-700 leading-relaxed space-y-4">
             {marketRecap.paragraphs?.map((paragraph, index) => (
-              <p key={index} className="mb-4 text-base">
+              <p key={index} className="text-base">
                 <TermHighlighter text={paragraph} userLevel={userLevel} />
               </p>
             ))}

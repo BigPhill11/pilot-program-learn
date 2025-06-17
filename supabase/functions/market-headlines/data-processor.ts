@@ -2,7 +2,7 @@
 import { NewsArticle, ProcessedHeadline } from './types.ts';
 import { extractKeyPoints, createSummary } from './text-processing.ts';
 
-export function processNewsArticles(articles: NewsArticle[]): ProcessedHeadline[] {
+export function processNewsArticles(articles: NewsArticle[], userLevel: string = 'beginner'): ProcessedHeadline[] {
   // Filter for finance-related articles first
   const financeArticles = articles.filter((article: any) => {
     const title = article.title?.toLowerCase() || '';
@@ -25,8 +25,8 @@ export function processNewsArticles(articles: NewsArticle[]): ProcessedHeadline[
   console.log(`Filtered ${financeArticles.length} finance-related articles from ${articles.length} total articles`);
   
   return financeArticles.slice(0, 8).map((article: any, index: number) => {
-    const summary = createSummary(article);
-    const tldr = extractKeyPoints(article.title, article.content || article.description || '');
+    const summary = createSummary(article, userLevel);
+    const tldr = extractKeyPoints(article.title, article.content || article.description || '', userLevel);
     
     return {
       id: article.article_id || `headline-${index}`,

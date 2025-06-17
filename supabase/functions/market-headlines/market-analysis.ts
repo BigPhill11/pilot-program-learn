@@ -17,7 +17,7 @@ interface SentimentAnalysis {
   neutral: number;
 }
 
-export function generateMarketRecap(headlines: ProcessedHeadline[]): MarketRecap {
+export function generateMarketRecap(headlines: ProcessedHeadline[], userLevel: string = 'beginner'): MarketRecap {
   const topics: TopicAnalysis = {
     tech: 0,
     finance: 0,
@@ -66,42 +66,94 @@ export function generateMarketRecap(headlines: ProcessedHeadline[]): MarketRecap
     }
   });
   
-  // Create dynamic market recap based on the news
   const dominantTopic = Object.keys(topics).reduce((a, b) => topics[a as keyof TopicAnalysis] > topics[b as keyof TopicAnalysis] ? a : b);
   const dominantSentiment = Object.keys(sentiments).reduce((a, b) => sentiments[a as keyof SentimentAnalysis] > sentiments[b as keyof SentimentAnalysis] ? a : b);
   
-  let recap = `Today's financial markets reflect ${dominantSentiment === 'positive' ? 'optimistic momentum' : dominantSentiment === 'negative' ? 'cautious sentiment' : 'mixed signals'} across key sectors. `;
-  
   const activeSectors = Object.keys(topics).filter(t => topics[t as keyof TopicAnalysis] > 0);
   
-  if (topics.tech > 0) {
-    recap += `Technology companies continue to drive market attention with ${topics.tech} significant development${topics.tech > 1 ? 's' : ''} in AI, cloud services, and earnings performance. `;
+  // Generate level-appropriate content
+  let paragraph1 = '';
+  let paragraph2 = '';
+  let tldr = '';
+  
+  switch (userLevel) {
+    case 'beginner':
+      paragraph1 = generateBeginnerParagraph1(dominantSentiment, dominantTopic, topics);
+      paragraph2 = generateBeginnerParagraph2(activeSectors, sentiments);
+      tldr = generateBeginnerTldr(dominantSentiment, dominantTopic);
+      break;
+    case 'intermediate':
+      paragraph1 = generateIntermediateParagraph1(dominantSentiment, dominantTopic, topics);
+      paragraph2 = generateIntermediateParagraph2(activeSectors, sentiments);
+      tldr = generateIntermediateTldr(dominantSentiment, dominantTopic);
+      break;
+    case 'advanced':
+      paragraph1 = generateAdvancedParagraph1(dominantSentiment, dominantTopic, topics);
+      paragraph2 = generateAdvancedParagraph2(activeSectors, sentiments);
+      tldr = generateAdvancedTldr(dominantSentiment, dominantTopic);
+      break;
+    default:
+      paragraph1 = generateBeginnerParagraph1(dominantSentiment, dominantTopic, topics);
+      paragraph2 = generateBeginnerParagraph2(activeSectors, sentiments);
+      tldr = generateBeginnerTldr(dominantSentiment, dominantTopic);
   }
-  
-  if (topics.finance > 0) {
-    recap += `Financial sector dynamics, including Federal Reserve policy discussions and banking developments, are shaping ${topics.finance} key market narrative${topics.finance > 1 ? 's' : ''}. `;
-  }
-  
-  if (topics.energy > 0) {
-    recap += `Energy markets remain in focus with ${topics.energy} major story${topics.energy > 1 ? 'ies' : 'y'} covering oil prices, renewable investments, and supply chain considerations. `;
-  }
-  
-  if (topics.retail > 0) {
-    recap += `Consumer and retail sectors show ${topics.retail > 1 ? 'multiple indicators' : 'signs'} of economic resilience and spending patterns. `;
-  }
-  
-  if (topics.crypto > 0) {
-    recap += `Cryptocurrency markets are experiencing renewed attention with ${topics.crypto} development${topics.crypto > 1 ? 's' : ''} in institutional adoption and regulatory progress. `;
-  }
-  
-  recap += `Market participants are monitoring these developments closely as they evaluate investment opportunities and assess economic trends for the coming weeks.`;
-  
-  const tldr = `Markets showing ${dominantSentiment} sentiment today with ${dominantTopic === 'general' ? 'broad-based' : dominantTopic} sector focus. Key themes: ${activeSectors.slice(0, 3).join(', ')} developments driving investor attention.`;
   
   return {
-    paragraphs: [recap],
+    paragraphs: [paragraph1, paragraph2],
     tldr: tldr,
     sentiment: dominantSentiment,
     dominantSector: dominantTopic
   };
+}
+
+function generateBeginnerParagraph1(sentiment: string, topic: string, topics: TopicAnalysis): string {
+  const moodText = sentiment === 'positive' ? 'good news and rising prices' : sentiment === 'negative' ? 'concerns and falling prices' : 'mixed results';
+  const sectorText = topic === 'tech' ? 'technology companies' : topic === 'finance' ? 'banks and financial companies' : topic === 'energy' ? 'oil and energy companies' : 'various businesses';
+  
+  return `Today's stock market showed ${moodText} as investors focused on ${sectorText}. The market reflects how people feel about buying and selling company shares, which affects the value of businesses we see every day.`;
+}
+
+function generateBeginnerParagraph2(sectors: string[], sentiments: SentimentAnalysis): string {
+  const totalNews = sentiments.positive + sentiments.negative + sentiments.neutral;
+  const mainMood = sentiments.positive > sentiments.negative ? 'optimistic' : sentiments.negative > sentiments.positive ? 'cautious' : 'uncertain';
+  
+  return `With ${totalNews} major news stories affecting different industries, investors are feeling ${mainMood} about the future. This matters because when stock prices change, it affects retirement accounts, college savings, and the overall health of our economy.`;
+}
+
+function generateBeginnerTldr(sentiment: string, topic: string): string {
+  return `Stock market had ${sentiment} day with ${topic} companies getting the most attention from investors.`;
+}
+
+function generateIntermediateParagraph1(sentiment: string, topic: string, topics: TopicAnalysis): string {
+  const sectorCount = Object.values(topics).filter(count => count > 0).length;
+  const leadingSector = topic === 'tech' ? 'technology sector' : topic === 'finance' ? 'financial services' : topic === 'energy' ? 'energy sector' : 'mixed sectors';
+  
+  return `Market sentiment reflected ${sentiment} momentum across ${sectorCount} key sectors, with the ${leadingSector} driving primary investor focus. Equity valuations responded to fundamental news flow, corporate earnings updates, and macroeconomic indicators that influence sector rotation strategies.`;
+}
+
+function generateIntermediateParagraph2(sectors: string[], sentiments: SentimentAnalysis): string {
+  const sentimentRatio = Math.round((sentiments.positive / (sentiments.positive + sentiments.negative)) * 100);
+  
+  return `Portfolio managers and institutional investors are positioning for continued volatility as ${sentimentRatio}% of market-moving news carried positive implications. The broad market's response suggests risk appetite remains measured, with sector-specific catalysts driving individual equity performance more than systematic market factors.`;
+}
+
+function generateIntermediateTldr(sentiment: string, topic: string): string {
+  return `Markets showed ${sentiment} bias with ${topic} sector leadership driving institutional positioning and retail investor sentiment.`;
+}
+
+function generateAdvancedParagraph1(sentiment: string, topic: string, topics: TopicAnalysis): string {
+  const sectorDispersion = Object.values(topics).filter(count => count > 0).length;
+  const alpha = topic === 'tech' ? 'technology beta exposure' : topic === 'finance' ? 'financial sector duration risk' : 'sector-neutral positioning';
+  
+  return `Cross-sectional momentum indicators suggest ${sentiment} market microstructure with ${sectorDispersion}-factor sector dispersion driving alpha generation opportunities. Factor loadings indicate ${alpha} as the primary systematic risk driver, while idiosyncratic volatility patterns suggest active management opportunities in single-name selections.`;
+}
+
+function generateAdvancedParagraph2(sectors: string[], sentiments: SentimentAnalysis): string {
+  const sharpeImplication = sentiments.positive > sentiments.negative ? 'positive Sharpe ratio expectations' : 'risk-parity rebalancing';
+  
+  return `Quantitative models are pricing in ${sharpeImplication} given the current correlation matrix and volatility surface dynamics. Options flow and gamma positioning suggest institutional overlays are hedging tail risks while maintaining long bias, indicating sophisticated portfolio construction amid changing market regimes and factor premium compression.`;
+}
+
+function generateAdvancedTldr(sentiment: string, topic: string): string {
+  return `Factor models indicate ${sentiment} alpha opportunities with ${topic} systematic exposure driving institutional flow and derivative positioning.`;
 }

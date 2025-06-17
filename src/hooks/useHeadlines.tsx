@@ -2,10 +2,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-const useHeadlines = () => {
+const useHeadlines = (userLevel: string = 'beginner') => {
   const fetchHeadlines = async () => {
     console.log('Fetching headlines...');
-    const { data, error } = await supabase.functions.invoke('market-headlines');
+    const { data, error } = await supabase.functions.invoke('market-headlines', {
+      body: { userLevel }
+    });
     if (error) {
       console.error('Headlines fetch error:', error);
       throw new Error(error.message);
@@ -15,9 +17,10 @@ const useHeadlines = () => {
   };
 
   return useQuery({
-    queryKey: ['marketHeadlines'],
+    queryKey: ['marketHeadlines', userLevel],
     queryFn: fetchHeadlines,
     staleTime: 1000 * 60 * 60 * 24, // 24 hours - refresh once daily
+    refetchInterval: 1000 * 60 * 60 * 24 * 14, // 14 days - refresh every 2 weeks
   });
 };
 

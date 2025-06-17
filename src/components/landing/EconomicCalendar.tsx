@@ -13,10 +13,34 @@ interface EconomicEvent {
 
 const economicEvents: EconomicEvent[] = [
   {
-    date: '2025-07-15',
+    date: '2025-06-20',
+    title: 'FOMC Meeting',
+    description: 'Federal Open Market Committee interest rate decision',
+    importance: 'high'
+  },
+  {
+    date: '2025-06-25',
+    title: 'GDP Report',
+    description: 'Quarterly economic growth data',
+    importance: 'high'
+  },
+  {
+    date: '2025-07-02',
+    title: 'Jobs Report',
+    description: 'Monthly employment statistics release',
+    importance: 'high'
+  },
+  {
+    date: '2025-07-10',
     title: 'CPI Release',
     description: 'Consumer Price Index data for inflation tracking',
     importance: 'high'
+  },
+  {
+    date: '2025-07-15',
+    title: 'Retail Sales',
+    description: 'Consumer spending data release',
+    importance: 'medium'
   },
   {
     date: '2025-07-30',
@@ -32,21 +56,14 @@ const economicEvents: EconomicEvent[] = [
   },
   {
     date: '2025-08-14',
-    title: 'Retail Sales',
-    description: 'Consumer spending data release',
-    importance: 'medium'
-  },
-  {
-    date: '2025-08-28',
-    title: 'GDP Report',
-    description: 'Quarterly economic growth data',
+    title: 'CPI Release',
+    description: 'Consumer Price Index data for inflation tracking',
     importance: 'high'
   }
 ];
 
 const EconomicCalendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedEvent, setSelectedEvent] = useState<EconomicEvent | null>(null);
 
   const today = new Date();
   const currentMonth = currentDate.getMonth();
@@ -60,9 +77,9 @@ const EconomicCalendar = () => {
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
-  const hasEvent = (day: number) => {
+  const getEventsForDate = (day: number) => {
     const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    return economicEvents.find(event => event.date === dateStr);
+    return economicEvents.filter(event => event.date === dateStr);
   };
 
   const navigateMonth = (direction: 'prev' | 'next') => {
@@ -77,24 +94,17 @@ const EconomicCalendar = () => {
     });
   };
 
-  const handleDateClick = (day: number) => {
-    const event = hasEvent(day);
-    if (event) {
-      setSelectedEvent(event);
-    }
-  };
-
   const renderCalendarDays = () => {
     const days = [];
     
     // Empty cells for days before the first day of the month
     for (let i = 0; i < firstDayOfMonth; i++) {
-      days.push(<div key={`empty-${i}`} className="p-2"></div>);
+      days.push(<div key={`empty-${i}`} className="p-1 h-20"></div>);
     }
 
     // Days of the month
     for (let day = 1; day <= daysInMonth; day++) {
-      const event = hasEvent(day);
+      const events = getEventsForDate(day);
       const isToday = today.getDate() === day && 
                      today.getMonth() === currentMonth && 
                      today.getFullYear() === currentYear;
@@ -102,19 +112,26 @@ const EconomicCalendar = () => {
       days.push(
         <div
           key={day}
-          onClick={() => handleDateClick(day)}
           className={`
-            p-2 text-center cursor-pointer rounded-lg border transition-colors
-            ${event ? 'bg-green-100 border-green-300 hover:bg-green-200' : 'hover:bg-gray-100'}
+            p-1 h-20 border transition-colors cursor-pointer overflow-hidden
+            ${events.length > 0 ? 'bg-green-50 border-green-300 hover:bg-green-100' : 'hover:bg-gray-50 border-gray-200'}
             ${isToday ? 'ring-2 ring-blue-500' : ''}
           `}
         >
-          <span className={`text-sm ${event ? 'font-semibold text-green-700' : ''}`}>
+          <div className={`text-sm font-medium ${events.length > 0 ? 'text-green-700' : 'text-gray-700'}`}>
             {day}
-          </span>
-          {event && (
-            <div className="w-2 h-2 bg-green-500 rounded-full mx-auto mt-1"></div>
-          )}
+          </div>
+          {events.map((event, index) => (
+            <div key={index} className="mt-1">
+              <div className={`text-xs p-1 rounded truncate ${
+                event.importance === 'high' ? 'bg-red-100 text-red-700' :
+                event.importance === 'medium' ? 'bg-yellow-100 text-yellow-700' :
+                'bg-gray-100 text-gray-700'
+              }`} title={`${event.title}: ${event.description}`}>
+                {event.title}
+              </div>
+            </div>
+          ))}
         </div>
       );
     }
@@ -123,81 +140,62 @@ const EconomicCalendar = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
-            Economic Calendar
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {/* Calendar Header */}
-            <div className="flex items-center justify-between">
-              <Button variant="ghost" size="sm" onClick={() => navigateMonth('prev')}>
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <h3 className="text-lg font-semibold">
-                {monthNames[currentMonth]} {currentYear}
-              </h3>
-              <Button variant="ghost" size="sm" onClick={() => navigateMonth('next')}>
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Calendar className="h-5 w-5" />
+          Economic Calendar
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {/* Calendar Header */}
+          <div className="flex items-center justify-between">
+            <Button variant="ghost" size="sm" onClick={() => navigateMonth('prev')}>
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <h3 className="text-lg font-semibold">
+              {monthNames[currentMonth]} {currentYear}
+            </h3>
+            <Button variant="ghost" size="sm" onClick={() => navigateMonth('next')}>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
 
-            {/* Days of week header */}
-            <div className="grid grid-cols-7 gap-1 text-center text-sm font-medium text-gray-600">
-              <div>Sun</div>
-              <div>Mon</div>
-              <div>Tue</div>
-              <div>Wed</div>
-              <div>Thu</div>
-              <div>Fri</div>
-              <div>Sat</div>
-            </div>
+          {/* Days of week header */}
+          <div className="grid grid-cols-7 gap-1 text-center text-sm font-medium text-gray-600">
+            <div>Sun</div>
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+          </div>
 
-            {/* Calendar Grid */}
-            <div className="grid grid-cols-7 gap-1">
-              {renderCalendarDays()}
-            </div>
+          {/* Calendar Grid */}
+          <div className="grid grid-cols-7 gap-1">
+            {renderCalendarDays()}
+          </div>
 
-            {/* Legend */}
-            <div className="flex items-center gap-4 text-sm text-gray-600 pt-4 border-t">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                <span>Economic Event</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 border-2 border-blue-500 rounded-full"></div>
-                <span>Today</span>
-              </div>
+          {/* Legend */}
+          <div className="flex items-center gap-4 text-sm text-gray-600 pt-4 border-t">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-green-100 border border-green-300 rounded"></div>
+              <span>Economic Event</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-red-100 text-red-700 rounded text-xs flex items-center justify-center font-bold">H</div>
+              <span>High Impact</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-yellow-100 text-yellow-700 rounded text-xs flex items-center justify-center font-bold">M</div>
+              <span>Medium Impact</span>
             </div>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Event Details */}
-      {selectedEvent && (
-        <Card className="border-green-200 bg-green-50">
-          <CardHeader>
-            <CardTitle className="text-green-700">{selectedEvent.title}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-green-600">{selectedEvent.description}</p>
-            <div className="mt-2">
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                selectedEvent.importance === 'high' ? 'bg-red-100 text-red-700' :
-                selectedEvent.importance === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-                'bg-gray-100 text-gray-700'
-              }`}>
-                {selectedEvent.importance.toUpperCase()} IMPACT
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-    </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

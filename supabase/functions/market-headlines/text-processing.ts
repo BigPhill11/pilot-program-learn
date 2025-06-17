@@ -1,115 +1,166 @@
-export function extractKeyPoints(title: string, text: string): string {
-  if (!text) return createSimpleTLDR(title);
 
-  // Extract key financial metrics and important points
-  const keyPatterns = [
+export function extractKeyPoints(title: string, text: string, userLevel: string = 'beginner'): string {
+  if (!text || text.length < 50) return createFallbackTLDR(title, userLevel);
+
+  // Extract key financial concepts from the full article
+  const keyFinancialData = extractFinancialData(text);
+  const mainSubject = extractMainSubject(title, text);
+  const impact = extractImpact(text);
+  
+  return createLevelAppropiateTLDR(mainSubject, keyFinancialData, impact, userLevel);
+}
+
+function extractFinancialData(text: string): string[] {
+  const patterns = [
     /\$[\d,]+\.?\d*[BbMmKkTt]?/g, // Dollar amounts
     /\d+\.?\d*%/g, // Percentages
-    /up \d+\.?\d*%|down \d+\.?\d*%|rose \d+\.?\d*%|fell \d+\.?\d*%|gained \d+\.?\d*%|dropped \d+\.?\d*%/gi, // Movement patterns
-    /earnings|revenue|profit|loss|growth|decline|rates|inflation|GDP|stocks?|market|trading|investment/gi, // Financial terms
+    /up \d+\.?\d*%|down \d+\.?\d*%|rose \d+\.?\d*%|fell \d+\.?\d*%|gained \d+\.?\d*%|dropped \d+\.?\d*%/gi,
+    /earnings|revenue|profit|loss|growth|decline|rates|inflation|GDP/gi,
   ];
   
-  const keyPoints = [];
-  
-  for (const pattern of keyPatterns) {
-    const matches = text.match(pattern);
-    if (matches) {
-      keyPoints.push(...matches.slice(0, 2)); // Limit to 2 matches per pattern
-    }
+  const matches = [];
+  for (const pattern of patterns) {
+    const found = text.match(pattern);
+    if (found) matches.push(...found.slice(0, 2));
   }
   
-  // Create a simple, one-sentence summary for 10th graders
-  if (keyPoints.length > 0) {
-    return createFinancialTLDR(title, keyPoints);
-  }
-  
-  return createSimpleTLDR(title);
+  return matches;
 }
 
-function createFinancialTLDR(title: string, keyPoints: string[]): string {
-  // Simplify financial terms for 10th grade level
-  const simplifiedPoints = keyPoints.map(point => {
-    return point
-      .replace(/revenue/gi, 'money earned')
-      .replace(/earnings/gi, 'profits')
-      .replace(/GDP/gi, 'economic growth')
-      .replace(/inflation/gi, 'rising prices')
-      .replace(/Federal Reserve/gi, 'the Fed (central bank)')
-      .replace(/Wall Street/gi, 'stock market');
-  });
+function extractMainSubject(title: string, text: string): string {
+  const combinedText = title + ' ' + text;
   
-  if (title.toLowerCase().includes('stock') || title.toLowerCase().includes('market')) {
-    return `Stock market news showing ${simplifiedPoints.slice(0, 2).join(' and ')}.`;
-  } else if (title.toLowerCase().includes('earning') || title.toLowerCase().includes('profit')) {
-    return `Company made ${simplifiedPoints[0] || 'money'} in recent business results.`;
-  } else if (title.toLowerCase().includes('economy') || title.toLowerCase().includes('GDP')) {
-    return `Economic update showing ${simplifiedPoints[0] || 'business activity'} trends.`;
+  if (combinedText.match(/\b(Apple|Microsoft|Google|Amazon|Tesla|Meta)\b/gi)) {
+    return 'major tech company';
+  } else if (combinedText.match(/\b(bank|JPMorgan|Goldman|Wells Fargo|financial|Fed|interest rate)\b/gi)) {
+    return 'financial institution';
+  } else if (combinedText.match(/\b(oil|energy|Exxon|renewable|gas)\b/gi)) {
+    return 'energy sector';
+  } else if (combinedText.match(/\b(stock market|S&P|Dow|Nasdaq|trading)\b/gi)) {
+    return 'stock market';
+  } else if (combinedText.match(/\b(economy|economic|GDP|inflation|jobs)\b/gi)) {
+    return 'economic indicator';
   }
   
-  return `Financial news about ${simplifiedPoints.slice(0, 2).join(' and ')}.`;
+  return 'market development';
 }
 
-function createSimpleTLDR(title: string): string {
-  if (title.toLowerCase().includes('stock') || title.toLowerCase().includes('market')) {
-    return 'Stock market news affecting investor decisions.';
-  } else if (title.toLowerCase().includes('bank') || title.toLowerCase().includes('finance')) {
-    return 'Banking and finance industry updates.';
-  } else if (title.toLowerCase().includes('economy')) {
-    return 'Economic news that impacts businesses and consumers.';
-  } else if (title.toLowerCase().includes('trade') || title.toLowerCase().includes('business')) {
-    return 'Business news affecting companies and markets.';
+function extractImpact(text: string): 'positive' | 'negative' | 'neutral' {
+  const positiveWords = text.match(/\b(gain|rise|up|increase|growth|strong|beat|exceed|positive|boost)\b/gi) || [];
+  const negativeWords = text.match(/\b(fall|decline|down|decrease|loss|weak|miss|below|negative|concern)\b/gi) || [];
+  
+  if (positiveWords.length > negativeWords.length) return 'positive';
+  if (negativeWords.length > positiveWords.length) return 'negative';
+  return 'neutral';
+}
+
+function createLevelAppropiateTLDR(subject: string, data: string[], impact: 'positive' | 'negative' | 'neutral', userLevel: string): string {
+  const impactText = impact === 'positive' ? 'gained' : impact === 'negative' ? 'lost' : 'moved';
+  const keyData = data.length > 0 ? data[0] : '';
+  
+  switch (userLevel) {
+    case 'beginner':
+      return `A ${subject} ${impactText} value today${keyData ? ` by ${keyData}` : ''}, affecting investor decisions.`;
+    case 'intermediate':
+      return `${subject.charAt(0).toUpperCase() + subject.slice(1)} reported ${impact} results${keyData ? ` with ${keyData} change` : ''}, influencing market sentiment.`;
+    case 'advanced':
+      return `${subject.charAt(0).toUpperCase() + subject.slice(1)} demonstrated ${impact} performance${keyData ? ` registering ${keyData}` : ''}, impacting systematic risk factors.`;
+    default:
+      return `A ${subject} ${impactText} value today${keyData ? ` by ${keyData}` : ''}, affecting investor decisions.`;
   }
-  
-  return 'Financial news impacting the economy and markets.';
 }
 
-export function createSummary(article: any): string {
-  let summary = '';
+function createFallbackTLDR(title: string, userLevel: string): string {
+  const subject = extractMainSubject(title, '');
   
-  // Use description first, then content, with better processing
+  switch (userLevel) {
+    case 'beginner':
+      return `Important news about ${subject} that could affect people's investments and savings.`;
+    case 'intermediate':
+      return `Market-relevant development in ${subject} with potential portfolio implications for investors.`;
+    case 'advanced':
+      return `${subject.charAt(0).toUpperCase() + subject.slice(1)} catalyst with systematic implications for factor exposure and risk-adjusted returns.`;
+    default:
+      return `Important news about ${subject} that could affect people's investments and savings.`;
+  }
+}
+
+export function createSummary(article: any, userLevel: string = 'beginner'): string {
   const sourceText = article.description || article.content || '';
   
   if (sourceText && sourceText.length > 50 && sourceText !== 'ONLY AVAILABLE IN PAID PLANS') {
-    // Split into sentences and take first 3-4 meaningful ones
-    const sentences = sourceText
-      .split(/[.!?]+/)
-      .filter((s: string) => s.trim().length > 20)
-      .map((s: string) => s.trim())
-      .slice(0, 4);
-    
-    summary = sentences.join('. ');
-    
-    // Ensure it ends with a period
-    if (!summary.endsWith('.')) {
-      summary += '.';
-    }
-    
-    // Keep it concise (3-4 sentences max, around 200-300 characters)
-    if (summary.length > 300) {
-      const truncated = summary.substring(0, 280);
-      const lastPeriod = truncated.lastIndexOf('.');
-      summary = lastPeriod > 100 ? truncated.substring(0, lastPeriod + 1) : truncated + '...';
-    }
+    return createLevelAppropriateSummary(sourceText, article.title, userLevel);
   } else {
-    // Create a generic but relevant summary based on title
-    summary = createGenericFinanceSummary(article.title);
+    return createGenericSummary(article.title, userLevel);
   }
-  
-  return summary;
 }
 
-function createGenericFinanceSummary(title: string): string {
-  const lowerTitle = title.toLowerCase();
+function createLevelAppropriateSummary(text: string, title: string, userLevel: string): string {
+  // Extract 3 most important sentences
+  const sentences = text
+    .split(/[.!?]+/)
+    .filter((s: string) => s.trim().length > 20)
+    .map((s: string) => s.trim())
+    .slice(0, 5); // Get more to choose from
   
-  if (lowerTitle.includes('stock') || lowerTitle.includes('share')) {
-    return `${title}. This development affects stock prices and investor sentiment in the market. Traders and analysts are closely monitoring the situation. The news could impact related companies and market sectors.`;
-  } else if (lowerTitle.includes('bank') || lowerTitle.includes('financial')) {
-    return `${title}. This banking and financial sector news impacts lending, investments, and economic growth. Financial institutions and their customers may see changes. Market analysts are evaluating the broader implications.`;
-  } else if (lowerTitle.includes('economy') || lowerTitle.includes('economic')) {
-    return `${title}. This economic development affects businesses, consumers, and government policy decisions. The news influences market confidence and future economic planning. Economists are analyzing the potential long-term effects.`;
-  } else if (lowerTitle.includes('trade') || lowerTitle.includes('business')) {
-    return `${title}. This business news impacts company operations, employment, and market competition. Stakeholders including investors and customers are watching developments closely. The outcome could influence industry trends.`;
+  // Score sentences by importance (financial keywords, numbers, etc.)
+  const scoredSentences = sentences.map(sentence => ({
+    text: sentence,
+    score: scoreFinancialImportance(sentence)
+  })).sort((a, b) => b.score - a.score).slice(0, 3);
+  
+  const selectedSentences = scoredSentences.map(s => s.text);
+  
+  // Adjust language complexity based on user level
+  return selectedSentences.map(sentence => adjustComplexity(sentence, userLevel)).join('. ') + '.';
+}
+
+function scoreFinancialImportance(sentence: string): number {
+  let score = 0;
+  const lowerSentence = sentence.toLowerCase();
+  
+  // Financial keywords
+  if (lowerSentence.match(/\$[\d,]+/)) score += 3;
+  if (lowerSentence.match(/\d+\.?\d*%/)) score += 3;
+  if (lowerSentence.match(/\b(revenue|earnings|profit|sales|growth)\b/)) score += 2;
+  if (lowerSentence.match(/\b(stock|share|market|investor|trading)\b/)) score += 2;
+  if (lowerSentence.match(/\b(quarter|quarterly|annual|year)\b/)) score += 1;
+  
+  return score;
+}
+
+function adjustComplexity(sentence: string, userLevel: string): string {
+  switch (userLevel) {
+    case 'beginner':
+      return sentence
+        .replace(/\bequity\b/gi, 'stock')
+        .replace(/\bvolatility\b/gi, 'price changes')
+        .replace(/\bliquidity\b/gi, 'available cash')
+        .replace(/\bcapitalization\b/gi, 'company size')
+        .replace(/\bvaluation\b/gi, 'company worth');
+    case 'intermediate':
+      return sentence
+        .replace(/\bshareholder equity\b/gi, 'company ownership value')
+        .replace(/\bmarket cap\b/gi, 'total company value')
+        .replace(/\bEBITDA\b/gi, 'operating profit');
+    case 'advanced':
+      return sentence; // Keep original complexity
+    default:
+      return adjustComplexity(sentence, 'beginner');
   }
+}
+
+function createGenericSummary(title: string, userLevel: string): string {
+  const subject = extractMainSubject(title, '');
   
-  return `${title}. This financial news affects market conditions and economic decision-making. Investors and business leaders are monitoring the situation for potential impacts. The development could influence future market trends and economic policy.`;
+  switch (userLevel) {
+    case 'beginner':
+      return `This news is about ${subject} and how it affects the stock market. When companies make money or lose money, it changes how much their stocks are worth. This is important because many people have investments that can go up or down based on this news.`;
+    case 'intermediate':
+      return `This development involves ${subject} and its impact on market valuations and investor sentiment. The news affects stock prices through changes in company fundamentals and market perception. Portfolio managers and individual investors monitor such developments for investment decision-making.`;
+    case 'advanced':
+      return `This catalyst represents a systematic factor affecting ${subject} with implications for risk-adjusted returns and portfolio optimization. The development impacts factor loadings, correlation matrices, and alpha generation opportunities. Institutional investors adjust position sizing and hedging strategies based on such fundamental catalysts.`;
+    default:
+      return createGenericSummary(title, 'beginner');
+  }
 }
