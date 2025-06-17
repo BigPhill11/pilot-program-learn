@@ -7,6 +7,8 @@ import { ArrowLeft, Trophy, Star } from 'lucide-react';
 import { futurePlanningJourneyData } from '@/data/future-planning-journey-data';
 import FuturePlanningLevelComponent from './FuturePlanningLevel';
 import FuturePlanningMiniGame from './FuturePlanningMiniGame';
+import FuturePlanningJourneyLevelCard from './FuturePlanningJourneyLevelCard';
+import FuturePlanningJourneyHeader from './FuturePlanningJourneyHeader';
 import { useProgressTracking } from '@/hooks/useProgressTracking';
 
 interface FuturePlanningJourneyProps {
@@ -17,6 +19,7 @@ const FuturePlanningJourney: React.FC<FuturePlanningJourneyProps> = ({ onBack })
   const [completedLevels, setCompletedLevels] = useState<Set<number>>(new Set());
   const [journeyCompleted, setJourneyCompleted] = useState(false);
   const [showMiniGame, setShowMiniGame] = useState(false);
+  const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
   const { updateQuizScore, updateLearningProgress } = useProgressTracking();
 
   useEffect(() => {
@@ -43,12 +46,14 @@ const FuturePlanningJourney: React.FC<FuturePlanningJourneyProps> = ({ onBack })
     const allLevelsComplete = newCompletedLevels.size === futurePlanningJourneyData.length;
     if (allLevelsComplete && !journeyCompleted) {
       setJourneyCompleted(true);
-      setShowMiniGame(true);
       updateLearningProgress(10);
       saveProgress(newCompletedLevels, true);
     } else {
       saveProgress(newCompletedLevels, journeyCompleted);
     }
+    
+    // Return to main view after completing level
+    setSelectedLevel(null);
   };
 
   const handleQuizComplete = (isCorrect: boolean) => {
@@ -59,8 +64,40 @@ const FuturePlanningJourney: React.FC<FuturePlanningJourneyProps> = ({ onBack })
     return levelId === 1 || completedLevels.has(levelId - 1);
   };
 
-  const progress = (completedLevels.size / futurePlanningJourneyData.length) * 100;
+  const handleLevelSelect = (levelId: number) => {
+    setSelectedLevel(levelId);
+  };
 
+  const handleBackToJourney = () => {
+    setSelectedLevel(null);
+  };
+
+  // Show individual level view
+  if (selectedLevel !== null) {
+    const level = futurePlanningJourneyData.find(l => l.id === selectedLevel);
+    if (level) {
+      return (
+        <div className="space-y-6">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" onClick={handleBackToJourney}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Journey
+            </Button>
+            <h1 className="text-3xl font-bold text-indigo-600">Level {level.id}: {level.title}</h1>
+          </div>
+          <FuturePlanningLevelComponent
+            level={level}
+            isUnlocked={isLevelUnlocked(level.id)}
+            isCompleted={completedLevels.has(level.id)}
+            onComplete={() => handleLevelComplete(level.id)}
+            onQuizComplete={handleQuizComplete}
+          />
+        </div>
+      );
+    }
+  }
+
+  // Show mini-game view
   if (showMiniGame) {
     return (
       <div className="space-y-6">
@@ -81,49 +118,14 @@ const FuturePlanningJourney: React.FC<FuturePlanningJourneyProps> = ({ onBack })
       <div className="flex items-center gap-4">
         <Button variant="ghost" onClick={onBack}>
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Learn
+          Back to Personal Finance
         </Button>
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold text-indigo-600">Plan for Later, Start Now</h1>
-          <p className="text-muted-foreground">Master future planning and build generational wealth</p>
-        </div>
       </div>
 
-      <Card className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-xl text-indigo-600">Journey Progress</CardTitle>
-            <Badge className="bg-indigo-500 text-white">
-              {completedLevels.size}/{futurePlanningJourneyData.length} Complete
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="w-full bg-gray-200 rounded-full h-3">
-              <div 
-                className="bg-gradient-to-r from-indigo-500 to-purple-500 h-3 rounded-full transition-all duration-500"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">
-                Complete all levels to unlock the Future Plan Folder builder!
-              </span>
-              {journeyCompleted && (
-                <Button 
-                  onClick={() => setShowMiniGame(true)}
-                  className="bg-indigo-500 hover:bg-indigo-600"
-                  size="sm"
-                >
-                  <Star className="h-4 w-4 mr-1" />
-                  Play Mini-Game
-                </Button>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <FuturePlanningJourneyHeader 
+        completedLevels={completedLevels.size}
+        totalLevels={futurePlanningJourneyData.length}
+      />
 
       {journeyCompleted && (
         <Card className="border border-indigo-200 bg-indigo-50/50">
@@ -138,23 +140,49 @@ const FuturePlanningJourney: React.FC<FuturePlanningJourneyProps> = ({ onBack })
                 <Trophy className="h-4 w-4 mr-2" />
                 Future Ready Achievement Unlocked!
               </Badge>
+              <Button 
+                onClick={() => setShowMiniGame(true)}
+                className="bg-indigo-500 hover:bg-indigo-600 mt-4"
+                size="lg"
+              >
+                <Star className="h-4 w-4 mr-1" />
+                Play Future Plan Challenge
+              </Button>
             </div>
           </CardContent>
         </Card>
       )}
 
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
         {futurePlanningJourneyData.map((level) => (
-          <FuturePlanningLevelComponent
+          <FuturePlanningJourneyLevelCard
             key={level.id}
             level={level}
             isUnlocked={isLevelUnlocked(level.id)}
             isCompleted={completedLevels.has(level.id)}
-            onComplete={() => handleLevelComplete(level.id)}
-            onQuizComplete={handleQuizComplete}
+            onLevelSelect={handleLevelSelect}
           />
         ))}
       </div>
+
+      {completedLevels.size === futurePlanningJourneyData.length && (
+        <Card className="border-2 border-yellow-400 bg-gradient-to-r from-yellow-50 to-orange-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Trophy className="h-5 w-5 text-yellow-500" />
+              Final Challenge Unlocked!
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground mb-4">
+              You've completed all 5 levels! Now test your skills in the Future Plan Folder builder.
+            </p>
+            <Button onClick={() => setShowMiniGame(true)} size="lg" className="w-full">
+              Start Future Plan Challenge
+            </Button>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
