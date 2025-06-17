@@ -1,30 +1,19 @@
 
 import React, { useState } from 'react';
-import { Accordion } from "@/components/ui/accordion";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Trophy, Lock, CheckCircle2, Play } from 'lucide-react';
 import TaxesJourney from './TaxesJourney';
 import BudgetJourney from './BudgetJourney';
 import CreditJourney from './CreditJourney';
-import BigPurchasesJourney from './BigPurchasesJourney';
-import FuturePlanningJourney from './FuturePlanningJourney';
-import EarningMoneyJourney from './EarningMoneyJourney';
-import FinancialSafetyJourney from './FinancialSafetyJourney';
-import BudgetJourneySection from './sections/BudgetJourneySection';
-import BigPurchasesJourneySection from './sections/BigPurchasesJourneySection';
-import FuturePlanningJourneySection from './sections/FuturePlanningJourneySection';
-import CreditJourneySection from './sections/CreditJourneySection';
-import TaxesJourneySection from './sections/TaxesJourneySection';
-import EarningMoneyJourneySection from './sections/EarningMoneyJourneySection';
-import FinancialSafetyJourneySection from './sections/FinancialSafetyJourneySection';
 import PodcastRecommendationsSection from './sections/PodcastRecommendationsSection';
 
 const PersonalFinanceTab = () => {
     const [showTaxesJourney, setShowTaxesJourney] = useState(false);
     const [showBudgetJourney, setShowBudgetJourney] = useState(false);
     const [showCreditJourney, setShowCreditJourney] = useState(false);
-    const [showBigPurchasesJourney, setShowBigPurchasesJourney] = useState(false);
-    const [showFuturePlanningJourney, setShowFuturePlanningJourney] = useState(false);
-    const [showEarningMoneyJourney, setShowEarningMoneyJourney] = useState(false);
-    const [showFinancialSafetyJourney, setShowFinancialSafetyJourney] = useState(false);
 
     // Helper functions to get progress for each journey
     const getTaxesProgress = () => {
@@ -66,58 +55,6 @@ const PersonalFinanceTab = () => {
         return { completed: false, levelsCompleted: 0, totalLevels: 5 };
     };
 
-    const getBigPurchasesProgress = () => {
-        const saved = localStorage.getItem('bigPurchasesJourneyProgress');
-        if (saved) {
-            const progress = JSON.parse(saved);
-            return {
-                completed: progress.journeyCompleted || false,
-                levelsCompleted: progress.completedLevels?.length || 0,
-                totalLevels: 5
-            };
-        }
-        return { completed: false, levelsCompleted: 0, totalLevels: 5 };
-    };
-
-    const getFuturePlanningProgress = () => {
-        const saved = localStorage.getItem('futurePlanningJourneyProgress');
-        if (saved) {
-            const progress = JSON.parse(saved);
-            return {
-                completed: progress.journeyCompleted || false,
-                levelsCompleted: progress.completedLevels?.length || 0,
-                totalLevels: 5
-            };
-        }
-        return { completed: false, levelsCompleted: 0, totalLevels: 5 };
-    };
-
-    const getEarningMoneyProgress = () => {
-        const saved = localStorage.getItem('earningMoneyJourneyProgress');
-        if (saved) {
-            const progress = JSON.parse(saved);
-            return {
-                completed: progress.journeyCompleted || false,
-                levelsCompleted: progress.completedLevels?.length || 0,
-                totalLevels: 5
-            };
-        }
-        return { completed: false, levelsCompleted: 0, totalLevels: 5 };
-    };
-
-    const getFinancialSafetyProgress = () => {
-        const saved = localStorage.getItem('financialSafetyJourneyProgress');
-        if (saved) {
-            const progress = JSON.parse(saved);
-            return {
-                completed: progress.journeyCompleted || false,
-                levelsCompleted: progress.completedLevels?.length || 0,
-                totalLevels: 5
-            };
-        }
-        return { completed: false, levelsCompleted: 0, totalLevels: 5 };
-    };
-
     // Render journey components if active
     if (showTaxesJourney) {
         return <TaxesJourney onBack={() => setShowTaxesJourney(false)} />;
@@ -131,56 +68,118 @@ const PersonalFinanceTab = () => {
         return <CreditJourney onBack={() => setShowCreditJourney(false)} />;
     }
 
-    if (showBigPurchasesJourney) {
-        return <BigPurchasesJourney onBack={() => setShowBigPurchasesJourney(false)} />;
-    }
+    const taxesProgress = getTaxesProgress();
+    const budgetProgress = getBudgetProgress();
+    const creditProgress = getCreditProgress();
 
-    if (showFuturePlanningJourney) {
-        return <FuturePlanningJourney onBack={() => setShowFuturePlanningJourney(false)} />;
-    }
-
-    if (showEarningMoneyJourney) {
-        return <EarningMoneyJourney onBack={() => setShowEarningMoneyJourney(false)} />;
-    }
-
-    if (showFinancialSafetyJourney) {
-        return <FinancialSafetyJourney onBack={() => setShowFinancialSafetyJourney(false)} />;
-    }
+    const journeys = [
+        {
+            id: 'budgeting',
+            title: 'Budgeting 101',
+            description: 'Master the art of managing your money effectively',
+            emoji: '💰',
+            progress: budgetProgress,
+            onClick: () => setShowBudgetJourney(true),
+            gradient: 'from-blue-50 to-green-50',
+            borderColor: 'border-blue-500/30',
+            buttonColor: 'bg-blue-500 hover:bg-blue-600'
+        },
+        {
+            id: 'credit',
+            title: 'Building Credit',
+            description: 'Build trust with your money and unlock financial opportunities',
+            emoji: '🏆',
+            progress: creditProgress,
+            onClick: () => setShowCreditJourney(true),
+            gradient: 'from-green-50 to-blue-50',
+            borderColor: 'border-green-500/30',
+            buttonColor: 'bg-green-500 hover:bg-green-600'
+        },
+        {
+            id: 'taxes',
+            title: 'Understanding Taxes',
+            description: 'Learn how taxes work and how to file them correctly',
+            emoji: '🎓',
+            progress: taxesProgress,
+            onClick: () => setShowTaxesJourney(true),
+            gradient: 'from-yellow-50 to-orange-50',
+            borderColor: 'border-primary/30',
+            buttonColor: 'bg-primary hover:bg-primary/90'
+        }
+    ];
 
     return (
         <div className="space-y-12">
             <div>
                 <h2 className="text-3xl font-bold tracking-tight journey-header text-center mb-8">Personal Finance Essentials</h2>
-                <Accordion type="single" collapsible className="w-full max-w-4xl mx-auto">
-                    <EarningMoneyJourneySection 
-                        onStartJourney={() => setShowEarningMoneyJourney(true)}
-                        progress={getEarningMoneyProgress()}
-                    />
-                    <FinancialSafetyJourneySection 
-                        onStartJourney={() => setShowFinancialSafetyJourney(true)}
-                        progress={getFinancialSafetyProgress()}
-                    />
-                    <BudgetJourneySection 
-                        onStartJourney={() => setShowBudgetJourney(true)}
-                        progress={getBudgetProgress()}
-                    />
-                    <BigPurchasesJourneySection 
-                        onStartJourney={() => setShowBigPurchasesJourney(true)}
-                        progress={getBigPurchasesProgress()}
-                    />
-                    <FuturePlanningJourneySection 
-                        onStartJourney={() => setShowFuturePlanningJourney(true)}
-                        progress={getFuturePlanningProgress()}
-                    />
-                    <CreditJourneySection 
-                        onStartJourney={() => setShowCreditJourney(true)}
-                        progress={getCreditProgress()}
-                    />
-                    <TaxesJourneySection 
-                        onStartJourney={() => setShowTaxesJourney(true)}
-                        progress={getTaxesProgress()}
-                    />
-                </Accordion>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                    {journeys.map((journey) => (
+                        <Card
+                            key={journey.id}
+                            className={`cursor-pointer transition-all hover:shadow-lg ${journey.borderColor} ${
+                                journey.progress.completed ? 'border-2' : 'border'
+                            }`}
+                            onClick={journey.onClick}
+                        >
+                            <CardHeader className={`bg-gradient-to-r ${journey.gradient} rounded-t-lg`}>
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-2xl">{journey.emoji}</span>
+                                        <CardTitle className="text-lg">{journey.title}</CardTitle>
+                                    </div>
+                                    {journey.progress.completed && (
+                                        <Badge className="bg-green-500 text-white">
+                                            <Trophy className="h-3 w-3 mr-1" />
+                                            Complete
+                                        </Badge>
+                                    )}
+                                    {!journey.progress.completed && journey.progress.levelsCompleted > 0 && (
+                                        <Badge variant="outline">
+                                            {journey.progress.levelsCompleted}/{journey.progress.totalLevels}
+                                        </Badge>
+                                    )}
+                                </div>
+                            </CardHeader>
+                            <CardContent className="p-6">
+                                <p className="text-muted-foreground text-sm mb-4 leading-relaxed">
+                                    {journey.description}
+                                </p>
+                                
+                                <div className="space-y-3 mb-4">
+                                    <div className="flex justify-between text-xs text-muted-foreground">
+                                        <span>Progress</span>
+                                        <span>{journey.progress.levelsCompleted}/{journey.progress.totalLevels} levels</span>
+                                    </div>
+                                    <Progress 
+                                        value={(journey.progress.levelsCompleted / journey.progress.totalLevels) * 100} 
+                                        className="h-2"
+                                    />
+                                </div>
+
+                                {journey.progress.completed && (
+                                    <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                                        <div className="flex items-center gap-2">
+                                            <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                            <span className="text-sm font-medium text-green-800">Journey Complete!</span>
+                                        </div>
+                                        <p className="text-xs text-green-700 mt-1">
+                                            You've earned your achievement badge.
+                                        </p>
+                                    </div>
+                                )}
+                                
+                                <Button 
+                                    className={`w-full ${journey.buttonColor}`}
+                                    size="sm"
+                                >
+                                    <Play className="h-4 w-4 mr-2" />
+                                    {journey.progress.levelsCompleted > 0 ? 'Continue Journey' : 'Start Journey'}
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
             </div>
 
             <PodcastRecommendationsSection />
