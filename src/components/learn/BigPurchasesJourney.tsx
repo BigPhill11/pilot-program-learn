@@ -3,8 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Trophy, Star } from 'lucide-react';
+import { ArrowLeft, Trophy } from 'lucide-react';
 import { bigPurchasesJourneyData } from '@/data/big-purchases-journey-data';
+import BigPurchasesJourneyLevelCard from './BigPurchasesJourneyLevelCard';
+import BigPurchasesJourneyHeader from './BigPurchasesJourneyHeader';
 import BigPurchasesLevelComponent from './BigPurchasesLevel';
 import BigPurchasesMiniGame from './BigPurchasesMiniGame';
 import { useProgressTracking } from '@/hooks/useProgressTracking';
@@ -28,6 +30,7 @@ const BigPurchasesJourney: React.FC<BigPurchasesJourneyProps> = ({ onBack }) => 
     journeyCompleted: false,
     totalPointsEarned: 0
   });
+  const [selectedLevelId, setSelectedLevelId] = useState<number | null>(null);
   const [showMiniGame, setShowMiniGame] = useState(false);
 
   useEffect(() => {
@@ -72,19 +75,51 @@ const BigPurchasesJourney: React.FC<BigPurchasesJourneyProps> = ({ onBack }) => 
     };
     saveProgress(newProgress);
     updateLearningProgress(20); // Final 20% for mini-game completion
+    setShowMiniGame(false);
+    setSelectedLevelId(null);
   };
 
-  const getProgressPercentage = () => {
-    const totalLevels = bigPurchasesJourneyData.length + 1; // +1 for mini-game
-    const completed = progress.completedLevels.length + (progress.journeyCompleted ? 1 : 0);
-    return Math.round((completed / totalLevels) * 100);
+  const handleLevelSelect = (levelId: number) => {
+    setSelectedLevelId(levelId);
   };
 
+  const handleBackToLevels = () => {
+    setSelectedLevelId(null);
+    setShowMiniGame(false);
+  };
+
+  // Show selected level content
+  if (selectedLevelId) {
+    const selectedLevel = bigPurchasesJourneyData.find(level => level.id === selectedLevelId);
+    if (selectedLevel) {
+      return (
+        <div className="space-y-6">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" onClick={handleBackToLevels}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Levels
+            </Button>
+            <h1 className="text-3xl font-bold">{selectedLevel.title}</h1>
+          </div>
+          
+          <BigPurchasesLevelComponent
+            level={selectedLevel}
+            isUnlocked={selectedLevel.id <= progress.currentLevel}
+            isCompleted={progress.completedLevels.includes(selectedLevel.id)}
+            onComplete={() => handleLevelComplete(selectedLevel.id)}
+            onQuizComplete={handleQuizComplete}
+          />
+        </div>
+      );
+    }
+  }
+
+  // Show mini-game
   if (showMiniGame && !progress.journeyCompleted) {
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={() => setShowMiniGame(false)}>
+          <Button variant="ghost" onClick={handleBackToLevels}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Journey
           </Button>
@@ -96,6 +131,7 @@ const BigPurchasesJourney: React.FC<BigPurchasesJourneyProps> = ({ onBack }) => 
     );
   }
 
+  // Show completion screen
   if (progress.journeyCompleted) {
     return (
       <div className="space-y-6">
@@ -142,6 +178,7 @@ const BigPurchasesJourney: React.FC<BigPurchasesJourneyProps> = ({ onBack }) => 
     );
   }
 
+  // Show main journey overview with grid layout
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -155,63 +192,43 @@ const BigPurchasesJourney: React.FC<BigPurchasesJourneyProps> = ({ onBack }) => 
         </div>
       </div>
 
-      <Card className="bg-gradient-to-r from-purple-50 to-blue-50">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Star className="h-5 w-5 text-purple-500" />
-              Your Progress
-            </CardTitle>
-            <Badge variant="outline">
-              {progress.completedLevels.length}/{bigPurchasesJourneyData.length} Levels + Mini-Game
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
-            <div 
-              className="bg-gradient-to-r from-purple-400 to-blue-500 h-3 rounded-full transition-all duration-500"
-              style={{ width: `${getProgressPercentage()}%` }}
-            />
-          </div>
-          <div className="flex justify-between text-sm text-muted-foreground">
-            <span>Progress: {getProgressPercentage()}%</span>
-            <span>Points Earned: {progress.totalPointsEarned}</span>
-          </div>
-        </CardContent>
-      </Card>
+      <BigPurchasesJourneyHeader
+        completedLevels={progress.completedLevels}
+        totalLevels={bigPurchasesJourneyData.length}
+        journeyCompleted={progress.journeyCompleted}
+        totalPointsEarned={progress.totalPointsEarned}
+      />
 
-      <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {bigPurchasesJourneyData.map((level) => (
-          <BigPurchasesLevelComponent
+          <BigPurchasesJourneyLevelCard
             key={level.id}
             level={level}
             isUnlocked={level.id <= progress.currentLevel}
             isCompleted={progress.completedLevels.includes(level.id)}
-            onComplete={() => handleLevelComplete(level.id)}
-            onQuizComplete={handleQuizComplete}
+            onLevelSelect={handleLevelSelect}
           />
         ))}
-
-        {progress.completedLevels.length === bigPurchasesJourneyData.length && (
-          <Card className="border-2 border-yellow-400 bg-gradient-to-r from-yellow-50 to-orange-50">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Trophy className="h-5 w-5 text-yellow-500" />
-                Final Challenge Unlocked!
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground mb-4">
-                You've completed all 5 levels! Now test your skills in the Car Buying Simulator.
-              </p>
-              <Button onClick={() => setShowMiniGame(true)} size="lg" className="w-full">
-                Start Car Buying Simulator
-              </Button>
-            </CardContent>
-          </Card>
-        )}
       </div>
+
+      {progress.completedLevels.length === bigPurchasesJourneyData.length && (
+        <Card className="border-2 border-yellow-400 bg-gradient-to-r from-yellow-50 to-orange-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Trophy className="h-5 w-5 text-yellow-500" />
+              Final Challenge Unlocked!
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground mb-4">
+              You've completed all 5 levels! Now test your skills in the Car Buying Simulator.
+            </p>
+            <Button onClick={() => setShowMiniGame(true)} size="lg" className="w-full">
+              Start Car Buying Simulator
+            </Button>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
