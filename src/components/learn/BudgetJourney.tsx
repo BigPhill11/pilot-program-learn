@@ -1,121 +1,125 @@
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, Trophy, Lock, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Trophy } from 'lucide-react';
+import { budgetJourneyData, budgetMiniGame } from '@/data/budgeting-journey-data';
 import BudgetLevel from './BudgetLevel';
 import BudgetMiniGame from './BudgetMiniGame';
-import { budgetingJourneyData } from '@/data/budgeting-journey-data';
-import { useProgressTracking } from '@/hooks/useProgressTracking';
 
 interface BudgetJourneyProps {
   onBack: () => void;
 }
 
 const BudgetJourney: React.FC<BudgetJourneyProps> = ({ onBack }) => {
-  const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
-  const [completedLevels, setCompletedLevels] = useState<Set<number>>(new Set());
+  const [currentLevel, setCurrentLevel] = useState(1);
+  const [completedLevels, setCompletedLevels] = useState<number[]>([]);
   const [showMiniGame, setShowMiniGame] = useState(false);
   const [journeyCompleted, setJourneyCompleted] = useState(false);
-  const { updateQuizScore } = useProgressTracking();
+
+  const totalLevels = budgetJourneyData.length;
 
   // Load progress from localStorage
   useEffect(() => {
     const saved = localStorage.getItem('budgetJourneyProgress');
     if (saved) {
       const progress = JSON.parse(saved);
-      setCompletedLevels(new Set(progress.completedLevels || []));
+      setCompletedLevels(progress.completedLevels || []);
+      setCurrentLevel(progress.currentLevel || 1);
       setJourneyCompleted(progress.journeyCompleted || false);
     }
   }, []);
 
   // Save progress to localStorage
-  const saveProgress = (levels: Set<number>, completed: boolean = false) => {
+  useEffect(() => {
     const progress = {
-      completedLevels: Array.from(levels),
-      journeyCompleted: completed
+      completedLevels,
+      currentLevel,
+      journeyCompleted
     };
     localStorage.setItem('budgetJourneyProgress', JSON.stringify(progress));
-  };
+  }, [completedLevels, currentLevel, journeyCompleted]);
 
   const handleLevelComplete = (levelId: number) => {
-    const newCompleted = new Set(completedLevels);
-    newCompleted.add(levelId);
-    setCompletedLevels(newCompleted);
-    saveProgress(newCompleted);
-    
-    // Award points for level completion (5 points per level as specified)
-    updateQuizScore(`budget-level-${levelId}-completion`, true);
-    
-    // Check if all levels are completed
-    if (newCompleted.size === budgetingJourneyData.length) {
-      setShowMiniGame(true);
-    } else {
-      setSelectedLevel(null);
+    if (!completedLevels.includes(levelId)) {
+      const newCompletedLevels = [...completedLevels, levelId];
+      setCompletedLevels(newCompletedLevels);
+      
+      if (levelId < totalLevels) {
+        setCurrentLevel(levelId + 1);
+      } else {
+        setShowMiniGame(true);
+      }
     }
   };
 
   const handleMiniGameComplete = () => {
     setJourneyCompleted(true);
-    saveProgress(completedLevels, true);
     setShowMiniGame(false);
-    setSelectedLevel(null);
-    
-    // Award bonus points for completing the entire journey
-    updateQuizScore('budget-journey-completion', true);
   };
 
-  const isLevelUnlocked = (levelId: number) => {
-    if (levelId === 1) return true;
-    return completedLevels.has(levelId - 1);
+  const getLevelData = (levelNumber: number) => {
+    return budgetJourneyData.find(level => level.id === levelNumber);
   };
 
-  const overallProgress = (completedLevels.size / budgetingJourneyData.length) * 100;
+  const progress = (completedLevels.length / totalLevels) * 100;
 
-  // Show mini-game
-  if (showMiniGame) {
+  if (journeyCompleted) {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <Button variant="ghost" onClick={() => setShowMiniGame(false)}>
+          <Button variant="ghost" onClick={onBack}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Journey
+            Back to Personal Finance
           </Button>
         </div>
-        <BudgetMiniGame onComplete={handleMiniGameComplete} />
+
+        <div className="text-center py-12">
+          <Trophy className="h-24 w-24 text-yellow-500 mx-auto mb-6" />
+          <h1 className="text-4xl font-bold journey-header mb-4">
+            Congratulations! 🎉
+          </h1>
+          <p className="text-xl text-muted-foreground mb-6">
+            You've completed the "Budgeting 101" journey!
+          </p>
+          <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-6 max-w-md mx-auto">
+            <h3 className="font-bold section-header mb-2">What You've Learned:</h3>
+            <ul className="text-left text-blue-700 dark:text-blue-300 space-y-1">
+              <li>• How to distinguish needs from wants</li>
+              <li>• The 50/30/20 budgeting rule</li>
+              <li>• Tracking and managing expenses</li>
+              <li>• Budgeting for financial goals</li>
+              <li>• Adjusting budgets when life changes</li>
+            </ul>
+          </div>
+        </div>
       </div>
     );
   }
 
-  // Show individual level
-  if (selectedLevel) {
-    const level = budgetingJourneyData.find(l => l.id === selectedLevel);
-    if (!level) return null;
-
+  if (showMiniGame) {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <Button variant="ghost" onClick={() => setSelectedLevel(null)}>
+          <Button variant="ghost" onClick={onBack}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Journey
+            Back to Personal Finance
           </Button>
-          <Badge variant="outline">
-            Level {selectedLevel} of {budgetingJourneyData.length}
-          </Badge>
+          <div className="text-sm text-muted-foreground">
+            Final Challenge
+          </div>
         </div>
-        <BudgetLevel
-          level={level}
-          onComplete={handleLevelComplete}
-          isUnlocked={isLevelUnlocked(selectedLevel)}
-          isCompleted={completedLevels.has(selectedLevel)}
+
+        <BudgetMiniGame 
+          miniGameData={budgetMiniGame}
+          onComplete={handleMiniGameComplete} 
         />
       </div>
     );
   }
 
-  // Show journey overview
+  const currentLevelData = getLevelData(currentLevel);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -123,101 +127,37 @@ const BudgetJourney: React.FC<BudgetJourneyProps> = ({ onBack }) => {
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Personal Finance
         </Button>
-        {journeyCompleted && (
-          <Badge className="bg-blue-500 text-white">
-            <Trophy className="h-4 w-4 mr-1" />
-            Journey Complete
-          </Badge>
-        )}
+        <div className="text-sm text-muted-foreground">
+          Level {currentLevel} of {totalLevels}
+        </div>
       </div>
 
-      <Card className="bg-gradient-to-r from-blue-50 to-green-50 border-2 border-blue-500/20">
-        <CardHeader>
-          <CardTitle className="text-2xl text-center">💰 Budgeting Learning Journey</CardTitle>
-          <p className="text-center text-muted-foreground">
-            Master budgeting through 5 interactive levels and unlock the budget builder simulation!
+      <div className="space-y-4">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold journey-header mb-2">
+            Budgeting 101
+          </h1>
+          <p className="text-muted-foreground">
+            Master the art of managing your money effectively
           </p>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex justify-between text-sm">
-              <span>Overall Progress</span>
-              <span>{completedLevels.size}/{budgetingJourneyData.length} levels completed</span>
-            </div>
-            <Progress value={overallProgress} className="h-3" />
-            
-            {completedLevels.size === budgetingJourneyData.length && !journeyCompleted && (
-              <div className="text-center p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <Trophy className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                <p className="font-semibold text-blue-800">Ready for the Final Challenge!</p>
-                <p className="text-sm text-blue-700 mb-3">
-                  Complete the budget builder simulation to earn your badge
-                </p>
-                <Button onClick={() => setShowMiniGame(true)} className="bg-blue-500 hover:bg-blue-600">
-                  Start Budget Builder Challenge
-                </Button>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {budgetingJourneyData.map((level) => {
-          const isUnlocked = isLevelUnlocked(level.id);
-          const isCompleted = completedLevels.has(level.id);
-          
-          return (
-            <Card
-              key={level.id}
-              className={`cursor-pointer transition-all hover:shadow-lg ${
-                isCompleted ? 'border-blue-500 bg-blue-50' :
-                isUnlocked ? 'border-blue-500/30 hover:border-blue-500' :
-                'opacity-60 cursor-not-allowed'
-              }`}
-              onClick={() => isUnlocked && setSelectedLevel(level.id)}
-            >
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-3">
-                  <Badge variant={isCompleted ? "default" : isUnlocked ? "outline" : "secondary"}>
-                    Level {level.id}
-                  </Badge>
-                  {isCompleted ? (
-                    <CheckCircle2 className="h-5 w-5 text-blue-500" />
-                  ) : !isUnlocked ? (
-                    <Lock className="h-5 w-5 text-gray-400" />
-                  ) : null}
-                </div>
-                <h3 className="font-semibold text-lg mb-2">{level.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {level.introCard}
-                </p>
-                {isUnlocked && (
-                  <div className="mt-4">
-                    <Button variant="ghost" size="sm" className="w-full">
-                      {isCompleted ? 'Review Level' : 'Start Level'}
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          );
-        })}
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm">
+            <span>Overall Progress</span>
+            <span>{completedLevels.length}/{totalLevels} levels completed</span>
+          </div>
+          <Progress value={progress} className="h-3" />
+        </div>
       </div>
 
-      {journeyCompleted && (
-        <Card className="border-2 border-blue-400 bg-gradient-to-r from-blue-50 to-green-50">
-          <CardContent className="p-6 text-center">
-            <Trophy className="h-12 w-12 text-blue-500 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-blue-700 mb-2">Journey Complete!</h3>
-            <p className="text-muted-foreground mb-4">
-              Congratulations! You've mastered budgeting and earned your Budget Boss badge.
-            </p>
-            <Badge className="bg-blue-500 text-white text-lg px-4 py-2">
-              💰 Budget Boss
-            </Badge>
-          </CardContent>
-        </Card>
+      {currentLevelData && (
+        <BudgetLevel
+          level={currentLevelData}
+          onComplete={handleLevelComplete}
+          isUnlocked={true}
+          isCompleted={completedLevels.includes(currentLevel)}
+        />
       )}
     </div>
   );

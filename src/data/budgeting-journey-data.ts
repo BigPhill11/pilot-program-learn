@@ -1,351 +1,280 @@
 
-export interface BudgetFlashcard {
-  term: string;
-  definition: string;
-}
-
-export interface BudgetQuiz {
-  question: string;
-  options: string[];
-  correctAnswer: number;
-  explanation: string;
-}
-
-export interface BudgetDragDropActivity {
-  id: string;
-  instruction: string;
-  items: Array<{
-    id: string;
-    text: string;
-    category: string;
-  }>;
-  categories: Array<{
-    id: string;
-    name: string;
-  }>;
-}
-
 export interface BudgetLevel {
   id: number;
   title: string;
+  description: string;
   introCard: string;
-  flashcards: BudgetFlashcard[];
-  quiz: BudgetQuiz;
-  activity?: BudgetDragDropActivity;
-  challenge: {
-    description: string;
+  flashcards: Array<{
+    term: string;
+    definition: string;
+  }>;
+  quiz: {
     question: string;
     options: string[];
     correctAnswer: number;
+    explanation: string;
+  };
+  activity?: {
+    title: string;
+    instruction: string;
+    items: Array<{
+      id: string;
+      text: string;
+    }>;
+    categories: Array<{
+      id: string;
+      title: string;
+      correctItems: string[];
+    }>;
+  };
+  challenge: {
+    description: string;
+    question: string;
+    options?: string[];
+    correctAnswer?: number;
+    scenario?: string;
   };
 }
 
-export const budgetingJourneyData: BudgetLevel[] = [
+export interface BudgetMiniGame {
+  title: string;
+  description: string;
+  scenario: string;
+  monthlyIncome: number;
+  categories: Array<{
+    id: string;
+    name: string;
+    recommended: number;
+    min: number;
+    max: number;
+  }>;
+}
+
+export const budgetJourneyData: BudgetLevel[] = [
   {
     id: 1,
-    title: "What Is a Budget?",
-    introCard: "A budget is a plan for your money. It helps you spend smarter and avoid surprises. Think of it as a roadmap that shows you where every dollar should go before you spend it.",
+    title: "Needs vs Wants",
+    description: "Learn to distinguish between essential expenses and optional purchases",
+    introCard: "Welcome to your budgeting journey! In this level, you'll master the fundamental skill of separating needs from wants - the foundation of all good budgeting decisions.",
     flashcards: [
       {
-        term: "Budget",
-        definition: "A plan for how you will spend your money over a certain period, usually a month. It helps you control your spending and reach your financial goals."
+        term: "Needs",
+        definition: "Essential expenses required for basic living - like housing, food, transportation, and healthcare."
       },
       {
-        term: "Income",
-        definition: "All the money you receive regularly, such as from a job, allowance, or gifts. This is the money you have available to spend or save."
+        term: "Wants",
+        definition: "Non-essential items that improve your lifestyle but aren't required for survival - like entertainment, dining out, or luxury items."
       },
       {
-        term: "Expenses",
-        definition: "All the money you spend on things you need or want, including bills, food, entertainment, and other purchases."
+        term: "Fixed Expenses",
+        definition: "Regular costs that stay the same each month, like rent, insurance, or subscription services."
+      },
+      {
+        term: "Variable Expenses",
+        definition: "Costs that change monthly, like groceries, gas, or entertainment spending."
       }
     ],
     quiz: {
-      question: "What does a budget help you avoid?",
-      options: ["Making money", "Overspending", "Saving money", "Getting a job"],
+      question: "Which of these is considered a 'need' rather than a 'want'?",
+      options: ["Netflix subscription", "Grocery shopping", "Designer clothes", "Video games"],
       correctAnswer: 1,
-      explanation: "A budget helps you plan your spending so you don't spend more money than you have, which is called overspending."
+      explanation: "Grocery shopping is a need because food is essential for survival, while the others are wants that enhance lifestyle."
     },
     activity: {
-      id: "budget-categories",
-      instruction: "You have $500 to budget. Drag the money amounts to different categories and see how they add up.",
+      title: "Categorize Your Expenses",
+      instruction: "Sort these common expenses into needs and wants:",
       items: [
-        { id: "rent-200", text: "$200 - Housing/Rent", category: "needs" },
-        { id: "food-150", text: "$150 - Food/Groceries", category: "needs" },
-        { id: "transport-50", text: "$50 - Transportation", category: "needs" },
-        { id: "entertainment-75", text: "$75 - Entertainment", category: "wants" },
-        { id: "savings-25", text: "$25 - Savings", category: "savings" }
+        { id: "rent", text: "Monthly rent payment" },
+        { id: "coffee", text: "Daily coffee shop visits" },
+        { id: "insurance", text: "Health insurance" },
+        { id: "streaming", text: "Multiple streaming services" },
+        { id: "groceries", text: "Basic groceries" },
+        { id: "concert", text: "Concert tickets" }
       ],
       categories: [
-        { id: "needs", name: "Needs (Must Have)" },
-        { id: "wants", name: "Wants (Nice to Have)" },
-        { id: "savings", name: "Savings (Future Goals)" }
+        { id: "needs", title: "Needs", correctItems: ["rent", "insurance", "groceries"] },
+        { id: "wants", title: "Wants", correctItems: ["coffee", "streaming", "concert"] }
       ]
     },
     challenge: {
-      description: "You're helping a friend understand budgeting basics.",
-      question: "Your friend asks: 'Why should I make a budget instead of just spending money when I need to?' What's the best answer?",
-      options: [
-        "Budgets are only for adults",
-        "It helps you plan ahead and avoid running out of money",
-        "You don't need a budget if you have a job",
-        "Budgets make spending less fun"
-      ],
-      correctAnswer: 1
+      description: "You have $2,000 monthly income. Your rent is $800, groceries $300, insurance $150. You want to save $200. How much is left for wants?",
+      question: "How much money is available for wants after covering needs and savings?",
+      options: ["$550", "$450", "$650", "$350"],
+      correctAnswer: 0
     }
   },
   {
     id: 2,
-    title: "Needs vs. Wants",
-    introCard: "Needs keep you going. Wants are the extras. Knowing the difference saves you money and helps you prioritize what's really important in your budget.",
+    title: "The 50/30/20 Rule",
+    description: "Master the popular budgeting framework that allocates income into three key categories",
+    introCard: "The 50/30/20 rule is a simple but powerful budgeting method: 50% for needs, 30% for wants, and 20% for savings and debt payments.",
     flashcards: [
       {
-        term: "Fixed Expense",
-        definition: "Costs that stay the same each month, like rent, phone bills, or insurance. These are predictable and usually needs."
+        term: "50/30/20 Rule",
+        definition: "A budgeting guideline where 50% goes to needs, 30% to wants, and 20% to savings and debt repayment."
       },
       {
-        term: "Variable Expense",
-        definition: "Costs that change from month to month, like groceries, gas, or entertainment. These can be needs or wants."
+        term: "Take-Home Pay",
+        definition: "Your actual income after taxes and deductions - the amount that goes into your bank account."
       },
       {
-        term: "Need",
-        definition: "Something essential for survival and basic living, like food, shelter, clothing, and transportation to work or school."
+        term: "Emergency Fund",
+        definition: "Money saved specifically for unexpected expenses, typically 3-6 months of living expenses."
       },
       {
-        term: "Want",
-        definition: "Something you desire but don't actually need to survive or function, like designer clothes, eating out, or premium apps."
+        term: "Debt Repayment",
+        definition: "Money allocated to paying off credit cards, student loans, or other debts beyond minimum payments."
       }
     ],
     quiz: {
-      question: "Which of these is a NEED?",
-      options: ["Designer sneakers", "Rent", "Movie tickets", "Video game subscription"],
-      correctAnswer: 1,
-      explanation: "Rent is a need because you require shelter to live safely. The other options are wants - nice to have but not essential."
-    },
-    activity: {
-      id: "needs-wants-sorting",
-      instruction: "Sort these items into 'Needs' or 'Wants' categories. Think about what's essential versus what's extra.",
-      items: [
-        { id: "groceries", text: "Groceries", category: "needs" },
-        { id: "netflix", text: "Netflix subscription", category: "wants" },
-        { id: "bus-fare", text: "Bus fare to school", category: "needs" },
-        { id: "airpods", text: "AirPods", category: "wants" },
-        { id: "textbooks", text: "School textbooks", category: "needs" },
-        { id: "coffee-shop", text: "Daily coffee shop visits", category: "wants" },
-        { id: "winter-coat", text: "Winter coat", category: "needs" },
-        { id: "gaming-chair", text: "Gaming chair", category: "wants" }
-      ],
-      categories: [
-        { id: "needs", name: "Needs (Essential)" },
-        { id: "wants", name: "Wants (Nice to Have)" }
-      ]
+      question: "If your monthly take-home pay is $3,000, how much should you allocate to wants using the 50/30/20 rule?",
+      options: ["$900", "$1,500", "$600", "$1,000"],
+      correctAnswer: 0,
+      explanation: "30% of $3,000 = $900 for wants according to the 50/30/20 rule."
     },
     challenge: {
-      description: "You have $100 left in your budget for the month. Multiple expenses come up.",
-      question: "You have $100 left and these options: $30 phone bill, $60 concert ticket, $25 groceries, $40 new headphones. What should you prioritize?",
-      options: [
-        "Concert ticket first, then headphones",
-        "Phone bill and groceries first",
-        "Headphones and groceries first",
-        "Everything costs too much, save it all"
-      ],
-      correctAnswer: 1
+      description: "Your friend makes $2,500 monthly after taxes and asks for budgeting help using the 50/30/20 rule.",
+      question: "How much should they save each month?",
+      options: ["$500", "$750", "$250", "$1,000"],
+      correctAnswer: 0
     }
   },
   {
     id: 3,
-    title: "Building a Simple Budget",
-    introCard: "Now that you know what you spend on, let's plan it out. Budgeting gives every dollar a job. The 50/30/20 rule is a simple way to divide your money wisely.",
+    title: "Tracking Your Spending",
+    description: "Learn effective methods to monitor where your money goes each month",
+    introCard: "You can't manage what you don't measure! This level teaches you practical ways to track spending and identify areas for improvement.",
     flashcards: [
       {
-        term: "50/30/20 Rule",
-        definition: "A simple budgeting method: 50% for needs, 30% for wants, and 20% for savings and debt payments. It's a good starting point for any budget."
+        term: "Expense Tracking",
+        definition: "Recording and categorizing all your purchases to understand spending patterns and find areas to cut back."
       },
       {
-        term: "Emergency Fund",
-        definition: "Money set aside for unexpected expenses like medical bills, car repairs, or job loss. Experts recommend saving 3-6 months of expenses."
+        term: "Budget Categories",
+        definition: "Groups of similar expenses like housing, transportation, food, and entertainment to organize your spending."
       },
       {
-        term: "Savings",
-        definition: "Money you set aside for future goals or emergencies instead of spending it now. It's the foundation of financial security."
+        term: "Impulse Purchase",
+        definition: "Unplanned buying decisions made in the moment, often for wants rather than needs."
       },
       {
-        term: "Tracking",
-        definition: "Recording and monitoring your income and expenses to see where your money actually goes versus where you planned to spend it."
+        term: "Spending Trigger",
+        definition: "Emotions, situations, or events that lead to increased or unplanned spending."
       }
     ],
     quiz: {
-      question: "In the 50/30/20 rule, how much should go to savings?",
-      options: ["50%", "30%", "20%", "10%"],
-      correctAnswer: 2,
-      explanation: "In the 50/30/20 rule, 20% of your income should go to savings and debt payments to build financial security."
+      question: "What's the main benefit of tracking your expenses for at least one month?",
+      options: [
+        "To impress your friends",
+        "To identify spending patterns and areas to improve",
+        "To make budgeting more complicated",
+        "To spend more money"
+      ],
+      correctAnswer: 1,
+      explanation: "Tracking expenses reveals your actual spending habits and helps identify where you can make positive changes."
     },
     challenge: {
-      description: "You're helping a teen working part-time build their first budget.",
-      question: "Alex earns $400/month from a part-time job. Using the 50/30/20 rule, how much should Alex budget for wants?",
-      options: [
-        "$200 for wants",
-        "$120 for wants", 
-        "$80 for wants",
-        "$160 for wants"
-      ],
-      correctAnswer: 1
+      description: "You notice you spent $180 on coffee last month - $6 per day for 30 days.",
+      question: "If you made coffee at home for $1 per day instead, how much would you save monthly?",
+      options: ["$150", "$120", "$180", "$30"],
+      correctAnswer: 0
     }
   },
   {
     id: 4,
-    title: "Sticking to Your Budget",
-    introCard: "Making a budget is one thing. Following it is where the magic happens. Learn practical strategies to stay on track and avoid common budgeting pitfalls.",
+    title: "Budgeting for Goals",
+    description: "Learn how to allocate money toward specific financial objectives",
+    introCard: "Great budgets aren't just about managing expenses - they're about achieving your dreams! Learn to budget for both short-term and long-term goals.",
     flashcards: [
       {
-        term: "Impulse Buying",
-        definition: "Making unplanned purchases without thinking about whether you need the item or if it fits in your budget. This can quickly derail your financial plans."
+        term: "Financial Goal",
+        definition: "A specific amount of money you want to save or achieve by a certain date, like $1,000 for a vacation."
       },
       {
-        term: "Budget App",
-        definition: "A digital tool or mobile application that helps you track income, expenses, and savings goals automatically. Examples include Mint, YNAB, or simple spreadsheets."
+        term: "Short-term Goal",
+        definition: "Financial objectives you can achieve within a year, like saving for a phone or building a small emergency fund."
       },
       {
-        term: "Cash Envelope System",
-        definition: "A budgeting method where you put cash for each budget category in separate envelopes. When the envelope is empty, you can't spend more in that category."
+        term: "Long-term Goal",
+        definition: "Financial objectives that take more than a year, like saving for college, a car, or retirement."
       },
       {
-        term: "Spending Journal",
-        definition: "A record where you write down every purchase to become more aware of your spending habits and identify areas for improvement."
+        term: "Sinking Fund",
+        definition: "Money saved gradually for a specific future expense, like car maintenance or holiday gifts."
       }
     ],
     quiz: {
-      question: "What tool helps you stay on track with your budget daily?",
-      options: ["Credit card", "Budget app", "Shopping list", "Calculator"],
+      question: "You want to save $1,200 for a laptop in 8 months. How much should you save monthly?",
+      options: ["$100", "$150", "$200", "$120"],
       correctAnswer: 1,
-      explanation: "A budget app helps you track your spending in real-time and alerts you when you're approaching your limits for each category."
+      explanation: "$1,200 ÷ 8 months = $150 per month needed to reach your goal."
     },
     challenge: {
-      description: "You're shopping and face a common budgeting dilemma.",
-      question: "Your favorite shoes go on sale for 50% off, but you've already spent this month's 'wants' budget. What's the best choice?",
-      options: [
-        "Buy them anyway, it's a great deal",
-        "Wait and save up for them next month",
-        "Use money from your 'needs' budget",
-        "Ask to borrow money from friends"
-      ],
-      correctAnswer: 1
+      description: "You're planning for three goals: $500 emergency fund (6 months), $300 phone (3 months), and $2,400 car down payment (12 months).",
+      question: "What's your total monthly savings needed for all goals?",
+      options: ["$383", "$350", "$400", "$450"],
+      correctAnswer: 0
     }
   },
   {
     id: 5,
-    title: "Budgeting for Goals",
-    introCard: "A budget isn't just for bills. It helps you save for big dreams, too. Learn how to turn your goals into actionable savings plans.",
+    title: "Adjusting Your Budget",
+    description: "Master the art of adapting your budget when life changes",
+    introCard: "Budgets aren't set in stone! Life changes, and your budget should adapt. Learn how to modify your spending plan when circumstances change.",
     flashcards: [
       {
-        term: "Short-Term Goal",
-        definition: "A financial goal you want to achieve within a year, like buying a new phone, taking a trip, or building an emergency fund."
+        term: "Budget Variance",
+        definition: "The difference between what you planned to spend and what you actually spent in each category."
       },
       {
-        term: "Long-Term Goal",
-        definition: "A financial goal that takes more than a year to achieve, like saving for college, buying a car, or starting a business."
+        term: "Flexible Budgeting",
+        definition: "Adjusting spending categories based on changing circumstances while maintaining overall financial goals."
       },
       {
-        term: "Sinking Fund",
-        definition: "Money you save regularly for a specific future expense, like a vacation or car repairs. You 'sink' money into it bit by bit."
+        term: "Budget Review",
+        definition: "Regularly examining your budget to see what's working and what needs adjustment."
       },
       {
-        term: "Financial Planning",
-        definition: "The process of setting money goals and creating a plan to achieve them through budgeting, saving, and smart spending choices."
+        term: "Zero-Based Budget",
+        definition: "A budgeting method where income minus expenses equals zero - every dollar has a specific purpose."
       }
     ],
     quiz: {
-      question: "What's a good example of what you'd use a sinking fund for?",
-      options: ["Daily coffee", "Saving for a laptop", "Paying rent", "Buying groceries"],
+      question: "What should you do if you consistently overspend in your grocery category?",
+      options: [
+        "Ignore it and hope it gets better",
+        "Increase the grocery budget and decrease another category",
+        "Stop eating to save money",
+        "Give up on budgeting entirely"
+      ],
       correctAnswer: 1,
-      explanation: "A sinking fund is perfect for planned future expenses like a laptop. You save a little each month so you have the full amount when you need it."
+      explanation: "Adjust your budget realistically by increasing the grocery allocation and reducing spending in another category to stay balanced."
     },
     challenge: {
-      description: "Time to put goal-setting into action with real numbers.",
-      question: "You want to save $300 for a new gaming console in 3 months. How much should you save each week?",
+      description: "Your car broke down and needs $400 in repairs. Your current budget has $50 for car maintenance.",
+      question: "What's the best strategy to handle this unexpected expense?",
       options: [
-        "$25 per week",
-        "$50 per week", 
-        "$75 per week",
-        "$100 per week"
+        "Use emergency fund and adjust next month's budget",
+        "Ignore the problem",
+        "Borrow money from friends",
+        "Buy a new car instead"
       ],
       correctAnswer: 0
     }
   }
 ];
 
-export const budgetMiniGameData = {
+export const budgetMiniGame: BudgetMiniGame = {
   title: "Budget Builder Challenge",
-  description: "Create your own monthly budget using everything you've learned! Make smart choices and see if you can balance your needs, wants, and savings.",
-  scenarios: [
-    {
-      step: "Income Setup",
-      context: "You work part-time and receive an allowance. Let's start by setting up your monthly income.",
-      question: "You earn $12/hour working 15 hours per week, plus a $50 monthly allowance. What's your total monthly income?",
-      options: [
-        "$720 per month",
-        "$770 per month", 
-        "$800 per month",
-        "$850 per month"
-      ],
-      correct: 1,
-      explanation: "$12 × 15 hours × 4 weeks = $720 from work + $50 allowance = $770 total monthly income."
-    },
-    {
-      step: "Fixed Expenses",
-      context: "Now let's identify your fixed monthly expenses that stay the same each month.",
-      question: "Which of these should be your first priority when budgeting your $770 income?",
-      options: [
-        "Entertainment and fun activities",
-        "Fixed expenses like phone bill and transportation",
-        "Shopping for clothes and accessories", 
-        "Saving for vacation"
-      ],
-      correct: 1,
-      explanation: "Fixed expenses and needs should always be budgeted first because they're essential and predictable."
-    },
-    {
-      step: "Applying 50/30/20 Rule",
-      context: "Let's apply the 50/30/20 rule to your $770 monthly income.",
-      question: "Using the 50/30/20 rule with $770 income, how much should you allocate to wants?",
-      options: [
-        "$231",
-        "$385",
-        "$154", 
-        "$200"
-      ],
-      correct: 0,
-      explanation: "30% of $770 = $231 for wants. This covers entertainment, dining out, and other non-essential purchases."
-    },
-    {
-      step: "Emergency Fund Priority",
-      context: "You have $154 allocated for savings. You need to decide how to split it between goals.",
-      question: "As a teen, what should be your first savings priority?",
-      options: [
-        "Saving for a car",
-        "Building a small emergency fund",
-        "Investing in stocks",
-        "Saving for expensive clothes"
-      ],
-      correct: 1,
-      explanation: "An emergency fund should be your first priority. Even $500-1000 can help cover unexpected expenses."
-    },
-    {
-      step: "Budget Adjustment",
-      context: "After 2 months, you notice you're spending $280 on wants but only budgeted $231.",
-      question: "What's the best way to handle this overspending?",
-      options: [
-        "Ignore it and keep spending",
-        "Take money from your savings",
-        "Review and cut some want expenses to fit your budget",
-        "Work more hours without adjusting your budget"
-      ],
-      correct: 2,
-      explanation: "The best approach is to review your want expenses and make cuts to stay within your budget. This builds discipline and keeps you on track."
-    }
-  ],
-  badge: {
-    title: "Budget Boss",
-    description: "You've mastered the art of budgeting! You know how to plan your money, prioritize your spending, and save for your goals.",
-    icon: "💰"
-  }
+  description: "Create a balanced budget using the 50/30/20 rule!",
+  scenario: "You're a college student with $2,000 monthly income from part-time work and family support. Build a realistic budget:",
+  monthlyIncome: 2000,
+  categories: [
+    { id: "housing", name: "Housing & Utilities", recommended: 35, min: 25, max: 45 },
+    { id: "food", name: "Food & Groceries", recommended: 15, min: 10, max: 25 },
+    { id: "transportation", name: "Transportation", recommended: 10, min: 5, max: 20 },
+    { id: "entertainment", name: "Entertainment", recommended: 15, min: 5, max: 25 },
+    { id: "savings", name: "Savings", recommended: 20, min: 10, max: 30 },
+    { id: "other", name: "Other Expenses", recommended: 5, min: 0, max: 15 }
+  ]
 };

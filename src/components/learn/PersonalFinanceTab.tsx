@@ -150,7 +150,7 @@ const PersonalFinanceTab = () => {
     return (
         <div className="space-y-12">
             <div>
-                <h2 className="text-3xl font-bold tracking-tight text-foreground text-center mb-8">Personal Finance Essentials</h2>
+                <h2 className="text-3xl font-bold tracking-tight journey-header text-center mb-8">Personal Finance Essentials</h2>
                 <Accordion type="single" collapsible className="w-full max-w-4xl mx-auto">
                     <EarningMoneyJourneySection 
                         onStartJourney={() => setShowEarningMoneyJourney(true)}

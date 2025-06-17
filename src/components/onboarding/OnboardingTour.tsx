@@ -1,86 +1,119 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { supabase } from '@/integrations/supabase/client';
-import { ArrowRight, ArrowLeft, CheckCircle2 } from 'lucide-react';
-import { toast } from 'sonner';
-
-interface OnboardingStep {
-  id: string;
-  title: string;
-  description: string;
-  content: string;
-  pandaMessage: string;
-}
-
-const onboardingSteps: OnboardingStep[] = [
-  {
-    id: 'welcome',
-    title: 'Welcome to Phil Finance! 🐼',
-    description: 'Your journey to financial literacy starts here',
-    content: 'Hi there! I\'m Phil, your friendly panda guide. I\'ll help you learn about investing, trading, and building wealth. No matter what level you tested into, I\'ll show you all the amazing features we have!',
-    pandaMessage: 'I\'m so excited to be your financial learning buddy! 🎉'
-  },
-  {
-    id: 'dashboard',
-    title: 'Your Personal Dashboard 📊',
-    description: 'Track your progress and see market data',
-    content: 'This is your home base! Here you\'ll see real-time market data, your learning progress, trading performance, and daily streaks. The more you engage, the more you\'ll advance through the app versions!',
-    pandaMessage: 'Think of this as your financial command center! 🎮'
-  },
-  {
-    id: 'learning',
-    title: 'Learn Finance Concepts 📚',
-    description: 'Interactive lessons with quizzes',
-    content: 'Our Learn section has tons of financial concepts explained in simple terms with fun analogies. Take quizzes to test your knowledge and unlock achievements. I\'ll be there to explain complex terms!',
-    pandaMessage: 'Learning is like leveling up in a game - but for your brain! 🧠✨'
-  },
-  {
-    id: 'paper_trading',
-    title: 'Paper Trading Practice 💼',
-    description: 'Practice investing with virtual money',
-    content: 'Try your hand at investing without any real money risk! Build portfolios, track performance, and learn from your decisions. Advanced users get access to options and margin trading simulation.',
-    pandaMessage: 'It\'s like a video game, but you\'re learning real investing skills! 🎯'
-  },
-  {
-    id: 'ask_phil',
-    title: 'Ask Phil Anything 💬',
-    description: 'Get personalized financial advice',
-    content: 'Stuck on something? Just ask me! I can help explain concepts, analyze your trades, or give advice on your financial goals. I\'m here 24/7 to help you succeed.',
-    pandaMessage: 'No question is too small - I love helping you learn! 🤗'
-  },
-  {
-    id: 'headlines',
-    title: 'Market News & Analysis 📰',
-    description: 'Stay updated with financial terms explained',
-    content: 'Read the latest market news with financial terms highlighted and explained. The number of highlighted terms adapts to your level - beginners see more explanations, pros see fewer.',
-    pandaMessage: 'Understanding news is key to making smart financial decisions! 📈'
-  },
-  {
-    id: 'progress',
-    title: 'Your Progress Journey 🏆',
-    description: 'Level up through app versions',
-    content: 'You\'ll progress from Beginner Phil to Intermediate Phil to Advanced Phil based on your quiz scores, trading performance, and daily engagement. Each level unlocks new features and capabilities!',
-    pandaMessage: 'I believe in you - let\'s reach Pro level together! 🌟'
-  }
-];
+import { ArrowLeft, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 interface OnboardingTourProps {
-  userLevel: string;
-  onComplete: () => void;
+  onComplete: (profile: UserProfile) => void;
 }
 
-const OnboardingTour: React.FC<OnboardingTourProps> = ({ userLevel, onComplete }) => {
+interface UserProfile {
+  experienceLevel: string;
+  interests: string[];
+  goals: string[];
+  timeCommitment: string;
+}
+
+const OnboardingTour: React.FC<OnboardingTourProps> = ({ onComplete }) => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [answers, setAnswers] = useState<UserProfile>({
+    experienceLevel: '',
+    interests: [],
+    goals: [],
+    timeCommitment: ''
+  });
+
+  const questions = [
+    {
+      id: 'experience',
+      title: 'What\'s your experience with personal finance?',
+      type: 'single',
+      options: [
+        { value: 'beginner', label: 'Complete beginner - I\'m just starting out' },
+        { value: 'some', label: 'Some knowledge - I know basics like budgeting' },
+        { value: 'intermediate', label: 'Intermediate - I understand investing basics' },
+        { value: 'advanced', label: 'Advanced - I\'m comfortable with complex topics' }
+      ]
+    },
+    {
+      id: 'interests',
+      title: 'Which topics interest you most?',
+      type: 'multiple',
+      options: [
+        { value: 'budgeting', label: 'Budgeting & saving money' },
+        { value: 'investing', label: 'Stock market & investing' },
+        { value: 'credit', label: 'Building credit & credit cards' },
+        { value: 'taxes', label: 'Understanding taxes' },
+        { value: 'bigpurchases', label: 'Big purchases (cars, homes)' },
+        { value: 'planning', label: 'Long-term financial planning' }
+      ]
+    },
+    {
+      id: 'goals',
+      title: 'What are your main financial goals?',
+      type: 'multiple',
+      options: [
+        { value: 'emergency', label: 'Build an emergency fund' },
+        { value: 'debt', label: 'Pay off debt' },
+        { value: 'invest', label: 'Start investing' },
+        { value: 'house', label: 'Save for a house' },
+        { value: 'retirement', label: 'Plan for retirement' },
+        { value: 'education', label: 'Save for education' }
+      ]
+    },
+    {
+      id: 'time',
+      title: 'How much time can you dedicate to learning?',
+      type: 'single',
+      options: [
+        { value: '5min', label: '5-10 minutes per day' },
+        { value: '15min', label: '15-30 minutes per day' },
+        { value: '1hour', label: '1 hour per week' },
+        { value: 'weekend', label: 'A few hours on weekends' }
+      ]
+    }
+  ];
+
+  const currentQuestion = questions[currentStep];
+  const progress = ((currentStep + 1) / questions.length) * 100;
+
+  const handleAnswer = (questionId: string, value: string) => {
+    if (currentQuestion.type === 'single') {
+      setAnswers(prev => ({
+        ...prev,
+        [questionId]: value
+      }));
+    } else {
+      setAnswers(prev => {
+        const currentValues = prev[questionId as keyof UserProfile] as string[];
+        const newValues = currentValues.includes(value)
+          ? currentValues.filter(v => v !== value)
+          : [...currentValues, value];
+        return {
+          ...prev,
+          [questionId]: newValues
+        };
+      });
+    }
+  };
+
+  const canProceed = () => {
+    const answer = answers[currentQuestion.id as keyof UserProfile];
+    if (currentQuestion.type === 'single') {
+      return answer !== '';
+    } else {
+      return Array.isArray(answer) && answer.length > 0;
+    }
+  };
 
   const handleNext = () => {
-    if (currentStep < onboardingSteps.length - 1) {
+    if (currentStep < questions.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      completeOnboarding();
+      onComplete(answers);
     }
   };
 
@@ -90,70 +123,51 @@ const OnboardingTour: React.FC<OnboardingTourProps> = ({ userLevel, onComplete }
     }
   };
 
-  const completeOnboarding = async () => {
-    setLoading(true);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not found');
-
-      const { error } = await supabase
-        .from('profiles')
-        .update({ onboarding_completed: true })
-        .eq('id', user.id);
-
-      if (error) throw error;
-
-      toast.success('Welcome to Phil Finance! Your journey begins now! 🎉');
-      onComplete();
-    } catch (error) {
-      console.error('Error completing onboarding:', error);
-      toast.error('Failed to complete onboarding');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const progress = ((currentStep + 1) / onboardingSteps.length) * 100;
-  const step = onboardingSteps[currentStep];
-  const isLastStep = currentStep === onboardingSteps.length - 1;
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 dark:from-green-950 dark:via-emerald-950 dark:to-teal-950 flex items-center justify-center p-4">
       <Card className="w-full max-w-2xl">
         <CardHeader>
-          <div className="flex items-center justify-between mb-2">
-            <CardTitle className="text-xl">{step.title}</CardTitle>
-            <span className="text-sm text-muted-foreground">
-              {currentStep + 1} of {onboardingSteps.length}
-            </span>
+          <div className="flex items-center justify-between mb-4">
+            <CardTitle className="journey-header text-2xl">Welcome to Phil's Financials!</CardTitle>
+            <Badge variant="outline">
+              {currentStep + 1} of {questions.length}
+            </Badge>
           </div>
-          <Progress value={progress} className="w-full h-2" />
-          <CardDescription>{step.description}</CardDescription>
+          <Progress value={progress} className="h-2" />
         </CardHeader>
+        
         <CardContent className="space-y-6">
-          <div className="bg-muted/30 rounded-lg p-4 border">
-            <p className="text-sm leading-relaxed">{step.content}</p>
+          <div>
+            <h3 className="section-header text-xl font-semibold mb-4">
+              {currentQuestion.title}
+            </h3>
+            
+            <div className="space-y-3">
+              {currentQuestion.options.map((option) => {
+                const isSelected = currentQuestion.type === 'single'
+                  ? answers[currentQuestion.id as keyof UserProfile] === option.value
+                  : (answers[currentQuestion.id as keyof UserProfile] as string[]).includes(option.value);
+                
+                return (
+                  <Button
+                    key={option.value}
+                    variant={isSelected ? "default" : "outline"}
+                    className={`w-full justify-start text-left h-auto p-4 ${
+                      isSelected ? 'bg-green-500 hover:bg-green-600' : 'hover:bg-green-50 dark:hover:bg-green-950'
+                    }`}
+                    onClick={() => handleAnswer(currentQuestion.id, option.value)}
+                  >
+                    <div className="flex items-center">
+                      {isSelected && <CheckCircle2 className="h-5 w-5 mr-3" />}
+                      <span>{option.label}</span>
+                    </div>
+                  </Button>
+                );
+              })}
+            </div>
           </div>
           
-          <div className="bg-primary/10 rounded-lg p-4 border border-primary/20">
-            <div className="flex items-start space-x-3">
-              <div className="text-2xl">🐼</div>
-              <div>
-                <p className="font-medium text-primary">Phil says:</p>
-                <p className="text-sm text-primary/80 mt-1">{step.pandaMessage}</p>
-              </div>
-            </div>
-          </div>
-
-          {userLevel && (
-            <div className="bg-secondary/10 rounded-lg p-3 border border-secondary/20">
-              <p className="text-sm">
-                <span className="font-medium">Your Level:</span> {userLevel.charAt(0).toUpperCase() + userLevel.slice(1)} Phil
-              </p>
-            </div>
-          )}
-
-          <div className="flex justify-between">
+          <div className="flex justify-between pt-6">
             <Button
               variant="outline"
               onClick={handlePrevious}
@@ -165,21 +179,11 @@ const OnboardingTour: React.FC<OnboardingTourProps> = ({ userLevel, onComplete }
             
             <Button
               onClick={handleNext}
-              disabled={loading}
+              disabled={!canProceed()}
+              className="bg-green-500 hover:bg-green-600"
             >
-              {loading ? (
-                'Completing...'
-              ) : isLastStep ? (
-                <>
-                  <CheckCircle2 className="h-4 w-4 mr-2" />
-                  Start Learning!
-                </>
-              ) : (
-                <>
-                  Next
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </>
-              )}
+              {currentStep === questions.length - 1 ? 'Complete Setup' : 'Next'}
+              {currentStep < questions.length - 1 && <ArrowRight className="h-4 w-4 ml-2" />}
             </Button>
           </div>
         </CardContent>

@@ -1,302 +1,300 @@
 
-export interface FuturePlanningFlashcard {
-  term: string;
-  definition: string;
-}
-
-export interface FuturePlanningDragDropActivity {
-  id: string;
-  title: string;
-  description: string;
-  items: Array<{
-    id: string;
-    content: string;
-    category: string;
-  }>;
-  categories: Array<{
-    id: string;
-    title: string;
-    description: string;
-  }>;
-}
-
-export interface FuturePlanningQuiz {
-  question: string;
-  options: string[];
-  correctAnswerIndex: number;
-  feedbackForIncorrect: string;
-}
-
 export interface FuturePlanningLevel {
   id: number;
   title: string;
   description: string;
-  flashcards: FuturePlanningFlashcard[];
-  activity?: FuturePlanningDragDropActivity;
-  quiz: FuturePlanningQuiz;
+  introCard: string;
+  flashcards: Array<{
+    term: string;
+    definition: string;
+  }>;
+  quiz: {
+    question: string;
+    options: string[];
+    correctAnswer: number;
+    explanation: string;
+  };
+  activity?: {
+    title: string;
+    instruction: string;
+    items: Array<{
+      id: string;
+      text: string;
+    }>;
+    categories: Array<{
+      id: string;
+      title: string;
+      correctItems: string[];
+    }>;
+  };
+  challenge: {
+    description: string;
+    question: string;
+    options?: string[];
+    correctAnswer?: number;
+  };
 }
 
 export const futurePlanningJourneyData: FuturePlanningLevel[] = [
   {
     id: 1,
-    title: "Retirement Accounts Explained",
-    description: "Learn about 401(k), Roth IRA, and Traditional IRA accounts",
+    title: "Starting Early: The Power of Time",
+    description: "Understand why starting financial planning young gives you a huge advantage",
+    introCard: "Time is your greatest asset when planning for the future! Starting early means compound interest works for decades, turning small amounts into substantial wealth.",
     flashcards: [
       {
-        term: "401(k)",
-        definition: "An employer-sponsored retirement plan where you can contribute pre-tax dollars, often with employer matching contributions."
-      },
-      {
-        term: "Roth IRA",
-        definition: "A retirement account where you pay taxes upfront on contributions, but withdrawals in retirement are tax-free."
-      },
-      {
-        term: "Traditional IRA",
-        definition: "A retirement account where contributions may be tax-deductible, but withdrawals in retirement are taxed as income."
-      },
-      {
         term: "Compound Interest",
-        definition: "Interest earned on both the initial principal and previously earned interest, leading to exponential growth over time."
+        definition: "Earning interest on both your original money and previously earned interest, creating exponential growth over time."
       },
       {
-        term: "Employer Match",
-        definition: "Free money your employer contributes to your 401(k) based on how much you contribute, often called 'free money'."
+        term: "Time Horizon",
+        definition: "The length of time you have until you need the money, which affects your investment strategy."
+      },
+      {
+        term: "Future Value",
+        definition: "What money invested today will be worth at a future date, accounting for compound growth."
+      },
+      {
+        term: "Starting Early Advantage",
+        definition: "The mathematical benefit of beginning to save and invest at a young age due to compound interest."
       }
     ],
-    activity: {
-      id: "retirement-accounts",
-      title: "Match Retirement Account Features",
-      description: "Drag each feature to the correct retirement account type",
-      items: [
-        { id: "1", content: "Tax-free withdrawals in retirement", category: "roth-ira" },
-        { id: "2", content: "Employer matching available", category: "401k" },
-        { id: "3", content: "Tax-deductible contributions", category: "traditional-ira" },
-        { id: "4", content: "Higher contribution limits", category: "401k" },
-        { id: "5", content: "Income limits apply", category: "roth-ira" },
-        { id: "6", content: "Required minimum distributions at 73", category: "traditional-ira" }
-      ],
-      categories: [
-        { id: "401k", title: "401(k)", description: "Employer-sponsored plan" },
-        { id: "roth-ira", title: "Roth IRA", description: "After-tax contributions" },
-        { id: "traditional-ira", title: "Traditional IRA", description: "Pre-tax contributions" }
-      ]
-    },
     quiz: {
-      question: "What is the main advantage of starting to save for retirement early?",
+      question: "If you invest $1,000 at age 20 earning 7% annually, approximately how much will it be worth at age 60?",
+      options: ["$2,800", "$7,600", "$14,900", "$22,000"],
+      correctAnswer: 2,
+      explanation: "With compound interest at 7% for 40 years, $1,000 grows to approximately $14,900."
+    },
+    challenge: {
+      description: "Two friends start investing $100/month. Sarah starts at 22, Jake starts at 32. Both earn 7% and stop at 62.",
+      question: "Who has more money at retirement?",
       options: [
-        "Higher interest rates",
-        "Lower taxes",
-        "Compound interest has more time to work",
-        "Guaranteed returns"
+        "Jake, because he's more mature",
+        "Sarah, despite investing for the same time period",
+        "They have the same amount",
+        "Jake, because he invests more per month"
       ],
-      correctAnswerIndex: 2,
-      feedbackForIncorrect: "Starting early allows compound interest more time to work its magic. Even small amounts can grow significantly over decades."
+      correctAnswer: 1
     }
   },
   {
     id: 2,
-    title: "Life Insurance Basics",
-    description: "Understanding term vs. whole life insurance and when you need it",
+    title: "Retirement Accounts 101",
+    description: "Learn about 401(k)s, IRAs, and other retirement savings vehicles",
+    introCard: "Retirement accounts offer tax advantages that boost your savings. Understanding these accounts helps you make smart decisions about your financial future.",
     flashcards: [
       {
-        term: "Term Life Insurance",
-        definition: "Temporary life insurance that covers you for a specific period (10, 20, or 30 years) with lower premiums."
+        term: "401(k)",
+        definition: "Employer-sponsored retirement account where you contribute pre-tax dollars, often with company matching."
       },
       {
-        term: "Whole Life Insurance",
-        definition: "Permanent life insurance that includes an investment component but has much higher premiums."
+        term: "IRA (Individual Retirement Account)",
+        definition: "Personal retirement account you can open yourself, with tax advantages for long-term savings."
       },
       {
-        term: "Death Benefit",
-        definition: "The amount of money paid to beneficiaries when the insured person dies."
+        term: "Employer Match",
+        definition: "Free money your employer contributes to your 401(k) when you contribute, often 50-100% of your contribution."
       },
       {
-        term: "Premium",
-        definition: "The regular payment you make to keep your life insurance policy active."
-      },
-      {
-        term: "Beneficiary",
-        definition: "The person or people who receive the death benefit when the insured person dies."
+        term: "Roth IRA",
+        definition: "Retirement account where you pay taxes now but withdrawals in retirement are tax-free."
       }
     ],
-    activity: {
-      id: "life-insurance-scenarios",
-      title: "Life Insurance Scenarios",
-      description: "Match each person to the most appropriate life insurance recommendation",
-      items: [
-        { id: "1", content: "22-year-old single college graduate with student loans", category: "minimal" },
-        { id: "2", content: "30-year-old married with a mortgage and new baby", category: "term" },
-        { id: "3", content: "45-year-old with teenage kids and significant assets", category: "term" },
-        { id: "4", content: "65-year-old retiree with grown children", category: "minimal" }
-      ],
-      categories: [
-        { id: "minimal", title: "Minimal/No Life Insurance", description: "Little to no financial dependents" },
-        { id: "term", title: "Term Life Insurance", description: "Temporary coverage for dependents" },
-        { id: "whole", title: "Whole Life Insurance", description: "Permanent coverage with investment" }
-      ]
-    },
     quiz: {
-      question: "For most young adults starting their careers, which type of life insurance is typically recommended?",
+      question: "What's the main benefit of a 401(k) with employer matching?",
       options: [
-        "Whole life insurance for the investment benefits",
-        "Term life insurance for affordable coverage",
-        "No life insurance needed",
-        "Universal life insurance"
+        "You can withdraw money anytime",
+        "It's free money from your employer plus tax advantages",
+        "You don't have to pay any taxes ever",
+        "It guarantees a specific return"
       ],
-      correctAnswerIndex: 1,
-      feedbackForIncorrect: "Term life insurance provides affordable coverage when you're young and healthy, perfect for protecting dependents during your working years."
+      correctAnswer: 1,
+      explanation: "Employer matching is free money, and 401(k)s provide tax advantages for retirement savings."
+    },
+    challenge: {
+      description: "Your employer matches 50% of 401(k) contributions up to 6% of salary. Your salary is $50,000.",
+      question: "If you contribute 6%, how much total goes into your 401(k) annually?",
+      options: ["$3,000", "$4,500", "$6,000", "$9,000"],
+      correctAnswer: 1
     }
   },
   {
     id: 3,
-    title: "Estate Planning Basics",
-    description: "Essential documents and planning for your future",
+    title: "Basic Investing Concepts",
+    description: "Introduction to stocks, bonds, and investment fundamentals",
+    introCard: "Investing helps your money grow faster than savings accounts. Learn the basics of stocks, bonds, and how to build a simple investment portfolio.",
     flashcards: [
       {
-        term: "Will",
-        definition: "A legal document that specifies how your assets should be distributed after death and who should care for minor children."
+        term: "Stock",
+        definition: "A share of ownership in a company that can increase in value and may pay dividends."
       },
       {
-        term: "Trust",
-        definition: "A legal arrangement where assets are held by a trustee for the benefit of beneficiaries, often avoiding probate."
+        term: "Bond",
+        definition: "A loan you give to a company or government that pays you interest over time."
       },
       {
-        term: "Power of Attorney",
-        definition: "A legal document that gives someone the authority to make financial or medical decisions on your behalf if you're incapacitated."
+        term: "Mutual Fund",
+        definition: "An investment that pools money from many people to buy a diversified mix of stocks and bonds."
       },
       {
-        term: "Beneficiary",
-        definition: "A person designated to receive assets from accounts, insurance policies, or estate planning documents."
-      },
-      {
-        term: "Probate",
-        definition: "The legal process of validating a will and distributing assets after someone dies."
+        term: "Diversification",
+        definition: "Spreading investments across different types of assets to reduce risk."
       }
     ],
+    quiz: {
+      question: "Why is diversification important for young investors?",
+      options: [
+        "It guarantees you'll make money",
+        "It reduces risk by not putting all eggs in one basket",
+        "It's required by law",
+        "It makes investing more complicated"
+      ],
+      correctAnswer: 1,
+      explanation: "Diversification reduces risk because different investments perform well at different times."
+    },
     activity: {
-      id: "estate-planning-documents",
-      title: "Estate Planning Document Purposes",
-      description: "Match each situation to the appropriate estate planning document",
+      title: "Investment Types",
+      instruction: "Categorize these investment options by risk level:",
       items: [
-        { id: "1", content: "Who gets your savings account when you die", category: "will" },
-        { id: "2", content: "Someone to make medical decisions if you're unconscious", category: "power-attorney" },
-        { id: "3", content: "Avoiding probate for your home", category: "trust" },
-        { id: "4", content: "Who your 401(k) goes to", category: "beneficiary" },
-        { id: "5", content: "Who takes care of your minor children", category: "will" },
-        { id: "6", content: "Someone to pay your bills if you're hospitalized", category: "power-attorney" }
+        { id: "savings", text: "High-yield savings account" },
+        { id: "bonds", text: "Government bonds" },
+        { id: "stocks", text: "Individual company stocks" },
+        { id: "mutual", text: "Broad market mutual funds" },
+        { id: "crypto", text: "Cryptocurrency" }
       ],
       categories: [
-        { id: "will", title: "Will", description: "Asset distribution and guardianship" },
-        { id: "trust", title: "Trust", description: "Asset management and probate avoidance" },
-        { id: "power-attorney", title: "Power of Attorney", description: "Decision-making authority" },
-        { id: "beneficiary", title: "Beneficiary Designation", description: "Direct asset transfer" }
+        { id: "low", title: "Low Risk", correctItems: ["savings", "bonds"] },
+        { id: "medium", title: "Medium Risk", correctItems: ["mutual"] },
+        { id: "high", title: "High Risk", correctItems: ["stocks", "crypto"] }
       ]
     },
-    quiz: {
-      question: "Why should even young adults consider basic estate planning?",
+    challenge: {
+      description: "You have $5,000 to invest for retirement (40+ years away). You're comfortable with some risk.",
+      question: "What's the best investment strategy?",
       options: [
-        "Only wealthy people need estate planning",
-        "Everyone has some assets and should plan for unexpected events",
-        "Estate planning is only for people over 50",
-        "It's too expensive for young people"
+        "Put it all in a savings account",
+        "Buy stock in one company you like",
+        "Invest in a diversified stock market index fund",
+        "Buy cryptocurrency"
       ],
-      correctAnswerIndex: 1,
-      feedbackForIncorrect: "Even young adults have assets like bank accounts, cars, or retirement funds. Plus, unexpected events can happen at any age."
+      correctAnswer: 2
     }
   },
   {
     id: 4,
-    title: "Major Life Events",
-    description: "Financial planning for college, moving, weddings, and family",
+    title: "Insurance for Your Future",
+    description: "Understanding how insurance protects your financial future",
+    introCard: "Insurance might seem boring, but it protects everything you've worked for. Learn which types of insurance are essential and when you need them.",
     flashcards: [
       {
-        term: "Emergency Fund",
-        definition: "3-6 months of expenses saved for unexpected costs during major life transitions."
+        term: "Life Insurance",
+        definition: "Insurance that pays money to your beneficiaries if you die, protecting their financial future."
       },
       {
-        term: "Moving Costs",
-        definition: "Expenses for relocating including deposits, moving services, utility setup, and time off work."
+        term: "Disability Insurance",
+        definition: "Insurance that replaces income if you can't work due to illness or injury."
       },
       {
-        term: "Wedding Budget",
-        definition: "The total amount allocated for wedding expenses, typically 6-12 months of income for couples."
+        term: "Term Life Insurance",
+        definition: "Temporary life insurance that covers you for a specific period, usually much cheaper than permanent insurance."
       },
       {
-        term: "Childcare Costs",
-        definition: "Ongoing expenses for raising children including daycare, medical care, and education."
-      },
-      {
-        term: "College Costs",
-        definition: "Tuition, fees, room, board, and other expenses for higher education."
+        term: "Beneficiary",
+        definition: "The person or people who receive insurance money if something happens to you."
       }
     ],
-    activity: {
-      id: "life-event-costs",
-      title: "Life Event Cost Planning",
-      description: "Categorize these expenses by major life event",
-      items: [
-        { id: "1", content: "Security deposit and first month's rent", category: "moving" },
-        { id: "2", content: "Venue rental and catering", category: "wedding" },
-        { id: "3", content: "Tuition and textbooks", category: "college" },
-        { id: "4", content: "Crib, car seat, and baby clothes", category: "baby" },
-        { id: "5", content: "Moving truck and professional movers", category: "moving" },
-        { id: "6", content: "Wedding dress and tuxedo rental", category: "wedding" }
-      ],
-      categories: [
-        { id: "moving", title: "Moving Out", description: "Relocation expenses" },
-        { id: "wedding", title: "Wedding", description: "Ceremony and celebration costs" },
-        { id: "college", title: "College", description: "Education expenses" },
-        { id: "baby", title: "Having a Baby", description: "New parent costs" }
-      ]
-    },
     quiz: {
-      question: "What's the most important financial step before a major life event?",
+      question: "When do most people need life insurance?",
       options: [
-        "Take out a loan to cover all costs",
-        "Start saving well in advance and create a budget",
-        "Use credit cards for everything",
-        "Wait until the last minute to plan"
+        "As soon as they turn 18",
+        "When they have dependents who rely on their income",
+        "Only when they're very old",
+        "Never, it's a waste of money"
       ],
-      correctAnswerIndex: 1,
-      feedbackForIncorrect: "Planning and saving in advance helps you avoid debt and financial stress during major life transitions."
+      correctAnswer: 1,
+      explanation: "Life insurance is most important when others depend on your income, like a spouse or children."
+    },
+    challenge: {
+      description: "You're 25, single, with no dependents, and healthy. You have student loans your parents co-signed.",
+      question: "What insurance should be your priority?",
+      options: [
+        "Expensive whole life insurance",
+        "Term life insurance to cover student loans",
+        "No insurance needed yet",
+        "Only health insurance"
+      ],
+      correctAnswer: 1
     }
   },
   {
     id: 5,
-    title: "Long-Term Financial Goals",
-    description: "Building generational wealth and legacy planning",
+    title: "Estate Planning Basics",
+    description: "Simple steps to protect your assets and loved ones",
+    introCard: "Estate planning isn't just for the wealthy! Even young adults need basic documents to protect themselves and their loved ones in emergencies.",
     flashcards: [
       {
-        term: "Generational Wealth",
-        definition: "Assets and financial resources passed down from one generation to the next, creating lasting family financial security."
+        term: "Will",
+        definition: "A legal document that specifies how you want your assets distributed after you die."
       },
       {
-        term: "Legacy Planning",
-        definition: "The process of planning how to transfer wealth, values, and assets to future generations."
+        term: "Power of Attorney",
+        definition: "A document that gives someone authority to make financial decisions for you if you can't."
       },
       {
-        term: "Financial Independence",
-        definition: "Having enough passive income and assets to live without depending on employment income."
+        term: "Healthcare Directive",
+        definition: "Instructions about your medical care preferences if you can't communicate them yourself."
       },
       {
-        term: "Net Worth",
-        definition: "The total value of your assets minus your debts - a key measure of financial progress."
-      },
-      {
-        term: "Diversification",
-        definition: "Spreading investments across different asset types to reduce risk and maximize long-term growth."
+        term: "Beneficiary Designation",
+        definition: "Naming who receives assets from accounts like retirement plans or life insurance directly."
       }
     ],
     quiz: {
-      question: "What's the foundation of building long-term wealth?",
+      question: "What happens if you die without a will?",
       options: [
-        "Getting rich quick with risky investments",
-        "Consistently saving and investing over time",
-        "Winning the lottery",
-        "Only investing in the stock market"
+        "Your family automatically gets everything",
+        "The government takes all your money",
+        "State laws determine how assets are distributed",
+        "Nothing, you don't need a will when young"
       ],
-      correctAnswerIndex: 1,
-      feedbackForIncorrect: "Building wealth requires patience, consistency, and time. Regular saving and smart investing habits compound over decades."
+      correctAnswer: 2,
+      explanation: "Without a will, state intestacy laws determine asset distribution, which may not match your wishes."
+    },
+    challenge: {
+      description: "You're 23, have $15,000 in savings, a car, and want your sister to handle finances if you're incapacitated.",
+      question: "What documents do you need most urgently?",
+      options: [
+        "Just a will",
+        "Power of attorney and healthcare directive",
+        "Nothing until you're older",
+        "Only beneficiary designations"
+      ],
+      correctAnswer: 1
     }
   }
 ];
+
+export const futurePlanningMiniGame = {
+  title: "Future Plan Builder",
+  description: "Create a comprehensive financial plan for your future!",
+  scenario: "You're 22, just graduated, and starting your first job at $45,000/year. Build your financial foundation:",
+  categories: [
+    {
+      id: "emergency",
+      name: "Emergency Fund",
+      target: 6,
+      description: "Months of expenses saved"
+    },
+    {
+      id: "retirement",
+      name: "Retirement Savings",
+      target: 15,
+      description: "Percentage of income"
+    },
+    {
+      id: "insurance",
+      name: "Insurance Coverage",
+      options: ["Health", "Disability", "Term Life", "Renters/Auto"]
+    }
+  ]
+};

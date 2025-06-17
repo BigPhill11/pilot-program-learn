@@ -1,428 +1,287 @@
 
-export interface CreditFlashcard {
-  id: string;
-  term: string;
-  definition: string;
-}
-
-export interface CreditQuiz {
-  question: string;
-  options: string[];
-  correct: number;
-  explanation: string;
-}
-
-export interface CreditDragDropActivity {
-  instruction: string;
-  items: { id: string; text: string; category: string }[];
-  categories: { id: string; name: string }[];
-}
-
-export interface CreditScenario {
-  question: string;
-  context: string;
-  options: string[];
-  correct: number;
-  explanation: string;
-}
-
 export interface CreditLevel {
   id: number;
   title: string;
   description: string;
-  introCard: {
-    title: string;
-    content: string;
+  introCard: string;
+  flashcards: Array<{
+    term: string;
+    definition: string;
+  }>;
+  quiz: {
+    question: string;
+    options: string[];
+    correctAnswer: number;
+    explanation: string;
   };
-  flashcards: CreditFlashcard[];
-  quiz: CreditQuiz;
-  activity?: CreditDragDropActivity;
-  scenario?: CreditScenario;
-  takeaway: string;
-}
-
-export interface CreditMiniGameScenario {
-  step: number;
-  question: string;
-  context: string;
-  options: string[];
-  correct: number;
-  explanation: string;
-  scoreImpact: number;
-}
-
-export interface CreditMiniGameData {
-  title: string;
-  description: string;
-  startingScore: number;
-  targetScore: number;
-  scenarios: CreditMiniGameScenario[];
-  badge: {
+  activity?: {
     title: string;
+    instruction: string;
+    items: Array<{
+      id: string;
+      text: string;
+    }>;
+    categories: Array<{
+      id: string;
+      title: string;
+      correctItems: string[];
+    }>;
+  };
+  challenge: {
     description: string;
-    icon: string;
+    question: string;
+    options?: string[];
+    correctAnswer?: number;
   };
 }
 
 export const creditJourneyData: CreditLevel[] = [
   {
     id: 1,
-    title: "What Is Credit?",
-    description: "Understanding the basics of borrowing money",
-    introCard: {
-      title: "Credit is Trust in Action",
-      content: "Credit is borrowed money you agree to pay back later. It's a tool — and it comes with responsibility."
-    },
+    title: "What is Credit?",
+    description: "Understanding the fundamentals of credit and how it works",
+    introCard: "Credit is essentially borrowed money that you promise to pay back. Understanding how credit works is crucial for your financial future, affecting everything from apartment rentals to loan rates.",
     flashcards: [
       {
-        id: "credit-1",
         term: "Credit",
-        definition: "Money borrowed from a lender that must be paid back, usually with interest."
+        definition: "The ability to borrow money or access goods/services with the promise to pay back later, often with interest."
       },
       {
-        id: "credit-2",
-        term: "Lender",
-        definition: "A person or institution that loans money to borrowers."
+        term: "Credit Score",
+        definition: "A three-digit number (300-850) that represents your creditworthiness based on your credit history."
       },
       {
-        id: "credit-3",
-        term: "Borrower",
-        definition: "A person who receives money from a lender and agrees to pay it back."
+        term: "Credit Report",
+        definition: "A detailed record of your credit history, including accounts, payment history, and credit inquiries."
       },
       {
-        id: "credit-4",
-        term: "Loan",
-        definition: "An amount of money that is borrowed and expected to be paid back with interest."
+        term: "Creditworthiness",
+        definition: "A lender's assessment of how likely you are to repay borrowed money based on your financial history."
       }
     ],
     quiz: {
-      question: "What's another word for the person who gives you money to borrow?",
-      options: ["Borrower", "Lender", "Creditor", "Bank Manager"],
-      correct: 1,
-      explanation: "A lender is the person or institution that provides money to borrowers."
-    },
-    scenario: {
-      question: "Your phone breaks and you can't afford a new one. How could credit help or hurt?",
-      context: "You need a phone for work and school, but a new one costs $600.",
+      question: "What does a higher credit score typically mean?",
       options: [
-        "Use a credit card to buy it immediately",
-        "Get a personal loan with high interest",
-        "Save up for a few months first",
-        "Buy a cheaper used phone with credit"
+        "You're more likely to be approved for loans with better terms",
+        "You have more money in your bank account",
+        "You spend more money monthly",
+        "You have a higher income"
       ],
-      correct: 3,
-      explanation: "Saving up first avoids debt. If you must use credit, choose the most affordable option."
+      correctAnswer: 0,
+      explanation: "A higher credit score indicates you're a lower-risk borrower, leading to better loan terms and interest rates."
     },
-    takeaway: "Credit is a tool - use it wisely and only when necessary."
+    challenge: {
+      description: "Your friend wants to rent an apartment but has no credit history.",
+      question: "What advice would you give them?",
+      options: [
+        "Start building credit now with a secured card or become an authorized user",
+        "Don't worry about credit, it's not important",
+        "Only use cash for everything",
+        "Wait until you're 30 to think about credit"
+      ],
+      correctAnswer: 0
+    }
   },
   {
     id: 2,
-    title: "What Is a Credit Score?",
-    description: "Your financial report card explained",
-    introCard: {
-      title: "Your Financial GPA",
-      content: "A credit score is like a financial GPA. It shows how trustworthy you are with borrowed money."
-    },
+    title: "Credit Reports & Scores",
+    description: "Learn how credit reports are created and what affects your credit score",
+    introCard: "Your credit report is like your financial report card. It tracks your borrowing history and payment behavior, which determines your credit score.",
     flashcards: [
       {
-        id: "score-1",
-        term: "Credit Score",
-        definition: "A three-digit number (300-850) that represents your creditworthiness."
+        term: "FICO Score",
+        definition: "The most common credit scoring model, ranging from 300-850, used by most lenders to assess credit risk."
       },
       {
-        id: "score-2",
-        term: "FICO",
-        definition: "The most common credit scoring model, ranging from 300 to 850."
+        term: "Credit Bureau",
+        definition: "Companies (Experian, Equifax, TransUnion) that collect and maintain credit information on consumers."
       },
       {
-        id: "score-3",
-        term: "Payment History",
-        definition: "A record of whether you've paid your bills on time. Makes up 35% of your credit score."
+        term: "Hard Inquiry",
+        definition: "A credit check that occurs when you apply for credit, which can temporarily lower your credit score."
       },
       {
-        id: "score-4",
-        term: "Credit Utilization",
-        definition: "The percentage of available credit you're using. Ideally should be under 30%."
-      },
-      {
-        id: "score-5",
-        term: "Credit Report",
-        definition: "A detailed report of your credit history, including accounts, payments, and inquiries."
+        term: "Soft Inquiry",
+        definition: "A credit check that doesn't affect your score, like checking your own credit or pre-qualification offers."
       }
     ],
     quiz: {
-      question: "Which of these is the biggest factor in your credit score?",
-      options: ["Credit utilization", "Payment history", "Length of credit history", "Types of credit"],
-      correct: 1,
-      explanation: "Payment history makes up 35% of your credit score - the largest single factor."
-    },
-    scenario: {
-      question: "You miss a credit card payment. What happens to your score?",
-      context: "You forgot to pay your credit card bill and it's now 30 days late.",
+      question: "How often should you check your credit report?",
       options: [
-        "Nothing happens for the first missed payment",
-        "Your score drops immediately by 100+ points",
-        "Your score may drop by 60-100 points",
-        "Only your credit limit is affected"
+        "Never, it will hurt your score",
+        "At least once per year from each credit bureau",
+        "Only when applying for a loan",
+        "Every day"
       ],
-      correct: 2,
-      explanation: "A 30-day late payment can cause your score to drop significantly, especially if you have good credit."
+      correctAnswer: 1,
+      explanation: "You should check your credit report at least annually from each bureau to monitor for errors and identity theft."
     },
-    takeaway: "Payment history is the most important factor - always pay on time!"
+    challenge: {
+      description: "You notice an error on your credit report - a credit card you never opened.",
+      question: "What should you do first?",
+      options: [
+        "Ignore it, errors fix themselves",
+        "File a dispute with the credit bureau immediately",
+        "Wait to see if it affects your score",
+        "Pay the debt to avoid problems"
+      ],
+      correctAnswer: 1
+    }
   },
   {
     id: 3,
-    title: "How to Build Credit",
-    description: "Starting your credit journey the right way",
-    introCard: {
-      title: "Building Trust Takes Time",
-      content: "You don't need to be rich to build credit — just consistent. It's all about showing lenders they can trust you."
-    },
+    title: "Building Credit from Scratch",
+    description: "Practical strategies for establishing your first credit history",
+    introCard: "Starting your credit journey can seem overwhelming, but there are several safe and effective ways to begin building a positive credit history.",
     flashcards: [
       {
-        id: "build-1",
+        term: "Secured Credit Card",
+        definition: "A credit card backed by a cash deposit that serves as your credit limit, perfect for building credit."
+      },
+      {
         term: "Authorized User",
-        definition: "Someone added to another person's credit card account who can use the card."
+        definition: "Someone added to another person's credit card account who can use the card but isn't responsible for payments."
       },
       {
-        id: "build-2",
-        term: "Student Credit Card",
-        definition: "A credit card designed for students with limited credit history."
-      },
-      {
-        id: "build-3",
-        term: "Secured Card",
-        definition: "A credit card backed by a cash deposit that serves as collateral."
-      },
-      {
-        id: "build-4",
         term: "Credit Builder Loan",
-        definition: "A loan designed to help people build credit by making on-time payments."
+        definition: "A small loan designed specifically to help people build credit history, where you pay first then receive the money."
+      },
+      {
+        term: "Student Credit Card",
+        definition: "Credit cards designed for students with no credit history, often with lower credit limits and educational resources."
       }
     ],
     quiz: {
-      question: "Which method helps you build credit using someone else's account?",
-      options: ["Secured credit card", "Authorized user", "Student loan", "Personal loan"],
-      correct: 1,
-      explanation: "Becoming an authorized user on someone else's account can help build your credit history."
-    },
-    activity: {
-      instruction: "Choose the best path to start building credit at age 18:",
-      items: [
-        { id: "path1", text: "Become an authorized user on parent's card", category: "good" },
-        { id: "path2", text: "Apply for 5 credit cards at once", category: "bad" },
-        { id: "path3", text: "Get a secured credit card", category: "good" },
-        { id: "path4", text: "Take out a large personal loan", category: "bad" },
-        { id: "path5", text: "Apply for a student credit card", category: "good" },
-        { id: "path6", text: "Use only debit cards forever", category: "bad" }
+      question: "What's the safest way for a student to start building credit?",
+      options: [
+        "Apply for multiple credit cards at once",
+        "Get a secured credit card or become an authorized user",
+        "Take out a large personal loan",
+        "Only use debit cards"
       ],
-      categories: [
-        { id: "good", name: "Good Ways to Start" },
-        { id: "bad", name: "Avoid These Methods" }
-      ]
+      correctAnswer: 1,
+      explanation: "Secured cards and authorized user status are low-risk ways to start building credit history responsibly."
     },
-    takeaway: "Start small and be patient - good credit takes time to build."
+    challenge: {
+      description: "You're 18 with no credit history and want to start building credit responsibly.",
+      question: "Which strategy would be most effective?",
+      options: [
+        "Wait until you have a full-time job",
+        "Start with a secured card, make small purchases, and pay in full monthly",
+        "Apply for store credit cards at every retailer",
+        "Only focus on debit cards and cash"
+      ],
+      correctAnswer: 1
+    }
   },
   {
     id: 4,
-    title: "What Hurts Your Credit?",
-    description: "Avoiding the credit score killers",
-    introCard: {
-      title: "Protect Your Progress",
-      content: "Good credit takes time to build — and seconds to damage. Let's avoid the traps."
-    },
+    title: "Managing Credit Responsibly",
+    description: "Best practices for maintaining and improving your credit score",
+    introCard: "Having credit is just the beginning. Managing it responsibly is what builds a strong credit score and opens financial opportunities.",
     flashcards: [
       {
-        id: "hurt-1",
-        term: "Late Payment",
-        definition: "A payment made after the due date, which can negatively impact your credit score."
+        term: "Payment History",
+        definition: "The record of whether you make credit payments on time, which makes up 35% of your credit score."
       },
       {
-        id: "hurt-2",
-        term: "Default",
-        definition: "Failure to pay back a loan according to the agreed terms."
+        term: "Credit Utilization",
+        definition: "The percentage of available credit you're using, ideally kept below 30% and preferably under 10%."
       },
       {
-        id: "hurt-3",
-        term: "Hard Inquiry",
-        definition: "A credit check that occurs when you apply for credit and can temporarily lower your score."
+        term: "Credit Mix",
+        definition: "Having different types of credit accounts (cards, auto loans, etc.) which can positively impact your score."
       },
       {
-        id: "hurt-4",
-        term: "Maxing Out",
-        definition: "Using all or most of your available credit limit."
-      },
-      {
-        id: "hurt-5",
-        term: "Collections",
-        definition: "When unpaid debts are sold to collection agencies."
+        term: "Length of Credit History",
+        definition: "How long you've had credit accounts open, which accounts for 15% of your credit score."
       }
     ],
     quiz: {
-      question: "What happens if you max out your credit card and don't pay it off?",
-      options: [
-        "Your credit score improves",
-        "Nothing happens to your score",
-        "Your credit score drops significantly",
-        "You get a higher credit limit"
-      ],
-      correct: 2,
-      explanation: "High credit utilization can cause your credit score to drop significantly."
+      question: "If you have a $1,000 credit limit, what's the maximum balance you should carry to maintain good credit utilization?",
+      options: ["$500", "$300", "$100", "$1,000"],
+      correctAnswer: 1,
+      explanation: "Keeping utilization below 30% ($300) is recommended, but below 10% ($100) is even better for your credit score."
     },
-    activity: {
-      instruction: "Sort these habits into good or bad for your credit:",
-      items: [
-        { id: "habit1", text: "Paying bills on time every month", category: "good" },
-        { id: "habit2", text: "Missing credit card payments", category: "bad" },
-        { id: "habit3", text: "Keeping credit utilization under 30%", category: "good" },
-        { id: "habit4", text: "Applying for multiple cards in one day", category: "bad" },
-        { id: "habit5", text: "Checking your credit report regularly", category: "good" },
-        { id: "habit6", text: "Ignoring credit card statements", category: "bad" }
-      ],
-      categories: [
-        { id: "good", name: "Good Credit Habits" },
-        { id: "bad", name: "Bad Credit Habits" }
-      ]
-    },
-    takeaway: "Avoid late payments and high balances - these hurt your score the most."
+    challenge: {
+      description: "You have two credit cards: one with $500 limit and $150 balance, another with $1,000 limit and $200 balance.",
+      question: "What's your overall credit utilization ratio?",
+      options: ["23%", "35%", "20%", "30%"],
+      correctAnswer: 0
+    }
   },
   {
     id: 5,
-    title: "Using Credit Responsibly",
-    description: "Smart habits for lifelong credit success",
-    introCard: {
-      title: "Credit is a Tool, Not Free Money",
-      content: "Credit is a tool, not free money. Smart habits lead to better loans, apartments, and even jobs."
-    },
+    title: "Credit Mistakes to Avoid",
+    description: "Common pitfalls that can damage your credit and how to avoid them",
+    introCard: "Learning what NOT to do with credit is just as important as learning best practices. Avoid these common mistakes that can hurt your credit score.",
     flashcards: [
       {
-        id: "responsible-1",
-        term: "Credit Limit",
-        definition: "The maximum amount you can borrow on a credit card or line of credit."
+        term: "Minimum Payment",
+        definition: "The smallest amount you must pay monthly to keep your account current, but paying only this leads to interest charges."
       },
       {
-        id: "responsible-2",
-        term: "On-Time Payment",
-        definition: "Making payments by or before the due date to maintain good credit."
+        term: "Credit Card Debt",
+        definition: "Money owed on credit cards that carries high interest rates, often 15-25% annually."
       },
       {
-        id: "responsible-3",
-        term: "Utilization Ratio",
-        definition: "The percentage of available credit you're using. Keep it under 30%."
+        term: "Late Payment Fee",
+        definition: "A penalty charge for making credit card payments after the due date, typically $25-$40."
       },
       {
-        id: "responsible-4",
-        term: "Annual Fee",
-        definition: "A yearly charge for having a credit card, regardless of usage."
-      },
-      {
-        id: "responsible-5",
-        term: "APR",
-        definition: "Annual Percentage Rate - the yearly interest rate charged on credit card balances."
+        term: "Account Closure",
+        definition: "Closing a credit account, which can hurt your credit score by reducing available credit and shortening credit history."
       }
     ],
     quiz: {
-      question: "How much of your credit limit should you use to maintain a good score?",
-      options: ["Up to 90%", "Around 50%", "Less than 30%", "Exactly 100%"],
-      correct: 2,
-      explanation: "Keeping your credit utilization under 30% helps maintain a good credit score."
-    },
-    scenario: {
-      question: "You get your first credit card with a $300 limit. What's the smart approach?",
-      context: "You just received your first credit card with a $300 credit limit.",
+      question: "What's the biggest mistake people make with their first credit card?",
       options: [
-        "Spend the full $300 immediately",
-        "Use it for small purchases and pay off monthly",
-        "Keep it locked away and never use it",
-        "Lend it to friends to help them out"
+        "Checking their credit score too often",
+        "Only making minimum payments and carrying a balance",
+        "Using it for small purchases",
+        "Paying the full balance every month"
       ],
-      correct: 1,
-      explanation: "Using it for small purchases and paying the full balance monthly builds positive payment history."
+      correctAnswer: 1,
+      explanation: "Making only minimum payments leads to expensive interest charges and potential debt problems."
     },
-    takeaway: "Use credit wisely - small purchases, full payments, and patience build great credit."
+    challenge: {
+      description: "Your friend maxed out their $2,000 credit card and only makes minimum payments of $50/month with 22% APR.",
+      question: "What would you advise them?",
+      options: [
+        "Continue minimum payments, it's fine",
+        "Pay as much as possible above minimum to reduce interest",
+        "Close the card immediately",
+        "Apply for more credit cards"
+      ],
+      correctAnswer: 1
+    }
   }
 ];
 
-export const creditMiniGameData: CreditMiniGameData = {
-  title: "Credit Score Builder Challenge",
-  description: "Make smart financial decisions to build your credit score from 500 to 750+",
-  startingScore: 500,
-  targetScore: 750,
+export const creditMiniGame = {
+  title: "Credit Score Simulator",
+  description: "Make financial decisions and see how they affect your credit score!",
+  initialScore: 650,
   scenarios: [
     {
-      step: 1,
-      question: "You just got your first credit card. What should you do first?",
-      context: "You're 18 and just received your first credit card with a $500 limit.",
+      id: 1,
+      situation: "You have a $500 credit card bill due tomorrow but only $200 in your account.",
       options: [
-        "Go shopping and spend $400 right away",
-        "Make a small purchase and pay it off immediately",
-        "Let it sit unused in your wallet",
-        "Give it to a friend to help them buy something"
-      ],
-      correct: 1,
-      explanation: "Making small purchases and paying them off immediately starts building positive payment history.",
-      scoreImpact: 50
+        { text: "Pay $200 now, rest next week", scoreChange: -15 },
+        { text: "Pay minimum $25 only", scoreChange: -5 },
+        { text: "Skip payment this month", scoreChange: -30 },
+        { text: "Ask family for help to pay full amount", scoreChange: +5 }
+      ]
     },
     {
-      step: 2,
-      question: "It's time to pay your credit card bill. What's the best strategy?",
-      context: "You have a $50 balance on your card and the minimum payment is $15.",
+      id: 2,
+      situation: "You want to buy a $800 laptop and have a $1,000 credit limit with $100 current balance.",
       options: [
-        "Pay only the minimum ($15)",
-        "Pay the full balance ($50)",
-        "Skip this payment since it's small",
-        "Pay $25 and carry a small balance"
-      ],
-      correct: 1,
-      explanation: "Paying the full balance avoids interest charges and shows responsible credit management.",
-      scoreImpact: 40
-    },
-    {
-      step: 3,
-      question: "You want to buy a $200 item but only have $50 in cash. What should you do?",
-      context: "Your credit card has a $500 limit with currently no balance.",
-      options: [
-        "Put it all on the credit card and pay minimum payments",
-        "Save up the remaining $150 first",
-        "Use the credit card but pay it off within a month",
-        "Ask friends to lend you money instead"
-      ],
-      correct: 2,
-      explanation: "Using credit responsibly means having a plan to pay it off quickly.",
-      scoreImpact: 30
-    },
-    {
-      step: 4,
-      question: "You've been managing credit well for 6 months. A store offers you another credit card with rewards. Should you apply?",
-      context: "You have one credit card that you manage well. A store offers 10% off if you open their card.",
-      options: [
-        "Apply immediately for the discount",
-        "Research the terms first, then decide",
-        "Apply for multiple store cards for more discounts",
-        "Never get another credit card"
-      ],
-      correct: 1,
-      explanation: "Research is key. Too many applications can hurt your score, but a second card might help if managed well.",
-      scoreImpact: 35
-    },
-    {
-      step: 5,
-      question: "Your credit limit was increased from $500 to $1,000. How should you adjust your spending?",
-      context: "Your credit card company raised your limit due to good payment history.",
-      options: [
-        "Start spending up to the new limit",
-        "Keep spending the same amount as before",
-        "Cancel the card since you don't need the higher limit",
-        "Use exactly half of the new limit"
-      ],
-      correct: 1,
-      explanation: "A higher limit improves your utilization ratio if you maintain the same spending level.",
-      scoreImpact: 45
+        { text: "Charge it all to the card", scoreChange: -20 },
+        { text: "Save up and pay cash", scoreChange: +10 },
+        { text: "Charge half, pay half cash", scoreChange: -5 },
+        { text: "Apply for a new card with higher limit", scoreChange: -10 }
+      ]
     }
-  ],
-  badge: {
-    title: "Credit Champ",
-    description: "You've mastered the fundamentals of building and maintaining excellent credit!",
-    icon: "🏆"
-  }
+  ]
 };
