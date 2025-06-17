@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle2, Trophy, ChevronRight, TrendingUp } from 'lucide-react';
-import { creditMiniGameData } from '@/data/credit-journey-data';
+import { creditMiniGame } from '@/data/credit-journey-data';
 
 interface CreditMiniGameProps {
   onComplete: () => void;
@@ -13,7 +13,7 @@ interface CreditMiniGameProps {
 const CreditMiniGame: React.FC<CreditMiniGameProps> = ({ onComplete }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
-  const [currentScore, setCurrentScore] = useState(creditMiniGameData.startingScore);
+  const [currentScore, setCurrentScore] = useState(creditMiniGame.startingScore);
   const [showResults, setShowResults] = useState(false);
   const [gameCompleted, setGameCompleted] = useState(false);
 
@@ -21,12 +21,12 @@ const CreditMiniGame: React.FC<CreditMiniGameProps> = ({ onComplete }) => {
     const newAnswers = [...answers, answerIndex];
     setAnswers(newAnswers);
 
-    const currentScenario = creditMiniGameData.scenarios[currentStep];
+    const currentScenario = creditMiniGame.scenarios[currentStep];
     const isCorrect = answerIndex === currentScenario.correct;
     const newScore = isCorrect ? currentScore + currentScenario.scoreImpact : Math.max(300, currentScore - 20);
     setCurrentScore(newScore);
 
-    if (currentStep < creditMiniGameData.scenarios.length - 1) {
+    if (currentStep < creditMiniGame.scenarios.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
       setShowResults(true);
@@ -56,12 +56,12 @@ const CreditMiniGame: React.FC<CreditMiniGameProps> = ({ onComplete }) => {
     return (
       <Card className="border-2 border-green-400 bg-gradient-to-br from-green-50 to-blue-50">
         <CardContent className="p-8 text-center">
-          <div className="text-6xl mb-4">{creditMiniGameData.badge.icon}</div>
+          <div className="text-6xl mb-4">{creditMiniGame.badge.icon}</div>
           <h2 className="text-2xl font-bold text-green-700 mb-2">Congratulations!</h2>
           <Badge className="bg-green-500 text-white text-lg px-4 py-2 mb-4">
-            {creditMiniGameData.badge.title}
+            {creditMiniGame.badge.title}
           </Badge>
-          <p className="text-muted-foreground mb-6">{creditMiniGameData.badge.description}</p>
+          <p className="text-muted-foreground mb-6">{creditMiniGame.badge.description}</p>
           <div className="flex justify-center">
             <Trophy className="h-12 w-12 text-green-500" />
           </div>
@@ -72,7 +72,7 @@ const CreditMiniGame: React.FC<CreditMiniGameProps> = ({ onComplete }) => {
 
   if (showResults) {
     const finalScore = currentScore;
-    const improvement = finalScore - creditMiniGameData.startingScore;
+    const improvement = finalScore - creditMiniGame.startingScore;
 
     return (
       <Card>
@@ -97,7 +97,7 @@ const CreditMiniGame: React.FC<CreditMiniGameProps> = ({ onComplete }) => {
           </div>
 
           <div className="space-y-4">
-            {creditMiniGameData.scenarios.map((scenario, index) => {
+            {creditMiniGame.scenarios.map((scenario, index) => {
               const userAnswer = answers[index];
               const isCorrect = userAnswer === scenario.correct;
               
@@ -147,7 +147,7 @@ const CreditMiniGame: React.FC<CreditMiniGameProps> = ({ onComplete }) => {
 
           <div className="text-center">
             <Button onClick={handleFinish} size="lg" className="w-full">
-              {finalScore >= creditMiniGameData.targetScore ? '🎉 Claim Your Badge!' : '🏆 Claim Your Badge!'}
+              {finalScore >= creditMiniGame.targetScore ? '🎉 Claim Your Badge!' : '🏆 Claim Your Badge!'}
             </Button>
           </div>
         </CardContent>
@@ -155,18 +155,18 @@ const CreditMiniGame: React.FC<CreditMiniGameProps> = ({ onComplete }) => {
     );
   }
 
-  const currentScenario = creditMiniGameData.scenarios[currentStep];
+  const currentScenario = creditMiniGame.scenarios[currentStep];
 
   return (
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>{creditMiniGameData.title}</CardTitle>
+          <CardTitle>{creditMiniGame.title}</CardTitle>
           <Badge variant="outline">
-            Step {currentStep + 1} of {creditMiniGameData.scenarios.length}
+            Step {currentStep + 1} of {creditMiniGame.scenarios.length}
           </Badge>
         </div>
-        <p className="text-muted-foreground">{creditMiniGameData.description}</p>
+        <p className="text-muted-foreground">{creditMiniGame.description}</p>
         <div className="flex items-center justify-center gap-4 mt-4">
           <div className="text-center">
             <div className={`text-2xl font-bold ${getScoreColor(currentScore)}`}>
@@ -176,7 +176,7 @@ const CreditMiniGame: React.FC<CreditMiniGameProps> = ({ onComplete }) => {
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-green-600">
-              {creditMiniGameData.targetScore}
+              {creditMiniGame.targetScore}
             </div>
             <p className="text-xs text-muted-foreground">Target Score</p>
           </div>
