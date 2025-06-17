@@ -12,99 +12,69 @@ serve(async (req) => {
   }
 
   try {
-    const API_KEY = Deno.env.get('FMP_API_KEY')
+    const YAHOO_FINANCE_API_KEY = Deno.env.get('YAHOO_FINANCE_API_KEY')
     
-    if (!API_KEY) {
-      throw new Error('FMP_API_KEY not found')
+    if (!YAHOO_FINANCE_API_KEY) {
+      throw new Error('YAHOO_FINANCE_API_KEY not found')
     }
 
-    // Fetch general news with finance/economy focus
-    const generalNewsResponse = await fetch(
-      `https://financialmodelingprep.com/api/v3/fmp/articles?page=0&size=20&apikey=${API_KEY}`
-    )
-    
-    if (!generalNewsResponse.ok) {
-      throw new Error(`General news API error: ${generalNewsResponse.status}`)
-    }
+    console.log('Fetching headlines from Yahoo Finance API...')
 
-    const generalNews = await generalNewsResponse.json()
-
-    // Fetch stock news for major companies
-    const stockNewsResponse = await fetch(
-      `https://financialmodelingprep.com/api/v3/stock_news?tickers=AAPL,MSFT,GOOGL,AMZN,TSLA&limit=10&apikey=${API_KEY}`
-    )
-    
-    let stockNews = []
-    if (stockNewsResponse.ok) {
-      stockNews = await stockNewsResponse.json()
-    }
-
-    // Combine and filter news
-    const allNews = [...(generalNews.content || []), ...stockNews]
-    
-    // Filter for finance/economy/market related content
-    const relevantNews = allNews.filter(article => {
-      const title = article.title?.toLowerCase() || ''
-      const text = article.text?.toLowerCase() || ''
-      
-      // Keywords that indicate financial/economic relevance
-      const financeKeywords = [
-        'market', 'stock', 'economy', 'financial', 'finance', 'trading', 'investment',
-        'earnings', 'revenue', 'profit', 'economic', 'federal reserve', 'fed', 'inflation',
-        'gdp', 'interest rate', 'bank', 'wall street', 'nasdaq', 's&p', 'dow jones',
-        'cryptocurrency', 'bitcoin', 'merger', 'acquisition', 'ipo', 'dividend'
-      ]
-      
-      // Lifestyle keywords to filter out
-      const lifestyleKeywords = [
-        'celebrity', 'entertainment', 'sports', 'fashion', 'lifestyle', 'travel',
-        'food', 'health', 'fitness', 'relationship', 'dating', 'movie', 'music'
-      ]
-      
-      const hasFinanceKeywords = financeKeywords.some(keyword => 
-        title.includes(keyword) || text.includes(keyword)
-      )
-      
-      const hasLifestyleKeywords = lifestyleKeywords.some(keyword => 
-        title.includes(keyword) || text.includes(keyword)
-      )
-      
-      return hasFinanceKeywords && !hasLifestyleKeywords
-    })
-
-    // Process headlines with enhanced summaries
-    const processedHeadlines = relevantNews.slice(0, 10).map(article => {
-      const sentences = article.text?.split('.').filter(s => s.trim().length > 20) || []
-      
-      // Create exactly 3-sentence summary
-      let summary = ''
-      if (sentences.length >= 3) {
-        summary = sentences.slice(0, 3).map(s => s.trim()).join('. ') + '.'
-      } else if (sentences.length > 0) {
-        // If less than 3 sentences, use what we have and pad with title info
-        summary = sentences.join('. ').trim()
-        if (!summary.endsWith('.')) summary += '.'
-        // Add more context from title if needed
-        if (sentences.length < 3) {
-          summary += ` This news relates to ${article.title.toLowerCase()}.`
+    // Use Yahoo Finance API for financial news
+    const response = await fetch(
+      'https://yahoo-finance15.p.rapidapi.com/api/v1/markets/news',
+      {
+        method: 'GET',
+        headers: {
+          'X-RapidAPI-Key': YAHOO_FINANCE_API_KEY,
+          'X-RapidAPI-Host': 'yahoo-finance15.p.rapidapi.com'
         }
+      }
+    )
+    
+    if (!response.ok) {
+      console.error('Yahoo Finance API error:', response.status, response.statusText)
+      throw new Error(`Yahoo Finance API error: ${response.status}`)
+    }
+
+    const data = await response.json()
+    console.log('Yahoo Finance API response received')
+
+    // Transform the data to match our expected format
+    const articles = data.body || []
+    
+    // Process headlines with enhanced summaries
+    const processedHeadlines = articles.slice(0, 10).map((article: any, index: number) => {
+      // Create summary from article content
+      let summary = ''
+      if (article.content && article.content.length > 100) {
+        // Take first few sentences up to 300 characters
+        const sentences = article.content.split('.').filter((s: string) => s.trim().length > 20)
+        summary = sentences.slice(0, 3).join('. ').trim()
+        if (summary.length > 300) {
+          summary = summary.substring(0, 300) + '...'
+        }
+        if (!summary.endsWith('.') && !summary.endsWith('...')) {
+          summary += '.'
+        }
+      } else if (article.summary) {
+        summary = article.summary
       } else {
-        // Fallback to title-based summary
         summary = `${article.title}. This is a developing story in the financial markets. More details are expected to emerge as the situation unfolds.`
       }
       
       // Create TL;DR (extract key points)
-      const tldr = extractKeyPoints(article.title, article.text)
+      const tldr = extractKeyPoints(article.title, article.content || article.summary || '')
       
       return {
-        id: article.id || Math.random().toString(36).substr(2, 9),
-        title: article.title,
+        id: article.uuid || `headline-${index}`,
+        title: article.title || 'Market Update',
         summary: summary,
         tldr: tldr,
-        url: article.url || '#',
-        publishedDate: article.publishedDate || article.date,
-        site: article.site || 'Financial News',
-        image: article.image
+        url: article.link || '#',
+        publishedDate: article.published_at || new Date().toISOString(),
+        site: article.publisher || 'Yahoo Finance',
+        image: article.thumbnail?.resolutions?.[0]?.url || null
       }
     })
 
