@@ -1,3 +1,4 @@
+
 import React from 'react';
 import MarketIndicatorCard from '@/components/MarketIndicatorCard';
 import { useQuery } from '@tanstack/react-query';
@@ -15,22 +16,48 @@ const fallbackIndicators = [
 ];
 
 const MarketIndicatorsSection = () => {
-  // Function to fetch data from our new Supabase edge function
-  const fetchMarketData = async () => {
+  // Function to fetch data from MarketStack
+  const fetchMarketStackData = async () => {
+    const { data, error } = await supabase.functions.invoke('marketstack-data');
+    if (error) {
+      throw new Error(error.message);
+    }
+    if (!data || !Array.isArray(data)) {
+        throw new Error("Invalid data format received from MarketStack");
+    }
+    return data;
+  };
+
+  // Function to fetch data from our original market-data function
+  const fetchOriginalMarketData = async () => {
     const { data, error } = await supabase.functions.invoke('market-data');
     if (error) {
       throw new Error(error.message);
     }
     if (!data || !Array.isArray(data)) {
-        throw new Error("Invalid data format received from function");
+        throw new Error("Invalid data format received from original function");
     }
     return data;
   };
 
-  // Using react-query to handle fetching, caching, and loading/error states
+  // Try MarketStack first, fallback to original market-data function
   const { data: marketIndicators, isLoading, isError, error } = useQuery({
     queryKey: ['marketData'],
-    queryFn: fetchMarketData,
+    queryFn: async () => {
+      try {
+        // Try MarketStack first
+        return await fetchMarketStackData();
+      } catch (marketStackError) {
+        console.log("MarketStack failed, trying original market-data:", marketStackError);
+        try {
+          // Fallback to original function
+          return await fetchOriginalMarketData();
+        } catch (originalError) {
+          console.error("Both market data sources failed:", originalError);
+          throw originalError;
+        }
+      }
+    },
     staleTime: 1000 * 60 * 5, // Re-fetch data every 5 minutes
   });
 
