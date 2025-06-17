@@ -7,19 +7,22 @@ import { CheckCircle2, Play, ArrowRight } from 'lucide-react';
 import FinancialSafetyFlashcard from './FinancialSafetyFlashcard';
 import FinancialSafetyDragDrop from './FinancialSafetyDragDrop';
 import InteractiveQuiz from '@/components/InteractiveQuiz';
+import { FinancialSafetyLevel as FinancialSafetyLevelType } from '@/data/financial-safety-journey-data';
 
 interface FinancialSafetyLevelProps {
-  levelNumber: number;
-  levelData: any;
-  onComplete: () => void;
+  level: FinancialSafetyLevelType;
+  isUnlocked: boolean;
   isCompleted: boolean;
+  onComplete: () => void;
+  onQuizComplete: (isCorrect: boolean) => void;
 }
 
 const FinancialSafetyLevel: React.FC<FinancialSafetyLevelProps> = ({
-  levelNumber,
-  levelData,
+  level,
+  isUnlocked,
+  isCompleted,
   onComplete,
-  isCompleted
+  onQuizComplete
 }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [masteredFlashcards, setMasteredFlashcards] = useState<string[]>([]);
@@ -44,12 +47,13 @@ const FinancialSafetyLevel: React.FC<FinancialSafetyLevelProps> = ({
     if (isCorrect) {
       handleActivityComplete('quiz');
     }
+    onQuizComplete(isCorrect);
   };
 
   const canProceedToNext = () => {
     switch (currentStep) {
       case 0: // Flashcards
-        return masteredFlashcards.length >= Math.ceil(levelData.flashcards.length * 0.75);
+        return masteredFlashcards.length >= Math.ceil(level.flashcards.length * 0.75);
       case 1: // Drag & Drop
         return completedActivities.includes('dragdrop');
       case 2: // Quiz
@@ -74,8 +78,19 @@ const FinancialSafetyLevel: React.FC<FinancialSafetyLevelProps> = ({
       <Card className="w-full border-purple-500">
         <CardContent className="p-6 text-center">
           <CheckCircle2 className="h-16 w-16 text-purple-500 mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-purple-700 mb-2">Level {levelNumber} Complete!</h3>
-          <p className="text-muted-foreground">You've mastered {levelData.title}</p>
+          <h3 className="text-xl font-bold text-purple-700 mb-2">Level {level.id} Complete!</h3>
+          <p className="text-muted-foreground">You've mastered {level.title}</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!isUnlocked) {
+    return (
+      <Card className="w-full opacity-50">
+        <CardContent className="p-6 text-center">
+          <h3 className="text-xl font-bold text-gray-500 mb-2">Level {level.id}: {level.title}</h3>
+          <p className="text-muted-foreground">Complete the previous level to unlock this content</p>
         </CardContent>
       </Card>
     );
@@ -86,7 +101,7 @@ const FinancialSafetyLevel: React.FC<FinancialSafetyLevelProps> = ({
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
-            <CardTitle>Level {levelNumber}: {levelData.title}</CardTitle>
+            <CardTitle>Level {level.id}: {level.title}</CardTitle>
             <div className="text-sm text-muted-foreground">
               Step {currentStep + 1} of {steps.length}
             </div>
@@ -107,11 +122,11 @@ const FinancialSafetyLevel: React.FC<FinancialSafetyLevelProps> = ({
           <div className="text-center mb-6">
             <h3 className="text-lg font-semibold mb-2">Study These Key Terms</h3>
             <p className="text-sm text-muted-foreground">
-              Master at least {Math.ceil(levelData.flashcards.length * 0.75)} terms to continue
+              Master at least {Math.ceil(level.flashcards.length * 0.75)} terms to continue
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {levelData.flashcards.map((flashcard: any, index: number) => (
+            {level.flashcards.map((flashcard, index) => (
               <FinancialSafetyFlashcard
                 key={index}
                 term={flashcard.term}
@@ -127,10 +142,10 @@ const FinancialSafetyLevel: React.FC<FinancialSafetyLevelProps> = ({
       {/* Drag & Drop Step */}
       {currentStep === 1 && (
         <FinancialSafetyDragDrop
-          title={levelData.dragDropActivity.title}
-          instruction={levelData.dragDropActivity.instruction}
-          items={levelData.dragDropActivity.items}
-          categories={levelData.dragDropActivity.categories}
+          title={level.dragDropActivity.title}
+          instruction={level.dragDropActivity.instruction}
+          items={level.dragDropActivity.items}
+          categories={level.dragDropActivity.categories}
           onComplete={() => handleActivityComplete('dragdrop')}
         />
       )}
@@ -140,11 +155,11 @@ const FinancialSafetyLevel: React.FC<FinancialSafetyLevelProps> = ({
         <Card>
           <CardContent className="p-6">
             <InteractiveQuiz
-              topicId={`safety-level-${levelNumber}`}
-              question={levelData.quiz.question}
-              options={levelData.quiz.options}
-              correctAnswerIndex={levelData.quiz.correctAnswer}
-              feedbackForIncorrect={levelData.quiz.explanation}
+              topicId={`safety-level-${level.id}`}
+              question={level.quiz.question}
+              options={level.quiz.options}
+              correctAnswerIndex={level.quiz.correctAnswer}
+              feedbackForIncorrect={level.quiz.explanation}
               onQuizComplete={handleQuizComplete}
               isCompleted={completedActivities.includes('quiz')}
             />
