@@ -65,7 +65,7 @@ const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({
       </div>
       
       {showIncorrectFeedback && (
-        <QuizFeedback type="incorrect" message={feedbackForIncorrected!} />
+        <QuizFeedback type="incorrect" message={feedbackForIncorrect!} />
       )}
 
       {showCompletedFeedback && (
