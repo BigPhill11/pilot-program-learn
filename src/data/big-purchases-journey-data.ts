@@ -266,7 +266,7 @@ export const bigPurchasesJourneyData: BigPurchasesLevel[] = [
         "Written warranty"
       ],
       correctAnswerIndex: 1,
-      feedbackForIncorrected: "Balloon payments can be a trap because they require a large sum at the end, which many people can't afford."
+      feedbackForIncorrect: "Balloon payments can be a trap because they require a large sum at the end, which many people can't afford."
     },
     activity: {
       instruction: "Identify red flags vs. good signs in contracts:",
