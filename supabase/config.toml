@@ -6,3 +6,9 @@ verify_jwt = false
 
 [functions.market-headlines]
 verify_jwt = false
+
+[functions.marketstack-data]
+verify_jwt = false
+
+[functions.fred-data]
+verify_jwt = false
