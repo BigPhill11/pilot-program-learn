@@ -5,10 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle2, ChevronRight, RotateCcw } from 'lucide-react';
-import InteractiveQuiz from '@/components/InteractiveQuiz';
-import BudgetFlashcard from './BudgetFlashcard';
-import BudgetDragDrop from './BudgetDragDrop';
 import { BudgetLevel } from '@/data/budgeting-journey-data';
+import { BudgetLevelStep, useBudgetLevelSteps } from './BudgetLevelSteps';
+import BudgetLevelContent from './BudgetLevelContent';
 
 interface BudgetLevelProps {
   level: BudgetLevel;
@@ -31,14 +30,8 @@ const BudgetLevelComponent: React.FC<BudgetLevelProps> = ({
   const [challengeCompleted, setChallengeCompleted] = useState(false);
   const [challengeCorrect, setChallengeCorrect] = useState(false);
 
-  const steps = [
-    'intro',
-    'flashcards',
-    'quiz',
-    ...(level.activity ? ['activity'] : []),
-    'challenge'
-  ];
-
+  const { getSteps } = useBudgetLevelSteps(level);
+  const steps = getSteps();
   const progressPercentage = ((currentStep + 1) / steps.length) * 100;
 
   const handleFlashcardMastered = (term: string) => {
@@ -75,7 +68,6 @@ const BudgetLevelComponent: React.FC<BudgetLevelProps> = ({
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      // Only complete if all requirements are met
       if (canProceedToNext()) {
         onComplete(level.id);
       }
@@ -107,97 +99,6 @@ const BudgetLevelComponent: React.FC<BudgetLevelProps> = ({
     );
   }
 
-  const renderCurrentStep = () => {
-    const step = steps[currentStep];
-
-    switch (step) {
-      case 'intro':
-        return (
-          <Card className="border-l-4 border-l-blue-500">
-            <CardContent className="p-6">
-              <h4 className="font-semibold text-lg mb-3">Welcome to Level {level.id}</h4>
-              <p className="text-muted-foreground leading-relaxed">{level.introCard}</p>
-            </CardContent>
-          </Card>
-        );
-
-      case 'flashcards':
-        return (
-          <div className="space-y-4">
-            <div className="text-center mb-4">
-              <h4 className="font-semibold text-lg mb-2">Learn Key Terms</h4>
-              <p className="text-sm text-muted-foreground">
-                Master at least {Math.ceil(level.flashcards.length / 2)} terms to continue
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Progress: {masteredFlashcards.size}/{level.flashcards.length} terms learned
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {level.flashcards.map((flashcard, index) => (
-                <BudgetFlashcard
-                  key={index}
-                  term={flashcard.term}
-                  definition={flashcard.definition}
-                  onMastered={() => handleFlashcardMastered(flashcard.term)}
-                  isMastered={masteredFlashcards.has(flashcard.term)}
-                />
-              ))}
-            </div>
-          </div>
-        );
-
-      case 'quiz':
-        return (
-          <div>
-            <div className="text-center mb-4">
-              <h4 className="font-semibold text-lg mb-2">Knowledge Check</h4>
-              <p className="text-sm text-muted-foreground">You must answer correctly to continue</p>
-            </div>
-            <InteractiveQuiz
-              topicId={`budget-level-${level.id}-quiz`}
-              question={level.quiz.question}
-              options={level.quiz.options}
-              correctAnswerIndex={level.quiz.correctAnswer}
-              feedbackForIncorrect={level.quiz.explanation}
-              onQuizComplete={handleQuizComplete}
-              isCompleted={quizCompleted && quizCorrect}
-            />
-          </div>
-        );
-
-      case 'activity':
-        return level.activity ? (
-          <BudgetDragDrop
-            activity={level.activity}
-            onComplete={handleActivityComplete}
-          />
-        ) : null;
-
-      case 'challenge':
-        return (
-          <div className="space-y-4">
-            <div className="text-center mb-4">
-              <h4 className="font-semibold text-lg mb-2">Real-World Challenge</h4>
-              <p className="text-muted-foreground">{level.challenge.description}</p>
-              <p className="text-sm text-muted-foreground mt-2">You must answer correctly to complete the level</p>
-            </div>
-            <InteractiveQuiz
-              topicId={`budget-level-${level.id}-challenge`}
-              question={level.challenge.question}
-              options={level.challenge.options || []}
-              correctAnswerIndex={typeof level.challenge.correctAnswer === 'number' ? level.challenge.correctAnswer : 0}
-              onQuizComplete={(_, isCorrect) => handleChallengeComplete(isCorrect)}
-              isCompleted={challengeCompleted && challengeCorrect}
-            />
-          </div>
-        );
-
-      default:
-        return null;
-    }
-  };
-
   return (
     <Card className={`${isCompleted ? 'border-blue-500' : ''}`}>
       <CardHeader>
@@ -213,7 +114,20 @@ const BudgetLevelComponent: React.FC<BudgetLevelProps> = ({
         <Progress value={progressPercentage} className="h-2" />
       </CardHeader>
       <CardContent className="space-y-6">
-        {renderCurrentStep()}
+        <BudgetLevelContent
+          level={level}
+          currentStep={steps[currentStep]}
+          masteredFlashcards={masteredFlashcards}
+          quizCompleted={quizCompleted}
+          quizCorrect={quizCorrect}
+          activityCompleted={activityCompleted}
+          challengeCompleted={challengeCompleted}
+          challengeCorrect={challengeCorrect}
+          onFlashcardMastered={handleFlashcardMastered}
+          onQuizComplete={handleQuizComplete}
+          onActivityComplete={handleActivityComplete}
+          onChallengeComplete={handleChallengeComplete}
+        />
         
         <div className="flex justify-between items-center pt-4">
           <Button

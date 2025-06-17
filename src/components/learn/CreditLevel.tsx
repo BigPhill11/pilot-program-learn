@@ -1,13 +1,11 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, ChevronRight, Star } from 'lucide-react';
+import { CheckCircle2, Star } from 'lucide-react';
 import { CreditLevel as CreditLevelType } from '@/data/credit-journey-data';
-import CreditFlashcard from './CreditFlashcard';
-import CreditDragDrop from './CreditDragDrop';
-import InteractiveQuiz from '../InteractiveQuiz';
+import { CreditLevelStep, useCreditLevelSteps } from './CreditLevelSteps';
+import CreditLevelContent from './CreditLevelContent';
 
 interface CreditLevelProps {
   level: CreditLevelType;
@@ -24,11 +22,13 @@ const CreditLevel: React.FC<CreditLevelProps> = ({
   onComplete,
   onQuizComplete
 }) => {
-  const [currentStep, setCurrentStep] = useState<'intro' | 'flashcards' | 'quiz' | 'activity' | 'scenario' | 'complete'>('intro');
+  const [currentStep, setCurrentStep] = useState<CreditLevelStep>('intro');
   const [masteredFlashcards, setMasteredFlashcards] = useState<Set<string>>(new Set());
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [activityCompleted, setActivityCompleted] = useState(false);
   const [scenarioCompleted, setScenarioCompleted] = useState(false);
+
+  const { getNextStep } = useCreditLevelSteps(!!level.activity, !!level.scenario);
 
   const handleFlashcardMastered = (flashcardId: string) => {
     setMasteredFlashcards(prev => new Set([...prev, flashcardId]));
@@ -56,19 +56,8 @@ const CreditLevel: React.FC<CreditLevelProps> = ({
     return false;
   };
 
-  const getNextStep = () => {
-    switch (currentStep) {
-      case 'intro': return 'flashcards';
-      case 'flashcards': return 'quiz';
-      case 'quiz': return level.activity ? 'activity' : (level.scenario ? 'scenario' : 'complete');
-      case 'activity': return level.scenario ? 'scenario' : 'complete';
-      case 'scenario': return 'complete';
-      default: return 'complete';
-    }
-  };
-
   const handleNext = () => {
-    const nextStep = getNextStep();
+    const nextStep = getNextStep(currentStep);
     if (nextStep === 'complete') {
       onComplete();
     }
@@ -127,115 +116,20 @@ const CreditLevel: React.FC<CreditLevelProps> = ({
         <p className="text-muted-foreground text-sm">{level.description}</p>
       </CardHeader>
       <CardContent className="space-y-6">
-        {currentStep === 'intro' && (
-          <div className="space-y-4">
-            <Card className="bg-green-50 border-green-200">
-              <CardContent className="p-4">
-                <h3 className="font-semibold text-lg mb-2">{level.introCard.title}</h3>
-                <p className="text-muted-foreground">{level.introCard.content}</p>
-              </CardContent>
-            </Card>
-            <Button onClick={handleNext} className="w-full">
-              Start Learning <ChevronRight className="h-4 w-4 ml-2" />
-            </Button>
-          </div>
-        )}
-
-        {currentStep === 'flashcards' && (
-          <div className="space-y-4">
-            <div className="text-center mb-4">
-              <h3 className="font-semibold text-lg mb-2">Study the Key Terms</h3>
-              <p className="text-sm text-muted-foreground">
-                Master all {level.flashcards.length} flashcards to continue ({masteredFlashcards.size}/{level.flashcards.length} learned)
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {level.flashcards.map((flashcard) => (
-                <CreditFlashcard
-                  key={flashcard.id}
-                  term={flashcard.term}
-                  definition={flashcard.definition}
-                  onMastered={() => handleFlashcardMastered(flashcard.id)}
-                  isMastered={masteredFlashcards.has(flashcard.id)}
-                />
-              ))}
-            </div>
-            {canProceedToNext() && (
-              <Button onClick={handleNext} className="w-full">
-                Continue to Quiz <ChevronRight className="h-4 w-4 ml-2" />
-              </Button>
-            )}
-          </div>
-        )}
-
-        {currentStep === 'quiz' && (
-          <div className="space-y-4">
-            <div className="text-center mb-4">
-              <h3 className="font-semibold text-lg mb-2">Test Your Knowledge</h3>
-            </div>
-            <InteractiveQuiz
-              topicId={`credit-level-${level.id}`}
-              question={level.quiz.question}
-              options={level.quiz.options}
-              correctAnswerIndex={level.quiz.correct}
-              feedbackForIncorrect={level.quiz.explanation}
-              onQuizComplete={handleQuizCompletion}
-              isCompleted={quizCompleted}
-            />
-            {canProceedToNext() && (
-              <Button onClick={handleNext} className="w-full">
-                {level.activity ? 'Continue to Activity' : level.scenario ? 'Continue to Scenario' : 'Complete Level'} 
-                <ChevronRight className="h-4 w-4 ml-2" />
-              </Button>
-            )}
-          </div>
-        )}
-
-        {currentStep === 'activity' && level.activity && (
-          <div className="space-y-4">
-            <CreditDragDrop
-              activity={level.activity}
-              onComplete={handleActivityCompletion}
-            />
-            {canProceedToNext() && (
-              <Button onClick={handleNext} className="w-full">
-                {level.scenario ? 'Continue to Scenario' : 'Complete Level'} <ChevronRight className="h-4 w-4 ml-2" />
-              </Button>
-            )}
-          </div>
-        )}
-
-        {currentStep === 'scenario' && level.scenario && (
-          <div className="space-y-4">
-            <div className="text-center mb-4">
-              <h3 className="font-semibold text-lg mb-2">Real-World Scenario</h3>
-            </div>
-            <InteractiveQuiz
-              topicId={`credit-scenario-${level.id}`}
-              question={level.scenario.question}
-              options={level.scenario.options}
-              correctAnswerIndex={level.scenario.correct}
-              feedbackForIncorrect={level.scenario.explanation}
-              onQuizComplete={handleScenarioCompletion}
-              isCompleted={scenarioCompleted}
-            />
-            {canProceedToNext() && (
-              <Button onClick={handleNext} className="w-full">
-                Complete Level <ChevronRight className="h-4 w-4 ml-2" />
-              </Button>
-            )}
-          </div>
-        )}
-
-        {currentStep === 'complete' && (
-          <div className="text-center space-y-4">
-            <div className="bg-green-100 border border-green-200 rounded-lg p-4">
-              <h3 className="font-semibold text-green-800 mb-2">🎉 Level Complete!</h3>
-              <p className="text-sm font-medium text-green-800 mb-2">💡 Key Takeaway:</p>
-              <p className="text-sm text-green-700">{level.takeaway}</p>
-            </div>
-          </div>
-        )}
+        <CreditLevelContent
+          level={level}
+          currentStep={currentStep}
+          masteredFlashcards={masteredFlashcards}
+          quizCompleted={quizCompleted}
+          activityCompleted={activityCompleted}
+          scenarioCompleted={scenarioCompleted}
+          canProceed={canProceedToNext()}
+          onFlashcardMastered={handleFlashcardMastered}
+          onQuizComplete={handleQuizCompletion}
+          onActivityComplete={handleActivityCompletion}
+          onScenarioComplete={handleScenarioCompletion}
+          onNext={handleNext}
+        />
       </CardContent>
     </Card>
   );

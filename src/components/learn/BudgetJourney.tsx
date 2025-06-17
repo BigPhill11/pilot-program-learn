@@ -1,12 +1,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Trophy, CheckCircle2, Lock, Play } from 'lucide-react';
+import { ArrowLeft, Trophy } from 'lucide-react';
 import { budgetJourneyData, budgetMiniGame } from '@/data/budgeting-journey-data';
 import BudgetLevel from './BudgetLevel';
 import BudgetMiniGame from './BudgetMiniGame';
+import BudgetJourneyHeader from './BudgetJourneyHeader';
+import BudgetJourneyLevelCard from './BudgetJourneyLevelCard';
+import BudgetJourneyCompletion from './BudgetJourneyCompletion';
 import { useProgressTracking } from '@/hooks/useProgressTracking';
 
 interface BudgetJourneyProps {
@@ -46,7 +49,6 @@ const BudgetJourney: React.FC<BudgetJourneyProps> = ({ onBack }) => {
   const handleLevelComplete = (levelId: number) => {
     const newCompletedLevels = [...progress.completedLevels];
     
-    // Only add if not already completed
     if (!newCompletedLevels.includes(levelId)) {
       newCompletedLevels.push(levelId);
     }
@@ -54,18 +56,17 @@ const BudgetJourney: React.FC<BudgetJourneyProps> = ({ onBack }) => {
     const newProgress = {
       ...progress,
       completedLevels: newCompletedLevels,
-      currentLevel: Math.max(progress.currentLevel, levelId + 1), // Unlock next level
+      currentLevel: Math.max(progress.currentLevel, levelId + 1),
       totalPointsEarned: progress.totalPointsEarned + 5
     };
 
-    // Check if all levels are completed
     if (newCompletedLevels.length === budgetJourneyData.length) {
       setShowMiniGame(true);
     }
 
     saveProgress(newProgress);
-    updateLearningProgress(20); // 20% progress per level
-    setSelectedLevel(null); // Return to level selection
+    updateLearningProgress(20);
+    setSelectedLevel(null);
   };
 
   const handleQuizComplete = (isCorrect: boolean) => {
@@ -76,10 +77,10 @@ const BudgetJourney: React.FC<BudgetJourneyProps> = ({ onBack }) => {
     const newProgress = {
       ...progress,
       journeyCompleted: true,
-      totalPointsEarned: progress.totalPointsEarned + 15 // Bonus points for completing mini-game
+      totalPointsEarned: progress.totalPointsEarned + 15
     };
     saveProgress(newProgress);
-    updateLearningProgress(20); // Final 20% for mini-game completion
+    updateLearningProgress(20);
     setShowMiniGame(false);
   };
 
@@ -91,7 +92,6 @@ const BudgetJourney: React.FC<BudgetJourneyProps> = ({ onBack }) => {
     return progress.completedLevels.includes(levelId);
   };
 
-  // Show mini-game screen
   if (showMiniGame) {
     return (
       <div className="space-y-6">
@@ -111,7 +111,6 @@ const BudgetJourney: React.FC<BudgetJourneyProps> = ({ onBack }) => {
     );
   }
 
-  // Show individual level screen
   if (selectedLevel !== null) {
     const level = budgetJourneyData.find(l => l.id === selectedLevel);
     if (!level) return null;
@@ -135,7 +134,6 @@ const BudgetJourney: React.FC<BudgetJourneyProps> = ({ onBack }) => {
     );
   }
 
-  // Show journey completion screen
   if (progress.journeyCompleted) {
     return (
       <div className="space-y-6">
@@ -145,44 +143,15 @@ const BudgetJourney: React.FC<BudgetJourneyProps> = ({ onBack }) => {
             Back to Personal Finance
           </Button>
         </div>
-
-        <Card className="border-2 border-blue-400 bg-gradient-to-br from-blue-50 to-green-50">
-          <CardContent className="p-8 text-center">
-            <div className="text-6xl mb-4">💰</div>
-            <h2 className="text-3xl font-bold text-blue-700 mb-4">Journey Complete!</h2>
-            <Badge className="bg-blue-500 text-white text-lg px-6 py-2 mb-4">
-              <Trophy className="h-4 w-4 mr-2" />
-              Budget Boss
-            </Badge>
-            <p className="text-lg text-muted-foreground mb-6">
-              You've mastered the art of managing your money effectively!
-            </p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-              <div className="bg-white/50 rounded-lg p-4">
-                <div className="text-2xl font-bold text-blue-600">{budgetJourneyData.length}</div>
-                <div className="text-sm text-muted-foreground">Levels Completed</div>
-              </div>
-              <div className="bg-white/50 rounded-lg p-4">
-                <div className="text-2xl font-bold text-green-600">{progress.totalPointsEarned}</div>
-                <div className="text-sm text-muted-foreground">Points Earned</div>
-              </div>
-              <div className="bg-white/50 rounded-lg p-4">
-                <div className="text-2xl font-bold text-purple-600">100%</div>
-                <div className="text-sm text-muted-foreground">Journey Progress</div>
-              </div>
-            </div>
-
-            <Button onClick={onBack} size="lg" className="mt-6">
-              Continue Learning
-            </Button>
-          </CardContent>
-        </Card>
+        <BudgetJourneyCompletion
+          totalLevels={budgetJourneyData.length}
+          totalPointsEarned={progress.totalPointsEarned}
+          onContinue={onBack}
+        />
       </div>
     );
   }
 
-  // Main level selection screen with grid layout
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -192,79 +161,22 @@ const BudgetJourney: React.FC<BudgetJourneyProps> = ({ onBack }) => {
         </Button>
       </div>
 
-      {/* Header Section */}
-      <div className="text-center bg-gradient-to-r from-blue-50 to-green-50 rounded-lg p-8">
-        <div className="text-4xl mb-4">💰</div>
-        <h1 className="text-3xl font-bold mb-2">Budgeting 101</h1>
-        <p className="text-muted-foreground mb-6">
-          Master the art of managing your money through 5 interactive levels!
-        </p>
-        
-        {/* Progress Section */}
-        <div className="max-w-md mx-auto">
-          <div className="flex justify-between text-sm text-muted-foreground mb-2">
-            <span>Overall Progress</span>
-            <span>{progress.completedLevels.length}/{budgetJourneyData.length} levels completed</span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
-            <div 
-              className="bg-gradient-to-r from-blue-400 to-green-500 h-3 rounded-full transition-all duration-500"
-              style={{ width: `${(progress.completedLevels.length / budgetJourneyData.length) * 100}%` }}
-            />
-          </div>
-        </div>
-      </div>
+      <BudgetJourneyHeader
+        completedLevels={progress.completedLevels.length}
+        totalLevels={budgetJourneyData.length}
+      />
 
-      {/* Levels Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        {budgetJourneyData.map((level) => {
-          const isUnlocked = isLevelUnlocked(level.id);
-          const isCompleted = isLevelCompleted(level.id);
-          
-          return (
-            <Card
-              key={level.id}
-              className={`aspect-square cursor-pointer transition-all hover:shadow-lg relative ${
-                isCompleted 
-                  ? 'border-2 border-blue-500 bg-blue-50' 
-                  : isUnlocked 
-                    ? 'border-2 border-blue-200 hover:border-blue-400 bg-white' 
-                    : 'opacity-50 cursor-not-allowed bg-gray-50'
-              }`}
-              onClick={() => isUnlocked && setSelectedLevel(level.id)}
-            >
-              <CardContent className="p-4 h-full flex flex-col justify-between">
-                <div className="text-center flex-1 flex flex-col justify-center">
-                  <div className="text-2xl mb-2">
-                    {isCompleted ? (
-                      <CheckCircle2 className="h-8 w-8 text-blue-600 mx-auto" />
-                    ) : isUnlocked ? (
-                      <Play className="h-8 w-8 text-blue-600 mx-auto" />
-                    ) : (
-                      <Lock className="h-8 w-8 text-gray-400 mx-auto" />
-                    )}
-                  </div>
-                  <h3 className="font-semibold text-sm mb-1">Level {level.id}</h3>
-                  <p className="text-xs text-muted-foreground leading-tight">{level.title}</p>
-                </div>
-                
-                <div className="text-center">
-                  {isCompleted && (
-                    <Badge className="text-xs bg-blue-500 text-white">Complete</Badge>
-                  )}
-                  {!isCompleted && isUnlocked && (
-                    <Badge variant="outline" className="text-xs">Start</Badge>
-                  )}
-                  {!isUnlocked && (
-                    <Badge variant="outline" className="text-xs opacity-50">Locked</Badge>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
+        {budgetJourneyData.map((level) => (
+          <BudgetJourneyLevelCard
+            key={level.id}
+            level={level}
+            isUnlocked={isLevelUnlocked(level.id)}
+            isCompleted={isLevelCompleted(level.id)}
+            onLevelSelect={setSelectedLevel}
+          />
+        ))}
 
-        {/* Mini-Game Card */}
         {progress.completedLevels.length === budgetJourneyData.length && (
           <Card className="aspect-square border-2 border-yellow-400 bg-gradient-to-br from-yellow-50 to-orange-50 cursor-pointer hover:shadow-lg">
             <CardContent className="p-4 h-full flex flex-col justify-between" onClick={() => setShowMiniGame(true)}>
