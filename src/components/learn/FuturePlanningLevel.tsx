@@ -142,8 +142,8 @@ const FuturePlanningLevelComponent: React.FC<FuturePlanningLevelProps> = ({
               topicId={`future-planning-level-${level.id}`}
               question={level.quiz.question}
               options={level.quiz.options}
-              correctAnswerIndex={level.quiz.correctAnswerIndex}
-              feedbackForIncorrect={level.quiz.feedbackForIncorrect}
+              correctAnswerIndex={level.quiz.correctAnswer}
+              feedbackForIncorrect={level.quiz.explanation}
               onQuizComplete={handleQuizComplete}
               isCompleted={quizCompleted}
             />

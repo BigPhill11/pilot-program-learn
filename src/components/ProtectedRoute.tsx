@@ -48,7 +48,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   if (!profile.onboarding_completed) {
     return (
       <OnboardingTour 
-        userLevel={profile.app_version}
         onComplete={() => {
           // Refresh profile after onboarding
           window.location.reload();

@@ -1,298 +1,238 @@
+export interface BigPurchasesFlashcard {
+  term: string;
+  definition: string;
+}
+
+export interface DragDropActivity {
+  instruction: string;
+  items: Array<{
+    id: string;
+    text: string;
+    category: string;
+  }>;
+  categories: Array<{
+    id: string;
+    name: string;
+  }>;
+}
 
 export interface BigPurchasesLevel {
   id: number;
   title: string;
   description: string;
-  introCard: string;
-  flashcards: Array<{
-    term: string;
-    definition: string;
-  }>;
+  flashcards: BigPurchasesFlashcard[];
   quiz: {
     question: string;
     options: string[];
     correctAnswerIndex: number;
     feedbackForIncorrect: string;
   };
-  activity?: {
-    title: string;
-    instruction: string;
-    items: Array<{
-      id: string;
-      text: string;
-    }>;
-    categories: Array<{
-      id: string;
-      title: string;
-      correctItems: string[];
-    }>;
-  };
-  challenge: {
-    description: string;
+  activity?: DragDropActivity;
+}
+
+export interface BigPurchasesMiniGame {
+  title: string;
+  description: string;
+  scenarios: Array<{
+    id: string;
+    situation: string;
     question: string;
-    options?: string[];
-    correctAnswer?: number;
-  };
+    options: string[];
+    correctAnswer: number;
+    explanation: string;
+    outcome: string;
+  }>;
 }
 
 export const bigPurchasesJourneyData: BigPurchasesLevel[] = [
   {
     id: 1,
-    title: "Planning Big Purchases",
-    description: "Learn the fundamentals of preparing for major expenses",
-    introCard: "Big purchases require big planning! Whether it's a car, home, or expensive gadget, smart planning prevents financial stress and buyer's remorse.",
+    title: "Planning for Big Purchases",
+    description: "Learn how to prepare financially for major expenses",
     flashcards: [
       {
         term: "Big Purchase",
-        definition: "Any significant expense that's more than your typical monthly spending, usually requiring savings or financing."
+        definition: "A significant expense that requires planning and saving, typically over $1,000"
       },
       {
-        term: "Purchase Planning",
-        definition: "Researching, budgeting, and preparing financially before making a major buying decision."
+        term: "Sinking Fund",
+        definition: "Money saved gradually for a specific future expense"
       },
       {
-        term: "Total Cost of Ownership",
-        definition: "The complete cost of an item including purchase price, maintenance, insurance, and operating expenses over time."
-      },
-      {
-        term: "Opportunity Cost",
-        definition: "What you give up when making a purchase decision - the best alternative use of that money."
+        term: "Purchase Timeline",
+        definition: "The planned timeframe for making a major purchase"
       }
     ],
     quiz: {
-      question: "Why is it important to consider total cost of ownership when making big purchases?",
+      question: "What's the best approach for a big purchase you need in 2 years?",
       options: [
-        "To impress salespeople with your knowledge",
-        "To understand the true long-term financial impact",
-        "To make purchases more complicated",
-        "It's not important, only focus on purchase price"
+        "Put it on a credit card when needed",
+        "Take out a personal loan",
+        "Start saving monthly now",
+        "Wait until you have extra money"
       ],
-      correctAnswerIndex: 1,
-      feedbackForIncorrect: "Total cost of ownership helps you understand the true financial impact beyond just the purchase price."
-    },
-    challenge: {
-      description: "You're considering buying a $5,000 used car. Insurance will cost $150/month, maintenance about $100/month.",
-      question: "What's the total first-year cost of ownership?",
-      options: ["$5,000", "$8,000", "$6,800", "$7,500"],
-      correctAnswer: 1
+      correctAnswerIndex: 2,
+      feedbackForIncorrect: "Starting to save monthly gives you time to accumulate funds without debt."
     }
   },
   {
     id: 2,
-    title: "Saving vs. Financing",
-    description: "Understanding when to save up versus when to finance major purchases",
-    introCard: "Should you save up or finance your big purchase? The answer depends on the item, interest rates, and your financial situation. Let's explore both strategies.",
+    title: "Researching Before You Buy",
+    description: "How to research and compare options for major purchases",
     flashcards: [
       {
-        term: "Cash Purchase",
-        definition: "Buying something outright with saved money, avoiding debt and interest payments."
+        term: "Total Cost of Ownership",
+        definition: "The complete cost including purchase price, maintenance, and operating costs"
       },
       {
-        term: "Financing",
-        definition: "Borrowing money to make a purchase, then paying it back over time with interest."
+        term: "Depreciation",
+        definition: "The decrease in an item's value over time"
       },
       {
-        term: "Interest Rate",
-        definition: "The cost of borrowing money, expressed as a percentage of the loan amount annually."
-      },
-      {
-        term: "Down Payment",
-        definition: "An upfront cash payment when financing, reducing the loan amount and often getting better terms."
+        term: "Warranty",
+        definition: "A guarantee covering repair or replacement for a specific period"
       }
     ],
     quiz: {
-      question: "When might financing be a better choice than saving up for a purchase?",
+      question: "When buying a car, what should you consider besides the purchase price?",
       options: [
-        "Never, cash is always better",
-        "When you can get 0% interest financing",
-        "When the item is going out of style",
-        "When you want instant gratification"
+        "Only the monthly payment",
+        "Insurance, maintenance, and fuel costs",
+        "Just the brand reputation",
+        "The color and features"
       ],
       correctAnswerIndex: 1,
-      feedbackForIncorrect: "0% financing can be beneficial since you keep your cash for other needs while paying no interest."
-    },
-    challenge: {
-      description: "You want a $1,200 laptop. You can save $200/month or finance at 12% APR for 12 months.",
-      question: "How much would you save by paying cash instead of financing?",
-      options: ["$0", "$79", "$144", "$200"],
-      correctAnswer: 1
+      feedbackForIncorrect: "Total cost of ownership includes insurance, maintenance, fuel, and depreciation - not just the purchase price."
     }
   },
   {
     id: 3,
-    title: "Car Buying Basics",
-    description: "Navigate the car buying process like a pro",
-    introCard: "Buying a car is often the first major purchase people make. Learn how to research, negotiate, and get the best deal whether buying new or used.",
+    title: "Financing Options",
+    description: "Understanding different ways to pay for big purchases",
     flashcards: [
       {
-        term: "Kelley Blue Book (KBB)",
-        definition: "A trusted resource for determining fair market value of vehicles based on make, model, year, and condition."
+        term: "Down Payment",
+        definition: "An upfront payment made when purchasing something with financing"
       },
       {
-        term: "Pre-approval",
-        definition: "Getting approved for a loan amount before shopping, giving you negotiating power and a clear budget."
+        term: "Interest Rate",
+        definition: "The cost of borrowing money, expressed as a percentage"
       },
       {
-        term: "Trade-in Value",
-        definition: "The amount a dealer will pay for your current vehicle when purchasing a new one."
+        term: "Loan Term",
+        definition: "The length of time you have to repay a loan"
       },
       {
-        term: "Vehicle History Report",
-        definition: "A record showing accidents, ownership history, and maintenance for a used car (like Carfax)."
+        term: "Monthly Payment",
+        definition: "The amount you pay each month toward a loan"
       }
     ],
     quiz: {
-      question: "What's the first step when buying a used car?",
+      question: "How does a larger down payment affect your loan?",
       options: [
-        "Go to the nearest dealership",
-        "Research the car's value and history",
-        "Get the cheapest option available",
-        "Focus only on monthly payment"
+        "It increases your monthly payments",
+        "It has no effect on the loan",
+        "It reduces the amount you need to borrow",
+        "It increases the interest rate"
       ],
-      correctAnswerIndex: 1,
-      feedbackForIncorrect: "Research helps you understand fair pricing and avoid problematic vehicles."
+      correctAnswerIndex: 2,
+      feedbackForIncorrect: "A larger down payment reduces the loan amount, which typically means lower monthly payments and less interest paid overall."
     },
     activity: {
-      title: "Car Buying Checklist",
-      instruction: "Put these car buying steps in the correct order:",
+      instruction: "Sort these financing options by their typical interest rates (lowest to highest):",
       items: [
-        { id: "research", text: "Research makes/models and prices" },
-        { id: "financing", text: "Get pre-approved for financing" },
-        { id: "inspect", text: "Inspect and test drive the car" },
-        { id: "negotiate", text: "Negotiate price and terms" },
-        { id: "paperwork", text: "Complete purchase paperwork" }
+        { id: "mortgage", text: "Home mortgage", category: "lowest" },
+        { id: "auto", text: "Auto loan", category: "medium" },
+        { id: "personal", text: "Personal loan", category: "high" },
+        { id: "credit", text: "Credit card", category: "highest" }
       ],
       categories: [
-        { id: "preparation", title: "Preparation Phase", correctItems: ["research", "financing"] },
-        { id: "shopping", title: "Shopping Phase", correctItems: ["inspect", "negotiate"] },
-        { id: "closing", title: "Closing Phase", correctItems: ["paperwork"] }
+        { id: "lowest", name: "Lowest Interest" },
+        { id: "medium", name: "Medium Interest" },
+        { id: "high", name: "Higher Interest" },
+        { id: "highest", name: "Highest Interest" }
       ]
-    },
-    challenge: {
-      description: "You found a used car listed for $12,000. KBB shows fair value at $10,500. The dealer won't budge on price.",
-      question: "What should you do?",
-      options: [
-        "Pay the asking price anyway",
-        "Walk away and find a better deal",
-        "Finance more to afford it",
-        "Buy without an inspection"
-      ],
-      correctAnswer: 1
     }
   },
   {
     id: 4,
-    title: "Home Buying vs. Renting",
-    description: "Understanding the financial implications of renting versus buying a home",
-    introCard: "Rent or buy? This major decision affects your finances for years. Learn the true costs and benefits of each option to make the right choice for your situation.",
+    title: "Negotiation Strategies",
+    description: "Learn how to negotiate better deals on major purchases",
     flashcards: [
       {
-        term: "Mortgage",
-        definition: "A loan used to purchase real estate, typically paid back over 15-30 years with interest."
+        term: "MSRP",
+        definition: "Manufacturer's Suggested Retail Price - the recommended selling price"
       },
       {
-        term: "Down Payment",
-        definition: "Upfront payment when buying a home, typically 3-20% of the purchase price."
+        term: "Trade-in Value",
+        definition: "The amount a dealer will pay for your current item toward a new purchase"
       },
       {
-        term: "Property Tax",
-        definition: "Annual tax paid to local government based on your home's assessed value."
-      },
-      {
-        term: "HOA Fees",
-        definition: "Monthly fees paid to a homeowner's association for maintenance of common areas and amenities."
+        term: "Market Research",
+        definition: "Investigating current prices and deals for similar items"
       }
     ],
     quiz: {
-      question: "What's typically included in a monthly rent payment that homeowners pay separately?",
+      question: "What's the most important preparation for negotiating a big purchase?",
       options: [
-        "Property taxes and homeowner's insurance",
-        "Electricity and internet",
-        "Food and transportation",
-        "Entertainment and shopping"
+        "Bringing cash to pay in full",
+        "Researching market prices and alternatives",
+        "Going to multiple stores in one day",
+        "Bringing a friend for support"
       ],
-      correctAnswerIndex: 0,
-      feedbackForIncorrect: "Rent often includes property taxes and sometimes insurance, while homeowners pay these separately."
-    },
-    challenge: {
-      description: "Monthly rent is $1,500. A similar home costs $300,000 with 20% down, 6% mortgage rate, plus $300/month taxes and insurance.",
-      question: "What's the monthly cost of buying (mortgage + taxes + insurance)?",
-      options: ["$1,500", "$1,800", "$2,139", "$2,500"],
-      correctAnswer: 2
+      correctAnswerIndex: 1,
+      feedbackForIncorrect: "Knowledge is power in negotiations. Knowing market prices and alternatives gives you leverage."
     }
   },
   {
     id: 5,
-    title: "Smart Shopping Strategies",
-    description: "Master the art of getting the best deals on major purchases",
-    introCard: "Smart shoppers save thousands on big purchases! Learn negotiation tactics, timing strategies, and research methods to get the best value.",
+    title: "Timing Your Purchase",
+    description: "When to buy for the best deals and financial impact",
     flashcards: [
       {
-        term: "Price Comparison",
-        definition: "Researching prices across multiple sellers to ensure you're getting the best deal available."
-      },
-      {
-        term: "Negotiation",
-        definition: "The process of discussing terms and price to reach a mutually acceptable agreement."
-      },
-      {
         term: "Seasonal Sales",
-        definition: "Predictable times when certain items go on sale, like cars at year-end or appliances in fall."
+        definition: "Regular sales periods when certain items are discounted"
       },
       {
-        term: "Extended Warranty",
-        definition: "Additional protection plan beyond manufacturer warranty, often overpriced and unnecessary."
+        term: "Model Year End",
+        definition: "When new models are released and previous years go on sale"
+      },
+      {
+        term: "Emergency Purchase",
+        definition: "An unplanned purchase needed immediately, often at higher cost"
       }
     ],
     quiz: {
-      question: "When is the best time to buy a new car model year?",
+      question: "When is typically the best time to buy a car?",
       options: [
-        "Right when the new model is released",
-        "In the middle of summer",
-        "At the end of the model year when new models arrive",
-        "It doesn't matter when you buy"
+        "Right when you need it",
+        "End of the model year or calendar year",
+        "Beginning of spring",
+        "During summer"
       ],
-      correctAnswerIndex: 2,
-      feedbackForIncorrect: "Dealers offer best deals on outgoing models to make room for new inventory."
-    },
-    challenge: {
-      description: "You're negotiating for a $20,000 car. The dealer offers an extended warranty for $2,000 'for peace of mind.'",
-      question: "What's the best response?",
-      options: [
-        "Accept it, warranties are always worth it",
-        "Politely decline and research warranty options later",
-        "Ask for the warranty to be included free",
-        "Walk away from the entire deal"
-      ],
-      correctAnswer: 1
+      correctAnswerIndex: 1,
+      feedbackForIncorrect: "End of model year and calendar year often bring the best deals as dealers clear inventory."
     }
   }
 ];
 
-export const bigPurchasesMiniGame = {
-  title: "Car Buying Simulator",
-  description: "Navigate the car buying process and get the best deal!",
-  scenario: "You need a reliable car for college with a $15,000 budget. Make smart decisions throughout the buying process:",
-  decisions: [
+export const bigPurchasesMiniGame: BigPurchasesMiniGame = {
+  title: "Smart Purchase Simulator",
+  description: "Make smart decisions in realistic big purchase scenarios",
+  scenarios: [
     {
-      id: 1,
-      situation: "Choose your research approach",
+      id: "car-scenario",
+      situation: "Your 10-year-old car needs $3,000 in repairs, but you could buy a reliable used car for $12,000.",
+      question: "What's the smartest financial decision?",
       options: [
-        { text: "Visit dealerships to see what's available", points: 1 },
-        { text: "Research online first, then visit with knowledge", points: 3 },
-        { text: "Ask friends for recommendations only", points: 2 },
-        { text: "Buy the first car you see", points: 0 }
-      ]
-    },
-    {
-      id: 2,
-      situation: "The dealer offers financing at 8% APR",
-      options: [
-        { text: "Accept immediately", points: 1 },
-        { text: "Compare with bank pre-approval rates", points: 3 },
-        { text: "Ask for a better rate", points: 2 },
-        { text: "Pay cash if you have it", points: 3 }
-      ]
+        "Fix the old car - it's always cheaper",
+        "Buy the new car immediately",
+        "Compare repair costs to car payments and reliability",
+        "Keep driving and hope for the best"
+      ],
+      correctAnswer: 2,
+      explanation: "Compare the ongoing costs and reliability. If repairs are frequent and expensive, a newer car might be more cost-effective long-term.",
+      outcome: "By analyzing total costs, you make a decision based on financial facts, not emotions."
     }
   ]
 };

@@ -1,300 +1,249 @@
 
+export interface FuturePlanningFlashcard {
+  term: string;
+  definition: string;
+}
+
+export interface FuturePlanningDragDropActivity {
+  title: string;
+  description: string;
+  items: Array<{
+    id: string;
+    content: string;
+    category: string;
+  }>;
+  categories: Array<{
+    id: string;
+    title: string;
+    description: string;
+  }>;
+}
+
 export interface FuturePlanningLevel {
   id: number;
   title: string;
   description: string;
-  introCard: string;
-  flashcards: Array<{
-    term: string;
-    definition: string;
-  }>;
+  flashcards: FuturePlanningFlashcard[];
   quiz: {
     question: string;
     options: string[];
     correctAnswer: number;
     explanation: string;
   };
-  activity?: {
+  activity?: FuturePlanningDragDropActivity;
+}
+
+export interface FuturePlanningMiniGame {
+  title: string;
+  description: string;
+  scenarios: Array<{
+    id: string;
     title: string;
-    instruction: string;
-    items: Array<{
-      id: string;
-      text: string;
-    }>;
-    categories: Array<{
-      id: string;
-      title: string;
-      correctItems: string[];
-    }>;
-  };
-  challenge: {
     description: string;
     question: string;
-    options?: string[];
-    correctAnswer?: number;
-  };
+    options: string[];
+    correctAnswer: number;
+    explanation: string;
+  }>;
 }
 
 export const futurePlanningJourneyData: FuturePlanningLevel[] = [
   {
     id: 1,
-    title: "Starting Early: The Power of Time",
-    description: "Understand why starting financial planning young gives you a huge advantage",
-    introCard: "Time is your greatest asset when planning for the future! Starting early means compound interest works for decades, turning small amounts into substantial wealth.",
+    title: "Emergency Funds",
+    description: "Build your financial safety net for unexpected expenses",
     flashcards: [
       {
-        term: "Compound Interest",
-        definition: "Earning interest on both your original money and previously earned interest, creating exponential growth over time."
+        term: "Emergency Fund",
+        definition: "Money saved specifically for unexpected expenses or income loss"
       },
       {
-        term: "Time Horizon",
-        definition: "The length of time you have until you need the money, which affects your investment strategy."
+        term: "Liquid Savings",
+        definition: "Money that can be easily accessed without penalties"
       },
       {
-        term: "Future Value",
-        definition: "What money invested today will be worth at a future date, accounting for compound growth."
-      },
-      {
-        term: "Starting Early Advantage",
-        definition: "The mathematical benefit of beginning to save and invest at a young age due to compound interest."
+        term: "3-6 Month Rule",
+        definition: "Recommended emergency fund size covering 3-6 months of expenses"
       }
     ],
     quiz: {
-      question: "If you invest $1,000 at age 20 earning 7% annually, approximately how much will it be worth at age 60?",
-      options: ["$2,800", "$7,600", "$14,900", "$22,000"],
-      correctAnswer: 2,
-      explanation: "With compound interest at 7% for 40 years, $1,000 grows to approximately $14,900."
-    },
-    challenge: {
-      description: "Two friends start investing $100/month. Sarah starts at 22, Jake starts at 32. Both earn 7% and stop at 62.",
-      question: "Who has more money at retirement?",
+      question: "How much should you typically have in an emergency fund?",
       options: [
-        "Jake, because he's more mature",
-        "Sarah, despite investing for the same time period",
-        "They have the same amount",
-        "Jake, because he invests more per month"
+        "1-2 months of expenses",
+        "3-6 months of expenses", 
+        "12 months of expenses",
+        "Whatever you can afford"
       ],
-      correctAnswer: 1
+      correctAnswer: 1,
+      explanation: "Financial experts recommend saving 3-6 months of living expenses for emergencies."
     }
   },
   {
     id: 2,
-    title: "Retirement Accounts 101",
-    description: "Learn about 401(k)s, IRAs, and other retirement savings vehicles",
-    introCard: "Retirement accounts offer tax advantages that boost your savings. Understanding these accounts helps you make smart decisions about your financial future.",
+    title: "Retirement Planning",
+    description: "Start planning for your financial future",
     flashcards: [
       {
         term: "401(k)",
-        definition: "Employer-sponsored retirement account where you contribute pre-tax dollars, often with company matching."
+        definition: "Employer-sponsored retirement savings plan with tax advantages"
       },
       {
-        term: "IRA (Individual Retirement Account)",
-        definition: "Personal retirement account you can open yourself, with tax advantages for long-term savings."
+        term: "Compound Interest",
+        definition: "Interest earned on both principal and previously earned interest"
       },
       {
         term: "Employer Match",
-        definition: "Free money your employer contributes to your 401(k) when you contribute, often 50-100% of your contribution."
-      },
-      {
-        term: "Roth IRA",
-        definition: "Retirement account where you pay taxes now but withdrawals in retirement are tax-free."
+        definition: "Money your employer contributes to your retirement plan"
       }
     ],
     quiz: {
-      question: "What's the main benefit of a 401(k) with employer matching?",
+      question: "What's the main advantage of starting retirement savings early?",
       options: [
-        "You can withdraw money anytime",
-        "It's free money from your employer plus tax advantages",
-        "You don't have to pay any taxes ever",
-        "It guarantees a specific return"
+        "You'll have more money to invest",
+        "Compound interest has more time to work",
+        "Retirement plans are cheaper when you're young",
+        "You can retire earlier"
       ],
       correctAnswer: 1,
-      explanation: "Employer matching is free money, and 401(k)s provide tax advantages for retirement savings."
+      explanation: "Starting early gives compound interest more time to grow your investments exponentially."
     },
-    challenge: {
-      description: "Your employer matches 50% of 401(k) contributions up to 6% of salary. Your salary is $50,000.",
-      question: "If you contribute 6%, how much total goes into your 401(k) annually?",
-      options: ["$3,000", "$4,500", "$6,000", "$9,000"],
-      correctAnswer: 1
+    activity: {
+      title: "Retirement Planning Priorities",
+      description: "Organize these retirement planning steps in order of priority:",
+      items: [
+        { id: "emergency", content: "Build emergency fund", category: "first" },
+        { id: "match", content: "Get full employer 401(k) match", category: "second" },
+        { id: "debt", content: "Pay off high-interest debt", category: "first" },
+        { id: "ira", content: "Max out IRA contributions", category: "third" }
+      ],
+      categories: [
+        { id: "first", title: "First Priority", description: "Do these before retirement investing" },
+        { id: "second", title: "Second Priority", description: "Free money from employer" },
+        { id: "third", title: "Third Priority", description: "Additional retirement savings" }
+      ]
     }
   },
   {
     id: 3,
-    title: "Basic Investing Concepts",
-    description: "Introduction to stocks, bonds, and investment fundamentals",
-    introCard: "Investing helps your money grow faster than savings accounts. Learn the basics of stocks, bonds, and how to build a simple investment portfolio.",
+    title: "Investment Basics",
+    description: "Learn the fundamentals of growing your money",
     flashcards: [
       {
         term: "Stock",
-        definition: "A share of ownership in a company that can increase in value and may pay dividends."
+        definition: "A share of ownership in a company"
       },
       {
         term: "Bond",
-        definition: "A loan you give to a company or government that pays you interest over time."
-      },
-      {
-        term: "Mutual Fund",
-        definition: "An investment that pools money from many people to buy a diversified mix of stocks and bonds."
+        definition: "A loan you give to a government or corporation"
       },
       {
         term: "Diversification",
-        definition: "Spreading investments across different types of assets to reduce risk."
+        definition: "Spreading investments across different types of assets"
+      },
+      {
+        term: "Risk Tolerance",
+        definition: "Your comfort level with investment ups and downs"
       }
     ],
     quiz: {
-      question: "Why is diversification important for young investors?",
+      question: "What is diversification in investing?",
       options: [
-        "It guarantees you'll make money",
-        "It reduces risk by not putting all eggs in one basket",
-        "It's required by law",
-        "It makes investing more complicated"
+        "Putting all money in one stock",
+        "Only investing in bonds",
+        "Spreading money across different investments",
+        "Avoiding the stock market entirely"
       ],
-      correctAnswer: 1,
-      explanation: "Diversification reduces risk because different investments perform well at different times."
-    },
-    activity: {
-      title: "Investment Types",
-      instruction: "Categorize these investment options by risk level:",
-      items: [
-        { id: "savings", text: "High-yield savings account" },
-        { id: "bonds", text: "Government bonds" },
-        { id: "stocks", text: "Individual company stocks" },
-        { id: "mutual", text: "Broad market mutual funds" },
-        { id: "crypto", text: "Cryptocurrency" }
-      ],
-      categories: [
-        { id: "low", title: "Low Risk", correctItems: ["savings", "bonds"] },
-        { id: "medium", title: "Medium Risk", correctItems: ["mutual"] },
-        { id: "high", title: "High Risk", correctItems: ["stocks", "crypto"] }
-      ]
-    },
-    challenge: {
-      description: "You have $5,000 to invest for retirement (40+ years away). You're comfortable with some risk.",
-      question: "What's the best investment strategy?",
-      options: [
-        "Put it all in a savings account",
-        "Buy stock in one company you like",
-        "Invest in a diversified stock market index fund",
-        "Buy cryptocurrency"
-      ],
-      correctAnswer: 2
+      correctAnswer: 2,
+      explanation: "Diversification means spreading your investments across different assets to reduce risk."
     }
   },
   {
     id: 4,
-    title: "Insurance for Your Future",
-    description: "Understanding how insurance protects your financial future",
-    introCard: "Insurance might seem boring, but it protects everything you've worked for. Learn which types of insurance are essential and when you need them.",
+    title: "Insurance Planning",
+    description: "Protect your financial future with proper insurance",
     flashcards: [
       {
         term: "Life Insurance",
-        definition: "Insurance that pays money to your beneficiaries if you die, protecting their financial future."
+        definition: "Coverage that pays beneficiaries when the insured person dies"
+      },
+      {
+        term: "Health Insurance",
+        definition: "Coverage for medical expenses and healthcare costs"
       },
       {
         term: "Disability Insurance",
-        definition: "Insurance that replaces income if you can't work due to illness or injury."
+        definition: "Income replacement if you can't work due to illness or injury"
       },
       {
-        term: "Term Life Insurance",
-        definition: "Temporary life insurance that covers you for a specific period, usually much cheaper than permanent insurance."
-      },
-      {
-        term: "Beneficiary",
-        definition: "The person or people who receive insurance money if something happens to you."
+        term: "Deductible",
+        definition: "Amount you pay out-of-pocket before insurance coverage begins"
       }
     ],
     quiz: {
-      question: "When do most people need life insurance?",
+      question: "Which type of insurance is most important for young, healthy adults?",
       options: [
-        "As soon as they turn 18",
-        "When they have dependents who rely on their income",
-        "Only when they're very old",
-        "Never, it's a waste of money"
+        "Life insurance",
+        "Health insurance",
+        "Disability insurance", 
+        "Travel insurance"
       ],
       correctAnswer: 1,
-      explanation: "Life insurance is most important when others depend on your income, like a spouse or children."
-    },
-    challenge: {
-      description: "You're 25, single, with no dependents, and healthy. You have student loans your parents co-signed.",
-      question: "What insurance should be your priority?",
-      options: [
-        "Expensive whole life insurance",
-        "Term life insurance to cover student loans",
-        "No insurance needed yet",
-        "Only health insurance"
-      ],
-      correctAnswer: 1
+      explanation: "Health insurance is crucial because medical costs can be financially devastating even for young, healthy people."
     }
   },
   {
     id: 5,
     title: "Estate Planning Basics",
-    description: "Simple steps to protect your assets and loved ones",
-    introCard: "Estate planning isn't just for the wealthy! Even young adults need basic documents to protect themselves and their loved ones in emergencies.",
+    description: "Plan for the transfer of your assets",
     flashcards: [
       {
         term: "Will",
-        definition: "A legal document that specifies how you want your assets distributed after you die."
+        definition: "Legal document specifying how your assets should be distributed"
+      },
+      {
+        term: "Beneficiary",
+        definition: "Person designated to receive assets from an account or policy"
       },
       {
         term: "Power of Attorney",
-        definition: "A document that gives someone authority to make financial decisions for you if you can't."
+        definition: "Legal authority to make decisions on someone else's behalf"
       },
       {
-        term: "Healthcare Directive",
-        definition: "Instructions about your medical care preferences if you can't communicate them yourself."
-      },
-      {
-        term: "Beneficiary Designation",
-        definition: "Naming who receives assets from accounts like retirement plans or life insurance directly."
+        term: "Trust",
+        definition: "Legal arrangement where assets are held for another person's benefit"
       }
     ],
     quiz: {
       question: "What happens if you die without a will?",
       options: [
-        "Your family automatically gets everything",
-        "The government takes all your money",
+        "Your assets go to the government",
+        "Your family automatically inherits everything",
         "State laws determine how assets are distributed",
-        "Nothing, you don't need a will when young"
+        "Your debts are forgiven"
       ],
       correctAnswer: 2,
-      explanation: "Without a will, state intestacy laws determine asset distribution, which may not match your wishes."
-    },
-    challenge: {
-      description: "You're 23, have $15,000 in savings, a car, and want your sister to handle finances if you're incapacitated.",
-      question: "What documents do you need most urgently?",
-      options: [
-        "Just a will",
-        "Power of attorney and healthcare directive",
-        "Nothing until you're older",
-        "Only beneficiary designations"
-      ],
-      correctAnswer: 1
+      explanation: "Without a will, state intestacy laws determine how your assets are distributed, which may not match your wishes."
     }
   }
 ];
 
-export const futurePlanningMiniGame = {
-  title: "Future Plan Builder",
-  description: "Create a comprehensive financial plan for your future!",
-  scenario: "You're 22, just graduated, and starting your first job at $45,000/year. Build your financial foundation:",
-  categories: [
+export const futurePlanningMiniGame: FuturePlanningMiniGame = {
+  title: "Life Planning Simulator",
+  description: "Navigate major life decisions and their financial implications",
+  scenarios: [
     {
-      id: "emergency",
-      name: "Emergency Fund",
-      target: 6,
-      description: "Months of expenses saved"
-    },
-    {
-      id: "retirement",
-      name: "Retirement Savings",
-      target: 15,
-      description: "Percentage of income"
-    },
-    {
-      id: "insurance",
-      name: "Insurance Coverage",
-      options: ["Health", "Disability", "Term Life", "Renters/Auto"]
+      id: "scenario1",
+      title: "First Job Decision",
+      description: "You're choosing between two job offers",
+      question: "Company A offers $50k with great benefits. Company B offers $55k with basic benefits. Which is better long-term?",
+      options: [
+        "Company A - benefits matter more than salary",
+        "Company B - higher salary is always better",
+        "Negotiate with both companies",
+        "Consider total compensation, not just salary"
+      ],
+      correctAnswer: 3,
+      explanation: "Total compensation includes salary, benefits, retirement matching, and growth potential - not just the base salary number."
     }
   ]
 };
