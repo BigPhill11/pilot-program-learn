@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle2, Play, ArrowRight } from 'lucide-react';
+import { CheckCircle2, Play, ArrowRight, RotateCcw } from 'lucide-react';
 import FinancialSafetyFlashcard from './FinancialSafetyFlashcard';
 import FinancialSafetyDragDrop from './FinancialSafetyDragDrop';
 import InteractiveQuiz from '@/components/InteractiveQuiz';
@@ -27,6 +27,7 @@ const FinancialSafetyLevel: React.FC<FinancialSafetyLevelProps> = ({
   const [currentStep, setCurrentStep] = useState(0);
   const [masteredFlashcards, setMasteredFlashcards] = useState<string[]>([]);
   const [completedActivities, setCompletedActivities] = useState<string[]>([]);
+  const [isReviewing, setIsReviewing] = useState(false);
 
   const steps = ['flashcards', 'dragdrop', 'quiz'];
   const stepTitles = ['Learn Key Terms', 'Practice Activity', 'Knowledge Check'];
@@ -67,19 +68,36 @@ const FinancialSafetyLevel: React.FC<FinancialSafetyLevelProps> = ({
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      onComplete();
+      if (!isCompleted) {
+        onComplete();
+      }
+      setIsReviewing(false);
     }
+  };
+
+  const handleStartReview = () => {
+    setIsReviewing(true);
+    setCurrentStep(0);
+    setMasteredFlashcards([]);
+    setCompletedActivities([]);
   };
 
   const progress = ((currentStep + 1) / steps.length) * 100;
 
-  if (isCompleted) {
+  if (isCompleted && !isReviewing) {
     return (
       <Card className="w-full border-purple-500">
         <CardContent className="p-6 text-center">
           <CheckCircle2 className="h-16 w-16 text-purple-500 mx-auto mb-4" />
           <h3 className="text-xl font-bold text-purple-700 mb-2">Level {level.id} Complete!</h3>
-          <p className="text-muted-foreground">You've mastered {level.title}</p>
+          <p className="text-muted-foreground mb-4">You've mastered {level.title}</p>
+          <Button 
+            onClick={handleStartReview}
+            className="bg-purple-500 hover:bg-purple-600"
+          >
+            <RotateCcw className="h-4 w-4 mr-2" />
+            Review Level Content
+          </Button>
         </CardContent>
       </Card>
     );
@@ -101,7 +119,10 @@ const FinancialSafetyLevel: React.FC<FinancialSafetyLevelProps> = ({
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
-            <CardTitle>Level {level.id}: {level.title}</CardTitle>
+            <CardTitle>
+              Level {level.id}: {level.title}
+              {isReviewing && <span className="text-sm font-normal text-muted-foreground ml-2">(Review Mode)</span>}
+            </CardTitle>
             <div className="text-sm text-muted-foreground">
               Step {currentStep + 1} of {steps.length}
             </div>
@@ -201,6 +222,10 @@ const FinancialSafetyLevel: React.FC<FinancialSafetyLevelProps> = ({
           {currentStep < steps.length - 1 ? (
             <>
               Next Step <ArrowRight className="h-4 w-4 ml-2" />
+            </>
+          ) : isReviewing ? (
+            <>
+              Finish Review <CheckCircle2 className="h-4 w-4 ml-2" />
             </>
           ) : (
             <>
