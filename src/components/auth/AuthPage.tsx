@@ -72,63 +72,28 @@ const AuthPage = () => {
     setLoading(true);
     
     try {
-      // Use a proper email format for the guest account
-      const guestEmail = 'guest.user@example.com';
-      const guestPassword = 'guest123456789';
+      // Sign in anonymously as guest
+      const { data, error } = await supabase.auth.signInAnonymously();
 
-      // Try to sign in first
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: guestEmail,
-        password: guestPassword,
-      });
-
-      if (signInError) {
-        // If guest account doesn't exist, create it
-        console.log('Guest account not found, creating new one...');
-        const { error: signUpError } = await supabase.auth.signUp({
-          email: guestEmail,
-          password: guestPassword,
-          options: {
-            emailRedirectTo: `${window.location.origin}/`,
-            data: {
-              username: 'Guest User'
-            }
-          }
-        });
-
-        if (signUpError) {
-          console.error('SignUp error:', signUpError);
-          toast.error('Failed to create guest account: ' + signUpError.message);
-          return;
-        }
-
-        // For development/testing, we'll try to sign in immediately
-        // In production, this would require email confirmation
-        const { error: secondSignInError } = await supabase.auth.signInWithPassword({
-          email: guestEmail,
-          password: guestPassword,
-        });
-        
-        if (secondSignInError) {
-          console.error('Second sign in error:', secondSignInError);
-          toast.success('Guest account created! Please check email for confirmation link, or disable email confirmation in Supabase Auth settings for testing.');
-          return;
-        }
+      if (error) {
+        console.error('Anonymous sign in error:', error);
+        toast.error('Failed to sign in as guest: ' + error.message);
+        return;
       }
 
-      // Reset the guest user's data to allow retesting onboarding
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        console.log('Resetting guest user data for user:', user.id);
+      if (data.user) {
+        console.log('Guest user signed in:', data.user.id);
         
-        // Reset profile data
+        // Reset profile data for onboarding
         const { error: profileError } = await supabase
           .from('profiles')
-          .update({ 
+          .upsert({ 
+            id: data.user.id,
             app_version: null,
-            onboarding_completed: false 
-          })
-          .eq('id', user.id);
+            onboarding_completed: false,
+            username: 'Guest User',
+            email: null
+          });
 
         if (profileError) {
           console.error('Profile update error:', profileError);
@@ -138,7 +103,7 @@ const AuthPage = () => {
         const { error: assessmentError } = await supabase
           .from('initial_assessments')
           .delete()
-          .eq('user_id', user.id);
+          .eq('user_id', data.user.id);
 
         if (assessmentError) {
           console.error('Assessment deletion error:', assessmentError);
@@ -219,7 +184,7 @@ const AuthPage = () => {
                   disabled={loading}
                 >
                   <UserCheck className="h-4 w-4 mr-2" />
-                  {loading ? 'Setting up guest...' : 'Continue as Guest (Test Onboarding)'}
+                  {loading ? 'Setting up guest...' : 'Continue as Guest'}
                 </Button>
               </div>
             </TabsContent>
