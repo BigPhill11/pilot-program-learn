@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, UserCheck } from 'lucide-react';
 
 const AuthPage = () => {
   const [email, setEmail] = useState('');
@@ -61,6 +61,73 @@ const AuthPage = () => {
         toast.success('Welcome back!');
         navigate('/');
       }
+    } catch (error) {
+      toast.error('An unexpected error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGuestSignIn = async () => {
+    setLoading(true);
+    
+    try {
+      // Sign in with a predefined guest account
+      const { error } = await supabase.auth.signInWithPassword({
+        email: 'guest@philfinance.app',
+        password: 'guest123456',
+      });
+
+      if (error) {
+        // If guest account doesn't exist, create it
+        const { error: signUpError } = await supabase.auth.signUp({
+          email: 'guest@philfinance.app',
+          password: 'guest123456',
+          options: {
+            emailRedirectTo: `${window.location.origin}/`,
+            data: {
+              username: 'Guest User'
+            }
+          }
+        });
+
+        if (signUpError) {
+          toast.error('Failed to create guest account');
+          return;
+        } else {
+          // Try signing in again after creating the account
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email: 'guest@philfinance.app',
+            password: 'guest123456',
+          });
+          
+          if (signInError) {
+            toast.error('Failed to sign in as guest');
+            return;
+          }
+        }
+      }
+
+      // Reset the guest user's onboarding status to allow retesting
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase
+          .from('profiles')
+          .update({ 
+            app_version: null,
+            onboarding_completed: false 
+          })
+          .eq('id', user.id);
+
+        // Also clear any existing assessment data
+        await supabase
+          .from('initial_assessments')
+          .delete()
+          .eq('user_id', user.id);
+      }
+
+      toast.success('Signed in as guest! Starting onboarding...');
+      navigate('/');
     } catch (error) {
       toast.error('An unexpected error occurred');
     } finally {
@@ -123,6 +190,18 @@ const AuthPage = () => {
                   {loading ? 'Signing In...' : 'Sign In'}
                 </Button>
               </form>
+              
+              <div className="mt-4 pt-4 border-t">
+                <Button 
+                  variant="outline" 
+                  className="w-full" 
+                  onClick={handleGuestSignIn}
+                  disabled={loading}
+                >
+                  <UserCheck className="h-4 w-4 mr-2" />
+                  {loading ? 'Setting up guest...' : 'Continue as Guest (Test Onboarding)'}
+                </Button>
+              </div>
             </TabsContent>
             
             <TabsContent value="signup">
