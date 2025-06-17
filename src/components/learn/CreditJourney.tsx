@@ -44,11 +44,17 @@ const CreditJourney: React.FC<CreditJourneyProps> = ({ onBack }) => {
   };
 
   const handleLevelComplete = (levelId: number) => {
-    const newCompletedLevels = [...progress.completedLevels, levelId];
+    const newCompletedLevels = [...progress.completedLevels];
+    
+    // Only add if not already completed
+    if (!newCompletedLevels.includes(levelId)) {
+      newCompletedLevels.push(levelId);
+    }
+    
     const newProgress = {
       ...progress,
       completedLevels: newCompletedLevels,
-      currentLevel: Math.min(levelId + 1, creditJourneyData.length + 1),
+      currentLevel: Math.max(progress.currentLevel, levelId + 1), // Unlock next level
       totalPointsEarned: progress.totalPointsEarned + 5
     };
 
@@ -75,12 +81,6 @@ const CreditJourney: React.FC<CreditJourneyProps> = ({ onBack }) => {
     saveProgress(newProgress);
     updateLearningProgress(20); // Final 20% for mini-game completion
     setShowMiniGame(false);
-  };
-
-  const getProgressPercentage = () => {
-    const totalLevels = creditJourneyData.length + 1; // +1 for mini-game
-    const completed = progress.completedLevels.length + (progress.journeyCompleted ? 1 : 0);
-    return Math.round((completed / totalLevels) * 100);
   };
 
   const isLevelUnlocked = (levelId: number) => {
@@ -180,7 +180,7 @@ const CreditJourney: React.FC<CreditJourneyProps> = ({ onBack }) => {
     );
   }
 
-  // Main level selection screen
+  // Main level selection screen with card layout
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
