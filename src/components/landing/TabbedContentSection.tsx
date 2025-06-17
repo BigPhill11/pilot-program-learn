@@ -3,6 +3,8 @@ import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Rss, Calendar, BarChart3 } from 'lucide-react';
 import MarketRecapTab from './MarketRecapTab';
+import EconomicIndicatorsSection from './EconomicIndicatorsSection';
+import IndustryDeepDiveTab from '@/components/learn/IndustryDeepDiveTab';
 
 const TabbedContentSection = () => {
   return (
@@ -29,19 +31,11 @@ const TabbedContentSection = () => {
           </TabsContent>
           
           <TabsContent value="economic-calendar">
-            <div className="text-center py-12">
-              <Calendar className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Economic Calendar</h3>
-              <p className="text-muted-foreground">Coming soon! Track important economic events and announcements.</p>
-            </div>
+            <EconomicIndicatorsSection />
           </TabsContent>
           
           <TabsContent value="industry-insights">
-            <div className="text-center py-12">
-              <BarChart3 className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Industry Insights</h3>
-              <p className="text-muted-foreground">Coming soon! Deep dive into specific industry trends and analysis.</p>
-            </div>
+            <IndustryDeepDiveTab />
           </TabsContent>
         </Tabs>
       </div>
