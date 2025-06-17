@@ -14,11 +14,11 @@ serve(async (req) => {
   }
 
   try {
-    const fmpApiKey = Deno.env.get('FMP_API_KEY');
+    const alphaVantageApiKey = Deno.env.get('ALPHA_VANTAGE_API_KEY');
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     
-    if (!fmpApiKey || !supabaseUrl || !supabaseKey) {
+    if (!alphaVantageApiKey || !supabaseUrl || !supabaseKey) {
       return new Response(
         JSON.stringify({ error: 'Required environment variables not configured' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -27,15 +27,15 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    console.log('Fetching enhanced market data...');
+    console.log('Fetching market data from Alpha Vantage...');
 
-    // Define the symbols we want to fetch with their display names and types
+    // Define the symbols we want to fetch with their Alpha Vantage symbols
     const symbols = [
       { symbol: 'IXIC', name: 'NASDAQ', type: 'index' },
       { symbol: 'DJI', name: 'Dow Jones', type: 'index' },
       { symbol: 'SPX', name: 'S&P 500', type: 'index' },
-      { symbol: 'GCUSD', name: 'Gold', type: 'commodity' },
-      { symbol: 'CLUSD', name: 'Crude Oil', type: 'commodity' },
+      { symbol: 'GLD', name: 'Gold', type: 'commodity' }, // Gold ETF as proxy
+      { symbol: 'USO', name: 'Crude Oil', type: 'commodity' }, // Oil ETF as proxy
       { symbol: 'VIX', name: 'Volatility Index', type: 'index' }
     ];
 
@@ -45,9 +45,9 @@ serve(async (req) => {
       try {
         console.log(`Fetching data for ${item.name} (${item.symbol})`);
         
-        // Use FMP's quote endpoint for real-time data
+        // Use Alpha Vantage GLOBAL_QUOTE function for real-time data
         const response = await fetch(
-          `https://financialmodelingprep.com/api/v3/quote/${item.symbol}?apikey=${fmpApiKey}`,
+          `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${item.symbol}&apikey=${alphaVantageApiKey}`,
           {
             method: 'GET',
             headers: {
@@ -60,15 +60,18 @@ serve(async (req) => {
           const data = await response.json();
           console.log(`Response for ${item.name}:`, data);
           
-          if (data && data.length > 0) {
-            const quote = data[0];
+          const quote = data['Global Quote'];
+          if (quote && quote['05. price']) {
+            const price = parseFloat(quote['05. price']) || 0;
+            const change = parseFloat(quote['09. change']) || 0;
+            const changePercent = parseFloat(quote['10. change percent']?.replace('%', '')) || 0;
             
             const marketItem = {
               symbol: item.symbol,
               name: item.name,
-              price: parseFloat(quote.price) || 0,
-              change_amount: parseFloat(quote.change) || 0,
-              change_percent: parseFloat(quote.changesPercentage) || 0,
+              price: price,
+              change_amount: change,
+              change_percent: changePercent,
               asset_type: item.type
             };
 
@@ -88,11 +91,15 @@ serve(async (req) => {
                 last_updated: new Date().toISOString()
               });
           } else {
-            console.log(`No data returned for ${item.name}`);
+            console.log(`No data returned for ${item.name}:`, data);
           }
         } else {
           console.error(`Failed to fetch ${item.name}: ${response.status} ${response.statusText}`);
         }
+        
+        // Add delay to respect rate limits (5 calls per minute for free tier)
+        await new Promise(resolve => setTimeout(resolve, 12000)); // 12 second delay
+        
       } catch (error) {
         console.error(`Error fetching ${item.name}:`, error);
         // Continue with other symbols even if one fails
@@ -100,7 +107,7 @@ serve(async (req) => {
     }
 
     console.log('Final market data array:', marketData);
-    console.log('Enhanced market data fetched and cached successfully');
+    console.log('Market data fetched and cached successfully with Alpha Vantage');
 
     return new Response(
       JSON.stringify(marketData),

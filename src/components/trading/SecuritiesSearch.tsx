@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -44,11 +43,22 @@ const SecuritiesSearch: React.FC<SecuritiesSearchProps> = ({ onSelectSecurity })
 
     setIsSearching(true);
     try {
-      const { data, error } = await supabase.functions.invoke('securities-search', {
-        body: { query: searchQuery }
-      });
+      const response = await fetch(
+        `https://aqqbxivolegafwuurxxm.supabase.co/functions/v1/securities-search?query=${encodeURIComponent(searchQuery)}`,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFxcWJ4aXZvbGVnYWZ3dXVyeHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NjkwMTcsImV4cCI6MjA2NTU0NTAxN30.W5pB4lv_OTYvXn9dx6146ms16HZdfdfaTv2bs3cK-r0`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
-      if (error) throw error;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
       setSearchResults(data || []);
     } catch (error) {
       console.error('Search error:', error);
@@ -62,21 +72,20 @@ const SecuritiesSearch: React.FC<SecuritiesSearchProps> = ({ onSelectSecurity })
   const handleSelectSecurity = async (security: Security) => {
     setSelectedSecurity(security);
     
-    // Get current price using FMP API
-    try {
-      const { data, error } = await supabase.functions.invoke('enhanced-market-data');
-      if (error) throw error;
-      
-      // For demo purposes, use a mock price
-      const mockPrice = Math.random() * 200 + 50;
-      onSelectSecurity(security, mockPrice);
-      
-      toast.success(`Selected ${security.name} (${security.symbol})`);
-    } catch (error) {
-      console.error('Price fetch error:', error);
-      // Use fallback price
-      onSelectSecurity(security, 100);
+    // For demo purposes, use a realistic price based on asset type
+    let mockPrice = 100;
+    if (security.assetType === 'index') {
+      mockPrice = Math.random() * 5000 + 15000; // Index range
+    } else if (security.assetType === 'etf') {
+      mockPrice = Math.random() * 300 + 50; // ETF range  
+    } else if (security.assetType === 'commodity') {
+      mockPrice = Math.random() * 100 + 50; // Commodity range
+    } else {
+      mockPrice = Math.random() * 500 + 20; // Stock range
     }
+    
+    onSelectSecurity(security, mockPrice);
+    toast.success(`Selected ${security.name} (${security.symbol})`);
   };
 
   const getAssetTypeColor = (type: string) => {

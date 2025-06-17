@@ -14,11 +14,11 @@ serve(async (req) => {
   }
 
   try {
-    const fmpApiKey = Deno.env.get('FMP_API_KEY');
+    const alphaVantageApiKey = Deno.env.get('ALPHA_VANTAGE_API_KEY');
     
-    if (!fmpApiKey) {
+    if (!alphaVantageApiKey) {
       return new Response(
-        JSON.stringify({ error: 'FMP API key not configured' }),
+        JSON.stringify({ error: 'Alpha Vantage API key not configured' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -35,9 +35,9 @@ serve(async (req) => {
 
     console.log(`Searching for securities: ${query}`);
 
-    // Search using FMP's search endpoint
+    // Search using Alpha Vantage SYMBOL_SEARCH endpoint
     const response = await fetch(
-      `https://financialmodelingprep.com/api/v3/search?query=${encodeURIComponent(query)}&limit=20&apikey=${fmpApiKey}`,
+      `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${encodeURIComponent(query)}&apikey=${alphaVantageApiKey}`,
       {
         method: 'GET',
         headers: {
@@ -48,7 +48,7 @@ serve(async (req) => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('FMP API error:', errorData);
+      console.error('Alpha Vantage API error:', errorData);
       return new Response(
         JSON.stringify({ error: errorData.error?.message || 'Failed to search securities' }),
         { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -56,28 +56,30 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    console.log('FMP search response received');
+    console.log('Alpha Vantage search response received');
 
     // Transform the data to match our expected format
-    const transformedData = data.map((item: any) => {
-      // Determine asset type based on symbol patterns and exchange
+    const bestMatches = data.bestMatches || [];
+    const transformedData = bestMatches.slice(0, 20).map((item: any) => {
+      // Determine asset type based on symbol patterns
       let assetType = 'stock';
-      if (item.symbol.includes('=F') || item.exchangeShortName === 'COMMODITY') {
-        assetType = 'commodity';
-      } else if (item.symbol.includes('^') || ['DJI', 'SPX', 'IXIC'].includes(item.symbol)) {
-        assetType = 'index';
-      } else if (item.name.toLowerCase().includes('etf') || item.exchangeShortName === 'ETF') {
+      const symbol = item['1. symbol'];
+      const name = item['2. name'];
+      
+      if (name.toLowerCase().includes('etf')) {
         assetType = 'etf';
-      } else if (item.name.toLowerCase().includes('bond')) {
+      } else if (name.toLowerCase().includes('bond')) {
         assetType = 'bond';
+      } else if (['DJI', 'SPX', 'IXIC', 'VIX'].includes(symbol)) {
+        assetType = 'index';
       }
 
       return {
-        symbol: item.symbol,
-        name: item.name,
-        exchange: item.exchangeShortName || 'UNKNOWN',
+        symbol: symbol,
+        name: name,
+        exchange: item['4. region'] || 'US',
         assetType,
-        currency: item.currency || 'USD'
+        currency: item['8. currency'] || 'USD'
       };
     });
 
