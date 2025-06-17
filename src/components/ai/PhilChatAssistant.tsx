@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Send, Bot, User, Lightbulb, TrendingUp, DollarSign, Loader2 } from 'lucide-react';
+import { Send, Bot, User, Lightbulb, TrendingUp, DollarSign, Loader2, Brain, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface Message {
@@ -12,6 +12,7 @@ interface Message {
   sender: 'user' | 'phil';
   timestamp: Date;
   suggestions?: string[];
+  aiProvider?: 'perplexity' | 'openai';
 }
 
 const PhilChatAssistant: React.FC = () => {
@@ -32,6 +33,7 @@ const PhilChatAssistant: React.FC = () => {
   
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [aiProvider, setAiProvider] = useState<'perplexity' | 'openai'>('perplexity');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -58,12 +60,14 @@ const PhilChatAssistant: React.FC = () => {
     setIsTyping(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('phil-chat', {
+      const functionName = aiProvider === 'perplexity' ? 'phil-chat' : 'phil-chat-openai';
+      
+      const { data, error } = await supabase.functions.invoke(functionName, {
         body: { message: currentInput }
       });
 
       if (error) {
-        throw new Error(error.message || 'Failed to get response from Phil');
+        throw new Error(error.message || `Failed to get response from Phil using ${aiProvider}`);
       }
 
       if (data?.error) {
@@ -75,6 +79,7 @@ const PhilChatAssistant: React.FC = () => {
         text: data.response,
         sender: 'phil',
         timestamp: new Date(),
+        aiProvider: aiProvider,
         suggestions: [
           "Tell me more about this",
           "What should I do next?",
@@ -122,6 +127,31 @@ const PhilChatAssistant: React.FC = () => {
             Ask Phil - Your Finance Buddy
             <Badge variant="secondary" className="ml-auto">AI Assistant</Badge>
           </CardTitle>
+          
+          <div className="flex gap-2 items-center">
+            <span className="text-sm font-medium">AI Provider:</span>
+            <Button
+              variant={aiProvider === 'perplexity' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setAiProvider('perplexity')}
+              className="flex items-center gap-1"
+            >
+              <Brain className="h-4 w-4" />
+              Perplexity
+            </Button>
+            <Button
+              variant={aiProvider === 'openai' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setAiProvider('openai')}
+              className="flex items-center gap-1"
+            >
+              <Zap className="h-4 w-4" />
+              OpenAI
+            </Button>
+            <Badge variant="secondary">
+              {aiProvider === 'perplexity' ? 'Real-time Data' : 'Fast Response'}
+            </Badge>
+          </div>
         </CardHeader>
         
         <CardContent className="flex-1 flex flex-col min-h-0">
@@ -145,6 +175,11 @@ const PhilChatAssistant: React.FC = () => {
                         __html: message.sender === 'phil' ? message.text.replace(/\n/g, '<br />') : message.text 
                       }}
                     />
+                    {message.sender === 'phil' && message.aiProvider && (
+                      <div className="text-xs opacity-70 mt-1">
+                        Powered by {message.aiProvider === 'perplexity' ? 'Perplexity' : 'OpenAI'}
+                      </div>
+                    )}
                   </div>
                   
                   {message.suggestions && (
@@ -186,7 +221,9 @@ const PhilChatAssistant: React.FC = () => {
                 <div className="bg-muted p-3 rounded-lg">
                   <div className="flex items-center space-x-2">
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    <span className="text-sm text-muted-foreground">Phil is thinking...</span>
+                    <span className="text-sm text-muted-foreground">
+                      Phil is thinking using {aiProvider === 'perplexity' ? 'Perplexity' : 'OpenAI'}...
+                    </span>
                   </div>
                 </div>
               </div>

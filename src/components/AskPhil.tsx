@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Loader2, Wand2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Loader2, Wand2, Brain, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 const AskPhil = () => {
@@ -11,6 +12,7 @@ const AskPhil = () => {
     const [answer, setAnswer] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [aiProvider, setAiProvider] = useState<'perplexity' | 'openai'>('perplexity');
 
     const handleAsk = async () => {
         if (!question.trim()) {
@@ -23,12 +25,14 @@ const AskPhil = () => {
         setError('');
 
         try {
-            const { data, error: functionError } = await supabase.functions.invoke('phil-chat', {
+            const functionName = aiProvider === 'perplexity' ? 'phil-chat' : 'phil-chat-openai';
+            
+            const { data, error: functionError } = await supabase.functions.invoke(functionName, {
                 body: { message: question }
             });
 
             if (functionError) {
-                throw new Error(functionError.message || 'Failed to get response from Phil');
+                throw new Error(functionError.message || `Failed to get response from Phil using ${aiProvider}`);
             }
 
             if (data?.error) {
@@ -56,6 +60,31 @@ const AskPhil = () => {
             </CardHeader>
             <CardContent>
                 <div className="flex flex-col gap-4">
+                    <div className="flex gap-2 items-center mb-2">
+                        <span className="text-sm font-medium">AI Provider:</span>
+                        <Button
+                            variant={aiProvider === 'perplexity' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => setAiProvider('perplexity')}
+                            className="flex items-center gap-1"
+                        >
+                            <Brain className="h-4 w-4" />
+                            Perplexity
+                        </Button>
+                        <Button
+                            variant={aiProvider === 'openai' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => setAiProvider('openai')}
+                            className="flex items-center gap-1"
+                        >
+                            <Zap className="h-4 w-4" />
+                            OpenAI
+                        </Button>
+                        <Badge variant="secondary" className="ml-auto">
+                            {aiProvider === 'perplexity' ? 'Real-time Data' : 'Fast Response'}
+                        </Badge>
+                    </div>
+                    
                     <div className="flex gap-2">
                         <Input
                             placeholder="e.g., How do I open a Roth IRA?"
@@ -72,6 +101,11 @@ const AskPhil = () => {
                     
                     {answer && (
                          <div className="p-4 bg-muted/50 rounded-lg border space-y-2">
+                             <div className="flex items-center justify-between mb-2">
+                                 <span className="text-sm text-muted-foreground">
+                                     Powered by {aiProvider === 'perplexity' ? 'Perplexity' : 'OpenAI'}
+                                 </span>
+                             </div>
                              <p 
                                 className="text-muted-foreground"
                                 dangerouslySetInnerHTML={{ __html: answer.replace(/\n/g, '<br />') }}
