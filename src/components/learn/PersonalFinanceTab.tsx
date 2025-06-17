@@ -9,6 +9,7 @@ import TaxesJourney from './TaxesJourney';
 import BudgetJourney from './BudgetJourney';
 import CreditJourney from './CreditJourney';
 import FuturePlanningJourney from './FuturePlanningJourney';
+import BigPurchasesJourney from './BigPurchasesJourney';
 import PodcastRecommendationsSection from './sections/PodcastRecommendationsSection';
 
 const PersonalFinanceTab = () => {
@@ -16,6 +17,7 @@ const PersonalFinanceTab = () => {
     const [showBudgetJourney, setShowBudgetJourney] = useState(false);
     const [showCreditJourney, setShowCreditJourney] = useState(false);
     const [showFuturePlanningJourney, setShowFuturePlanningJourney] = useState(false);
+    const [showBigPurchasesJourney, setShowBigPurchasesJourney] = useState(false);
 
     // Helper functions to get progress for each journey
     const getTaxesProgress = () => {
@@ -70,6 +72,19 @@ const PersonalFinanceTab = () => {
         return { completed: false, levelsCompleted: 0, totalLevels: 5 };
     };
 
+    const getBigPurchasesProgress = () => {
+        const saved = localStorage.getItem('bigPurchasesJourneyProgress');
+        if (saved) {
+            const progress = JSON.parse(saved);
+            return {
+                completed: progress.journeyCompleted || false,
+                levelsCompleted: progress.completedLevels?.length || 0,
+                totalLevels: 5
+            };
+        }
+        return { completed: false, levelsCompleted: 0, totalLevels: 5 };
+    };
+
     // Render journey components if active
     if (showTaxesJourney) {
         return <TaxesJourney onBack={() => setShowTaxesJourney(false)} />;
@@ -87,10 +102,15 @@ const PersonalFinanceTab = () => {
         return <FuturePlanningJourney onBack={() => setShowFuturePlanningJourney(false)} />;
     }
 
+    if (showBigPurchasesJourney) {
+        return <BigPurchasesJourney onBack={() => setShowBigPurchasesJourney(false)} />;
+    }
+
     const taxesProgress = getTaxesProgress();
     const budgetProgress = getBudgetProgress();
     const creditProgress = getCreditProgress();
     const futurePlanningProgress = getFuturePlanningProgress();
+    const bigPurchasesProgress = getBigPurchasesProgress();
 
     const journeys = [
         {
@@ -136,6 +156,17 @@ const PersonalFinanceTab = () => {
             gradient: 'from-indigo-50 to-purple-50',
             borderColor: 'border-indigo-500/30',
             buttonColor: 'bg-indigo-500 hover:bg-indigo-600'
+        },
+        {
+            id: 'big-purchases',
+            title: 'How to Buy Big',
+            description: 'Master smart shopping for cars, homes, and major purchases',
+            emoji: '🚗',
+            progress: bigPurchasesProgress,
+            onClick: () => setShowBigPurchasesJourney(true),
+            gradient: 'from-purple-50 to-blue-50',
+            borderColor: 'border-purple-500/30',
+            buttonColor: 'bg-purple-500 hover:bg-purple-600'
         }
     ];
 
