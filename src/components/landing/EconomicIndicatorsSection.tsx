@@ -1,82 +1,109 @@
 
 import React from 'react';
-import MarketIndicatorCard from '@/components/MarketIndicatorCard';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Skeleton } from '@/components/ui/skeleton';
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import EconomicCalendar from './EconomicCalendar';
 
-// Fallback data for when FRED API is not available
-const fallbackIndicators = [
-  { title: "Unemployment Rate", value: "3.7%", change: 0 },
-  { title: "Inflation Rate (CPI)", value: "3.2%", change: 0 },
-  { title: "Federal Funds Rate", value: "5.25%", change: 0 },
-  { title: "GDP Growth", value: "$27.0T", change: 0 },
-  { title: "Employment Change", value: "156.0M", change: 0 },
-  { title: "Housing Starts", value: "1.4M", change: 0 },
-];
+interface EconomicIndicator {
+  name: string;
+  value: number;
+  change: number;
+  unit: string;
+  trend: 'up' | 'down' | 'neutral';
+}
 
 const EconomicIndicatorsSection = () => {
-  // Function to fetch data from FRED
-  const fetchFredData = async () => {
+  const fetchEconomicData = async () => {
+    console.log('Fetching economic data...');
     const { data, error } = await supabase.functions.invoke('fred-data');
     if (error) {
+      console.error('Economic data fetch error:', error);
       throw new Error(error.message);
     }
-    if (!data || !Array.isArray(data)) {
-        throw new Error("Invalid data format received from FRED");
-    }
-    return data;
+    console.log('Economic data received:', data);
+    return data || { indicators: [] };
   };
 
-  const { data: economicIndicators, isLoading, isError, error } = useQuery({
-    queryKey: ['fredData'],
-    queryFn: fetchFredData,
-    staleTime: 1000 * 60 * 30, // Re-fetch data every 30 minutes (FRED data updates less frequently)
+  const { data: economicData, isLoading, error } = useQuery({
+    queryKey: ['economicIndicators'],
+    queryFn: fetchEconomicData,
+    staleTime: 1000 * 60 * 60, // 1 hour
   });
 
-  if (isError) {
-    console.error("Error fetching FRED data:", error);
+  const getTrendIcon = (trend: string) => {
+    switch (trend) {
+      case 'up':
+        return <TrendingUp className="h-4 w-4 text-green-500" />;
+      case 'down':
+        return <TrendingDown className="h-4 w-4 text-red-500" />;
+      default:
+        return <Minus className="h-4 w-4 text-gray-500" />;
+    }
+  };
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center py-8">
+          <p className="text-muted-foreground">Economic data is currently unavailable.</p>
+        </div>
+        <EconomicCalendar />
+      </div>
+    );
   }
 
-  const indicatorsToDisplay = isError || !economicIndicators || economicIndicators.length === 0 ? fallbackIndicators : economicIndicators;
-  const subtitle = isError ? "Could not load live data. Showing static data." : "Key economic indicators from the Federal Reserve.";
-
   return (
-    <section className="py-16 bg-muted/30">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-semibold text-emerald-700">Economic Indicators</h2>
-          <p className="mt-2 text-muted-foreground">{subtitle}</p>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
-          {isLoading ? (
-            Array.from({ length: 6 }).map((_, index) => (
-              <CardSkeleton key={index} />
-            ))
-          ) : (
-            indicatorsToDisplay.map((indicator) => (
-              <MarketIndicatorCard
-                key={indicator.title}
-                title={indicator.title}
-                value={indicator.value}
-                change={indicator.change}
-                changeSuffix={indicator.changeSuffix}
-              />
-            ))
-          )}
-        </div>
+    <div className="space-y-6">
+      {/* Economic Indicators */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {isLoading ? (
+          Array.from({ length: 4 }).map((_, index) => (
+            <Card key={index}>
+              <CardHeader className="pb-2">
+                <Skeleton className="h-4 w-24" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-8 w-16 mb-2" />
+                <Skeleton className="h-4 w-20" />
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          economicData?.indicators?.map((indicator: EconomicIndicator, index: number) => (
+            <Card key={index} className="hover:shadow-md transition-shadow">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {indicator.name}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-2xl font-bold">
+                      {indicator.value}{indicator.unit}
+                    </p>
+                    <p className={`text-sm flex items-center gap-1 ${
+                      indicator.change > 0 ? 'text-green-600' : 
+                      indicator.change < 0 ? 'text-red-600' : 'text-gray-600'
+                    }`}>
+                      {getTrendIcon(indicator.trend)}
+                      {indicator.change > 0 ? '+' : ''}{indicator.change}%
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
-    </section>
+
+      {/* Economic Calendar */}
+      <EconomicCalendar />
+    </div>
   );
 };
-
-// A skeleton component to show while data is loading
-const CardSkeleton = () => (
-  <div className="p-4 border rounded-lg shadow-md space-y-2 bg-card">
-    <Skeleton className="h-4 w-20" />
-    <Skeleton className="h-8 w-32" />
-    <Skeleton className="h-4 w-24" />
-  </div>
-);
 
 export default EconomicIndicatorsSection;

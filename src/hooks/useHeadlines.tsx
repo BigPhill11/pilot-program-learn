@@ -17,7 +17,7 @@ const useHeadlines = () => {
   return useQuery({
     queryKey: ['marketHeadlines'],
     queryFn: fetchHeadlines,
-    staleTime: 1000 * 60 * 15, // 15 minutes
+    staleTime: 1000 * 60 * 60 * 24, // 24 hours - refresh once daily
   });
 };
 

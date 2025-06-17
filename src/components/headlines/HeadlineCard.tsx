@@ -17,6 +17,15 @@ interface HeadlineCardProps {
   onHeadlineClick: (headline: any) => void;
 }
 
+const getComplexityDescription = (level: string) => {
+  switch (level) {
+    case 'beginner': return '(9th grade level)';
+    case 'intermediate': return '(12th grade level)';
+    case 'advanced': return '(Finance professional level)';
+    default: return '';
+  }
+};
+
 const HeadlineCard: React.FC<HeadlineCardProps> = ({ headline, userLevel, onHeadlineClick }) => {
   return (
     <Card className="h-full hover:shadow-lg transition-shadow">
@@ -32,7 +41,9 @@ const HeadlineCard: React.FC<HeadlineCardProps> = ({ headline, userLevel, onHead
         
         {headline.tldr && (
           <div className="bg-green-50 p-3 rounded-lg border-l-4 border-green-500">
-            <p className="text-xs font-semibold text-green-700 mb-1">TL;DR</p>
+            <p className="text-xs font-semibold text-green-700 mb-1">
+              TL;DR {getComplexityDescription(userLevel)}
+            </p>
             <p className="text-sm text-green-600">
               <TermHighlighter text={headline.tldr} userLevel={userLevel} />
             </p>

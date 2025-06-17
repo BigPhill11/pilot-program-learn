@@ -25,11 +25,20 @@ const MarketRecapTab = () => {
   const { data: marketData, isLoading } = useQuery({
     queryKey: ['marketRecap'],
     queryFn: fetchMarketData,
-    staleTime: 1000 * 60 * 15, // 15 minutes
+    staleTime: 1000 * 60 * 60 * 24, // 24 hours - refresh once daily
   });
 
   const userLevel = profile?.app_version || 'beginner';
   const marketRecap = marketData?.marketRecap;
+
+  const getComplexityDescription = (level: string) => {
+    switch (level) {
+      case 'beginner': return '(9th grade level)';
+      case 'intermediate': return '(12th grade level)';
+      case 'advanced': return '(Finance professional level)';
+      default: return '';
+    }
+  };
 
   if (isLoading) {
     return (
@@ -71,7 +80,7 @@ const MarketRecapTab = () => {
               day: 'numeric' 
             })}
             <span className="text-sm font-normal text-green-600 ml-auto">
-              (Powered by newsdata.io)
+              {getComplexityDescription(userLevel)} (Powered by newsdata.io)
             </span>
           </CardTitle>
         </CardHeader>
@@ -86,7 +95,7 @@ const MarketRecapTab = () => {
           
           {marketRecap.tldr && (
             <div className="bg-green-100 p-4 rounded-lg border-l-4 border-green-600">
-              <p className="text-sm font-semibold text-green-700 mb-2">TL;DR (Easy Explanation):</p>
+              <p className="text-sm font-semibold text-green-700 mb-2">TL;DR (Easy Explanation {getComplexityDescription(userLevel)}):</p>
               <p className="text-green-700 font-medium italic">
                 <TermHighlighter text={marketRecap.tldr} userLevel={userLevel} />
               </p>

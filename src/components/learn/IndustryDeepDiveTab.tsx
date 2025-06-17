@@ -15,9 +15,9 @@ const IndustryDeepDiveTab = () => {
     return (
         <div>
             <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold tracking-tight text-foreground">Industry Deep Dives</h2>
+                <h2 className="text-3xl font-bold tracking-tight text-foreground">Industry Insights</h2>
                 <p className="mt-3 max-w-2xl mx-auto text-lg text-muted-foreground">
-                    Choose an industry to start your learning journey with structured learning paths.
+                    Explore different economic sectors, understand how they work, and discover AI-powered insights into their future.
                 </p>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -34,7 +34,7 @@ const IndustryDeepDiveTab = () => {
                                 </div>
                             </div>
                             <CardTitle className="text-xl mb-2 text-center">{industry.name}</CardTitle>
-                            <Badge variant="outline" className="mx-auto block w-fit mb-4">{industry.levels.length} Levels</Badge>
+                            <Badge variant="outline" className="mx-auto block w-fit mb-4">AI Insights Available</Badge>
                             
                             <CardDescription className="text-sm leading-relaxed">
                                 {industry.description}
