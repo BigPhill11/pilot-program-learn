@@ -5,7 +5,7 @@ export async function fetchNewsFromAPI(apiKey: string): Promise<NewsArticle[]> {
   console.log('Fetching finance-specific headlines from newsdata.io API...');
 
   const response = await fetch(
-    `https://newsdata.io/api/1/news?apikey=${apiKey}&category=business&q=finance OR economics OR stock OR market OR investment OR trading OR earnings OR revenue OR GDP OR inflation OR interest rate OR Federal Reserve OR Wall Street&language=en&country=us&size=12`,
+    `https://newsdata.io/api/1/news?apikey=${apiKey}&category=business&q=finance OR economics OR stock OR market OR investment OR trading OR earnings OR revenue OR GDP OR inflation OR interest rate OR Federal Reserve OR Wall Street&language=en&country=us`,
     {
       method: 'GET',
       headers: {
