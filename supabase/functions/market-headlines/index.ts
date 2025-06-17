@@ -17,14 +17,14 @@ serve(async (req) => {
   }
 
   try {
-    const NEWSDATA_IO_API_KEY = Deno.env.get('NEWSDATA_IO_API_KEY')
+    const NEWS_API_KEY = Deno.env.get('NEWS_API_KEY')
     
-    if (!NEWSDATA_IO_API_KEY) {
-      throw new Error('NEWSDATA_IO_API_KEY not found')
+    if (!NEWS_API_KEY) {
+      throw new Error('NEWS_API_KEY not found')
     }
 
     // Fetch news articles
-    const articles = await fetchNewsFromAPI(NEWSDATA_IO_API_KEY);
+    const articles = await fetchNewsFromAPI(NEWS_API_KEY);
     
     // Process headlines with enhanced summaries
     const processedHeadlines = processNewsArticles(articles);
