@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +9,7 @@ import BudgetJourney from './BudgetJourney';
 import CreditJourney from './CreditJourney';
 import FuturePlanningJourney from './FuturePlanningJourney';
 import BigPurchasesJourney from './BigPurchasesJourney';
+import FinancialSafetyJourney from './FinancialSafetyJourney';
 import PodcastRecommendationsSection from './sections/PodcastRecommendationsSection';
 
 const PersonalFinanceTab = () => {
@@ -18,6 +18,7 @@ const PersonalFinanceTab = () => {
     const [showCreditJourney, setShowCreditJourney] = useState(false);
     const [showFuturePlanningJourney, setShowFuturePlanningJourney] = useState(false);
     const [showBigPurchasesJourney, setShowBigPurchasesJourney] = useState(false);
+    const [showFinancialSafetyJourney, setShowFinancialSafetyJourney] = useState(false);
 
     // Helper functions to get progress for each journey
     const getTaxesProgress = () => {
@@ -85,6 +86,19 @@ const PersonalFinanceTab = () => {
         return { completed: false, levelsCompleted: 0, totalLevels: 5 };
     };
 
+    const getFinancialSafetyProgress = () => {
+        const saved = localStorage.getItem('financialSafetyJourneyProgress');
+        if (saved) {
+            const progress = JSON.parse(saved);
+            return {
+                completed: progress.journeyCompleted || false,
+                levelsCompleted: progress.completedLevels?.length || 0,
+                totalLevels: 5
+            };
+        }
+        return { completed: false, levelsCompleted: 0, totalLevels: 5 };
+    };
+
     // Render journey components if active
     if (showTaxesJourney) {
         return <TaxesJourney onBack={() => setShowTaxesJourney(false)} />;
@@ -106,11 +120,9 @@ const PersonalFinanceTab = () => {
         return <BigPurchasesJourney onBack={() => setShowBigPurchasesJourney(false)} />;
     }
 
-    const taxesProgress = getTaxesProgress();
-    const budgetProgress = getBudgetProgress();
-    const creditProgress = getCreditProgress();
-    const futurePlanningProgress = getFuturePlanningProgress();
-    const bigPurchasesProgress = getBigPurchasesProgress();
+    if (showFinancialSafetyJourney) {
+        return <FinancialSafetyJourney onBack={() => setShowFinancialSafetyJourney(false)} />;
+    }
 
     const journeys = [
         {
@@ -118,7 +130,7 @@ const PersonalFinanceTab = () => {
             title: 'Budgeting 101',
             description: 'Master the art of managing your money effectively',
             emoji: '💰',
-            progress: budgetProgress,
+            progress: getBudgetProgress(),
             onClick: () => setShowBudgetJourney(true),
             gradient: 'from-blue-50 to-green-50',
             borderColor: 'border-blue-500/30',
@@ -129,7 +141,7 @@ const PersonalFinanceTab = () => {
             title: 'Building Credit',
             description: 'Build trust with your money and unlock financial opportunities',
             emoji: '🏆',
-            progress: creditProgress,
+            progress: getCreditProgress(),
             onClick: () => setShowCreditJourney(true),
             gradient: 'from-green-50 to-blue-50',
             borderColor: 'border-green-500/30',
@@ -140,7 +152,7 @@ const PersonalFinanceTab = () => {
             title: 'Understanding Taxes',
             description: 'Learn how taxes work and how to file them correctly',
             emoji: '🎓',
-            progress: taxesProgress,
+            progress: getTaxesProgress(),
             onClick: () => setShowTaxesJourney(true),
             gradient: 'from-yellow-50 to-orange-50',
             borderColor: 'border-primary/30',
@@ -151,7 +163,7 @@ const PersonalFinanceTab = () => {
             title: 'Plan for Later, Start Now',
             description: 'Master future planning and build generational wealth',
             emoji: '🔮',
-            progress: futurePlanningProgress,
+            progress: getFuturePlanningProgress(),
             onClick: () => setShowFuturePlanningJourney(true),
             gradient: 'from-indigo-50 to-purple-50',
             borderColor: 'border-indigo-500/30',
@@ -162,9 +174,20 @@ const PersonalFinanceTab = () => {
             title: 'How to Buy Big',
             description: 'Master smart shopping for cars, homes, and major purchases',
             emoji: '🚗',
-            progress: bigPurchasesProgress,
+            progress: getBigPurchasesProgress(),
             onClick: () => setShowBigPurchasesJourney(true),
             gradient: 'from-purple-50 to-blue-50',
+            borderColor: 'border-purple-500/30',
+            buttonColor: 'bg-purple-500 hover:bg-purple-600'
+        },
+        {
+            id: 'financial-safety',
+            title: 'Money Armor',
+            description: 'Protect yourself from financial risks, scams, and identity theft',
+            emoji: '🛡️',
+            progress: getFinancialSafetyProgress(),
+            onClick: () => setShowFinancialSafetyJourney(true),
+            gradient: 'from-purple-50 to-indigo-50',
             borderColor: 'border-purple-500/30',
             buttonColor: 'bg-purple-500 hover:bg-purple-600'
         }
