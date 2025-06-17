@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { CheckCircle2, XCircle, AlertTriangle, RotateCcw } from 'lucide-react';
+import QuizOption from '@/components/quiz/QuizOption';
+import QuizFeedback from '@/components/quiz/QuizFeedback';
+import QuizActions from '@/components/quiz/QuizActions';
 
 interface InteractiveQuizProps {
   topicId: string;
@@ -39,75 +40,46 @@ const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({
     setHasAttempted(false);
   };
 
-  const getButtonVariant = (index: number) => {
-    if (!hasAttempted && !isCompleted) return "outline";
-    if (index === correctAnswerIndex) return "default";
-    if (index === selectedAnswerIndex && index !== correctAnswerIndex) return "destructive";
-    return "outline";
-  };
+  const showIncorrectFeedback = hasAttempted && 
+    selectedAnswerIndex !== correctAnswerIndex && 
+    feedbackForIncorrect;
 
-  const getButtonClassName = (index: number) => {
-    let baseClasses = "w-full justify-start text-left text-sm py-2 px-3 h-auto mb-2";
-    if (!hasAttempted && !isCompleted) return `${baseClasses} hover:bg-accent`;
-    
-    if (index === correctAnswerIndex) {
-      return `${baseClasses} bg-green-500 hover:bg-green-600 text-white`;
-    }
-    if (index === selectedAnswerIndex && index !== correctAnswerIndex) {
-      return `${baseClasses} bg-red-500 hover:bg-red-600 text-white`;
-    }
-    return `${baseClasses} opacity-70 cursor-not-allowed`;
-  };
+  const showCompletedFeedback = isCompleted && !hasAttempted;
 
   return (
     <div className="mt-6 p-4 border rounded-lg bg-muted/30">
       <p className="font-semibold mb-3 text-md">{question}</p>
       <div className="space-y-1">
         {options.map((option, index) => (
-          <Button
+          <QuizOption
             key={index}
-            variant={getButtonVariant(index)}
-            className={getButtonClassName(index)}
+            option={option}
+            index={index}
+            isSelected={selectedAnswerIndex === index}
+            isCorrect={index === correctAnswerIndex}
+            hasAttempted={hasAttempted}
+            isCompleted={isCompleted}
             onClick={() => handleOptionClick(index)}
-            disabled={hasAttempted || isCompleted}
-          >
-            <span className="flex-grow">{option}</span>
-            {(hasAttempted || isCompleted) && index === correctAnswerIndex && <CheckCircle2 className="h-5 w-5 ml-2" />}
-            {hasAttempted && index === selectedAnswerIndex && index !== correctAnswerIndex && <XCircle className="h-5 w-5 ml-2" />}
-          </Button>
+          />
         ))}
       </div>
       
-      {(hasAttempted && selectedAnswerIndex !== correctAnswerIndex && feedbackForIncorrect) && (
-        <div className="mt-3 p-3 text-sm bg-destructive/10 text-destructive border border-destructive/30 rounded-md flex items-start">
-          <AlertTriangle className="h-5 w-5 mr-2 flex-shrink-0" />
-          <p>{feedbackForIncorrect}</p>
-        </div>
+      {showIncorrectFeedback && (
+        <QuizFeedback type="incorrect" message={feedbackForIncorrected!} />
       )}
 
-      {(hasAttempted || isCompleted) && (
-        <div className="mt-3 flex justify-center">
-          <Button
-            onClick={handleRetry}
-            variant="outline"
-            size="sm"
-            className="text-xs"
-          >
-            <RotateCcw className="h-3 w-3 mr-1" />
-            Try Again
-          </Button>
-        </div>
+      {showCompletedFeedback && (
+        <QuizFeedback 
+          type="completed" 
+          message="You've already answered this correctly!" 
+        />
       )}
-      
-      {(isCompleted && !hasAttempted) && (
-         <div className="mt-3 p-2 text-sm bg-green-500/10 text-green-700 border border-green-500/30 rounded-md flex items-center">
-            <CheckCircle2 className="h-5 w-5 mr-2 flex-shrink-0" />
-            <p>You've already answered this correctly!</p>
-        </div>
-      )}
-      {(!hasAttempted && !isCompleted) && (
-         <p className="text-xs text-muted-foreground mt-3 text-center">Select an option to test your knowledge.</p>
-      )}
+
+      <QuizActions
+        hasAttempted={hasAttempted}
+        isCompleted={isCompleted}
+        onRetry={handleRetry}
+      />
     </div>
   );
 };
