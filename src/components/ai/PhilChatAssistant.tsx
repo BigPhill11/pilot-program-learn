@@ -252,7 +252,7 @@ const PhilChatAssistant: React.FC = () => {
         </CardContent>
       </Card>
       
-      <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <Card className="p-4 text-center cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSuggestionClick("How do I start budgeting?")}>
           <DollarSign className="h-6 w-6 mx-auto mb-2 text-primary" />
           <p className="text-sm font-medium">Budgeting Basics</p>

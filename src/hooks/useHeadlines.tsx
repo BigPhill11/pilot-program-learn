@@ -19,8 +19,9 @@ const useHeadlines = (userLevel: string = 'beginner') => {
   return useQuery({
     queryKey: ['marketHeadlines', userLevel],
     queryFn: fetchHeadlines,
-    staleTime: 1000 * 60 * 60 * 24, // 24 hours - refresh once daily
-    refetchInterval: 1000 * 60 * 60 * 24 * 14, // 14 days - refresh every 2 weeks
+    staleTime: 1000 * 60 * 60 * 9, // 9 hours - only refresh twice daily
+    refetchInterval: false, // Disable automatic refetching
+    refetchOnWindowFocus: false, // Don't refetch when window gains focus
   });
 };
 
