@@ -200,7 +200,7 @@ const StoryReader: React.FC<StoryReaderProps> = ({ adventure, onBack }) => {
           title: "Economic Cycles and Your Future",
           content: [
             "📊 Economies naturally go through cycles - periods of growth (expansion) followed by periods of slowing down (recession), then recovery and growth again.",
-            "During expansions, businesses grow, pandas find jobs easily, and investments often do well. During recessions, the opposite happens - but these tough times also create opportunities for smart, patient pandas.',
+            "During expansions, businesses grow, pandas find jobs easily, and investments often do well. During recessions, the opposite happens - but these tough times also create opportunities for smart, patient pandas.",
             "Understanding these cycles helps us make better decisions: saving more during good times to prepare for tough times, and recognizing opportunities during downturns when others are too scared to act.",
             "Remember, economics affects every aspect of our lives - from job opportunities to the price of bamboo to investment returns. The more you understand these connections, the better financial decisions you'll make throughout your life!"
           ]
