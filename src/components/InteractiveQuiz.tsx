@@ -48,7 +48,7 @@ const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({
 
   const showIncorrectFeedback = hasAttempted && 
     selectedAnswerIndex !== correctAnswerIndex && 
-    feedbackForIncorrected;
+    feedbackForIncorrect;
 
   const showCompletedFeedback = isCompleted && !hasAttempted;
 
