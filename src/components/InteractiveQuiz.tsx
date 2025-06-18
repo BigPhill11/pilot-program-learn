@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import QuizOption from '@/components/quiz/QuizOption';
 import QuizFeedback from '@/components/quiz/QuizFeedback';
 import QuizActions from '@/components/quiz/QuizActions';
@@ -26,6 +26,12 @@ const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({
   const [selectedAnswerIndex, setSelectedAnswerIndex] = useState<number | null>(null);
   const [hasAttempted, setHasAttempted] = useState<boolean>(false);
 
+  // Clear selections when topicId changes (new question)
+  useEffect(() => {
+    setSelectedAnswerIndex(null);
+    setHasAttempted(false);
+  }, [topicId]);
+
   const handleOptionClick = (index: number) => {
     if (hasAttempted || isCompleted) return;
 
@@ -42,7 +48,7 @@ const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({
 
   const showIncorrectFeedback = hasAttempted && 
     selectedAnswerIndex !== correctAnswerIndex && 
-    feedbackForIncorrect;
+    feedbackForIncorrected;
 
   const showCompletedFeedback = isCompleted && !hasAttempted;
 
