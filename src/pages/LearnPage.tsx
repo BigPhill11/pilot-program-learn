@@ -3,7 +3,7 @@ import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PersonalFinanceTab from "@/components/learn/PersonalFinanceTab";
 import CompanyDiscoveryTab from "@/components/learn/CompanyDiscoveryTab";
-import IndustryDeepDiveTab from "@/components/learn/IndustryDeepDiveTab";
+import CareersInFinanceTab from "@/components/learn/CareersInFinanceTab";
 import AdaptiveLearningContent from "@/components/learning/AdaptiveLearningContent";
 import TermOfTheDay from "@/components/learn/TermOfTheDay";
 
@@ -17,7 +17,7 @@ const LearnPage = () => {
           <TabsTrigger value="adaptive">Adaptive Learning</TabsTrigger>
           <TabsTrigger value="personal-finance">Personal Finance</TabsTrigger>
           <TabsTrigger value="companies">Company Discovery</TabsTrigger>
-          <TabsTrigger value="industries">Industry Deep Dive</TabsTrigger>
+          <TabsTrigger value="careers">Careers in Finance</TabsTrigger>
         </TabsList>
         
         <TabsContent value="adaptive" className="mt-6">
@@ -32,8 +32,8 @@ const LearnPage = () => {
           <CompanyDiscoveryTab />
         </TabsContent>
         
-        <TabsContent value="industries" className="mt-6">
-          <IndustryDeepDiveTab />
+        <TabsContent value="careers" className="mt-6">
+          <CareersInFinanceTab />
         </TabsContent>
       </Tabs>
     </div>
