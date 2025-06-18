@@ -8,6 +8,7 @@ import { TrendingUp, TrendingDown, DollarSign, Target, BarChart3 } from 'lucide-
 import MarketSimulation from '@/components/trading/MarketSimulation';
 import MarketPredictionGame from '@/components/trading/MarketPredictionGame';
 import PortfolioCharts from '@/components/trading/PortfolioCharts';
+import TradingAcademy from '@/components/trading/TradingAcademy';
 import { usePaperTrading } from '@/hooks/usePaperTrading';
 
 const PaperTradingPage = () => {
@@ -101,10 +102,11 @@ const PaperTradingPage = () => {
       </div>
 
       <Tabs defaultValue="trading" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 bg-emerald-50 border border-emerald-200">
+        <TabsList className="grid w-full grid-cols-5 bg-emerald-50 border border-emerald-200">
           <TabsTrigger value="trading" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white">Trading Simulator</TabsTrigger>
           <TabsTrigger value="portfolio" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white">Portfolio Analysis</TabsTrigger>
           <TabsTrigger value="predictions" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white">Market Predictions</TabsTrigger>
+          <TabsTrigger value="academy" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white">Phil's Academy</TabsTrigger>
           <TabsTrigger value="transactions" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white">Transaction History</TabsTrigger>
         </TabsList>
 
@@ -160,6 +162,10 @@ const PaperTradingPage = () => {
 
         <TabsContent value="predictions" className="space-y-6">
           <MarketPredictionGame />
+        </TabsContent>
+
+        <TabsContent value="academy" className="space-y-6">
+          <TradingAcademy />
         </TabsContent>
 
         <TabsContent value="transactions" className="space-y-6">

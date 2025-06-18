@@ -9,6 +9,38 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      comment_votes: {
+        Row: {
+          comment_id: string
+          created_at: string
+          id: string
+          user_id: string
+          vote_type: string
+        }
+        Insert: {
+          comment_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+          vote_type: string
+        }
+        Update: {
+          comment_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+          vote_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comment_votes_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "video_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       daily_logins: {
         Row: {
           created_at: string
@@ -375,6 +407,63 @@ export type Database = {
           },
         ]
       }
+      trading_videos: {
+        Row: {
+          created_at: string
+          description: string | null
+          difficulty_level: string
+          duration_minutes: number | null
+          id: string
+          instructor_bio: string | null
+          instructor_credentials: string | null
+          instructor_name: string
+          status: string
+          submitted_by: string | null
+          thumbnail_url: string | null
+          title: string
+          topic_category: string
+          updated_at: string
+          video_url: string
+          view_count: number | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          difficulty_level: string
+          duration_minutes?: number | null
+          id?: string
+          instructor_bio?: string | null
+          instructor_credentials?: string | null
+          instructor_name: string
+          status?: string
+          submitted_by?: string | null
+          thumbnail_url?: string | null
+          title: string
+          topic_category: string
+          updated_at?: string
+          video_url: string
+          view_count?: number | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          difficulty_level?: string
+          duration_minutes?: number | null
+          id?: string
+          instructor_bio?: string | null
+          instructor_credentials?: string | null
+          instructor_name?: string
+          status?: string
+          submitted_by?: string | null
+          thumbnail_url?: string | null
+          title?: string
+          topic_category?: string
+          updated_at?: string
+          video_url?: string
+          view_count?: number | null
+        }
+        Relationships: []
+      }
       user_progress: {
         Row: {
           achievements: Json | null
@@ -468,6 +557,101 @@ export type Database = {
           },
         ]
       }
+      video_comments: {
+        Row: {
+          content: string
+          created_at: string
+          helpful_votes: number | null
+          id: string
+          parent_comment_id: string | null
+          updated_at: string
+          user_id: string
+          video_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          helpful_votes?: number | null
+          id?: string
+          parent_comment_id?: string | null
+          updated_at?: string
+          user_id: string
+          video_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          helpful_votes?: number | null
+          id?: string
+          parent_comment_id?: string | null
+          updated_at?: string
+          user_id?: string
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_comments_parent_comment_id_fkey"
+            columns: ["parent_comment_id"]
+            isOneToOne: false
+            referencedRelation: "video_comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "video_comments_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "trading_videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      video_ratings: {
+        Row: {
+          clarity_rating: number
+          created_at: string
+          difficulty_rating: number
+          entertainment_rating: number
+          id: string
+          overall_rating: number | null
+          updated_at: string
+          usefulness_rating: number
+          user_id: string
+          video_id: string
+        }
+        Insert: {
+          clarity_rating: number
+          created_at?: string
+          difficulty_rating: number
+          entertainment_rating: number
+          id?: string
+          overall_rating?: number | null
+          updated_at?: string
+          usefulness_rating: number
+          user_id: string
+          video_id: string
+        }
+        Update: {
+          clarity_rating?: number
+          created_at?: string
+          difficulty_rating?: number
+          entertainment_rating?: number
+          id?: string
+          overall_rating?: number | null
+          updated_at?: string
+          usefulness_rating?: number
+          user_id?: string
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_ratings_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "trading_videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -476,6 +660,17 @@ export type Database = {
       calculate_user_streak: {
         Args: { p_user_id: string }
         Returns: number
+      }
+      get_video_average_ratings: {
+        Args: { video_id_param: string }
+        Returns: {
+          avg_clarity: number
+          avg_usefulness: number
+          avg_entertainment: number
+          avg_difficulty: number
+          avg_overall: number
+          total_ratings: number
+        }[]
       }
       handle_daily_login: {
         Args: { p_user_id: string }
