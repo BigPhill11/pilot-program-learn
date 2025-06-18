@@ -1,11 +1,24 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Brain, TrendingUp, Info } from 'lucide-react';
+import { ArrowLeft, Brain, TrendingUp, Info, Play } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import InteractiveIndustryJourney from './InteractiveIndustryJourney';
 import type { IndustryJourneyData } from '@/data/industry-journeys';
 
 const IndustryJourney = ({ journey, onBack }: { journey: IndustryJourneyData; onBack: () => void; }) => {
+  const [currentView, setCurrentView] = useState<'overview' | 'interactive'>('overview');
+
+  if (currentView === 'interactive') {
+    return (
+      <InteractiveIndustryJourney 
+        journey={journey} 
+        onBack={() => setCurrentView('overview')}
+      />
+    );
+  }
+
   return (
     <div className="animate-fade-in max-w-6xl mx-auto">
       <Button variant="ghost" onClick={onBack} className="mb-4">
@@ -66,12 +79,35 @@ const IndustryJourney = ({ journey, onBack }: { journey: IndustryJourneyData; on
         </CardContent>
       </Card>
 
-      {/* Career Learning Path */}
+      {/* Interactive Learning Journey CTA */}
+      <Card className="mb-8 border-2 border-green-400 bg-gradient-to-r from-green-50 to-emerald-50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-green-700">
+            <Play className="h-5 w-5" />
+            Interactive Learning Journey
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-green-800 mb-4">
+            Ready to dive deeper? Start your interactive learning journey with hands-on lessons, 
+            real-world examples, and personalized difficulty levels tailored to your expertise.
+          </p>
+          <Button 
+            onClick={() => setCurrentView('interactive')}
+            className="bg-green-600 hover:bg-green-700 text-white"
+            size="lg"
+          >
+            Start Interactive Learning Journey
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Career Learning Path Preview */}
       <Card>
         <CardHeader>
-          <CardTitle>Career Learning Path in {journey.name}</CardTitle>
+          <CardTitle>Career Learning Path Preview</CardTitle>
           <p className="text-sm text-muted-foreground">
-            Build expertise in this field through our structured learning journey
+            See what you'll learn in our interactive journey
           </p>
         </CardHeader>
         <CardContent>
@@ -86,11 +122,6 @@ const IndustryJourney = ({ journey, onBack }: { journey: IndustryJourneyData; on
                 </ul>
               </div>
             ))}
-          </div>
-          <div className="mt-6 text-center">
-            <Button className="bg-purple-600 hover:bg-purple-700">
-              Start Learning Journey
-            </Button>
           </div>
         </CardContent>
       </Card>
