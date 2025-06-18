@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -60,8 +59,8 @@ const InteractiveIndustryJourney: React.FC<InteractiveIndustryJourneyProps> = ({
     updateLearningProgress(15);
   };
 
-  const handleQuizComplete = (isCorrect: boolean) => {
-    updateQuizScore(`${journey.id}-industry-lesson`, isCorrect);
+  const handleQuizComplete = (topicId: string, isCorrect: boolean) => {
+    updateQuizScore(topicId, isCorrect);
   };
 
   const getDifficultyContent = (level: any, difficulty: string) => {
