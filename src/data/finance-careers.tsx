@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Landmark, Briefcase, CreditCard, Handshake, Users, Home, TrendingUp, Building } from 'lucide-react';
+import { Landmark, Briefcase, CreditCard, Handshake, Users, Home, TrendingUp, Building, DollarSign } from 'lucide-react';
 
 export interface CareerLevel {
   level: number;
@@ -71,9 +71,9 @@ export const financeCareers: FinanceCareerData[] = [
   },
   {
     id: "credit",
-    name: "Credit & Fixed Income",
+    name: "Credit",
     icon: <CreditCard />,
-    description: "Analyze and invest in debt instruments, assess credit risk, and manage fixed income portfolios across various market conditions.",
+    description: "Analyze and assess credit risk across various debt instruments, from corporate bonds to bank loans, managing portfolios and evaluating borrower creditworthiness.",
     levels: [
       { level: 1, focusArea: "Basic Credit Terms", sampleTopics: ["Bonds", "loans", "yield", "credit risk", "covenants"] },
       { level: 2, focusArea: "Types of Credit Instruments", sampleTopics: ["Investment grade", "high yield", "distressed debt", "mezzanine"] },
@@ -87,6 +87,26 @@ export const financeCareers: FinanceCareerData[] = [
       { id: "credit-intern", title: "Credit Analyst Internship", speaker: "intern", duration: "7:45", description: "Learning credit analysis fundamentals" },
       { id: "credit-pro", title: "Portfolio Manager Insights", speaker: "professional", duration: "13:20", description: "Managing credit portfolios through cycles" },
       { id: "credit-prof", title: "Credit Market Theory", speaker: "professor", duration: "16:30", description: "Academic perspective on credit pricing" }
+    ]
+  },
+  {
+    id: "fixed-income",
+    name: "Fixed Income",
+    icon: <DollarSign />,
+    description: "Trade and invest in government bonds, treasury securities, and other fixed income instruments, focusing on interest rate movements and duration risk management.",
+    levels: [
+      { level: 1, focusArea: "Basic Fixed Income Terms", sampleTopics: ["Treasury bonds", "duration", "yield curve", "interest rate risk", "maturity"] },
+      { level: 2, focusArea: "Types of Fixed Income Securities", sampleTopics: ["Government bonds", "municipal bonds", "treasury bills", "TIPS"] },
+      { level: 3, focusArea: "Fixed Income Analysis", sampleTopics: ["Yield calculations", "price sensitivity", "curve analysis"] },
+      { level: 4, focusArea: "Trading & Portfolio Skills", sampleTopics: ["Duration matching", "convexity", "hedging strategies"] },
+      { level: 5, focusArea: "Fixed Income in Practice", sampleTopics: ["Central bank policy", "auction mechanisms", "market making"] },
+      { level: 6, focusArea: "Macro & Fixed Income", sampleTopics: ["Fed policy", "inflation impact", "global bond markets"] },
+      { level: 7, focusArea: "Careers & Interviews", sampleTopics: ["Trading roles", "research positions", "risk management"] },
+    ],
+    videos: [
+      { id: "fi-intern", title: "Fixed Income Trader Intern", speaker: "intern", duration: "8:15", description: "Learning bond trading basics" },
+      { id: "fi-pro", title: "Senior Trader Experience", speaker: "professional", duration: "11:40", description: "Managing fixed income portfolios" },
+      { id: "fi-prof", title: "Interest Rate Theory", speaker: "professor", duration: "14:25", description: "Academic foundations of bond pricing" }
     ]
   },
   {
