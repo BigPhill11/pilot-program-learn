@@ -14,11 +14,13 @@ import {
   BookOpen,
   TrendingUp,
   Brain,
-  Building
+  Building,
+  Scroll
 } from 'lucide-react';
 import PandaLogo from '@/components/icons/PandaLogo';
 import TradingVideoList from './TradingVideoList';
 import VideoSubmissionForm from './VideoSubmissionForm';
+import PhilAdventures from './PhilAdventures';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const TradingAcademy = () => {
@@ -54,8 +56,8 @@ const TradingAcademy = () => {
                 Welcome to Phil's Trading Academy! 🎓
               </h2>
               <p className={`text-emerald-700 ${isMobile ? 'text-sm' : ''}`}>
-                Learn trading and investing with videos from professionals. Like YouTube meets Rate My Professor - 
-                watch, learn, and rate content on clarity, usefulness, entertainment, and difficulty!
+                Learn trading and investing with videos from professionals and interactive stories with Phil the panda! 
+                Watch, learn, rate content, and follow Phil's adventures in the bamboo forest of finance.
               </p>
             </div>
           </div>
@@ -63,13 +65,20 @@ const TradingAcademy = () => {
       </Card>
 
       <Tabs defaultValue="videos" className="space-y-6">
-        <TabsList className={`grid w-full grid-cols-2 bg-emerald-50 border border-emerald-200 ${isMobile ? 'h-auto' : ''}`}>
+        <TabsList className={`grid w-full grid-cols-3 bg-emerald-50 border border-emerald-200 ${isMobile ? 'h-auto' : ''}`}>
           <TabsTrigger 
             value="videos" 
             className={`data-[state=active]:bg-emerald-500 data-[state=active]:text-white ${isMobile ? 'text-sm py-3' : ''}`}
           >
             <Video className="mr-2 h-4 w-4" />
             {isMobile ? 'Videos' : 'Watch Videos'}
+          </TabsTrigger>
+          <TabsTrigger 
+            value="adventures" 
+            className={`data-[state=active]:bg-emerald-500 data-[state=active]:text-white ${isMobile ? 'text-sm py-3' : ''}`}
+          >
+            <Scroll className="mr-2 h-4 w-4" />
+            {isMobile ? 'Stories' : "Phil's Adventures"}
           </TabsTrigger>
           <TabsTrigger 
             value="submit" 
@@ -165,6 +174,10 @@ const TradingAcademy = () => {
             selectedCategory={selectedCategory}
             selectedDifficulty={selectedDifficulty}
           />
+        </TabsContent>
+
+        <TabsContent value="adventures" className="space-y-6">
+          <PhilAdventures />
         </TabsContent>
 
         <TabsContent value="submit" className="space-y-6">
