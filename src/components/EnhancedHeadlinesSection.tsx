@@ -4,10 +4,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
 import useHeadlines from '@/hooks/useHeadlines';
+import useFinancialTerms from '@/hooks/useFinancialTerms';
+import TermHighlighter from '@/components/TermHighlighter';
 
 const EnhancedHeadlinesSection = () => {
   const { profile } = useAuth();
   const { data: headlinesData, isLoading, isError } = useHeadlines();
+  const { data: financialTerms = [] } = useFinancialTerms();
 
   const handleHeadlineClick = (headline: any) => {
     console.log('Clicking headline:', headline);
@@ -92,7 +95,7 @@ const EnhancedHeadlinesSection = () => {
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-green-700">Market Headlines</h2>
           <p className="mt-2 text-muted-foreground">
-            Stay updated with the latest financial news
+            Stay updated with financial news - terms are highlighted based on your level!
           </p>
           <div className="mt-2 text-sm text-primary">
             🐼 Current Level: {userLevel.charAt(0).toUpperCase() + userLevel.slice(1)} Phil
@@ -116,10 +119,16 @@ const EnhancedHeadlinesSection = () => {
                   )}
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-sm mb-2 line-clamp-2">
-                      {headline.title}
+                      <TermHighlighter 
+                        text={headline.title} 
+                        terms={financialTerms}
+                      />
                     </h3>
                     <p className="text-xs text-muted-foreground mb-2 line-clamp-3">
-                      {headline.description || ''}
+                      <TermHighlighter 
+                        text={headline.description || ''} 
+                        terms={financialTerms}
+                      />
                     </p>
                     <div className="flex justify-between items-center text-xs text-muted-foreground">
                       <span>{headline.source?.name || 'Unknown Source'}</span>

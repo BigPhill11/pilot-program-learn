@@ -1,6 +1,8 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
+import useFinancialTerms from '@/hooks/useFinancialTerms';
+import TermHighlighter from '@/components/TermHighlighter';
 
 interface HeadlineCardProps {
   headline: {
@@ -16,6 +18,8 @@ interface HeadlineCardProps {
 }
 
 const HeadlineCard: React.FC<HeadlineCardProps> = ({ headline }) => {
+  const { data: financialTerms = [] } = useFinancialTerms();
+
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardContent className="p-4">
@@ -32,10 +36,16 @@ const HeadlineCard: React.FC<HeadlineCardProps> = ({ headline }) => {
           )}
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-sm mb-2 line-clamp-2">
-              {headline.title}
+              <TermHighlighter 
+                text={headline.title} 
+                terms={financialTerms}
+              />
             </h3>
             <p className="text-xs text-muted-foreground mb-2 line-clamp-3">
-              {headline.description || ''}
+              <TermHighlighter 
+                text={headline.description || ''} 
+                terms={financialTerms}
+              />
             </p>
             <div className="flex justify-between items-center text-xs text-muted-foreground">
               <span>{headline.source?.name || 'Unknown Source'}</span>
