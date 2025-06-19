@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import useFinancialTerms from '@/hooks/useFinancialTerms';
+import { useFinancialTerms } from '@/hooks/useFinancialTerms';
 import TermHighlighter from '@/components/TermHighlighter';
 
 interface HeadlineCardProps {
@@ -18,7 +18,7 @@ interface HeadlineCardProps {
 }
 
 const HeadlineCard: React.FC<HeadlineCardProps> = ({ headline }) => {
-  const { data: financialTerms = [] } = useFinancialTerms();
+  const { terms: financialTerms = [] } = useFinancialTerms();
 
   return (
     <Card className="hover:shadow-md transition-shadow">

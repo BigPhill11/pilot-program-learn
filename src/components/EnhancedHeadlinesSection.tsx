@@ -1,16 +1,15 @@
-
 import React from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
 import useHeadlines from '@/hooks/useHeadlines';
-import useFinancialTerms from '@/hooks/useFinancialTerms';
+import { useFinancialTerms } from '@/hooks/useFinancialTerms';
 import TermHighlighter from '@/components/TermHighlighter';
 
 const EnhancedHeadlinesSection = () => {
   const { profile } = useAuth();
   const { data: headlinesData, isLoading, isError } = useHeadlines();
-  const { data: financialTerms = [] } = useFinancialTerms();
+  const { terms: financialTerms = [] } = useFinancialTerms();
 
   const handleHeadlineClick = (headline: any) => {
     console.log('Clicking headline:', headline);

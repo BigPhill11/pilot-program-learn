@@ -4,14 +4,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import useHeadlines from '@/hooks/useHeadlines';
-import useFinancialTerms from '@/hooks/useFinancialTerms';
+import { useFinancialTerms } from '@/hooks/useFinancialTerms';
 import TermHighlighter from '@/components/TermHighlighter';
 
 const MarketRecapTab = () => {
   const { profile } = useAuth();
   const userLevel = profile?.app_version || 'beginner';
   const { data: headlinesData, isLoading } = useHeadlines(userLevel);
-  const { data: financialTerms = [] } = useFinancialTerms();
+  const { terms: financialTerms = [] } = useFinancialTerms();
   const [marketSummary, setMarketSummary] = useState<string>('');
 
   useEffect(() => {
