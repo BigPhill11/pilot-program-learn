@@ -9,7 +9,7 @@ interface HeadlineCardProps {
     description: string;
     url: string;
     publishedAt: string;
-    source: {
+    source?: {
       name: string;
     };
     urlToImage?: string;
@@ -39,7 +39,7 @@ const HeadlineCard: React.FC<HeadlineCardProps> = ({ headline }) => {
               <HeadlineTermHighlighter text={headline.description || ''} />
             </p>
             <div className="flex justify-between items-center text-xs text-muted-foreground">
-              <span>{headline.source.name}</span>
+              <span>{headline.source?.name || 'Unknown Source'}</span>
               <span>{new Date(headline.publishedAt).toLocaleDateString()}</span>
             </div>
           </div>
