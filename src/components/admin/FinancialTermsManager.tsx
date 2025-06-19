@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Trash2, Edit, Plus, Search } from 'lucide-react';
+import { Trash2, Edit, Plus, Search, Save, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import CSVUploader from './CSVUploader';
@@ -29,7 +29,8 @@ const FinancialTermsManager = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [editingTerm, setEditingTerm] = useState<FinancialTerm | null>(null);
+  const [editingTermId, setEditingTermId] = useState<string | null>(null);
+  const [editingData, setEditingData] = useState<Partial<FinancialTerm>>({});
   const [showAddForm, setShowAddForm] = useState(false);
   const { toast } = useToast();
 
@@ -69,6 +70,8 @@ const FinancialTermsManager = () => {
   });
 
   const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this term?')) return;
+    
     try {
       const { error } = await supabase
         .from('financial_terms_database')
@@ -76,7 +79,6 @@ const FinancialTermsManager = () => {
         .eq('id', id);
 
       if (error) throw error;
-
       setTerms(terms.filter(term => term.id !== id));
       toast({
         title: "Success",
@@ -92,49 +94,89 @@ const FinancialTermsManager = () => {
     }
   };
 
-  const handleSave = async (termData: Omit<FinancialTerm, 'id' | 'status'>) => {
-    try {
-      if (editingTerm) {
-        // Update existing term
-        const { error } = await supabase
-          .from('financial_terms_database')
-          .update({
-            ...termData,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', editingTerm.id);
+  const startEdit = (term: FinancialTerm) => {
+    setEditingTermId(term.id);
+    setEditingData(term);
+  };
 
-        if (error) throw error;
-        
-        setTerms(terms.map(term => 
-          term.id === editingTerm.id ? { ...term, ...termData } as FinancialTerm : term
-        ));
-      } else {
-        // Add new term
-        const { data, error } = await supabase
-          .from('financial_terms_database')
-          .insert([{
-            ...termData,
-            status: 'active'
-          }])
-          .select()
-          .single();
+  const cancelEdit = () => {
+    setEditingTermId(null);
+    setEditingData({});
+  };
 
-        if (error) throw error;
-        setTerms([...terms, data]);
-      }
-
-      setEditingTerm(null);
-      setShowAddForm(false);
-      toast({
-        title: "Success",
-        description: `Term ${editingTerm ? 'updated' : 'added'} successfully`
-      });
-    } catch (error) {
-      console.error('Error saving term:', error);
+  const saveEdit = async () => {
+    if (!editingTermId || !editingData.term || !editingData.definition) {
       toast({
         title: "Error",
-        description: `Failed to ${editingTerm ? 'update' : 'add'} term`,
+        description: "Term and definition are required",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('financial_terms_database')
+        .update({
+          term: editingData.term,
+          definition: editingData.definition,
+          category: editingData.category || 'general',
+          difficulty_level: editingData.difficulty_level || 'beginner',
+          analogy: editingData.analogy || null,
+          real_world_example: editingData.real_world_example || null,
+          example_usage: editingData.example_usage || null,
+          source: editingData.source || null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', editingTermId);
+
+      if (error) throw error;
+      
+      setTerms(terms.map(term => 
+        term.id === editingTermId ? { ...term, ...editingData } as FinancialTerm : term
+      ));
+      
+      setEditingTermId(null);
+      setEditingData({});
+      
+      toast({
+        title: "Success",
+        description: "Term updated successfully"
+      });
+    } catch (error) {
+      console.error('Error updating term:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update term",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleAddTerm = async (termData: Omit<FinancialTerm, 'id' | 'status'>) => {
+    try {
+      const { data, error } = await supabase
+        .from('financial_terms_database')
+        .insert([{
+          ...termData,
+          status: 'active'
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+      setTerms([...terms, data]);
+      setShowAddForm(false);
+      
+      toast({
+        title: "Success",
+        description: "Term added successfully"
+      });
+    } catch (error) {
+      console.error('Error adding term:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add term",
         variant: "destructive"
       });
     }
@@ -187,38 +229,90 @@ const FinancialTermsManager = () => {
             {filteredTerms.map((term) => (
               <Card key={term.id}>
                 <CardContent className="p-4">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="font-semibold">{term.term}</h3>
-                        <Badge variant="outline">{term.category}</Badge>
-                        <Badge variant="secondary">{term.difficulty_level}</Badge>
+                  {editingTermId === term.id ? (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <Input
+                          placeholder="Term"
+                          value={editingData.term || ''}
+                          onChange={(e) => setEditingData({...editingData, term: e.target.value})}
+                        />
+                        <Select
+                          value={editingData.category || 'general'}
+                          onValueChange={(value) => setEditingData({...editingData, category: value})}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {categories.filter(c => c !== 'all').map(category => (
+                              <SelectItem key={category} value={category}>
+                                {category.replace('_', ' ')}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
-                      <p className="text-sm text-gray-600 mb-2">{term.definition}</p>
-                      {term.analogy && (
-                        <p className="text-xs text-blue-600 mb-1"><strong>Analogy:</strong> {term.analogy}</p>
-                      )}
-                      {term.real_world_example && (
-                        <p className="text-xs text-green-600"><strong>Example:</strong> {term.real_world_example}</p>
-                      )}
+                      
+                      <Textarea
+                        placeholder="Definition"
+                        value={editingData.definition || ''}
+                        onChange={(e) => setEditingData({...editingData, definition: e.target.value})}
+                        rows={3}
+                      />
+                      
+                      <Textarea
+                        placeholder="Analogy (optional)"
+                        value={editingData.analogy || ''}
+                        onChange={(e) => setEditingData({...editingData, analogy: e.target.value})}
+                        rows={2}
+                      />
+                      
+                      <div className="flex gap-2">
+                        <Button onClick={saveEdit} size="sm">
+                          <Save className="h-4 w-4 mr-1" />
+                          Save
+                        </Button>
+                        <Button onClick={cancelEdit} variant="outline" size="sm">
+                          <X className="h-4 w-4 mr-1" />
+                          Cancel
+                        </Button>
+                      </div>
                     </div>
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setEditingTerm(term)}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => handleDelete(term.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                  ) : (
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h3 className="font-semibold">{term.term}</h3>
+                          <Badge variant="outline">{term.category}</Badge>
+                          <Badge variant="secondary">{term.difficulty_level}</Badge>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-2">{term.definition}</p>
+                        {term.analogy && (
+                          <p className="text-xs text-blue-600 mb-1"><strong>Analogy:</strong> {term.analogy}</p>
+                        )}
+                        {term.real_world_example && (
+                          <p className="text-xs text-green-600"><strong>Example:</strong> {term.real_world_example}</p>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => startEdit(term)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleDelete(term.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </CardContent>
               </Card>
             ))}
@@ -230,130 +324,89 @@ const FinancialTermsManager = () => {
         </CardContent>
       </Card>
 
-      {(editingTerm || showAddForm) && (
-        <TermForm
-          term={editingTerm}
+      {showAddForm && (
+        <QuickAddForm
           categories={categories.filter(c => c !== 'all')}
           difficultyLevels={difficultyLevels}
-          onSave={handleSave}
-          onCancel={() => {
-            setEditingTerm(null);
-            setShowAddForm(false);
-          }}
+          onSave={handleAddTerm}
+          onCancel={() => setShowAddForm(false)}
         />
       )}
     </div>
   );
 };
 
-const TermForm: React.FC<{
-  term: FinancialTerm | null;
+const QuickAddForm: React.FC<{
   categories: string[];
   difficultyLevels: string[];
   onSave: (data: Omit<FinancialTerm, 'id' | 'status'>) => void;
   onCancel: () => void;
-}> = ({ term, categories, difficultyLevels, onSave, onCancel }) => {
+}> = ({ categories, difficultyLevels, onSave, onCancel }) => {
   const [formData, setFormData] = useState({
-    term: term?.term || '',
-    definition: term?.definition || '',
-    category: term?.category || 'general',
-    difficulty_level: term?.difficulty_level || 'beginner',
-    analogy: term?.analogy || '',
-    real_world_example: term?.real_world_example || '',
-    example_usage: term?.example_usage || '',
-    source: term?.source || ''
+    term: '',
+    definition: '',
+    category: 'general',
+    difficulty_level: 'beginner',
+    analogy: '',
+    real_world_example: '',
+    example_usage: '',
+    source: ''
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.term || !formData.definition) return;
     onSave(formData);
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{term ? 'Edit Term' : 'Add New Term'}</CardTitle>
+        <CardTitle>Add New Term</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Term *</label>
-              <Input
-                value={formData.term}
-                onChange={(e) => setFormData({...formData, term: e.target.value})}
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Category</label>
-              <Select
-                value={formData.category}
-                onValueChange={(value) => setFormData({...formData, category: value})}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map(category => (
-                    <SelectItem key={category} value={category}>
-                      {category.replace('_', ' ')}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Definition *</label>
-            <Textarea
-              value={formData.definition}
-              onChange={(e) => setFormData({...formData, definition: e.target.value})}
+            <Input
+              placeholder="Term *"
+              value={formData.term}
+              onChange={(e) => setFormData({...formData, term: e.target.value})}
               required
-              rows={3}
             />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Difficulty Level</label>
             <Select
-              value={formData.difficulty_level}
-              onValueChange={(value) => setFormData({...formData, difficulty_level: value})}
+              value={formData.category}
+              onValueChange={(value) => setFormData({...formData, category: value})}
             >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {difficultyLevels.map(level => (
-                  <SelectItem key={level} value={level}>
-                    {level}
+                {categories.map(category => (
+                  <SelectItem key={category} value={category}>
+                    {category.replace('_', ' ')}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">Analogy</label>
-            <Textarea
-              value={formData.analogy}
-              onChange={(e) => setFormData({...formData, analogy: e.target.value})}
-              rows={2}
-            />
-          </div>
+          <Textarea
+            placeholder="Definition *"
+            value={formData.definition}
+            onChange={(e) => setFormData({...formData, definition: e.target.value})}
+            required
+            rows={3}
+          />
 
-          <div>
-            <label className="block text-sm font-medium mb-1">Real World Example</label>
-            <Textarea
-              value={formData.real_world_example}
-              onChange={(e) => setFormData({...formData, real_world_example: e.target.value})}
-              rows={2}
-            />
-          </div>
+          <Textarea
+            placeholder="Analogy (optional)"
+            value={formData.analogy}
+            onChange={(e) => setFormData({...formData, analogy: e.target.value})}
+            rows={2}
+          />
 
           <div className="flex gap-2">
-            <Button type="submit">Save</Button>
+            <Button type="submit">Add Term</Button>
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancel
             </Button>
