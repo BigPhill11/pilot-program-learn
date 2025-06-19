@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Building2, ShoppingCart, Stethoscope, Laptop, Brain, TrendingUp, Briefcase } from 'lucide-react';
+import { Building2, ShoppingCart, Stethoscope, Laptop, Brain, TrendingUp, Briefcase, Heart } from 'lucide-react';
 
 export interface JourneyLevel {
   level: number;
@@ -72,7 +71,40 @@ export interface IndustryJourneyData {
   };
 }
 
+import { technologySoftwareJourney, artificialIntelligenceJourney } from './industry-journeys';
+
 export const industryJourneys: IndustryJourneyData[] = [
+  {
+    id: 'healthcare',
+    name: 'Healthcare',
+    icon: <Heart className="h-6 w-6" />,
+    description: 'Healthcare organizations provide medical services, develop treatments, and manage patient care through hospitals, clinics, pharmaceutical companies, and medical device manufacturers.',
+    overview: 'The healthcare industry encompasses hospitals, clinics, pharmaceutical companies, medical device manufacturers, and health insurance providers working to maintain and improve human health.',
+    howItWorks: 'Healthcare generates revenue through patient services, insurance reimbursements, pharmaceutical sales, and medical device licensing, with outcomes measured by patient health improvements and cost efficiency.',
+    futureOutlook: 'Digital health technologies, personalized medicine, and AI-driven diagnostics are transforming healthcare delivery while aging populations increase demand for innovative and cost-effective solutions.',
+    totalEstimatedTime: '45 min',
+    difficulty: 'Beginner',
+    levels: [
+      {
+        level: 1,
+        title: 'Healthcare Finance Basics',
+        focusArea: 'Healthcare Finance',
+        description: 'Understanding healthcare business models and financial structures',
+        estimatedTime: '15 min',
+        objectives: [
+          'Learn about healthcare revenue streams',
+          'Understand insurance and reimbursement models',
+          'Explore pharmaceutical business models'
+        ],
+        sampleTopics: ['Revenue streams', 'Insurance models', 'Patient care', 'Pharmaceutical sales'],
+        content: {
+          beginner: 'Healthcare companies make money by treating patients, selling medicines, and providing medical equipment. They get paid by patients, insurance companies, and governments.',
+          intermediate: 'Healthcare financial models involve complex reimbursement structures, risk-based contracts, and regulatory compliance requirements that vary significantly across different healthcare sectors.',
+          pro: 'Advanced healthcare finance incorporates value-based care models, population health management, and integrated delivery systems that align financial incentives with patient outcomes.'
+        }
+      }
+    ]
+  },
   {
     id: 'consumer-goods-retail',
     name: 'Consumer Goods & Retail',
@@ -340,5 +372,7 @@ export const industryJourneys: IndustryJourneyData[] = [
         }
       }
     ]
-  }
+  },
+  technologySoftwareJourney,
+  artificialIntelligenceJourney
 ];
