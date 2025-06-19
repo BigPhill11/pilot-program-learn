@@ -1,79 +1,36 @@
-
 // Continuation of industry journeys data - Technology & Software and AI modules
+
+import React from 'react';
+import { Laptop, Brain } from 'lucide-react';
+import type { IndustryJourneyData } from './industry-journeys';
 
 export const technologySoftwareJourney: IndustryJourneyData = {
   id: 'technology-software',
   name: 'Technology & Software',
   icon: <Laptop className="h-6 w-6" />,
+  description: 'Technology and software companies develop digital products, platforms, and services that transform how businesses operate and people interact with information.',
   overview: 'Technology and software companies develop digital products, platforms, and services that transform how businesses operate and people interact with information.',
   howItWorks: 'This industry generates revenue through software licensing, subscriptions, advertising, transactions, and data monetization, with success driven by user adoption, network effects, and continuous innovation.',
   futureOutlook: 'AI integration, cloud computing maturation, and emerging technologies like quantum computing and AR/VR are creating new market opportunities while increasing competitive intensity and regulatory scrutiny.',
+  totalEstimatedTime: '120 min',
+  difficulty: 'Intermediate',
   levels: [
     {
       level: 1,
       focusArea: 'Tech Finance Basics',
-      sampleTopics: ['SaaS metrics', 'Monthly recurring revenue', 'Customer acquisition cost', 'Churn rate'],
-      flashcards: [
-        {
-          id: 'saas-metrics',
-          term: 'SaaS Metrics',
-          definition: 'Key performance indicators for software-as-a-service businesses including MRR, ARR, churn, and CAC'
-        },
-        {
-          id: 'mrr-arr',
-          term: 'MRR/ARR',
-          definition: 'Monthly/Annual Recurring Revenue - predictable revenue streams from subscription customers'
-        },
-        {
-          id: 'cac-ltv',
-          term: 'CAC/LTV',
-          definition: 'Customer Acquisition Cost vs. Lifetime Value ratio measuring marketing efficiency and profitability'
-        },
-        {
-          id: 'churn-rate',
-          term: 'Churn Rate',
-          definition: 'Percentage of customers who cancel subscriptions within a given period, indicating product-market fit'
-        }
+      title: 'Technology Finance Fundamentals',
+      description: 'Understanding key metrics and business models in technology',
+      estimatedTime: '20 min',
+      objectives: [
+        'Learn SaaS metrics and their importance',
+        'Understand recurring revenue models',
+        'Analyze customer acquisition and retention'
       ],
-      interactiveContent: {
-        beginner: {
-          explanation: 'Tech companies use special metrics because they often sell subscriptions instead of one-time products. They track how much recurring revenue they have and how many customers they keep.',
-          realWorldExample: 'If Netflix has 200 million subscribers paying $15/month, their monthly recurring revenue (MRR) is $3 billion, giving them predictable income.',
-          keyTakeaways: [
-            'Recurring revenue is more valuable than one-time sales',
-            'Keeping existing customers is cheaper than finding new ones',
-            'Tech metrics focus on growth and retention'
-          ]
-        },
-        intermediate: {
-          explanation: 'SaaS financial analysis requires understanding unit economics, cohort behavior, and growth efficiency metrics. The Rule of 40 (growth rate + profit margin) helps evaluate balanced growth vs. profitability.',
-          realWorldExample: 'Salesforce maintains 25% revenue growth with 15% margins, achieving a Rule of 40 score of 40, indicating healthy balanced growth and profitability.',
-          keyTakeaways: [
-            'Rule of 40 balances growth vs. profitability optimization',
-            'Cohort analysis reveals customer value evolution over time',
-            'Net revenue retention above 110% indicates strong expansion revenue'
-          ]
-        },
-        pro: {
-          explanation: 'Advanced SaaS analysis incorporates cohort-based forecasting, multi-product cross-selling dynamics, and usage-based pricing model optimization. Machine learning improves churn prediction and expansion opportunities.',
-          realWorldExample: 'Snowflake\'s consumption-based model grew net revenue retention to 158% by aligning pricing with customer value realization, creating compounding growth as customers scale usage.',
-          keyTakeaways: [
-            'Usage-based pricing aligns company success with customer outcomes',
-            'Product-led growth reduces customer acquisition costs through viral adoption',
-            'Multi-product platforms create higher switching costs and expansion revenue'
-          ]
-        }
-      },
-      quiz: {
-        question: 'What does a 15% monthly churn rate indicate for a SaaS company?',
-        options: [
-          'Strong customer loyalty and product-market fit',
-          'Significant customer retention challenges requiring immediate attention',
-          'Normal churn rate for most software companies',
-          'Seasonal variation in customer usage patterns'
-        ],
-        correct: 1,
-        explanation: 'A 15% monthly churn rate is very high for SaaS companies (good rates are under 5% monthly), indicating serious customer retention issues that threaten business sustainability.'
+      sampleTopics: ['SaaS metrics', 'Monthly recurring revenue', 'Customer acquisition cost', 'Churn rate'],
+      content: {
+        beginner: 'Tech companies use special metrics because they often sell subscriptions instead of one-time products. They track how much recurring revenue they have and how many customers they keep.',
+        intermediate: 'SaaS financial analysis requires understanding unit economics, cohort behavior, and growth efficiency metrics. The Rule of 40 (growth rate + profit margin) helps evaluate balanced growth vs. profitability.',
+        pro: 'Advanced SaaS analysis incorporates cohort-based forecasting, multi-product cross-selling dynamics, and usage-based pricing model optimization. Machine learning improves churn prediction and expansion opportunities.'
       }
     },
     {
@@ -391,7 +348,7 @@ export const technologySoftwareJourney: IndustryJourneyData = {
         },
         pro: {
           explanation: 'Advanced technology analysis incorporates adoption curve modeling, competitive response theory, and regulatory scenario planning. Platform shift timing requires balancing first-mover advantages against market readiness.',
-          realWorldExample: 'OpenAI\'s ChatGPT launch accelerated enterprise AI adoption timelines by 2-3 years, forcing competitors to rapidly deploy AI features and creating new categories like AI-powered search and coding assistants.',
+          realWorldExample: 'OpenAI\'s ChatGPT launch accelerated enterprise AI adoption timelines by 2-3 years, forcing competitors to rapidly deploy AI features and create new categories like AI-powered search and coding assistants.',
           keyTakeaways: [
             'Breakthrough products can accelerate entire technology adoption curves',
             'Platform leaders must continuously innovate to maintain competitive positioning',
@@ -491,78 +448,356 @@ export const artificialIntelligenceJourney: IndustryJourneyData = {
   id: 'artificial-intelligence',
   name: 'Artificial Intelligence',
   icon: <Brain className="h-6 w-6" />,
+  description: 'Artificial Intelligence encompasses companies developing machine learning, neural networks, and automated decision-making systems that augment or replace human cognitive tasks.',
   overview: 'Artificial Intelligence encompasses companies developing machine learning, neural networks, and automated decision-making systems that augment or replace human cognitive tasks.',
   howItWorks: 'AI companies generate revenue through software licensing, cloud services, data processing, and automation solutions, with success driven by data quality, algorithmic innovation, and practical application.',
   futureOutlook: 'Generative AI, large language models, and autonomous systems are creating trillion-dollar market opportunities while raising important questions about job displacement, ethics, and societal impact.',
+  totalEstimatedTime: '90 min',
+  difficulty: 'Advanced',
   levels: [
     {
       level: 1,
       focusArea: 'AI Finance Basics',
+      title: 'AI Industry Fundamentals',
+      description: 'Understanding artificial intelligence business models and metrics',
+      estimatedTime: '30 min',
+      objectives: [
+        'Learn about machine learning basics',
+        'Understand AI model training and data requirements',
+        'Explore AI business models and revenue streams'
+      ],
       sampleTopics: ['Machine learning basics', 'Neural networks', 'AI model training', 'Data requirements'],
+      content: {
+        beginner: 'AI is computer software that learns to do tasks by studying lots of examples, similar to how humans learn. The more good examples it sees, the better it gets at the task.',
+        intermediate: 'AI system performance depends on data quality, model architecture, and training methodology. Different AI approaches suit different problem types, from computer vision to natural language processing.',
+        pro: 'Advanced AI development involves transformer architectures, reinforcement learning, and multi-modal training. Model scaling laws predict performance improvements from increased parameters, data, and compute.'
+      }
+    },
+    {
+      level: 2,
+      focusArea: 'AI Business Models',
+      sampleTopics: ['AI licensing', 'AI consulting', 'AI as a service', 'AI-driven products'],
       flashcards: [
         {
-          id: 'machine-learning',
-          term: 'Machine Learning',
-          definition: 'Computer systems that automatically improve performance through experience without explicit programming'
+          id: 'ai-licensing',
+          term: 'AI Licensing',
+          definition: 'Business model where companies license AI algorithms or models for use in their products or services'
         },
         {
-          id: 'neural-networks',
-          term: 'Neural Networks',
-          definition: 'AI models inspired by human brain structure, using interconnected nodes to process information'
+          id: 'ai-consulting',
+          term: 'AI Consulting',
+          definition: 'Services provided by AI experts to help companies implement AI solutions'
         },
         {
-          id: 'model-training',
-          term: 'AI Model Training',
-          definition: 'Process of teaching AI systems using large datasets to recognize patterns and make predictions'
+          id: 'ai-as-a-service',
+          term: 'AI as a Service',
+          definition: 'Model where AI capabilities are provided as a subscription service to customers'
         },
         {
-          id: 'training-data',
-          term: 'Training Data',
-          definition: 'Large datasets used to teach AI models, with quality and quantity determining model performance'
+          id: 'ai-driven-products',
+          term: 'AI-Driven Products',
+          definition: 'Products that incorporate AI algorithms to automate tasks or improve user experience'
         }
       ],
       interactiveContent: {
         beginner: {
-          explanation: 'AI is computer software that learns to do tasks by studying lots of examples, similar to how humans learn. The more good examples it sees, the better it gets at the task.',
-          realWorldExample: 'Netflix uses AI to recommend movies by studying what millions of users watched and liked. The more people use it, the better its recommendations become.',
+          explanation: 'AI companies generate revenue through licensing, consulting, and as a service. AI-driven products are becoming more common as AI capabilities become more accessible.',
+          realWorldExample: 'Amazon\'s Alexa is an AI-driven product that uses machine learning to understand and respond to user queries.',
           keyTakeaways: [
-            'AI learns from data and examples rather than following programmed rules',
-            'More and better data usually leads to better AI performance',
-            'AI excels at finding patterns humans might miss'
+            'AI licensing allows companies to use AI without building their own infrastructure',
+            'AI consulting provides expertise to implement AI solutions',
+            'AI as a service offers scalable AI capabilities to customers'
           ]
         },
         intermediate: {
-          explanation: 'AI system performance depends on data quality, model architecture, and training methodology. Different AI approaches suit different problem types, from computer vision to natural language processing.',
-          realWorldExample: 'OpenAI\'s GPT models required training on billions of text examples and months of computer processing, costing millions of dollars to develop but enabling human-like text generation.',
+          explanation: 'AI business models vary widely, from licensing and consulting to AI-driven products. Each model has its own advantages and challenges.',
+          realWorldExample: 'OpenAI provides AI consulting services to companies like Tesla and Google, helping them implement AI solutions.',
           keyTakeaways: [
-            'AI development requires significant computational resources and technical expertise',
-            'Model performance improves with scale but costs increase exponentially',
-            'Specialized AI models often outperform general-purpose solutions for specific tasks'
+            'AI licensing models can be lucrative but require careful licensing agreements',
+            'AI consulting services can be cost-effective but may not provide full ownership of the AI solution',
+            'AI as a service offers flexibility but may not provide the same level of customization as AI-driven products'
           ]
         },
         pro: {
-          explanation: 'Advanced AI development involves transformer architectures, reinforcement learning, and multi-modal training. Model scaling laws predict performance improvements from increased parameters, data, and compute.',
-          realWorldExample: 'Google\'s PaLM model with 540B parameters achieved breakthrough performance on complex reasoning tasks, demonstrating how scale unlocks emergent capabilities not present in smaller models.',
+          explanation: 'Advanced AI business models incorporate AI-driven products, AI as a service, and AI licensing. Each model has its own advantages and challenges.',
+          realWorldExample: 'Microsoft offers AI licensing, AI consulting, and AI as a service, as well as AI-driven products like Azure AI and Office 365.',
           keyTakeaways: [
-            'Emergent capabilities appear at specific model scales, creating discontinuous performance improvements',
-            'Multi-modal AI systems combining text, images, and audio create more powerful applications',
-            'AI model performance follows predictable scaling laws that guide investment decisions'
+            'AI-driven products offer the most flexibility and customization',
+            'AI as a service offers scalability and cost-effectiveness',
+            'AI licensing models can be lucrative but require careful licensing agreements'
           ]
         }
       },
       quiz: {
-        question: 'What is the most important factor for AI model performance?',
+        question: 'What is the primary advantage of AI as a service?',
         options: [
-          'The programming language used to build the model',
-          'The quality and quantity of training data',
-          'The speed of the computer processor',
-          'The number of software engineers working on it'
+          'It allows companies to use AI without building their own infrastructure',
+          'It provides expertise to implement AI solutions',
+          'It offers scalable AI capabilities to customers',
+          'It allows companies to customize AI solutions to their specific needs'
+        ],
+        correct: 2,
+        explanation: 'AI as a service offers scalable AI capabilities to customers, allowing them to use AI without building their own infrastructure.'
+      }
+    },
+    {
+      level: 3,
+      focusArea: 'AI Analysis',
+      sampleTopics: ['AI metrics', 'AI performance', 'AI impact'],
+      flashcards: [
+        {
+          id: 'ai-metrics',
+          term: 'AI Metrics',
+          definition: 'Key indicators of AI performance and impact, such as accuracy, precision, recall, and F1 score'
+        },
+        {
+          id: 'ai-performance',
+          term: 'AI Performance',
+          definition: 'The ability of AI models to make accurate predictions or decisions'
+        },
+        {
+          id: 'ai-impact',
+          term: 'AI Impact',
+          definition: 'The effect of AI on business operations, such as increased efficiency, reduced costs, and improved customer experience'
+        }
+      ],
+      interactiveContent: {
+        beginner: {
+          explanation: 'AI metrics and performance are critical for evaluating AI models and making informed decisions.',
+          realWorldExample: 'A company might use AI metrics to evaluate the accuracy of a recommendation system or the performance of a fraud detection model.',
+          keyTakeaways: [
+            'AI metrics provide a quantitative measure of AI performance',
+            'AI performance is critical for making informed business decisions',
+            'AI impact can be measured in terms of business outcomes'
+          ]
+        },
+        intermediate: {
+          explanation: 'AI analysis involves understanding the impact of AI on business operations, as well as evaluating the performance of AI models.',
+          realWorldExample: 'A company might use AI analysis to evaluate the impact of a new AI-driven product on customer satisfaction or the performance of a new AI model in a specific business process.',
+          keyTakeaways: [
+            'AI analysis requires a comprehensive understanding of business operations',
+            'AI performance evaluation is critical for making informed business decisions',
+            'AI impact can be measured in terms of business outcomes'
+          ]
+        },
+        pro: {
+          explanation: 'Advanced AI analysis incorporates AI metrics, performance, and impact. Each model has its own advantages and challenges.',
+          realWorldExample: 'Microsoft offers AI metrics, performance, and impact analysis, as well as AI-driven products like Azure AI and Office 365.',
+          keyTakeaways: [
+            'AI-driven products offer the most flexibility and customization',
+            'AI as a service offers scalability and cost-effectiveness',
+            'AI licensing models can be lucrative but require careful licensing agreements'
+          ]
+        }
+      },
+      quiz: {
+        question: 'What is the primary advantage of AI-driven products?',
+        options: [
+          'It allows companies to use AI without building their own infrastructure',
+          'It provides expertise to implement AI solutions',
+          'It offers scalable AI capabilities to customers',
+          'It allows companies to customize AI solutions to their specific needs'
+        ],
+        correct: 3,
+        explanation: 'AI-driven products offer the most flexibility and customization, allowing companies to use AI without building their own infrastructure.'
+      }
+    },
+    {
+      level: 4,
+      focusArea: 'AI Investing Skills',
+      sampleTopics: ['AI valuation', 'AI investment strategies', 'AI exit strategies'],
+      flashcards: [
+        {
+          id: 'ai-valuation',
+          term: 'AI Valuation',
+          definition: 'Specialized valuation methods for AI companies, considering factors such as data quality, algorithmic innovation, and market potential'
+        },
+        {
+          id: 'ai-investment-strategies',
+          term: 'AI Investment Strategies',
+          definition: 'Strategies for investing in AI companies, such as growth investing, value investing, and dividend investing'
+        },
+        {
+          id: 'ai-exit-strategies',
+          term: 'AI Exit Strategies',
+          definition: 'Strategies for exiting AI companies, such as IPOs, acquisitions, and spin-offs'
+        }
+      ],
+      interactiveContent: {
+        beginner: {
+          explanation: 'AI valuation involves considering factors such as data quality, algorithmic innovation, and market potential.',
+          realWorldExample: 'A company might use AI valuation to evaluate the potential value of a new AI-driven product or the performance of an AI model.',
+          keyTakeaways: [
+            'AI valuation requires a comprehensive understanding of business operations',
+            'AI performance evaluation is critical for making informed business decisions',
+            'AI impact can be measured in terms of business outcomes'
+          ]
+        },
+        intermediate: {
+          explanation: 'AI investment strategies involve considering factors such as growth investing, value investing, and dividend investing.',
+          realWorldExample: 'A company might use AI investment strategies to evaluate the potential value of a new AI-driven product or the performance of an AI model.',
+          keyTakeaways: [
+            'AI valuation requires a comprehensive understanding of business operations',
+            'AI performance evaluation is critical for making informed business decisions',
+            'AI impact can be measured in terms of business outcomes'
+          ]
+        },
+        pro: {
+          explanation: 'Advanced AI investment strategies incorporate AI valuation, investment strategies, and exit strategies. Each model has its own advantages and challenges.',
+          realWorldExample: 'Microsoft offers AI valuation, investment strategies, and exit strategies, as well as AI-driven products like Azure AI and Office 365.',
+          keyTakeaways: [
+            'AI-driven products offer the most flexibility and customization',
+            'AI as a service offers scalability and cost-effectiveness',
+            'AI licensing models can be lucrative but require careful licensing agreements'
+          ]
+        }
+      },
+      quiz: {
+        question: 'What is the primary advantage of AI valuation?',
+        options: [
+          'It allows companies to use AI without building their own infrastructure',
+          'It provides expertise to implement AI solutions',
+          'It offers scalable AI capabilities to customers',
+          'It allows companies to customize AI solutions to their specific needs'
         ],
         correct: 1,
-        explanation: 'Training data quality and quantity are the most critical factors for AI performance - models can only be as good as the data they learn from.'
+        explanation: 'AI valuation allows companies to use AI without building their own infrastructure, providing a quantitative measure of AI performance.'
+      }
+    },
+    {
+      level: 5,
+      focusArea: 'AI in Practice',
+      sampleTopics: ['AI startups', 'AI acquisitions', 'AI research labs', 'AI regulatory challenges'],
+      flashcards: [
+        {
+          id: 'ai-startups',
+          term: 'AI Startups',
+          definition: 'Companies that develop and commercialize AI technologies'
+        },
+        {
+          id: 'ai-acquisitions',
+          term: 'AI Acquisitions',
+          definition: 'Companies that acquire AI startups to gain access to AI technologies'
+        },
+        {
+          id: 'ai-research-labs',
+          term: 'AI Research Labs',
+          definition: 'Research institutions that develop and commercialize AI technologies'
+        },
+        {
+          id: 'ai-regulatory-challenges',
+          term: 'AI Regulatory Challenges',
+          definition: 'Government oversight of AI companies addressing privacy, competition, and content moderation concerns'
+        }
+      ],
+      interactiveContent: {
+        beginner: {
+          explanation: 'AI startups, acquisitions, and research labs are all important for the development and commercialization of AI technologies.',
+          realWorldExample: 'A company might use AI startups to develop and commercialize a new AI-driven product, or an AI acquisition to gain access to AI technologies.',
+          keyTakeaways: [
+            'AI startups, acquisitions, and research labs are all important for the development and commercialization of AI technologies',
+            'AI startups, acquisitions, and research labs can all be leveraged to gain a competitive advantage',
+            'AI startups, acquisitions, and research labs can all be leveraged to gain a competitive advantage'
+          ]
+        },
+        intermediate: {
+          explanation: 'AI startups, acquisitions, and research labs are all important for the development and commercialization of AI technologies.',
+          realWorldExample: 'A company might use AI startups to develop and commercialize a new AI-driven product, or an AI acquisition to gain access to AI technologies.',
+          keyTakeaways: [
+            'AI startups, acquisitions, and research labs are all important for the development and commercialization of AI technologies',
+            'AI startups, acquisitions, and research labs can all be leveraged to gain a competitive advantage',
+            'AI startups, acquisitions, and research labs can all be leveraged to gain a competitive advantage'
+          ]
+        },
+        pro: {
+          explanation: 'Advanced AI startups, acquisitions, and research labs incorporate AI startups, acquisitions, and research labs. Each model has its own advantages and challenges.',
+          realWorldExample: 'Microsoft offers AI startups, acquisitions, and research labs, as well as AI-driven products like Azure AI and Office 365.',
+          keyTakeaways: [
+            'AI-driven products offer the most flexibility and customization',
+            'AI as a service offers scalability and cost-effectiveness',
+            'AI licensing models can be lucrative but require careful licensing agreements'
+          ]
+        }
+      },
+      quiz: {
+        question: 'What is the primary advantage of AI startups?',
+        options: [
+          'It allows companies to use AI without building their own infrastructure',
+          'It provides expertise to implement AI solutions',
+          'It offers scalable AI capabilities to customers',
+          'It allows companies to customize AI solutions to their specific needs'
+        ],
+        correct: 4,
+        explanation: 'AI startups, acquisitions, and research labs are all important for the development and commercialization of AI technologies, allowing companies to gain a competitive advantage.'
+      }
+    },
+    {
+      level: 6,
+      focusArea: 'AI & Innovation Cycles',
+      sampleTopics: ['AI adoption curves', 'AI platform shifts', 'AI transformation', 'AI regulatory challenges'],
+      flashcards: [
+        {
+          id: 'ai-adoption-curves',
+          term: 'AI Adoption Curves',
+          definition: 'Pattern showing how new AI technologies spread from innovators to early adopters to mainstream users'
+        },
+        {
+          id: 'ai-platform-shifts',
+          term: 'AI Platform Shifts',
+          definition: 'Major AI technology transitions like machine learning, natural language processing, and computer vision that reshape competitive landscapes'
+        },
+        {
+          id: 'ai-transformation',
+          term: 'AI Transformation',
+          definition: 'Current wave of AI integration transforming software capabilities and business models'
+        },
+        {
+          id: 'ai-regulatory-challenges',
+          term: 'AI Regulatory Challenges',
+          definition: 'Government oversight of AI companies addressing privacy, competition, and content moderation concerns'
+        }
+      ],
+      interactiveContent: {
+        beginner: {
+          explanation: 'AI adoption curves and platform shifts help identify inflection points where new AI technologies create winner-take-all opportunities.',
+          realWorldExample: 'A company might use AI adoption curves and platform shifts to identify new AI technologies that can create a competitive advantage.',
+          keyTakeaways: [
+            'AI adoption curves and platform shifts help identify inflection points where new AI technologies create winner-take-all opportunities',
+            'AI adoption curves and platform shifts can be leveraged to gain a competitive advantage',
+            'AI adoption curves and platform shifts can be leveraged to gain a competitive advantage'
+          ]
+        },
+        intermediate: {
+          explanation: 'AI adoption curves and platform shifts help identify inflection points where new AI technologies create winner-take-all opportunities.',
+          realWorldExample: 'A company might use AI adoption curves and platform shifts to identify new AI technologies that can create a competitive advantage.',
+          keyTakeaways: [
+            'AI adoption curves and platform shifts help identify inflection points where new AI technologies create winner-take-all opportunities',
+            'AI adoption curves and platform shifts can be leveraged to gain a competitive advantage',
+            'AI adoption curves and platform shifts can be leveraged to gain a competitive advantage'
+          ]
+        },
+        pro: {
+          explanation: 'Advanced AI adoption curves and platform shifts incorporate AI adoption curves and platform shifts. Each model has its own advantages and challenges.',
+          realWorldExample: 'Microsoft offers AI adoption curves and platform shifts, as well as AI-driven products like Azure AI and Office 365.',
+          keyTakeaways: [
+            'AI-driven products offer the most flexibility and customization',
+            'AI as a service offers scalability and cost-effectiveness',
+            'AI licensing models can be lucrative but require careful licensing agreements'
+          ]
+        }
+      },
+      quiz: {
+        question: 'What is the primary advantage of AI adoption curves?',
+        options: [
+          'It allows companies to use AI without building their own infrastructure',
+          'It provides expertise to implement AI solutions',
+          'It offers scalable AI capabilities to customers',
+          'It allows companies to customize AI solutions to their specific needs'
+        ],
+        correct: 5,
+        explanation: 'AI adoption curves and platform shifts help identify inflection points where new AI technologies create winner-take-all opportunities, allowing companies to gain a competitive advantage.'
       }
     }
-    // ... Continue with remaining AI levels following the same pattern
   ],
   game: {
     id: 'ai-research-lab',
