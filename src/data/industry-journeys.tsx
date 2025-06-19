@@ -71,7 +71,7 @@ export interface IndustryJourneyData {
   };
 }
 
-import { technologySoftwareJourney, artificialIntelligenceJourney } from './industry-journeys';
+import { technologySoftwareJourney, artificialIntelligenceJourney } from './industry-journeys/index';
 
 export const industryJourneys: IndustryJourneyData[] = [
   {
@@ -83,7 +83,7 @@ export const industryJourneys: IndustryJourneyData[] = [
     howItWorks: 'Healthcare generates revenue through patient services, insurance reimbursements, pharmaceutical sales, and medical device licensing, with outcomes measured by patient health improvements and cost efficiency.',
     futureOutlook: 'Digital health technologies, personalized medicine, and AI-driven diagnostics are transforming healthcare delivery while aging populations increase demand for innovative and cost-effective solutions.',
     totalEstimatedTime: '45 min',
-    difficulty: 'Beginner',
+    difficulty: 'Beginner Friendly',
     levels: [
       {
         level: 1,
