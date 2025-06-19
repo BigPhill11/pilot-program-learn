@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -197,7 +196,7 @@ const AdaptiveLearningContent: React.FC = () => {
                 "Wait for the stock to go higher"
               ],
               correctAnswerIndex: 1,
-              feedbackForIncorrected: "Since the stock is at $60 and your call option lets you buy at $50, you should exercise it to capture the $10 difference!"
+              feedbackForIncorrect: "Since the stock is at $60 and your call option lets you buy at $50, you should exercise it to capture the $10 difference!"
             }}
           />
         </div>
