@@ -1,66 +1,49 @@
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ExternalLink } from 'lucide-react';
-import TermHighlighter from './TermHighlighter';
+import { Card, CardContent } from '@/components/ui/card';
+import HeadlineTermHighlighter from './TermHighlighter';
 
 interface HeadlineCardProps {
   headline: {
-    id?: string;
     title: string;
-    summary: string;
-    tldr?: string;
-    url?: string;
+    description: string;
+    url: string;
+    publishedAt: string;
+    source: {
+      name: string;
+    };
+    urlToImage?: string;
   };
-  userLevel: string;
-  onHeadlineClick: (headline: any) => void;
 }
 
-const getComplexityDescription = (level: string) => {
-  switch (level) {
-    case 'beginner': return '(9th grade level)';
-    case 'intermediate': return '(12th grade level)';
-    case 'advanced': return '(Finance professional level)';
-    default: return '';
-  }
-};
-
-const HeadlineCard: React.FC<HeadlineCardProps> = ({ headline, userLevel, onHeadlineClick }) => {
+const HeadlineCard: React.FC<HeadlineCardProps> = ({ headline }) => {
   return (
-    <Card className="h-full hover:shadow-lg transition-shadow">
-      <CardHeader>
-        <CardTitle className="text-lg line-clamp-2">
-          <TermHighlighter text={headline.title} userLevel={userLevel} />
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="flex-grow space-y-3">
-        <CardDescription className="text-sm leading-relaxed">
-          <TermHighlighter text={headline.summary} userLevel={userLevel} />
-        </CardDescription>
-        
-        {headline.tldr && (
-          <div className="bg-green-50 p-3 rounded-lg border-l-4 border-green-500">
-            <p className="text-xs font-semibold text-green-700 mb-1">
-              TL;DR {getComplexityDescription(userLevel)}
+    <Card className="hover:shadow-md transition-shadow">
+      <CardContent className="p-4">
+        <div className="flex gap-4">
+          {headline.urlToImage && (
+            <img 
+              src={headline.urlToImage} 
+              alt=""
+              className="w-20 h-20 object-cover rounded flex-shrink-0"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = 'none';
+              }}
+            />
+          )}
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-sm mb-2 line-clamp-2">
+              <HeadlineTermHighlighter text={headline.title} />
+            </h3>
+            <p className="text-xs text-muted-foreground mb-2 line-clamp-3">
+              <HeadlineTermHighlighter text={headline.description || ''} />
             </p>
-            <p className="text-sm text-green-600">
-              <TermHighlighter text={headline.tldr} userLevel={userLevel} />
-            </p>
+            <div className="flex justify-between items-center text-xs text-muted-foreground">
+              <span>{headline.source.name}</span>
+              <span>{new Date(headline.publishedAt).toLocaleDateString()}</span>
+            </div>
           </div>
-        )}
-        
-        {headline.url && headline.url !== "#" && (
-          <Button 
-            onClick={() => onHeadlineClick(headline)}
-            variant="outline" 
-            size="sm" 
-            className="w-full mt-4 border-green-600 text-green-600 hover:bg-green-50"
-          >
-            Read Full Article
-            <ExternalLink className="ml-2 h-4 w-4" />
-          </Button>
-        )}
+        </div>
       </CardContent>
     </Card>
   );

@@ -1,15 +1,15 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Upload, Download, Plus, Search, Filter } from 'lucide-react';
+import { Trash2, Edit, Plus, Search } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import CSVUploader from './CSVUploader';
 
 interface FinancialTerm {
   id: string;
@@ -22,335 +22,342 @@ interface FinancialTerm {
   example_usage?: string;
   source?: string;
   status: string;
-  created_at: string;
 }
 
 const FinancialTermsManager = () => {
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  
+  const [terms, setTerms] = useState<FinancialTerm[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterCategory, setFilterCategory] = useState<string>('all');
-  const [filterDifficulty, setFilterDifficulty] = useState<string>('all');
-  const [isAddingTerm, setIsAddingTerm] = useState(false);
-  
-  const [newTerm, setNewTerm] = useState({
-    term: '',
-    definition: '',
-    category: 'general',
-    difficulty_level: 'beginner',
-    analogy: '',
-    real_world_example: '',
-    example_usage: '',
-    source: ''
-  });
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [editingTerm, setEditingTerm] = useState<FinancialTerm | null>(null);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const { toast } = useToast();
 
-  // Fetch financial terms
-  const { data: terms, isLoading } = useQuery({
-    queryKey: ['financial-terms', searchTerm, filterCategory, filterDifficulty],
-    queryFn: async () => {
-      let query = supabase
-        .from('financial_terms_database')
-        .select('*')
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
+  const categories = ['all', 'general', 'stocks', 'bonds', 'investing', 'banking', 'insurance', 'real_estate', 'crypto'];
+  const difficultyLevels = ['beginner', 'intermediate', 'advanced'];
 
-      if (searchTerm) {
-        query = query.ilike('term', `%${searchTerm}%`);
-      }
-      
-      if (filterCategory !== 'all') {
-        query = query.eq('category', filterCategory);
-      }
-      
-      if (filterDifficulty !== 'all') {
-        query = query.eq('difficulty_level', filterDifficulty);
-      }
-
-      const { data, error } = await query;
-      if (error) throw error;
-      return data as FinancialTerm[];
-    }
-  });
-
-  // Add single term mutation
-  const addTermMutation = useMutation({
-    mutationFn: async (termData: typeof newTerm) => {
+  const fetchTerms = async () => {
+    try {
       const { data, error } = await supabase
         .from('financial_terms_database')
-        .insert([termData])
-        .select();
+        .select('*')
+        .order('term');
+
       if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['financial-terms'] });
-      setNewTerm({
-        term: '',
-        definition: '',
-        category: 'general',
-        difficulty_level: 'beginner',
-        analogy: '',
-        real_world_example: '',
-        example_usage: '',
-        source: ''
-      });
-      setIsAddingTerm(false);
-      toast({
-        title: "Success",
-        description: "Financial term added successfully!"
-      });
-    },
-    onError: (error) => {
+      setTerms(data || []);
+    } catch (error) {
+      console.error('Error fetching terms:', error);
       toast({
         title: "Error",
-        description: "Failed to add financial term: " + error.message,
+        description: "Failed to fetch financial terms",
         variant: "destructive"
       });
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    fetchTerms();
+  }, []);
+
+  const filteredTerms = terms.filter(term => {
+    const matchesSearch = term.term.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         term.definition.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === 'all' || term.category === selectedCategory;
+    return matchesSearch && matchesCategory;
   });
 
-  // CSV upload mutation
-  const uploadCSVMutation = useMutation({
-    mutationFn: async (csvData: any[]) => {
-      const { data, error } = await supabase.rpc('bulk_insert_financial_terms', {
-        terms_data: csvData
-      });
+  const handleDelete = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('financial_terms_database')
+        .delete()
+        .eq('id', id);
+
       if (error) throw error;
-      return data;
-    },
-    onSuccess: (result) => {
-      queryClient.invalidateQueries({ queryKey: ['financial-terms'] });
+
+      setTerms(terms.filter(term => term.id !== id));
       toast({
-        title: "CSV Upload Complete",
-        description: `Inserted: ${result[0]?.inserted_count || 0}, Errors: ${result[0]?.error_count || 0}`
+        title: "Success",
+        description: "Term deleted successfully"
       });
-    },
-    onError: (error) => {
+    } catch (error) {
+      console.error('Error deleting term:', error);
       toast({
-        title: "Upload Failed",
-        description: error.message,
+        title: "Error",
+        description: "Failed to delete term",
         variant: "destructive"
       });
     }
-  });
-
-  const handleCSVUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const text = e.target?.result as string;
-      const lines = text.split('\n');
-      const headers = lines[0].split(',').map(h => h.replace(/["\r]/g, '').trim());
-      
-      const csvData = lines.slice(1)
-        .filter(line => line.trim())
-        .map(line => {
-          const values = line.split(',').map(v => v.replace(/["\r]/g, '').trim());
-          const obj: any = {};
-          headers.forEach((header, index) => {
-            if (values[index]) {
-              obj[header] = values[index];
-            }
-          });
-          return obj;
-        });
-
-      uploadCSVMutation.mutate(csvData);
-    };
-    reader.readAsText(file);
   };
 
-  const downloadSampleCSV = () => {
-    const sampleData = [
-      ['term', 'definition', 'category', 'difficulty_level', 'analogy', 'real_world_example', 'example_usage', 'source'],
-      ['Stock', 'A share of ownership in a company', 'investments', 'beginner', 'Like owning a slice of pizza from the whole pizza', 'Buying Apple stock means you own a tiny piece of Apple company', 'I bought 10 stocks of Microsoft', 'Investopedia'],
-      ['Dividend', 'A payment made by companies to shareholders', 'investments', 'beginner', 'Like getting an allowance from a company', 'Coca-Cola pays shareholders $1.68 per share annually', 'The dividend yield is 3.2%', 'SEC.gov']
-    ];
-    
-    const csvContent = sampleData.map(row => row.join(',')).join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'financial_terms_template.csv';
-    a.click();
-    URL.revokeObjectURL(url);
+  const handleSave = async (termData: Partial<FinancialTerm>) => {
+    try {
+      if (editingTerm) {
+        // Update existing term
+        const { error } = await supabase
+          .from('financial_terms_database')
+          .update({
+            ...termData,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', editingTerm.id);
+
+        if (error) throw error;
+        
+        setTerms(terms.map(term => 
+          term.id === editingTerm.id ? { ...term, ...termData } as FinancialTerm : term
+        ));
+      } else {
+        // Add new term
+        const { data, error } = await supabase
+          .from('financial_terms_database')
+          .insert([termData])
+          .select()
+          .single();
+
+        if (error) throw error;
+        setTerms([...terms, data]);
+      }
+
+      setEditingTerm(null);
+      setShowAddForm(false);
+      toast({
+        title: "Success",
+        description: `Term ${editingTerm ? 'updated' : 'added'} successfully`
+      });
+    } catch (error) {
+      console.error('Error saving term:', error);
+      toast({
+        title: "Error",
+        description: `Failed to ${editingTerm ? 'update' : 'add'} term`,
+        variant: "destructive"
+      });
+    }
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <div className="container mx-auto p-6 max-w-7xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Financial Terms Database</h1>
-        <p className="text-muted-foreground">Manage financial terms, definitions, and examples</p>
-      </div>
-
-      {/* Upload Section */}
-      <Card className="mb-6">
+    <div className="space-y-6">
+      <CSVUploader onUploadComplete={fetchTerms} />
+      
+      <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Upload className="h-5 w-5" />
-            Upload Financial Terms
-          </CardTitle>
+          <CardTitle>Financial Terms Database</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex gap-4">
-            <Button onClick={() => fileInputRef.current?.click()} disabled={uploadCSVMutation.isPending}>
-              <Upload className="h-4 w-4 mr-2" />
-              Upload CSV
-            </Button>
-            <Button variant="outline" onClick={downloadSampleCSV}>
-              <Download className="h-4 w-4 mr-2" />
-              Download Template
-            </Button>
-            <Button variant="outline" onClick={() => setIsAddingTerm(true)}>
+          <div className="flex gap-4 mb-4">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Search terms..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map(category => (
+                  <SelectItem key={category} value={category}>
+                    {category === 'all' ? 'All Categories' : category.replace('_', ' ')}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button onClick={() => setShowAddForm(true)}>
               <Plus className="h-4 w-4 mr-2" />
-              Add Single Term
+              Add Term
             </Button>
           </div>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".csv"
-            onChange={handleCSVUpload}
-            className="hidden"
-          />
-          <p className="text-sm text-muted-foreground">
-            CSV should include columns: term, definition, category, difficulty_level, analogy, real_world_example, example_usage, source
+
+          <div className="space-y-4">
+            {filteredTerms.map((term) => (
+              <Card key={term.id}>
+                <CardContent className="p-4">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h3 className="font-semibold">{term.term}</h3>
+                        <Badge variant="outline">{term.category}</Badge>
+                        <Badge variant="secondary">{term.difficulty_level}</Badge>
+                      </div>
+                      <p className="text-sm text-gray-600 mb-2">{term.definition}</p>
+                      {term.analogy && (
+                        <p className="text-xs text-blue-600 mb-1"><strong>Analogy:</strong> {term.analogy}</p>
+                      )}
+                      {term.real_world_example && (
+                        <p className="text-xs text-green-600"><strong>Example:</strong> {term.real_world_example}</p>
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setEditingTerm(term)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => handleDelete(term.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <p className="text-sm text-gray-500">
+            Showing {filteredTerms.length} of {terms.length} terms
           </p>
         </CardContent>
       </Card>
 
-      {/* Add Term Form */}
-      {isAddingTerm && (
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Add New Financial Term</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {(editingTerm || showAddForm) && (
+        <TermForm
+          term={editingTerm}
+          categories={categories.filter(c => c !== 'all')}
+          difficultyLevels={difficultyLevels}
+          onSave={handleSave}
+          onCancel={() => {
+            setEditingTerm(null);
+            setShowAddForm(false);
+          }}
+        />
+      )}
+    </div>
+  );
+};
+
+const TermForm: React.FC<{
+  term: FinancialTerm | null;
+  categories: string[];
+  difficultyLevels: string[];
+  onSave: (data: Partial<FinancialTerm>) => void;
+  onCancel: () => void;
+}> = ({ term, categories, difficultyLevels, onSave, onCancel }) => {
+  const [formData, setFormData] = useState({
+    term: term?.term || '',
+    definition: term?.definition || '',
+    category: term?.category || 'general',
+    difficulty_level: term?.difficulty_level || 'beginner',
+    analogy: term?.analogy || '',
+    real_world_example: term?.real_world_example || '',
+    example_usage: term?.example_usage || '',
+    source: term?.source || ''
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSave(formData);
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{term ? 'Edit Term' : 'Add New Term'}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Term *</label>
               <Input
-                placeholder="Term"
-                value={newTerm.term}
-                onChange={(e) => setNewTerm({...newTerm, term: e.target.value})}
+                value={formData.term}
+                onChange={(e) => setFormData({...formData, term: e.target.value})}
+                required
               />
-              <Select value={newTerm.category} onValueChange={(value) => setNewTerm({...newTerm, category: value})}>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Category</label>
+              <Select
+                value={formData.category}
+                onValueChange={(value) => setFormData({...formData, category: value})}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="general">General</SelectItem>
-                  <SelectItem value="investments">Investments</SelectItem>
-                  <SelectItem value="banking">Banking</SelectItem>
-                  <SelectItem value="trading">Trading</SelectItem>
-                  <SelectItem value="economics">Economics</SelectItem>
+                  {categories.map(category => (
+                    <SelectItem key={category} value={category}>
+                      {category.replace('_', ' ')}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
-            <Textarea
-              placeholder="Definition"
-              value={newTerm.definition}
-              onChange={(e) => setNewTerm({...newTerm, definition: e.target.value})}
-            />
-            <Textarea
-              placeholder="Analogy (optional)"
-              value={newTerm.analogy}
-              onChange={(e) => setNewTerm({...newTerm, analogy: e.target.value})}
-            />
-            <Textarea
-              placeholder="Real World Example (optional)"
-              value={newTerm.real_world_example}
-              onChange={(e) => setNewTerm({...newTerm, real_world_example: e.target.value})}
-            />
-            <div className="flex gap-2">
-              <Button onClick={() => addTermMutation.mutate(newTerm)} disabled={addTermMutation.isPending}>
-                Add Term
-              </Button>
-              <Button variant="outline" onClick={() => setIsAddingTerm(false)}>
-                Cancel
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+          </div>
 
-      {/* Search and Filters */}
-      <Card className="mb-6">
-        <CardContent className="pt-6">
-          <div className="flex gap-4">
-            <div className="flex-1">
-              <Input
-                placeholder="Search terms..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full"
-              />
-            </div>
-            <Select value={filterCategory} onValueChange={setFilterCategory}>
-              <SelectTrigger className="w-48">
+          <div>
+            <label className="block text-sm font-medium mb-1">Definition *</label>
+            <Textarea
+              value={formData.definition}
+              onChange={(e) => setFormData({...formData, definition: e.target.value})}
+              required
+              rows={3}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Difficulty Level</label>
+            <Select
+              value={formData.difficulty_level}
+              onValueChange={(value) => setFormData({...formData, difficulty_level: value})}
+            >
+              <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                <SelectItem value="general">General</SelectItem>
-                <SelectItem value="investments">Investments</SelectItem>
-                <SelectItem value="banking">Banking</SelectItem>
-                <SelectItem value="trading">Trading</SelectItem>
-                <SelectItem value="economics">Economics</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={filterDifficulty} onValueChange={setFilterDifficulty}>
-              <SelectTrigger className="w-48">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Levels</SelectItem>
-                <SelectItem value="beginner">Beginner</SelectItem>
-                <SelectItem value="intermediate">Intermediate</SelectItem>
-                <SelectItem value="advanced">Advanced</SelectItem>
-                <SelectItem value="expert">Expert</SelectItem>
+                {difficultyLevels.map(level => (
+                  <SelectItem key={level} value={level}>
+                    {level}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Terms List */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {isLoading ? (
-          <div>Loading terms...</div>
-        ) : (
-          terms?.map((term) => (
-            <Card key={term.id}>
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <CardTitle className="text-lg">{term.term}</CardTitle>
-                  <div className="flex gap-2">
-                    <Badge variant="secondary">{term.category}</Badge>
-                    <Badge variant="outline">{term.difficulty_level}</Badge>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <p className="text-sm"><strong>Definition:</strong> {term.definition}</p>
-                {term.analogy && (
-                  <p className="text-sm"><strong>Analogy:</strong> {term.analogy}</p>
-                )}
-                {term.real_world_example && (
-                  <p className="text-sm"><strong>Example:</strong> {term.real_world_example}</p>
-                )}
-                {term.source && (
-                  <p className="text-xs text-muted-foreground"><strong>Source:</strong> {term.source}</p>
-                )}
-              </CardContent>
-            </Card>
-          ))
-        )}
-      </div>
-    </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Analogy</label>
+            <Textarea
+              value={formData.analogy}
+              onChange={(e) => setFormData({...formData, analogy: e.target.value})}
+              rows={2}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Real World Example</label>
+            <Textarea
+              value={formData.real_world_example}
+              onChange={(e) => setFormData({...formData, real_world_example: e.target.value})}
+              rows={2}
+            />
+          </div>
+
+          <div className="flex gap-2">
+            <Button type="submit">Save</Button>
+            <Button type="button" variant="outline" onClick={onCancel}>
+              Cancel
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   );
 };
 
