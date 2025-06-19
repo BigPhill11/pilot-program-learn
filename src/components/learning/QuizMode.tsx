@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -34,11 +34,15 @@ const QuizMode: React.FC<QuizModeProps> = ({ terms, userLevel }) => {
   const [score, setScore] = useState(0);
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
 
-  // Filter terms by user level
-  const levelFilteredTerms = terms.filter(term => 
-    userLevel === 'advanced' || term.difficulty_level === userLevel || 
-    (userLevel === 'intermediate' && term.difficulty_level === 'beginner')
-  );
+  // Memoize filtered terms to prevent infinite re-renders
+  const levelFilteredTerms = useMemo(() => {
+    if (!terms || !Array.isArray(terms)) return [];
+    
+    return terms.filter(term => 
+      userLevel === 'advanced' || term.difficulty_level === userLevel || 
+      (userLevel === 'intermediate' && term.difficulty_level === 'beginner')
+    );
+  }, [terms, userLevel]);
 
   const generateQuestions = () => {
     if (levelFilteredTerms.length < 4) return [];
@@ -64,13 +68,15 @@ const QuizMode: React.FC<QuizModeProps> = ({ terms, userLevel }) => {
   };
 
   useEffect(() => {
-    const newQuestions = generateQuestions();
-    setQuestions(newQuestions);
-    setCurrentQuestionIndex(0);
-    setScore(0);
-    setSelectedAnswer(null);
-    setShowResult(false);
-  }, [levelFilteredTerms]);
+    if (levelFilteredTerms.length >= 4) {
+      const newQuestions = generateQuestions();
+      setQuestions(newQuestions);
+      setCurrentQuestionIndex(0);
+      setScore(0);
+      setSelectedAnswer(null);
+      setShowResult(false);
+    }
+  }, [levelFilteredTerms.length]); // Only depend on length to avoid infinite loops
 
   const handleAnswerSelect = (answer: string) => {
     if (showResult) return;
@@ -103,6 +109,14 @@ const QuizMode: React.FC<QuizModeProps> = ({ terms, userLevel }) => {
     setSelectedAnswer(null);
     setShowResult(false);
   };
+
+  if (!terms || terms.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-muted-foreground">Loading terms...</p>
+      </div>
+    );
+  }
 
   if (questions.length === 0) {
     return (

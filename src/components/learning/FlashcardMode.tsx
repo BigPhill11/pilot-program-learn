@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,15 +26,21 @@ const FlashcardMode: React.FC<FlashcardModeProps> = ({ terms, userLevel }) => {
   const [shuffledTerms, setShuffledTerms] = useState<FinancialTerm[]>([]);
   const [masteredTerms, setMasteredTerms] = useState<Set<string>>(new Set());
 
-  // Filter terms by user level
-  const levelFilteredTerms = terms.filter(term => 
-    userLevel === 'advanced' || term.difficulty_level === userLevel || 
-    (userLevel === 'intermediate' && term.difficulty_level === 'beginner')
-  );
+  // Memoize filtered terms to prevent infinite re-renders
+  const levelFilteredTerms = useMemo(() => {
+    if (!terms || !Array.isArray(terms)) return [];
+    
+    return terms.filter(term => 
+      userLevel === 'advanced' || term.difficulty_level === userLevel || 
+      (userLevel === 'intermediate' && term.difficulty_level === 'beginner')
+    );
+  }, [terms, userLevel]);
 
   useEffect(() => {
-    setShuffledTerms([...levelFilteredTerms]);
-  }, [levelFilteredTerms]);
+    if (levelFilteredTerms.length > 0) {
+      setShuffledTerms([...levelFilteredTerms]);
+    }
+  }, [levelFilteredTerms.length]); // Only depend on length to avoid infinite loops
 
   const currentTerm = shuffledTerms[currentIndex];
 
@@ -58,6 +64,14 @@ const FlashcardMode: React.FC<FlashcardModeProps> = ({ terms, userLevel }) => {
   const markAsMastered = (termId: string) => {
     setMasteredTerms(prev => new Set([...prev, termId]));
   };
+
+  if (!terms || terms.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-muted-foreground">Loading terms...</p>
+      </div>
+    );
+  }
 
   if (!currentTerm) {
     return (

@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -35,13 +35,19 @@ const MatchingGame: React.FC<MatchingGameProps> = ({ terms, userLevel }) => {
   const [score, setScore] = useState(0);
   const [gameComplete, setGameComplete] = useState(false);
 
-  // Filter terms by user level
-  const levelFilteredTerms = terms.filter(term => 
-    userLevel === 'advanced' || term.difficulty_level === userLevel || 
-    (userLevel === 'intermediate' && term.difficulty_level === 'beginner')
-  );
+  // Memoize filtered terms to prevent infinite re-renders
+  const levelFilteredTerms = useMemo(() => {
+    if (!terms || !Array.isArray(terms)) return [];
+    
+    return terms.filter(term => 
+      userLevel === 'advanced' || term.difficulty_level === userLevel || 
+      (userLevel === 'intermediate' && term.difficulty_level === 'beginner')
+    );
+  }, [terms, userLevel]);
 
   const initializeGame = () => {
+    if (levelFilteredTerms.length === 0) return;
+
     const gameTerms = levelFilteredTerms
       .sort(() => Math.random() - 0.5)
       .slice(0, Math.min(6, levelFilteredTerms.length));
@@ -76,7 +82,7 @@ const MatchingGame: React.FC<MatchingGameProps> = ({ terms, userLevel }) => {
     if (levelFilteredTerms.length > 0) {
       initializeGame();
     }
-  }, [levelFilteredTerms]);
+  }, [levelFilteredTerms.length]); // Only depend on length to avoid infinite loops
 
   const handleItemClick = (item: MatchItem) => {
     if (item.matched || selectedItems.length >= 2) return;
@@ -123,6 +129,14 @@ const MatchingGame: React.FC<MatchingGameProps> = ({ terms, userLevel }) => {
     if (isSelected(item)) return 'bg-blue-100 border-blue-500 text-blue-700';
     return 'hover:bg-gray-50 border-gray-200';
   };
+
+  if (!terms || terms.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-muted-foreground">Loading terms...</p>
+      </div>
+    );
+  }
 
   if (levelFilteredTerms.length === 0) {
     return (
