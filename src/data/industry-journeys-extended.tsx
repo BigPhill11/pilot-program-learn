@@ -1,5 +1,6 @@
-
-// Continuation of industry journeys data - Technology & Software and AI modules
+import React from 'react';
+import { Laptop, Brain } from 'lucide-react';
+import type { IndustryJourneyData } from './industry-journeys';
 
 export const technologySoftwareJourney: IndustryJourneyData = {
   id: 'technology-software',
@@ -391,7 +392,7 @@ export const technologySoftwareJourney: IndustryJourneyData = {
         },
         pro: {
           explanation: 'Advanced technology analysis incorporates adoption curve modeling, competitive response theory, and regulatory scenario planning. Platform shift timing requires balancing first-mover advantages against market readiness.',
-          realWorldExample: 'OpenAI\'s ChatGPT launch accelerated enterprise AI adoption timelines by 2-3 years, forcing competitors to rapidly deploy AI features and creating new categories like AI-powered search and coding assistants.',
+          realWorldExample: 'OpenAI\'s ChatGPT launch accelerated enterprise AI adoption timelines by 2-3 years, forcing competitors to rapidly deploy AI features and create new categories like AI-powered search and coding assistants.',
           keyTakeaways: [
             'Breakthrough products can accelerate entire technology adoption curves',
             'Platform leaders must continuously innovate to maintain competitive positioning',
