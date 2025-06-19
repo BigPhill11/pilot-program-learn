@@ -62,6 +62,60 @@ export type Database = {
         }
         Relationships: []
       }
+      financial_terms_database: {
+        Row: {
+          analogy: string | null
+          category: string
+          created_at: string
+          created_by: string | null
+          definition: string
+          difficulty_level: string
+          example_usage: string | null
+          id: string
+          real_world_example: string | null
+          related_terms: string[] | null
+          source: string | null
+          status: string
+          tags: string[] | null
+          term: string
+          updated_at: string
+        }
+        Insert: {
+          analogy?: string | null
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          definition: string
+          difficulty_level?: string
+          example_usage?: string | null
+          id?: string
+          real_world_example?: string | null
+          related_terms?: string[] | null
+          source?: string | null
+          status?: string
+          tags?: string[] | null
+          term: string
+          updated_at?: string
+        }
+        Update: {
+          analogy?: string | null
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          definition?: string
+          difficulty_level?: string
+          example_usage?: string | null
+          id?: string
+          real_world_example?: string | null
+          related_terms?: string[] | null
+          source?: string | null
+          status?: string
+          tags?: string[] | null
+          term?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       initial_assessments: {
         Row: {
           assigned_version: string | null
@@ -657,6 +711,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      bulk_insert_financial_terms: {
+        Args: { terms_data: Json }
+        Returns: {
+          inserted_count: number
+          error_count: number
+          errors: string[]
+        }[]
+      }
       calculate_user_streak: {
         Args: { p_user_id: string }
         Returns: number
