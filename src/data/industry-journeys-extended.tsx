@@ -1,3 +1,4 @@
+
 // Continuation of industry journeys data - Technology & Software and AI modules
 
 import React from 'react';
@@ -17,8 +18,8 @@ export const technologySoftwareJourney: IndustryJourneyData = {
   levels: [
     {
       level: 1,
-      focusArea: 'Tech Finance Basics',
       title: 'Technology Finance Fundamentals',
+      focusArea: 'Tech Finance Basics',
       description: 'Understanding key metrics and business models in technology',
       estimatedTime: '20 min',
       objectives: [
@@ -35,8 +36,21 @@ export const technologySoftwareJourney: IndustryJourneyData = {
     },
     {
       level: 2,
+      title: 'Tech Business Models',
       focusArea: 'Tech Business Models',
+      description: 'Understanding different technology business models and revenue streams',
+      estimatedTime: '25 min',
+      objectives: [
+        'Compare subscription vs licensing models',
+        'Understand freemium strategies',
+        'Analyze platform business dynamics'
+      ],
       sampleTopics: ['Subscription vs licensing', 'Freemium models', 'Platform businesses', 'Network effects'],
+      content: {
+        beginner: 'Tech companies make money in different ways. Some charge monthly subscriptions, others let you use basic features free but charge for premium ones, and platforms connect people who pay to use the service.',
+        intermediate: 'Business model selection determines unit economics, scalability, and competitive positioning. Platform businesses achieve superior economics through network effects but require critical mass to succeed.',
+        pro: 'Advanced business model analysis examines multi-sided platforms, data monetization strategies, and API ecosystems. Winner-take-all dynamics in platform markets require aggressive growth investment and strategic partnerships.'
+      },
       flashcards: [
         {
           id: 'subscription-licensing',
@@ -102,8 +116,21 @@ export const technologySoftwareJourney: IndustryJourneyData = {
     },
     {
       level: 3,
+      title: 'Tech Analysis',
       focusArea: 'Tech Analysis',
+      description: 'Analyzing technology companies using specialized metrics and frameworks',
+      estimatedTime: '30 min',
+      objectives: [
+        'Master growth metrics analysis',
+        'Understand unit economics',
+        'Evaluate competitive moats'
+      ],
       sampleTopics: ['Growth metrics', 'Unit economics', 'Competitive moats', 'TAM analysis'],
+      content: {
+        beginner: 'Analyzing tech companies means looking at how fast they\'re growing, whether they make money on each customer, and what advantages protect them from competitors.',
+        intermediate: 'Technology analysis requires understanding customer cohort behavior, competitive dynamics, and market expansion opportunities. Unit economics must account for blended customer acquisition costs across channels.',
+        pro: 'Advanced tech analysis incorporates product-market fit metrics, technological disruption risk, and platform ecosystem dynamics. AI and machine learning increasingly drive competitive differentiation and unit economics optimization.'
+      },
       flashcards: [
         {
           id: 'growth-metrics',
@@ -169,8 +196,21 @@ export const technologySoftwareJourney: IndustryJourneyData = {
     },
     {
       level: 4,
+      title: 'Tech Investing Skills',
       focusArea: 'Tech Investing Skills',
+      description: 'Advanced valuation and investment analysis for technology companies',
+      estimatedTime: '35 min',
+      objectives: [
+        'Master revenue forecasting techniques',
+        'Build cohort-based models',
+        'Conduct scenario analysis'
+      ],
       sampleTopics: ['Revenue forecasting', 'Cohort modeling', 'Scenario analysis', 'Platform valuation'],
+      content: {
+        beginner: 'Valuing tech companies requires predicting how many users they\'ll have, how much those users will pay, and considering different scenarios for how the business might grow.',
+        intermediate: 'Technology investment modeling requires cohort-based forecasting, competitive response analysis, and platform scaling dynamics. DCF models must incorporate high growth phases and terminal value assumptions.',
+        pro: 'Advanced tech valuation incorporates option theory for growth opportunities, competitive game theory, and ecosystem value creation. Machine learning models improve forecasting accuracy through pattern recognition.'
+      },
       flashcards: [
         {
           id: 'revenue-forecasting',
@@ -236,8 +276,21 @@ export const technologySoftwareJourney: IndustryJourneyData = {
     },
     {
       level: 5,
+      title: 'Tech in Practice',
       focusArea: 'Tech in Practice',
+      description: 'Real-world case studies and practical applications of technology investment principles',
+      estimatedTime: '30 min',
+      objectives: [
+        'Analyze major tech deals and IPOs',
+        'Understand acquisition strategies',
+        'Learn from historical examples'
+      ],
       sampleTopics: ['Facebook IPO', 'Google YouTube acquisition', 'Microsoft LinkedIn deal', 'Startup funding cycles'],
+      content: {
+        beginner: 'Real tech deals show how companies grow from startups to big public companies, and how large companies buy smaller ones to get new technologies or eliminate competition.',
+        intermediate: 'Technology M&A and IPO case studies reveal strategic rationales, valuation methodologies, and execution challenges. Integration success depends on cultural fit, technology compatibility, and market timing.',
+        pro: 'Advanced M&A analysis examines competitive dynamics, regulatory considerations, and value creation mechanisms. IPO analysis requires understanding public market valuations, growth expectations, and execution risks.'
+      },
       flashcards: [
         {
           id: 'facebook-ipo',
@@ -303,8 +356,21 @@ export const technologySoftwareJourney: IndustryJourneyData = {
     },
     {
       level: 6,
+      title: 'Tech & Innovation Cycles',
       focusArea: 'Tech & Innovation Cycles',
+      description: 'Understanding technology adoption cycles and innovation patterns',
+      estimatedTime: '25 min',
+      objectives: [
+        'Understand technology adoption patterns',
+        'Identify platform shift opportunities',
+        'Analyze regulatory impacts'
+      ],
       sampleTopics: ['Technology adoption curves', 'Platform shifts', 'AI transformation', 'Regulatory challenges'],
+      content: {
+        beginner: 'Technology goes through cycles where new innovations slowly get adopted, then suddenly become mainstream. Companies that recognize these shifts early often become very successful.',
+        intermediate: 'Technology cycle analysis helps identify inflection points where new platforms create winner-take-all opportunities. Early positioning in platform shifts often determines long-term market leadership.',
+        pro: 'Advanced technology analysis incorporates adoption curve modeling, competitive response theory, and regulatory scenario planning. Platform shift timing requires balancing first-mover advantages against market readiness.'
+      },
       flashcards: [
         {
           id: 'adoption-curves',
@@ -457,8 +523,8 @@ export const artificialIntelligenceJourney: IndustryJourneyData = {
   levels: [
     {
       level: 1,
-      focusArea: 'AI Finance Basics',
       title: 'AI Industry Fundamentals',
+      focusArea: 'AI Finance Basics',
       description: 'Understanding artificial intelligence business models and metrics',
       estimatedTime: '30 min',
       objectives: [
@@ -475,8 +541,21 @@ export const artificialIntelligenceJourney: IndustryJourneyData = {
     },
     {
       level: 2,
+      title: 'AI Business Models',
       focusArea: 'AI Business Models',
+      description: 'Understanding how AI companies generate revenue and create value',
+      estimatedTime: '20 min',
+      objectives: [
+        'Learn AI licensing strategies',
+        'Understand AI consulting services',
+        'Explore AI-as-a-Service models'
+      ],
       sampleTopics: ['AI licensing', 'AI consulting', 'AI as a service', 'AI-driven products'],
+      content: {
+        beginner: 'AI companies make money by selling their smart software to other companies, helping them solve problems, or providing AI services that customers can use.',
+        intermediate: 'AI business models include software licensing, consulting services, platform-as-a-service offerings, and AI-enhanced products with subscription or usage-based pricing.',
+        pro: 'Advanced AI monetization involves API ecosystems, data marketplace strategies, and vertical-specific solutions with enterprise licensing and partnership revenue streams.'
+      },
       flashcards: [
         {
           id: 'ai-licensing',
@@ -542,8 +621,21 @@ export const artificialIntelligenceJourney: IndustryJourneyData = {
     },
     {
       level: 3,
+      title: 'AI Analysis',
       focusArea: 'AI Analysis',
+      description: 'Analyzing AI companies and their performance metrics',
+      estimatedTime: '25 min',
+      objectives: [
+        'Understand AI performance metrics',
+        'Learn to evaluate AI business impact',
+        'Analyze competitive advantages'
+      ],
       sampleTopics: ['AI metrics', 'AI performance', 'AI impact'],
+      content: {
+        beginner: 'To understand how well AI companies are doing, we look at how accurate their AI is, how much money they make, and how much their AI helps customers.',
+        intermediate: 'AI analysis involves evaluating model performance metrics, business impact measurements, and competitive positioning based on data advantages and technological capabilities.',
+        pro: 'Advanced AI analysis incorporates algorithmic differentiation, data moat sustainability, compute efficiency optimization, and talent acquisition as key competitive factors.'
+      },
       flashcards: [
         {
           id: 'ai-metrics',
@@ -600,202 +692,6 @@ export const artificialIntelligenceJourney: IndustryJourneyData = {
         ],
         correct: 3,
         explanation: 'AI-driven products offer the most flexibility and customization, allowing companies to use AI without building their own infrastructure.'
-      }
-    },
-    {
-      level: 4,
-      focusArea: 'AI Investing Skills',
-      sampleTopics: ['AI valuation', 'AI investment strategies', 'AI exit strategies'],
-      flashcards: [
-        {
-          id: 'ai-valuation',
-          term: 'AI Valuation',
-          definition: 'Specialized valuation methods for AI companies, considering factors such as data quality, algorithmic innovation, and market potential'
-        },
-        {
-          id: 'ai-investment-strategies',
-          term: 'AI Investment Strategies',
-          definition: 'Strategies for investing in AI companies, such as growth investing, value investing, and dividend investing'
-        },
-        {
-          id: 'ai-exit-strategies',
-          term: 'AI Exit Strategies',
-          definition: 'Strategies for exiting AI companies, such as IPOs, acquisitions, and spin-offs'
-        }
-      ],
-      interactiveContent: {
-        beginner: {
-          explanation: 'AI valuation involves considering factors such as data quality, algorithmic innovation, and market potential.',
-          realWorldExample: 'A company might use AI valuation to evaluate the potential value of a new AI-driven product or the performance of an AI model.',
-          keyTakeaways: [
-            'AI valuation requires a comprehensive understanding of business operations',
-            'AI performance evaluation is critical for making informed business decisions',
-            'AI impact can be measured in terms of business outcomes'
-          ]
-        },
-        intermediate: {
-          explanation: 'AI investment strategies involve considering factors such as growth investing, value investing, and dividend investing.',
-          realWorldExample: 'A company might use AI investment strategies to evaluate the potential value of a new AI-driven product or the performance of an AI model.',
-          keyTakeaways: [
-            'AI valuation requires a comprehensive understanding of business operations',
-            'AI performance evaluation is critical for making informed business decisions',
-            'AI impact can be measured in terms of business outcomes'
-          ]
-        },
-        pro: {
-          explanation: 'Advanced AI investment strategies incorporate AI valuation, investment strategies, and exit strategies. Each model has its own advantages and challenges.',
-          realWorldExample: 'Microsoft offers AI valuation, investment strategies, and exit strategies, as well as AI-driven products like Azure AI and Office 365.',
-          keyTakeaways: [
-            'AI-driven products offer the most flexibility and customization',
-            'AI as a service offers scalability and cost-effectiveness',
-            'AI licensing models can be lucrative but require careful licensing agreements'
-          ]
-        }
-      },
-      quiz: {
-        question: 'What is the primary advantage of AI valuation?',
-        options: [
-          'It allows companies to use AI without building their own infrastructure',
-          'It provides expertise to implement AI solutions',
-          'It offers scalable AI capabilities to customers',
-          'It allows companies to customize AI solutions to their specific needs'
-        ],
-        correct: 1,
-        explanation: 'AI valuation allows companies to use AI without building their own infrastructure, providing a quantitative measure of AI performance.'
-      }
-    },
-    {
-      level: 5,
-      focusArea: 'AI in Practice',
-      sampleTopics: ['AI startups', 'AI acquisitions', 'AI research labs', 'AI regulatory challenges'],
-      flashcards: [
-        {
-          id: 'ai-startups',
-          term: 'AI Startups',
-          definition: 'Companies that develop and commercialize AI technologies'
-        },
-        {
-          id: 'ai-acquisitions',
-          term: 'AI Acquisitions',
-          definition: 'Companies that acquire AI startups to gain access to AI technologies'
-        },
-        {
-          id: 'ai-research-labs',
-          term: 'AI Research Labs',
-          definition: 'Research institutions that develop and commercialize AI technologies'
-        },
-        {
-          id: 'ai-regulatory-challenges',
-          term: 'AI Regulatory Challenges',
-          definition: 'Government oversight of AI companies addressing privacy, competition, and content moderation concerns'
-        }
-      ],
-      interactiveContent: {
-        beginner: {
-          explanation: 'AI startups, acquisitions, and research labs are all important for the development and commercialization of AI technologies.',
-          realWorldExample: 'A company might use AI startups to develop and commercialize a new AI-driven product, or an AI acquisition to gain access to AI technologies.',
-          keyTakeaways: [
-            'AI startups, acquisitions, and research labs are all important for the development and commercialization of AI technologies',
-            'AI startups, acquisitions, and research labs can all be leveraged to gain a competitive advantage',
-            'AI startups, acquisitions, and research labs can all be leveraged to gain a competitive advantage'
-          ]
-        },
-        intermediate: {
-          explanation: 'AI startups, acquisitions, and research labs are all important for the development and commercialization of AI technologies.',
-          realWorldExample: 'A company might use AI startups to develop and commercialize a new AI-driven product, or an AI acquisition to gain access to AI technologies.',
-          keyTakeaways: [
-            'AI startups, acquisitions, and research labs are all important for the development and commercialization of AI technologies',
-            'AI startups, acquisitions, and research labs can all be leveraged to gain a competitive advantage',
-            'AI startups, acquisitions, and research labs can all be leveraged to gain a competitive advantage'
-          ]
-        },
-        pro: {
-          explanation: 'Advanced AI startups, acquisitions, and research labs incorporate AI startups, acquisitions, and research labs. Each model has its own advantages and challenges.',
-          realWorldExample: 'Microsoft offers AI startups, acquisitions, and research labs, as well as AI-driven products like Azure AI and Office 365.',
-          keyTakeaways: [
-            'AI-driven products offer the most flexibility and customization',
-            'AI as a service offers scalability and cost-effectiveness',
-            'AI licensing models can be lucrative but require careful licensing agreements'
-          ]
-        }
-      },
-      quiz: {
-        question: 'What is the primary advantage of AI startups?',
-        options: [
-          'It allows companies to use AI without building their own infrastructure',
-          'It provides expertise to implement AI solutions',
-          'It offers scalable AI capabilities to customers',
-          'It allows companies to customize AI solutions to their specific needs'
-        ],
-        correct: 4,
-        explanation: 'AI startups, acquisitions, and research labs are all important for the development and commercialization of AI technologies, allowing companies to gain a competitive advantage.'
-      }
-    },
-    {
-      level: 6,
-      focusArea: 'AI & Innovation Cycles',
-      sampleTopics: ['AI adoption curves', 'AI platform shifts', 'AI transformation', 'AI regulatory challenges'],
-      flashcards: [
-        {
-          id: 'ai-adoption-curves',
-          term: 'AI Adoption Curves',
-          definition: 'Pattern showing how new AI technologies spread from innovators to early adopters to mainstream users'
-        },
-        {
-          id: 'ai-platform-shifts',
-          term: 'AI Platform Shifts',
-          definition: 'Major AI technology transitions like machine learning, natural language processing, and computer vision that reshape competitive landscapes'
-        },
-        {
-          id: 'ai-transformation',
-          term: 'AI Transformation',
-          definition: 'Current wave of AI integration transforming software capabilities and business models'
-        },
-        {
-          id: 'ai-regulatory-challenges',
-          term: 'AI Regulatory Challenges',
-          definition: 'Government oversight of AI companies addressing privacy, competition, and content moderation concerns'
-        }
-      ],
-      interactiveContent: {
-        beginner: {
-          explanation: 'AI adoption curves and platform shifts help identify inflection points where new AI technologies create winner-take-all opportunities.',
-          realWorldExample: 'A company might use AI adoption curves and platform shifts to identify new AI technologies that can create a competitive advantage.',
-          keyTakeaways: [
-            'AI adoption curves and platform shifts help identify inflection points where new AI technologies create winner-take-all opportunities',
-            'AI adoption curves and platform shifts can be leveraged to gain a competitive advantage',
-            'AI adoption curves and platform shifts can be leveraged to gain a competitive advantage'
-          ]
-        },
-        intermediate: {
-          explanation: 'AI adoption curves and platform shifts help identify inflection points where new AI technologies create winner-take-all opportunities.',
-          realWorldExample: 'A company might use AI adoption curves and platform shifts to identify new AI technologies that can create a competitive advantage.',
-          keyTakeaways: [
-            'AI adoption curves and platform shifts help identify inflection points where new AI technologies create winner-take-all opportunities',
-            'AI adoption curves and platform shifts can be leveraged to gain a competitive advantage',
-            'AI adoption curves and platform shifts can be leveraged to gain a competitive advantage'
-          ]
-        },
-        pro: {
-          explanation: 'Advanced AI adoption curves and platform shifts incorporate AI adoption curves and platform shifts. Each model has its own advantages and challenges.',
-          realWorldExample: 'Microsoft offers AI adoption curves and platform shifts, as well as AI-driven products like Azure AI and Office 365.',
-          keyTakeaways: [
-            'AI-driven products offer the most flexibility and customization',
-            'AI as a service offers scalability and cost-effectiveness',
-            'AI licensing models can be lucrative but require careful licensing agreements'
-          ]
-        }
-      },
-      quiz: {
-        question: 'What is the primary advantage of AI adoption curves?',
-        options: [
-          'It allows companies to use AI without building their own infrastructure',
-          'It provides expertise to implement AI solutions',
-          'It offers scalable AI capabilities to customers',
-          'It allows companies to customize AI solutions to their specific needs'
-        ],
-        correct: 5,
-        explanation: 'AI adoption curves and platform shifts help identify inflection points where new AI technologies create winner-take-all opportunities, allowing companies to gain a competitive advantage.'
       }
     }
   ],
