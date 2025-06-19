@@ -18,37 +18,57 @@ interface FinancialTerm {
 interface FlashcardModeProps {
   terms: FinancialTerm[];
   userLevel: string;
+  selectedDifficulty: string;
 }
 
-const FlashcardMode: React.FC<FlashcardModeProps> = ({ terms, userLevel }) => {
+const FlashcardMode: React.FC<FlashcardModeProps> = ({ terms, userLevel, selectedDifficulty }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [shuffledTerms, setShuffledTerms] = useState<FinancialTerm[]>([]);
   const [masteredTerms, setMasteredTerms] = useState<Set<string>>(new Set());
 
-  // Memoize filtered terms to prevent infinite re-renders
-  const levelFilteredTerms = useMemo(() => {
+  // Filter terms based on selected difficulty
+  const filteredTerms = useMemo(() => {
     if (!terms || !Array.isArray(terms)) return [];
     
-    return terms.filter(term => 
-      userLevel === 'advanced' || term.difficulty_level === userLevel || 
-      (userLevel === 'intermediate' && term.difficulty_level === 'beginner')
-    );
-  }, [terms, userLevel]);
-
-  useEffect(() => {
-    if (levelFilteredTerms.length > 0) {
-      setShuffledTerms([...levelFilteredTerms]);
+    let filtered = terms;
+    
+    if (selectedDifficulty !== 'all') {
+      filtered = terms.filter(term => term.difficulty_level === selectedDifficulty);
+    } else {
+      // If 'all' is selected, still respect user level for beginners
+      if (userLevel === 'beginner') {
+        filtered = terms.filter(term => term.difficulty_level === 'beginner');
+      } else if (userLevel === 'intermediate') {
+        filtered = terms.filter(term => 
+          term.difficulty_level === 'beginner' || term.difficulty_level === 'intermediate'
+        );
+      }
+      // Advanced users see all terms when 'all' is selected
     }
-  }, [levelFilteredTerms.length]); // Only depend on length to avoid infinite loops
+    
+    return filtered;
+  }, [terms, selectedDifficulty, userLevel]);
+
+  // Initialize shuffled terms
+  useEffect(() => {
+    if (filteredTerms.length > 0) {
+      const shuffled = [...filteredTerms].sort(() => Math.random() - 0.5);
+      setShuffledTerms(shuffled);
+      setCurrentIndex(0);
+      setIsFlipped(false);
+    }
+  }, [filteredTerms]);
 
   const currentTerm = shuffledTerms[currentIndex];
 
   const shuffleTerms = () => {
-    const shuffled = [...levelFilteredTerms].sort(() => Math.random() - 0.5);
-    setShuffledTerms(shuffled);
-    setCurrentIndex(0);
-    setIsFlipped(false);
+    if (filteredTerms.length > 0) {
+      const shuffled = [...filteredTerms].sort(() => Math.random() - 0.5);
+      setShuffledTerms(shuffled);
+      setCurrentIndex(0);
+      setIsFlipped(false);
+    }
   };
 
   const nextCard = () => {
@@ -73,10 +93,10 @@ const FlashcardMode: React.FC<FlashcardModeProps> = ({ terms, userLevel }) => {
     );
   }
 
-  if (!currentTerm) {
+  if (!currentTerm || shuffledTerms.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-muted-foreground">No terms available for your level.</p>
+        <p className="text-muted-foreground">No terms available for the selected difficulty level.</p>
       </div>
     );
   }

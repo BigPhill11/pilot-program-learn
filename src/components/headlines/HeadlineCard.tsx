@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import HeadlineTermHighlighter from './TermHighlighter';
 
 interface HeadlineCardProps {
   headline: {
@@ -33,10 +32,10 @@ const HeadlineCard: React.FC<HeadlineCardProps> = ({ headline }) => {
           )}
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-sm mb-2 line-clamp-2">
-              <HeadlineTermHighlighter text={headline.title} />
+              {headline.title}
             </h3>
             <p className="text-xs text-muted-foreground mb-2 line-clamp-3">
-              <HeadlineTermHighlighter text={headline.description || ''} />
+              {headline.description || ''}
             </p>
             <div className="flex justify-between items-center text-xs text-muted-foreground">
               <span>{headline.source?.name || 'Unknown Source'}</span>

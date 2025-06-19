@@ -3,7 +3,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { RefreshCw, Trophy } from 'lucide-react';
+import { RefreshCw, Trophy }from 'lucide-react';
 
 interface FinancialTerm {
   id: string;
@@ -18,6 +18,8 @@ interface FinancialTerm {
 interface MatchingGameProps {
   terms: FinancialTerm[];
   userLevel: string;
+  selectedDifficulty: string;
+  termCount: number;
 }
 
 interface MatchItem {
@@ -28,29 +30,42 @@ interface MatchItem {
   matched: boolean;
 }
 
-const MatchingGame: React.FC<MatchingGameProps> = ({ terms, userLevel }) => {
+const MatchingGame: React.FC<MatchingGameProps> = ({ terms, userLevel, selectedDifficulty, termCount }) => {
   const [gameItems, setGameItems] = useState<MatchItem[]>([]);
   const [selectedItems, setSelectedItems] = useState<MatchItem[]>([]);
   const [matches, setMatches] = useState<Set<string>>(new Set());
   const [score, setScore] = useState(0);
   const [gameComplete, setGameComplete] = useState(false);
 
-  // Memoize filtered terms to prevent infinite re-renders
-  const levelFilteredTerms = useMemo(() => {
+  // Filter terms based on selected difficulty
+  const filteredTerms = useMemo(() => {
     if (!terms || !Array.isArray(terms)) return [];
     
-    return terms.filter(term => 
-      userLevel === 'advanced' || term.difficulty_level === userLevel || 
-      (userLevel === 'intermediate' && term.difficulty_level === 'beginner')
-    );
-  }, [terms, userLevel]);
+    let filtered = terms;
+    
+    if (selectedDifficulty !== 'all') {
+      filtered = terms.filter(term => term.difficulty_level === selectedDifficulty);
+    } else {
+      // If 'all' is selected, still respect user level for beginners
+      if (userLevel === 'beginner') {
+        filtered = terms.filter(term => term.difficulty_level === 'beginner');
+      } else if (userLevel === 'intermediate') {
+        filtered = terms.filter(term => 
+          term.difficulty_level === 'beginner' || term.difficulty_level === 'intermediate'
+        );
+      }
+      // Advanced users see all terms when 'all' is selected
+    }
+    
+    return filtered;
+  }, [terms, selectedDifficulty, userLevel]);
 
   const initializeGame = () => {
-    if (levelFilteredTerms.length === 0) return;
+    if (filteredTerms.length === 0) return;
 
-    const gameTerms = levelFilteredTerms
+    const gameTerms = filteredTerms
       .sort(() => Math.random() - 0.5)
-      .slice(0, Math.min(6, levelFilteredTerms.length));
+      .slice(0, Math.min(termCount, filteredTerms.length));
 
     const items: MatchItem[] = [];
     
@@ -79,10 +94,10 @@ const MatchingGame: React.FC<MatchingGameProps> = ({ terms, userLevel }) => {
   };
 
   useEffect(() => {
-    if (levelFilteredTerms.length > 0) {
+    if (filteredTerms.length > 0) {
       initializeGame();
     }
-  }, [levelFilteredTerms.length]); // Only depend on length to avoid infinite loops
+  }, [filteredTerms, termCount]);
 
   const handleItemClick = (item: MatchItem) => {
     if (item.matched || selectedItems.length >= 2) return;
@@ -138,10 +153,10 @@ const MatchingGame: React.FC<MatchingGameProps> = ({ terms, userLevel }) => {
     );
   }
 
-  if (levelFilteredTerms.length === 0) {
+  if (filteredTerms.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-muted-foreground">No terms available for matching game.</p>
+        <p className="text-muted-foreground">No terms available for the selected difficulty level.</p>
       </div>
     );
   }

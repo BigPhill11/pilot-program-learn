@@ -4,7 +4,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
 import useHeadlines from '@/hooks/useHeadlines';
-import HeadlineCard from './headlines/HeadlineCard';
 
 const EnhancedHeadlinesSection = () => {
   const { profile } = useAuth();
@@ -93,7 +92,7 @@ const EnhancedHeadlinesSection = () => {
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-green-700">Market Headlines</h2>
           <p className="mt-2 text-muted-foreground">
-            Stay updated with financial news - terms are highlighted based on your level!
+            Stay updated with the latest financial news
           </p>
           <div className="mt-2 text-sm text-primary">
             🐼 Current Level: {userLevel.charAt(0).toUpperCase() + userLevel.slice(1)} Phil
@@ -102,9 +101,34 @@ const EnhancedHeadlinesSection = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {displayHeadlines.map((headline, index) => (
-            <div key={headline.id || index} onClick={() => handleHeadlineClick(headline)}>
-              <HeadlineCard headline={headline} />
-            </div>
+            <Card key={headline.id || index} className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleHeadlineClick(headline)}>
+              <CardContent className="p-4">
+                <div className="flex gap-4">
+                  {headline.urlToImage && (
+                    <img 
+                      src={headline.urlToImage} 
+                      alt=""
+                      className="w-20 h-20 object-cover rounded flex-shrink-0"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-sm mb-2 line-clamp-2">
+                      {headline.title}
+                    </h3>
+                    <p className="text-xs text-muted-foreground mb-2 line-clamp-3">
+                      {headline.description || ''}
+                    </p>
+                    <div className="flex justify-between items-center text-xs text-muted-foreground">
+                      <span>{headline.source?.name || 'Unknown Source'}</span>
+                      <span>{new Date(headline.publishedAt).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
       </div>

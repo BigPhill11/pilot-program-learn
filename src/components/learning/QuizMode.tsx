@@ -19,6 +19,8 @@ interface FinancialTerm {
 interface QuizModeProps {
   terms: FinancialTerm[];
   userLevel: string;
+  selectedDifficulty: string;
+  termCount: number;
 }
 
 interface QuizQuestion {
@@ -27,31 +29,44 @@ interface QuizQuestion {
   correctAnswer: string;
 }
 
-const QuizMode: React.FC<QuizModeProps> = ({ terms, userLevel }) => {
+const QuizMode: React.FC<QuizModeProps> = ({ terms, userLevel, selectedDifficulty, termCount }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [score, setScore] = useState(0);
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
 
-  // Memoize filtered terms to prevent infinite re-renders
-  const levelFilteredTerms = useMemo(() => {
+  // Filter terms based on selected difficulty
+  const filteredTerms = useMemo(() => {
     if (!terms || !Array.isArray(terms)) return [];
     
-    return terms.filter(term => 
-      userLevel === 'advanced' || term.difficulty_level === userLevel || 
-      (userLevel === 'intermediate' && term.difficulty_level === 'beginner')
-    );
-  }, [terms, userLevel]);
+    let filtered = terms;
+    
+    if (selectedDifficulty !== 'all') {
+      filtered = terms.filter(term => term.difficulty_level === selectedDifficulty);
+    } else {
+      // If 'all' is selected, still respect user level for beginners
+      if (userLevel === 'beginner') {
+        filtered = terms.filter(term => term.difficulty_level === 'beginner');
+      } else if (userLevel === 'intermediate') {
+        filtered = terms.filter(term => 
+          term.difficulty_level === 'beginner' || term.difficulty_level === 'intermediate'
+        );
+      }
+      // Advanced users see all terms when 'all' is selected
+    }
+    
+    return filtered;
+  }, [terms, selectedDifficulty, userLevel]);
 
   const generateQuestions = () => {
-    if (levelFilteredTerms.length < 4) return [];
+    if (filteredTerms.length < 4) return [];
 
-    const shuffled = [...levelFilteredTerms].sort(() => Math.random() - 0.5);
-    const quizTerms = shuffled.slice(0, Math.min(10, shuffled.length));
+    const shuffled = [...filteredTerms].sort(() => Math.random() - 0.5);
+    const selectedTerms = shuffled.slice(0, Math.min(termCount, shuffled.length));
     
-    return quizTerms.map(term => {
-      const wrongAnswers = shuffled
+    return selectedTerms.map(term => {
+      const wrongAnswers = filteredTerms
         .filter(t => t.id !== term.id)
         .sort(() => Math.random() - 0.5)
         .slice(0, 3)
@@ -68,7 +83,7 @@ const QuizMode: React.FC<QuizModeProps> = ({ terms, userLevel }) => {
   };
 
   useEffect(() => {
-    if (levelFilteredTerms.length >= 4) {
+    if (filteredTerms.length >= 4) {
       const newQuestions = generateQuestions();
       setQuestions(newQuestions);
       setCurrentQuestionIndex(0);
@@ -76,7 +91,7 @@ const QuizMode: React.FC<QuizModeProps> = ({ terms, userLevel }) => {
       setSelectedAnswer(null);
       setShowResult(false);
     }
-  }, [levelFilteredTerms.length]); // Only depend on length to avoid infinite loops
+  }, [filteredTerms, termCount]);
 
   const handleAnswerSelect = (answer: string) => {
     if (showResult) return;
@@ -121,7 +136,7 @@ const QuizMode: React.FC<QuizModeProps> = ({ terms, userLevel }) => {
   if (questions.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-muted-foreground">Not enough terms available to generate a quiz.</p>
+        <p className="text-muted-foreground">Not enough terms available for the selected difficulty level to generate a quiz.</p>
       </div>
     );
   }

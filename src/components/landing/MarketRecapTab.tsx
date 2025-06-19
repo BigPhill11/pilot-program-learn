@@ -2,12 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp, TrendingDown } from 'lucide-react';
-import TermHighlighter from '../TermHighlighter';
-import { useFinancialTerms } from '@/hooks/useFinancialTerms';
 
 const MarketRecapTab = () => {
   const [marketSummary, setMarketSummary] = useState<string>('');
-  const { terms } = useFinancialTerms();
 
   useEffect(() => {
     // Simulate market recap data
@@ -27,11 +24,7 @@ const MarketRecapTab = () => {
         </CardHeader>
         <CardContent>
           <div className="prose prose-sm max-w-none">
-            <TermHighlighter 
-              text={marketSummary}
-              terms={terms}
-              className="text-muted-foreground leading-relaxed"
-            />
+            <p className="text-muted-foreground leading-relaxed">{marketSummary}</p>
           </div>
         </CardContent>
       </Card>
@@ -43,27 +36,21 @@ const MarketRecapTab = () => {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="font-medium">
-                <TermHighlighter text="Technology Sector" terms={terms} />
-              </span>
+              <span className="font-medium">Technology Sector</span>
               <span className="flex items-center gap-1 text-green-600">
                 <TrendingUp className="h-4 w-4" />
                 +2.1%
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="font-medium">
-                <TermHighlighter text="Energy Stocks" terms={terms} />
-              </span>
+              <span className="font-medium">Energy Stocks</span>
               <span className="flex items-center gap-1 text-red-600">
                 <TrendingDown className="h-4 w-4" />
                 -1.3%
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="font-medium">
-                <TermHighlighter text="Financial Services" terms={terms} />
-              </span>
+              <span className="font-medium">Financial Services</span>
               <span className="flex items-center gap-1 text-green-600">
                 <TrendingUp className="h-4 w-4" />
                 +0.8%
@@ -78,25 +65,13 @@ const MarketRecapTab = () => {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="text-sm">
-              <TermHighlighter 
-                text="Strong quarterly earnings boosted investor confidence in growth stocks."
-                terms={terms}
-                className="text-muted-foreground"
-              />
+              <p className="text-muted-foreground">Strong quarterly earnings boosted investor confidence in growth stocks.</p>
             </div>
             <div className="text-sm">
-              <TermHighlighter 
-                text="Interest rate speculation continues to influence bond market dynamics."
-                terms={terms}
-                className="text-muted-foreground"
-              />
+              <p className="text-muted-foreground">Interest rate speculation continues to influence bond market dynamics.</p>
             </div>
             <div className="text-sm">
-              <TermHighlighter 
-                text="Commodity prices showed resilience despite global economic concerns."
-                terms={terms}
-                className="text-muted-foreground"
-              />
+              <p className="text-muted-foreground">Commodity prices showed resilience despite global economic concerns.</p>
             </div>
           </CardContent>
         </Card>
