@@ -37,7 +37,7 @@ const IndustryDeepDiveTab = () => {
                             <Badge variant="outline" className="mx-auto block w-fit mb-4">AI Insights Available</Badge>
                             
                             <CardDescription className="text-sm leading-relaxed">
-                                {industry.overview}
+                                {industry.description}
                             </CardDescription>
                         </div>
                     </Card>
