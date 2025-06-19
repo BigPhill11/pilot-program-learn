@@ -72,16 +72,18 @@ const EnhancedHeadlinesSection = () => {
     {
       id: '1',
       title: "Market Reaches New Heights",
-      summary: "Stock prices continue to rise as investors show confidence in the market's future performance. Major indices are posting significant gains across multiple sectors. Analysts attribute the growth to strong economic indicators and corporate earnings reports.",
-      tldr: "Stock markets are up significantly due to positive investor sentiment and strong economic data.",
-      url: "https://finance.yahoo.com"
+      description: "Stock prices continue to rise as investors show confidence in the market's future performance. Major indices are posting significant gains across multiple sectors. Analysts attribute the growth to strong economic indicators and corporate earnings reports.",
+      url: "https://finance.yahoo.com",
+      publishedAt: new Date().toISOString(),
+      source: { name: "Financial News" }
     },
     {
       id: '2',
       title: "Tech Companies Report Strong Earnings",
-      summary: "Major technology companies exceeded profit expectations, driving significant trading volume. Revenue growth has been particularly strong in cloud computing and artificial intelligence sectors. Investors are responding positively to future growth projections and innovation investments.",
-      tldr: "Tech giants beat earnings expectations, boosting investor confidence in the sector.",
-      url: "https://finance.yahoo.com"
+      description: "Major technology companies exceeded profit expectations, driving significant trading volume. Revenue growth has been particularly strong in cloud computing and artificial intelligence sectors. Investors are responding positively to future growth projections and innovation investments.",
+      url: "https://finance.yahoo.com",
+      publishedAt: new Date().toISOString(),
+      source: { name: "Tech Report" }
     }
   ] : headlines;
 
@@ -100,12 +102,9 @@ const EnhancedHeadlinesSection = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {displayHeadlines.map((headline, index) => (
-            <HeadlineCard
-              key={headline.id || index}
-              headline={headline}
-              userLevel={userLevel}
-              onHeadlineClick={handleHeadlineClick}
-            />
+            <div key={headline.id || index} onClick={() => handleHeadlineClick(headline)}>
+              <HeadlineCard headline={headline} />
+            </div>
           ))}
         </div>
       </div>

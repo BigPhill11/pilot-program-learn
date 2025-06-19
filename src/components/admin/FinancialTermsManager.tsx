@@ -92,7 +92,7 @@ const FinancialTermsManager = () => {
     }
   };
 
-  const handleSave = async (termData: Partial<FinancialTerm>) => {
+  const handleSave = async (termData: Omit<FinancialTerm, 'id' | 'status'>) => {
     try {
       if (editingTerm) {
         // Update existing term
@@ -113,7 +113,10 @@ const FinancialTermsManager = () => {
         // Add new term
         const { data, error } = await supabase
           .from('financial_terms_database')
-          .insert([termData])
+          .insert([{
+            ...termData,
+            status: 'active'
+          }])
           .select()
           .single();
 
@@ -247,7 +250,7 @@ const TermForm: React.FC<{
   term: FinancialTerm | null;
   categories: string[];
   difficultyLevels: string[];
-  onSave: (data: Partial<FinancialTerm>) => void;
+  onSave: (data: Omit<FinancialTerm, 'id' | 'status'>) => void;
   onCancel: () => void;
 }> = ({ term, categories, difficultyLevels, onSave, onCancel }) => {
   const [formData, setFormData] = useState({
