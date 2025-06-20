@@ -6,6 +6,8 @@ import { useAuth } from '@/hooks/useAuth';
 import useHeadlines from '@/hooks/useHeadlines';
 import { useFinancialTerms } from '@/hooks/useFinancialTerms';
 import TermHighlighter from '@/components/TermHighlighter';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 const MarketRecapTab = () => {
   const { profile } = useAuth();
@@ -13,6 +15,17 @@ const MarketRecapTab = () => {
   const { data: headlinesData, isLoading } = useHeadlines(userLevel);
   const { terms: financialTerms = [] } = useFinancialTerms();
   const [marketSummary, setMarketSummary] = useState<string>('');
+
+  // Fetch market movers and insights from Polygon.io
+  const { data: polygonData } = useQuery({
+    queryKey: ['polygonMarketMovers'],
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke('polygon-market-movers');
+      if (error) throw error;
+      return data;
+    },
+    staleTime: 1000 * 60 * 15, // 15 minutes
+  });
 
   useEffect(() => {
     if (headlinesData?.marketRecap) {
@@ -110,27 +123,47 @@ const MarketRecapTab = () => {
             <CardTitle className="text-lg">Market Movers</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="font-medium">Technology Sector</span>
-              <span className="flex items-center gap-1 text-green-600">
-                <TrendingUp className="h-4 w-4" />
-                +2.1%
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="font-medium">Energy Stocks</span>
-              <span className="flex items-center gap-1 text-red-600">
-                <TrendingDown className="h-4 w-4" />
-                -1.3%
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="font-medium">Financial Services</span>
-              <span className="flex items-center gap-1 text-green-600">
-                <TrendingUp className="h-4 w-4" />
-                +0.8%
-              </span>
-            </div>
+            {polygonData?.movers ? (
+              polygonData.movers.map((mover: any, index: number) => (
+                <div key={index} className="flex justify-between items-center">
+                  <span className="font-medium">{mover.name}</span>
+                  <span className={`flex items-center gap-1 ${
+                    mover.change >= 0 ? 'text-green-600' : 'text-red-600'
+                  }`}>
+                    {mover.change >= 0 ? 
+                      <TrendingUp className="h-4 w-4" /> : 
+                      <TrendingDown className="h-4 w-4" />
+                    }
+                    {mover.change >= 0 ? '+' : ''}{mover.change.toFixed(1)}%
+                  </span>
+                </div>
+              ))
+            ) : (
+              // Fallback data
+              <>
+                <div className="flex justify-between items-center">
+                  <span className="font-medium">Technology Sector</span>
+                  <span className="flex items-center gap-1 text-green-600">
+                    <TrendingUp className="h-4 w-4" />
+                    +2.1%
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="font-medium">Energy Stocks</span>
+                  <span className="flex items-center gap-1 text-red-600">
+                    <TrendingDown className="h-4 w-4" />
+                    -1.3%
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="font-medium">Financial Services</span>
+                  <span className="flex items-center gap-1 text-green-600">
+                    <TrendingUp className="h-4 w-4" />
+                    +0.8%
+                  </span>
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
 
@@ -139,30 +172,46 @@ const MarketRecapTab = () => {
             <CardTitle className="text-lg">Key Insights</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="text-sm">
-              <p className="text-muted-foreground">
-                <TermHighlighter 
-                  text="Strong quarterly earnings boosted investor confidence in growth stocks." 
-                  terms={financialTerms}
-                />
-              </p>
-            </div>
-            <div className="text-sm">
-              <p className="text-muted-foreground">
-                <TermHighlighter 
-                  text="Interest rate speculation continues to influence bond market dynamics." 
-                  terms={financialTerms}
-                />
-              </p>
-            </div>
-            <div className="text-sm">
-              <p className="text-muted-foreground">
-                <TermHighlighter 
-                  text="Commodity prices showed resilience despite global economic concerns." 
-                  terms={financialTerms}
-                />
-              </p>
-            </div>
+            {polygonData?.insights ? (
+              polygonData.insights.map((insight: string, index: number) => (
+                <div key={index} className="text-sm">
+                  <p className="text-muted-foreground">
+                    <TermHighlighter 
+                      text={insight} 
+                      terms={financialTerms}
+                    />
+                  </p>
+                </div>
+              ))
+            ) : (
+              // Fallback data
+              <>
+                <div className="text-sm">
+                  <p className="text-muted-foreground">
+                    <TermHighlighter 
+                      text="Strong quarterly earnings boosted investor confidence in growth stocks." 
+                      terms={financialTerms}
+                    />
+                  </p>
+                </div>
+                <div className="text-sm">
+                  <p className="text-muted-foreground">
+                    <TermHighlighter 
+                      text="Interest rate speculation continues to influence bond market dynamics." 
+                      terms={financialTerms}
+                    />
+                  </p>
+                </div>
+                <div className="text-sm">
+                  <p className="text-muted-foreground">
+                    <TermHighlighter 
+                      text="Commodity prices showed resilience despite global economic concerns." 
+                      terms={financialTerms}
+                    />
+                  </p>
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>

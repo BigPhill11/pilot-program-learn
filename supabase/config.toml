@@ -21,3 +21,6 @@ verify_jwt = false
 
 [functions.scheduled-market-refresh]
 verify_jwt = false
+
+[functions.polygon-market-movers]
+verify_jwt = false

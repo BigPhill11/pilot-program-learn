@@ -5,7 +5,7 @@ export async function fetchMarketOverviewFromNewsData(apiKey: string): Promise<N
   console.log('Fetching market overview data from newsdata.io...');
 
   const response = await fetch(
-    `https://newsdata.io/api/1/news?apikey=${apiKey}&category=business&q=market overview OR market summary OR economic outlook OR financial markets OR stock market trends OR market analysis&language=en&country=us&size=10`,
+    `https://newsdata.io/api/1/news?apikey=${apiKey}&category=business&q=market&language=en&country=us&size=10`,
     {
       method: 'GET',
       headers: {
