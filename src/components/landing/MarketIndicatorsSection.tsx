@@ -1,3 +1,4 @@
+
 import React from 'react';
 import MarketIndicatorCard from '@/components/MarketIndicatorCard';
 import { useQuery } from '@tanstack/react-query';
@@ -83,12 +84,12 @@ const MarketIndicatorsSection = () => {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
           {isLoading ? (
             Array.from({ length: 6 }).map((_, index) => (
-              <CardSkeleton key={index} />
+              <CardSkeleton key={`skeleton-${index}`} />
             ))
           ) : (
-            indicatorsToDisplay.map((indicator) => (
+            indicatorsToDisplay.map((indicator, index) => (
               <MarketIndicatorCard
-                key={indicator.title}
+                key={`${indicator.title}-${index}`}
                 title={indicator.title}
                 value={indicator.value}
                 change={indicator.change}

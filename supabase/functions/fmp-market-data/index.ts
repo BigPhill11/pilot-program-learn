@@ -14,8 +14,20 @@ serve(async (req) => {
   }
 
   try {
-    const { searchParams } = new URL(req.url);
-    const dataType = searchParams.get('type') || 'all'; // all, overview, headlines, indexes
+    let dataType = 'all';
+    
+    // Handle both GET query params and POST body
+    if (req.method === 'GET') {
+      const { searchParams } = new URL(req.url);
+      dataType = searchParams.get('type') || 'all';
+    } else if (req.method === 'POST') {
+      try {
+        const body = await req.json();
+        dataType = body.type || 'all';
+      } catch {
+        dataType = 'all';
+      }
+    }
     
     console.log(`Fetching FMP market data for type: ${dataType}`);
 
