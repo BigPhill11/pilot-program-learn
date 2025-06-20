@@ -5,11 +5,26 @@ import { useAuth } from '@/hooks/useAuth';
 import useHeadlines from '@/hooks/useHeadlines';
 import { useFinancialTerms } from '@/hooks/useFinancialTerms';
 import TermHighlighter from '@/components/TermHighlighter';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 const EnhancedHeadlinesSection = () => {
   const { profile } = useAuth();
-  const { data: headlinesData, isLoading, isError } = useHeadlines();
+  const { data: headlinesData, isLoading: headlinesLoading } = useHeadlines();
   const { terms: financialTerms = [] } = useFinancialTerms();
+
+  // Fetch FMP headlines twice daily
+  const { data: fmpHeadlinesData, isLoading: fmpLoading } = useQuery({
+    queryKey: ['fmpMarketHeadlines'],
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke('fmp-market-data', {
+        body: { type: 'headlines' }
+      });
+      if (error) throw error;
+      return data;
+    },
+    staleTime: 1000 * 60 * 60 * 12, // 12 hours - refresh twice daily
+  });
 
   const handleHeadlineClick = (headline: any) => {
     console.log('Clicking headline:', headline);
@@ -37,6 +52,7 @@ const EnhancedHeadlinesSection = () => {
   };
 
   const userLevel = profile?.app_version || 'beginner';
+  const isLoading = headlinesLoading || fmpLoading;
 
   if (isLoading) {
     return (
@@ -65,11 +81,15 @@ const EnhancedHeadlinesSection = () => {
     );
   }
 
-  // Extract headlines from the response
-  const headlines = headlinesData?.headlines || [];
-  console.log('Processing headlines:', headlines);
-  
-  const displayHeadlines = isError || !Array.isArray(headlines) || headlines.length === 0 ? [
+  // Prioritize FMP headlines if available, fallback to regular headlines
+  let headlines = [];
+  if (fmpHeadlinesData?.headlines && Array.isArray(fmpHeadlinesData.headlines)) {
+    headlines = fmpHeadlinesData.headlines;
+  } else if (headlinesData?.headlines && Array.isArray(headlinesData.headlines)) {
+    headlines = headlinesData.headlines;
+  }
+
+  const displayHeadlines = headlines.length === 0 ? [
     {
       id: '1',
       title: "Market Reaches New Heights",

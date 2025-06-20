@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp, TrendingDown } from 'lucide-react';
@@ -16,15 +15,17 @@ const MarketRecapTab = () => {
   const { terms: financialTerms = [] } = useFinancialTerms();
   const [marketSummary, setMarketSummary] = useState<string>('');
 
-  // Fetch market movers and insights from Polygon.io
-  const { data: polygonData } = useQuery({
-    queryKey: ['polygonMarketMovers'],
+  // Fetch market overview data from FMP
+  const { data: fmpOverviewData } = useQuery({
+    queryKey: ['fmpMarketOverview'],
     queryFn: async () => {
-      const { data, error } = await supabase.functions.invoke('polygon-market-movers');
+      const { data, error } = await supabase.functions.invoke('fmp-market-data', {
+        body: { type: 'overview' }
+      });
       if (error) throw error;
       return data;
     },
-    staleTime: 1000 * 60 * 15, // 15 minutes
+    staleTime: 1000 * 60 * 60 * 4, // 4 hours - refresh at 8am, 12pm, 5pm
   });
 
   useEffect(() => {
@@ -123,8 +124,8 @@ const MarketRecapTab = () => {
             <CardTitle className="text-lg">Market Movers</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {polygonData?.movers ? (
-              polygonData.movers.map((mover: any, index: number) => (
+            {fmpOverviewData?.overview?.movers ? (
+              fmpOverviewData.overview.movers.map((mover: any, index: number) => (
                 <div key={index} className="flex justify-between items-center">
                   <span className="font-medium">{mover.name}</span>
                   <span className={`flex items-center gap-1 ${
@@ -172,8 +173,8 @@ const MarketRecapTab = () => {
             <CardTitle className="text-lg">Key Insights</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {polygonData?.insights ? (
-              polygonData.insights.map((insight: string, index: number) => (
+            {fmpOverviewData?.overview?.insights ? (
+              fmpOverviewData.overview.insights.map((insight: string, index: number) => (
                 <div key={index} className="text-sm">
                   <p className="text-muted-foreground">
                     <TermHighlighter 

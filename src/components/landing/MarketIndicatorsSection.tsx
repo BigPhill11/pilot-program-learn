@@ -1,4 +1,3 @@
-
 import React from 'react';
 import MarketIndicatorCard from '@/components/MarketIndicatorCard';
 import { useQuery } from '@tanstack/react-query';
@@ -16,25 +15,13 @@ const fallbackIndicators = [
 ];
 
 const MarketIndicatorsSection = () => {
-  // Function to fetch data from enhanced market data
-  const fetchEnhancedMarketData = async () => {
-    const { data, error } = await supabase.functions.invoke('enhanced-market-data');
-    if (error) {
-      throw new Error(error.message);
-    }
-    if (!data || !Array.isArray(data)) {
-        throw new Error("Invalid data format received from enhanced market data");
-    }
-    
-    // Transform the enhanced market data to match component expectations
-    return data.map(item => ({
-      title: item.name || item.symbol,
-      value: item.asset_type === 'commodity' && !item.name?.includes('$') 
-        ? `$${(item.price || 0).toFixed(2)}`
-        : (item.price || 0).toFixed(2),
-      change: item.change_percent || 0,
-      changeSuffix: '%'
-    }));
+  // Function to fetch fresh FMP index data
+  const fetchFMPIndexData = async () => {
+    const { data, error } = await supabase.functions.invoke('fmp-market-data', {
+      body: { type: 'indexes' }
+    });
+    if (error) throw error;
+    return data?.indexes || [];
   };
 
   // Function to fetch cached data from database
@@ -58,20 +45,20 @@ const MarketIndicatorsSection = () => {
     }));
   };
 
-  // Try enhanced market data first, fallback to cached data
+  // Try FMP data first, fallback to cached data
   const { data: marketIndicators, isLoading, isError, error } = useQuery({
-    queryKey: ['enhancedMarketData'],
+    queryKey: ['fmpIndexData'],
     queryFn: async () => {
       try {
-        // Try enhanced market data first
-        return await fetchEnhancedMarketData();
-      } catch (enhancedError) {
-        console.log("Enhanced market data failed, trying cached data:", enhancedError);
+        // Try FMP data first
+        return await fetchFMPIndexData();
+      } catch (fmpError) {
+        console.log("FMP data failed, trying cached data:", fmpError);
         try {
           // Fallback to cached data
           return await fetchCachedMarketData();
         } catch (cachedError) {
-          console.error("Both enhanced and cached data failed:", cachedError);
+          console.error("Both FMP and cached data failed:", cachedError);
           throw cachedError;
         }
       }
