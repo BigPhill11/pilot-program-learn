@@ -37,7 +37,12 @@ class FMPApiHandler {
       commoditiesChart1Hour: Deno.env.get('FMP_1HOUR_COMMODITIES_CHART_API_KEY') || '',
       incomeStatement: Deno.env.get('FMP_INCOME_STATEMENT_API_KEY') || '',
       balanceSheet: Deno.env.get('FMP_BALANCE_SHEET_API_KEY') || '',
-      cashFlow: Deno.env.get('FMP_CASH_FLOW_API_KEY') || ''
+      cashFlow: Deno.env.get('FMP_CASH_FLOW_API_KEY') || '',
+      majorIndexes: Deno.env.get('FMP_MAJOR_INDEXES_API_KEY') || '',
+      sectorPerformance: Deno.env.get('FMP_SECTOR_PERFORMANCE_API_KEY') || '',
+      stockGainers: Deno.env.get('FMP_STOCK_GAINERS_API_KEY') || '',
+      stockLosers: Deno.env.get('FMP_STOCK_LOSERS_API_KEY') || '',
+      commodityPrices: Deno.env.get('FMP_COMMODITY_PRICES_API_KEY') || ''
     };
   }
 
@@ -55,7 +60,7 @@ class FMPApiHandler {
     if (endpoint.includes('profile')) {
       return this.apiKeys.companyProfile || this.apiKeys.stockSymbolSearch;
     }
-    if (endpoint.includes('price')) {
+    if (endpoint.includes('price') || endpoint.includes('quote')) {
       return this.apiKeys.stockPrice || this.apiKeys.stockSymbolSearch;
     }
     if (endpoint.includes('chart')) {
@@ -65,7 +70,16 @@ class FMPApiHandler {
       return this.apiKeys.incomeStatement || this.apiKeys.balanceSheet || this.apiKeys.cashFlow;
     }
     if (endpoint.includes('commodities')) {
-      return this.apiKeys.commoditiesList || this.apiKeys.commoditiesChart1Hour;
+      return this.apiKeys.commoditiesList || this.apiKeys.commoditiesChart1Hour || this.apiKeys.commodityPrices;
+    }
+    if (endpoint.includes('sector')) {
+      return this.apiKeys.sectorPerformance || this.apiKeys.stockSymbolSearch;
+    }
+    if (endpoint.includes('gainers') || endpoint.includes('losers')) {
+      return this.apiKeys.stockGainers || this.apiKeys.stockLosers || this.apiKeys.stockSymbolSearch;
+    }
+    if (endpoint.includes('indexes') || endpoint.includes('majors')) {
+      return this.apiKeys.majorIndexes || this.apiKeys.stockSymbolSearch;
     }
     
     // Default fallback
@@ -225,7 +239,7 @@ class FMPApiHandler {
   }
 
   async getStockPrice(symbol: string): Promise<any> {
-    const apiKey = this.apiKeys.stockPrice;
+    const apiKey = this.getApiKey('quote');
     if (!apiKey) return null;
 
     try {
@@ -238,6 +252,96 @@ class FMPApiHandler {
     } catch (error) {
       console.error('Error fetching stock price:', error);
       return null;
+    }
+  }
+
+  async getMajorIndexes(): Promise<any[]> {
+    const apiKey = this.getApiKey('indexes');
+    if (!apiKey) return [];
+
+    try {
+      const response = await fetch(
+        `https://financialmodelingprep.com/api/v3/quotes/index?apikey=${apiKey}`
+      );
+      
+      if (!response.ok) return [];
+      const data = await response.json();
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching major indexes:', error);
+      return [];
+    }
+  }
+
+  async getSectorPerformance(): Promise<any[]> {
+    const apiKey = this.getApiKey('sector');
+    if (!apiKey) return [];
+
+    try {
+      const response = await fetch(
+        `https://financialmodelingprep.com/api/v3/sector-performance?apikey=${apiKey}`
+      );
+      
+      if (!response.ok) return [];
+      const data = await response.json();
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching sector performance:', error);
+      return [];
+    }
+  }
+
+  async getStockGainers(): Promise<any[]> {
+    const apiKey = this.getApiKey('gainers');
+    if (!apiKey) return [];
+
+    try {
+      const response = await fetch(
+        `https://financialmodelingprep.com/api/v3/stock_market/gainers?apikey=${apiKey}`
+      );
+      
+      if (!response.ok) return [];
+      const data = await response.json();
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching stock gainers:', error);
+      return [];
+    }
+  }
+
+  async getStockLosers(): Promise<any[]> {
+    const apiKey = this.getApiKey('losers');
+    if (!apiKey) return [];
+
+    try {
+      const response = await fetch(
+        `https://financialmodelingprep.com/api/v3/stock_market/losers?apikey=${apiKey}`
+      );
+      
+      if (!response.ok) return [];
+      const data = await response.json();
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching stock losers:', error);
+      return [];
+    }
+  }
+
+  async getCommodityPrices(): Promise<any[]> {
+    const apiKey = this.getApiKey('commodities');
+    if (!apiKey) return [];
+
+    try {
+      const response = await fetch(
+        `https://financialmodelingprep.com/api/v3/quotes/commodity?apikey=${apiKey}`
+      );
+      
+      if (!response.ok) return [];
+      const data = await response.json();
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching commodity prices:', error);
+      return [];
     }
   }
 }
@@ -276,70 +380,112 @@ serve(async (req) => {
     };
 
     if (dataType === 'all' || dataType === 'indexes') {
-      // Fetch major indexes data
-      const indexSymbols = ['SPY', 'QQQ', 'DIA', 'IWM', 'VTI', 'GLD'];
-      const indexData = [];
-      
-      for (const symbol of indexSymbols) {
-        try {
-          const priceData = await fmpHandler.getStockPrice(symbol);
-          if (priceData && priceData.length > 0) {
-            const data = priceData[0];
+      // Fetch real-time major indexes
+      try {
+        const majorIndexes = await fmpHandler.getMajorIndexes();
+        const commodities = await fmpHandler.getCommodityPrices();
+        
+        const indexData = [];
+        
+        // Process major stock indexes
+        const indexSymbols = ['SPY', 'QQQ', 'DIA', 'IWM', 'VTI'];
+        for (const symbol of indexSymbols) {
+          const found = majorIndexes.find(idx => idx.symbol === symbol);
+          if (found) {
             let title = symbol;
-            
-            // Map symbols to readable names
             if (symbol === 'SPY') title = 'S&P 500';
             else if (symbol === 'QQQ') title = 'NASDAQ';
             else if (symbol === 'DIA') title = 'Dow Jones';
             else if (symbol === 'IWM') title = 'Russell 2000';
             else if (symbol === 'VTI') title = 'Total Stock Market';
-            else if (symbol === 'GLD') title = 'Gold';
             
             indexData.push({
               title,
-              value: `$${data.price?.toFixed(2) || '0.00'}`,
-              change: data.changesPercentage || 0,
+              value: `$${found.price?.toFixed(2) || '0.00'}`,
+              change: found.changesPercentage || 0,
               changeSuffix: '%'
             });
           }
-        } catch (error) {
-          console.error(`Error fetching ${symbol}:`, error);
         }
+        
+        // Add Gold from commodities
+        const gold = commodities.find(c => c.symbol === 'GCUSD' || c.symbol === 'GC=F');
+        if (gold) {
+          indexData.push({
+            title: 'Gold',
+            value: `$${gold.price?.toFixed(2) || '0.00'}`,
+            change: gold.changesPercentage || 0,
+            changeSuffix: '%'
+          });
+        }
+        
+        response.indexes = indexData;
+      } catch (error) {
+        console.error('Error fetching indexes:', error);
+        response.indexes = [];
       }
-      
-      response.indexes = indexData;
     }
 
     if (dataType === 'all' || dataType === 'overview') {
-      // Fetch market overview data
+      // Fetch real-time market overview data
       try {
+        const [gainers, losers, sectors] = await Promise.all([
+          fmpHandler.getStockGainers(),
+          fmpHandler.getStockLosers(),
+          fmpHandler.getSectorPerformance()
+        ]);
+        
         const marketMovers = [];
         
-        // Get top gainers and losers using stock screener or search
-        const gainersQuery = await fmpHandler.searchSecurities('technology');
-        const topStocks = gainersQuery.slice(0, 3);
-        
-        for (const stock of topStocks) {
-          try {
-            const priceData = await fmpHandler.getStockPrice(stock.symbol);
-            if (priceData && priceData.length > 0) {
-              const data = priceData[0];
-              marketMovers.push({
-                name: stock.symbol,
-                change: data.changesPercentage || 0
-              });
-            }
-          } catch (error) {
-            console.error(`Error fetching price for ${stock.symbol}:`, error);
-          }
+        // Add top gainers
+        if (gainers && gainers.length > 0) {
+          marketMovers.push({
+            name: `${gainers[0].symbol} (Top Gainer)`,
+            change: gainers[0].changesPercentage || 0
+          });
         }
         
-        // Generate insights
-        const insights = [
-          'Strong quarterly earnings boosted investor confidence in growth stocks.',
-          'Interest rate speculation continues to influence bond market dynamics.',
-          'Commodity prices showed resilience despite global economic concerns.'
-        ];
+        // Add top loser
+        if (losers && losers.length > 0) {
+          marketMovers.push({
+            name: `${losers[0].symbol} (Top Loser)`,
+            change: losers[0].changesPercentage || 0
+          });
+        }
+        
+        // Add sector performance
+        if (sectors && sectors.length > 0) {
+          const topSector = sectors[0];
+          marketMovers.push({
+            name: `${topSector.sector} Sector`,
+            change: parseFloat(topSector.changesPercentage?.replace('%', '')) || 0
+          });
+        }
+        
+        // Generate real-time insights based on market data
+        const insights = [];
+        
+        if (gainers && gainers.length > 0) {
+          insights.push(`${gainers[0].symbol} leads market gains with ${gainers[0].changesPercentage?.toFixed(1)}% increase.`);
+        }
+        
+        if (sectors && sectors.length > 0) {
+          const topSector = sectors[0];
+          insights.push(`${topSector.sector} sector shows ${topSector.changesPercentage} performance today.`);
+        }
+        
+        if (losers && losers.length > 0) {
+          insights.push(`Market volatility evident with ${losers[0].symbol} declining ${Math.abs(losers[0].changesPercentage || 0).toFixed(1)}%.`);
+        }
+        
+        // Add default insights if no data
+        if (insights.length === 0) {
+          insights.push(
+            'Markets showing mixed signals as investors evaluate economic indicators.',
+            'Technology and growth stocks continue to attract investor attention.',
+            'Federal Reserve policy decisions remain a key market driver.'
+          );
+        }
         
         response.overview = {
           movers: marketMovers.length > 0 ? marketMovers : [
@@ -358,22 +504,25 @@ serve(async (req) => {
             { name: 'Financial Services', change: 0.8 }
           ],
           insights: [
-            'Strong quarterly earnings boosted investor confidence in growth stocks.',
-            'Interest rate speculation continues to influence bond market dynamics.',
-            'Commodity prices showed resilience despite global economic concerns.'
+            'Markets showing mixed signals as investors evaluate economic indicators.',
+            'Technology and growth stocks continue to attract investor attention.',
+            'Federal Reserve policy decisions remain a key market driver.'
           ]
         };
       }
     }
 
     if (dataType === 'all' || dataType === 'headlines') {
-      // Generate market headlines based on current data
+      // Generate market headlines based on current real-time data
       try {
         const headlines = [];
         
-        // Get some market data to generate contextual headlines
-        const spyData = await fmpHandler.getStockPrice('SPY');
-        const techData = await fmpHandler.searchSecurities('apple');
+        // Get real-time market data for contextual headlines
+        const [spyData, sectors, gainers] = await Promise.all([
+          fmpHandler.getStockPrice('SPY'),
+          fmpHandler.getSectorPerformance(),
+          fmpHandler.getStockGainers()
+        ]);
         
         if (spyData && spyData.length > 0) {
           const spy = spyData[0];
@@ -381,7 +530,7 @@ serve(async (req) => {
           headlines.push({
             id: '1',
             title: `S&P 500 ${direction} ${Math.abs(spy.changesPercentage).toFixed(1)}% in today's trading session`,
-            description: `The S&P 500 index moved ${spy.changesPercentage > 0 ? 'higher' : 'lower'} as investors react to recent market developments and economic indicators.`,
+            description: `The S&P 500 index moved ${spy.changesPercentage > 0 ? 'higher' : 'lower'} to $${spy.price?.toFixed(2)} as investors react to recent market developments and economic indicators.`,
             url: 'https://finance.yahoo.com',
             publishedAt: new Date().toISOString(),
             source: { name: 'FMP Market Data' },
@@ -389,25 +538,44 @@ serve(async (req) => {
           });
         }
         
-        headlines.push({
-          id: '2',
-          title: 'Technology Sector Shows Strong Performance',
-          description: 'Major technology companies continue to outperform market expectations with robust earnings and forward guidance.',
-          url: 'https://finance.yahoo.com',
-          publishedAt: new Date().toISOString(),
-          source: { name: 'FMP Market Data' },
-          urlToImage: null
-        });
+        if (gainers && gainers.length > 0) {
+          const topGainer = gainers[0];
+          headlines.push({
+            id: '2',
+            title: `${topGainer.symbol} surges ${topGainer.changesPercentage?.toFixed(1)}% leading market gains`,
+            description: `${topGainer.name || topGainer.symbol} shares jumped to $${topGainer.price?.toFixed(2)}, making it one of today's top performers amid strong investor interest.`,
+            url: 'https://finance.yahoo.com',
+            publishedAt: new Date().toISOString(),
+            source: { name: 'FMP Market Data' },
+            urlToImage: null
+          });
+        }
         
-        headlines.push({
-          id: '3',
-          title: 'Federal Reserve Policy Impacts Market Sentiment',
-          description: 'Recent Federal Reserve communications continue to influence investor sentiment and market direction.',
-          url: 'https://finance.yahoo.com',
-          publishedAt: new Date().toISOString(),
-          source: { name: 'FMP Market Data' },
-          urlToImage: null
-        });
+        if (sectors && sectors.length > 0) {
+          const topSector = sectors[0];
+          headlines.push({
+            id: '3',
+            title: `${topSector.sector} sector leads with ${topSector.changesPercentage} performance`,
+            description: `The ${topSector.sector} sector outperforms broader markets today, reflecting investor confidence in the industry's growth prospects and fundamentals.`,
+            url: 'https://finance.yahoo.com',
+            publishedAt: new Date().toISOString(),
+            source: { name: 'FMP Market Data' },
+            urlToImage: null
+          });
+        }
+        
+        // Add default headlines if no real-time data
+        if (headlines.length === 0) {
+          headlines.push({
+            id: '1',
+            title: 'Markets Show Resilience Amid Economic Uncertainty',
+            description: 'Stock indices maintain stability as investors navigate changing economic conditions and policy developments.',
+            url: 'https://finance.yahoo.com',
+            publishedAt: new Date().toISOString(),
+            source: { name: 'FMP Market Data' },
+            urlToImage: null
+          });
+        }
         
         response.headlines = headlines;
       } catch (error) {
@@ -415,8 +583,8 @@ serve(async (req) => {
         response.headlines = [
           {
             id: '1',
-            title: 'Market Reaches New Heights',
-            description: 'Stock prices continue to rise as investors show confidence in the market\'s future performance.',
+            title: 'Market Update: Trading Activity Continues',
+            description: 'Financial markets remain active as investors monitor economic developments and corporate earnings reports.',
             url: 'https://finance.yahoo.com',
             publishedAt: new Date().toISOString(),
             source: { name: 'FMP Market Data' },
@@ -436,7 +604,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in FMP market data function:', error);
     return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
+      JSON.stringify({ error: 'Internal server error', details: error.message }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
