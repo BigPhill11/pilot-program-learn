@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -6,33 +5,11 @@ import { useAuth } from '@/hooks/useAuth';
 import useHeadlines from '@/hooks/useHeadlines';
 import { useFinancialTerms } from '@/hooks/useFinancialTerms';
 import TermHighlighter from '@/components/TermHighlighter';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 
 const EnhancedHeadlinesSection = () => {
   const { profile } = useAuth();
-  const { data: headlinesData, isLoading: headlinesLoading } = useHeadlines();
+  const { data: headlinesData, isLoading, isError } = useHeadlines();
   const { terms: financialTerms = [] } = useFinancialTerms();
-
-  // Fetch FMP headlines with real-time updates
-  const { data: fmpHeadlinesData, isLoading: fmpLoading, error: fmpError } = useQuery({
-    queryKey: ['fmpRealTimeHeadlines'],
-    queryFn: async () => {
-      console.log('Fetching real-time FMP headlines...');
-      const { data, error } = await supabase.functions.invoke('fmp-market-data', {
-        body: { type: 'headlines' }
-      });
-      if (error) {
-        console.error('FMP headlines fetch error:', error);
-        throw error;
-      }
-      console.log('FMP headlines data received:', data);
-      return data;
-    },
-    staleTime: 1000 * 60 * 10, // 10 minutes
-    refetchInterval: 1000 * 60 * 15, // Auto-refresh every 15 minutes
-    retry: 2,
-  });
 
   const handleHeadlineClick = (headline: any) => {
     console.log('Clicking headline:', headline);
@@ -60,7 +37,6 @@ const EnhancedHeadlinesSection = () => {
   };
 
   const userLevel = profile?.app_version || 'beginner';
-  const isLoading = headlinesLoading || fmpLoading;
 
   if (isLoading) {
     return (
@@ -89,42 +65,26 @@ const EnhancedHeadlinesSection = () => {
     );
   }
 
-  // Prioritize FMP headlines if available, fallback to regular headlines
-  let headlines = [];
-  let dataSource = "static";
+  // Extract headlines from the response
+  const headlines = headlinesData?.headlines || [];
+  console.log('Processing headlines:', headlines);
   
-  if (fmpHeadlinesData?.headlines && Array.isArray(fmpHeadlinesData.headlines) && fmpHeadlinesData.headlines.length > 0) {
-    headlines = fmpHeadlinesData.headlines;
-    dataSource = "real-time FMP";
-  } else if (headlinesData?.headlines && Array.isArray(headlinesData.headlines) && headlinesData.headlines.length > 0) {
-    headlines = headlinesData.headlines;
-    dataSource = "cached API";
-  }
-
-  const displayHeadlines = headlines.length === 0 ? [
+  const displayHeadlines = isError || !Array.isArray(headlines) || headlines.length === 0 ? [
     {
       id: '1',
-      title: "Markets Show Strong Performance Amid Economic Data Release",
-      description: "Major stock indices posted gains as investors processed the latest economic indicators and corporate earnings reports. Technology and healthcare sectors led the rally with particularly strong performance across growth-oriented equities.",
+      title: "Market Reaches New Heights",
+      description: "Stock prices continue to rise as investors show confidence in the market's future performance. Major indices are posting significant gains across multiple sectors. Analysts attribute the growth to strong economic indicators and corporate earnings reports.",
       url: "https://finance.yahoo.com",
       publishedAt: new Date().toISOString(),
-      source: { name: "Financial Markets Today" }
+      source: { name: "Financial News" }
     },
     {
       id: '2',
-      title: "Federal Reserve Policy Expectations Shape Trading Activity",
-      description: "Market participants continue to adjust positions based on Federal Reserve communications and anticipated monetary policy changes. Bond yields and equity valuations reflect evolving expectations about future interest rate decisions.",
+      title: "Tech Companies Report Strong Earnings",
+      description: "Major technology companies exceeded profit expectations, driving significant trading volume. Revenue growth has been particularly strong in cloud computing and artificial intelligence sectors. Investors are responding positively to future growth projections and innovation investments.",
       url: "https://finance.yahoo.com",
       publishedAt: new Date().toISOString(),
-      source: { name: "Economic Policy Watch" }
-    },
-    {
-      id: '3',
-      title: "Sector Rotation Patterns Indicate Shifting Investment Sentiment", 
-      description: "Institutional and retail investors demonstrate changing risk appetite through notable sector rotation patterns. Growth stocks continue attracting capital while defensive positions maintain appeal among conservative portfolios.",
-      url: "https://finance.yahoo.com",
-      publishedAt: new Date().toISOString(),
-      source: { name: "Investment Trends" }
+      source: { name: "Tech Report" }
     }
   ] : headlines;
 
@@ -137,14 +97,13 @@ const EnhancedHeadlinesSection = () => {
             Stay updated with financial news - terms are highlighted based on your level!
           </p>
           <div className="mt-2 text-sm text-primary">
-            🐼 Current Level: {userLevel.charAt(0).toUpperCase() + userLevel.slice(1)} Phil • Data: {dataSource}
-            {fmpError && <span className="text-amber-600 ml-2">• Live data temporarily unavailable</span>}
+            🐼 Current Level: {userLevel.charAt(0).toUpperCase() + userLevel.slice(1)} Phil
           </div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {displayHeadlines.map((headline, index) => (
-            <Card key={`${headline.id || index}-${dataSource}`} className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleHeadlineClick(headline)}>
+            <Card key={headline.id || index} className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleHeadlineClick(headline)}>
               <CardContent className="p-4">
                 <div className="flex gap-4">
                   {headline.urlToImage && (
@@ -171,7 +130,7 @@ const EnhancedHeadlinesSection = () => {
                       />
                     </p>
                     <div className="flex justify-between items-center text-xs text-muted-foreground">
-                      <span>{headline.source?.name || 'Market Data'}</span>
+                      <span>{headline.source?.name || 'Unknown Source'}</span>
                       <span>{new Date(headline.publishedAt).toLocaleDateString()}</span>
                     </div>
                   </div>

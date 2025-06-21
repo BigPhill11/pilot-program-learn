@@ -1,7 +1,6 @@
 
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { FMPApiHandler } from './fmp-api-handler.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -25,18 +24,59 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Searching securities with FMP APIs: ${query}`);
+    console.log(`Searching for securities: ${query}`);
 
-    // Initialize the unified FMP handler
-    const fmpHandler = new FMPApiHandler();
-    
-    // Search using all available FMP endpoints
-    const results = await fmpHandler.searchSecurities(query);
-    
-    console.log(`Found ${results.length} securities using FMP APIs`);
+    // Use Yahoo Finance search API (free, no API key required)
+    const response = await fetch(
+      `https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(query)}&quotesCount=20&newsCount=0`,
+      {
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          'Accept': 'application/json',
+        },
+      }
+    );
+
+    if (!response.ok) {
+      console.error('Yahoo Finance API error:', response.status, response.statusText);
+      return new Response(
+        JSON.stringify({ error: 'Failed to search securities' }),
+        { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const data = await response.json();
+    console.log('Yahoo Finance search response received');
+
+    // Transform the data to match our expected format
+    const quotes = data.quotes || [];
+    const transformedData = quotes.slice(0, 20).map((item: any) => {
+      // Determine asset type based on quote type
+      let assetType = 'stock';
+      const quoteType = item.quoteType?.toLowerCase() || '';
+      
+      if (quoteType.includes('etf')) {
+        assetType = 'etf';
+      } else if (quoteType.includes('index')) {
+        assetType = 'index';
+      } else if (quoteType.includes('future') || quoteType.includes('commodity')) {
+        assetType = 'commodity';
+      } else if (quoteType.includes('bond')) {
+        assetType = 'bond';
+      }
+
+      return {
+        symbol: item.symbol || '',
+        name: item.longname || item.shortname || item.symbol || '',
+        exchange: item.exchange || item.exchDisp || 'US',
+        assetType,
+        currency: item.currency || 'USD'
+      };
+    }).filter(item => item.symbol && item.name); // Filter out items without symbol or name
 
     return new Response(
-      JSON.stringify(results),
+      JSON.stringify(transformedData),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 

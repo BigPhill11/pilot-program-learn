@@ -24,6 +24,3 @@ verify_jwt = false
 
 [functions.polygon-market-movers]
 verify_jwt = false
-
-[functions.fmp-market-data]
-verify_jwt = false

@@ -16,40 +16,31 @@ const MarketRecapTab = () => {
   const { terms: financialTerms = [] } = useFinancialTerms();
   const [marketSummary, setMarketSummary] = useState<string>('');
 
-  // Fetch market overview data from FMP with real-time updates
-  const { data: fmpOverviewData, isLoading: fmpLoading, error: fmpError } = useQuery({
-    queryKey: ['fmpRealTimeMarketOverview'],
+  // Fetch market movers and insights from Polygon.io
+  const { data: polygonData } = useQuery({
+    queryKey: ['polygonMarketMovers'],
     queryFn: async () => {
-      console.log('Fetching real-time FMP market overview...');
-      const { data, error } = await supabase.functions.invoke('fmp-market-data', {
-        body: { type: 'overview' }
-      });
-      if (error) {
-        console.error('FMP overview fetch error:', error);
-        throw error;
-      }
-      console.log('FMP overview data received:', data);
+      const { data, error } = await supabase.functions.invoke('polygon-market-movers');
+      if (error) throw error;
       return data;
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    refetchInterval: 1000 * 60 * 10, // Auto-refresh every 10 minutes
-    retry: 2,
+    staleTime: 1000 * 60 * 15, // 15 minutes
   });
 
   useEffect(() => {
     if (headlinesData?.marketRecap) {
       const recap = headlinesData.marketRecap;
       const fullSummary = recap.paragraphs ? recap.paragraphs.join(' ') : 
-        `Today's market showed mixed signals with real-time data indicating varied sector performance. Technology and growth stocks continue to attract investor attention while traditional value sectors face headwinds. The Federal Reserve's monetary policy continues to influence market sentiment and trading patterns. Current market indicators suggest cautious optimism among institutional investors as they navigate evolving economic conditions.`;
+        `Today's market showed mixed signals as the S&P 500 gained 0.5% while the Dow Jones experienced volatility throughout the trading session. Technology stocks led the rally with strong earnings reports driving investor sentiment. The Federal Reserve's recent policy changes continue to impact bond yields and cryptocurrency markets. Portfolio diversification remains crucial as market uncertainty persists amid ongoing inflation concerns.`;
       setMarketSummary(fullSummary);
     } else {
-      // Enhanced fallback content with more current language
-      const recap = `Today's market demonstrated resilience with real-time indicators showing sector rotation and evolving investor sentiment. Growth equities attracted renewed interest while defensive positions remained popular among risk-averse investors. Current Federal Reserve policy communications continue to shape market expectations and portfolio allocation strategies across institutional and retail segments.`;
+      // Fallback content
+      const recap = `Today's market showed mixed signals as the S&P 500 gained 0.5% while the Dow Jones experienced volatility throughout the trading session. Technology stocks led the rally with strong earnings reports driving investor sentiment. The Federal Reserve's recent policy changes continue to impact bond yields and cryptocurrency markets. Portfolio diversification remains crucial as market uncertainty persists amid ongoing inflation concerns.`;
       setMarketSummary(recap);
     }
   }, [headlinesData]);
 
-  if (isLoading && fmpLoading) {
+  if (isLoading) {
     return (
       <div className="space-y-6">
         <Card>
@@ -84,7 +75,7 @@ const MarketRecapTab = () => {
             })}
           </CardTitle>
           <div className="text-sm text-muted-foreground">
-            ({userLevel} grade level) • Powered by {fmpError ? 'cached data' : 'real-time FMP API'}
+            ({userLevel} grade level) (Powered by newsdata.io)
           </div>
         </CardHeader>
         <CardContent>
@@ -122,9 +113,6 @@ const MarketRecapTab = () => {
                 Focus: {headlinesData.marketRecap.dominantSector} sector
               </span>
             )}
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
-              {fmpError ? 'Cached Data' : 'Real-Time FMP'}
-            </span>
           </div>
         </CardContent>
       </Card>
@@ -133,14 +121,11 @@ const MarketRecapTab = () => {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Market Movers</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              {fmpError ? 'Last cached data' : 'Real-time FMP data'}
-            </p>
           </CardHeader>
           <CardContent className="space-y-3">
-            {fmpOverviewData?.overview?.movers && fmpOverviewData.overview.movers.length > 0 ? (
-              fmpOverviewData.overview.movers.map((mover: any, index: number) => (
-                <div key={`mover-${index}`} className="flex justify-between items-center">
+            {polygonData?.movers ? (
+              polygonData.movers.map((mover: any, index: number) => (
+                <div key={index} className="flex justify-between items-center">
                   <span className="font-medium">{mover.name}</span>
                   <span className={`flex items-center gap-1 ${
                     mover.change >= 0 ? 'text-green-600' : 'text-red-600'
@@ -154,27 +139,27 @@ const MarketRecapTab = () => {
                 </div>
               ))
             ) : (
-              // Enhanced fallback with current market context
+              // Fallback data
               <>
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Technology Sector</span>
                   <span className="flex items-center gap-1 text-green-600">
                     <TrendingUp className="h-4 w-4" />
-                    +1.8%
+                    +2.1%
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Energy Stocks</span>
                   <span className="flex items-center gap-1 text-red-600">
                     <TrendingDown className="h-4 w-4" />
-                    -0.9%
+                    -1.3%
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Financial Services</span>
                   <span className="flex items-center gap-1 text-green-600">
                     <TrendingUp className="h-4 w-4" />
-                    +1.2%
+                    +0.8%
                   </span>
                 </div>
               </>
@@ -185,14 +170,11 @@ const MarketRecapTab = () => {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Key Insights</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              {fmpError ? 'Analysis from cached data' : 'Real-time market analysis'}
-            </p>
           </CardHeader>
           <CardContent className="space-y-3">
-            {fmpOverviewData?.overview?.insights && fmpOverviewData.overview.insights.length > 0 ? (
-              fmpOverviewData.overview.insights.map((insight: string, index: number) => (
-                <div key={`insight-${index}`} className="text-sm">
+            {polygonData?.insights ? (
+              polygonData.insights.map((insight: string, index: number) => (
+                <div key={index} className="text-sm">
                   <p className="text-muted-foreground">
                     <TermHighlighter 
                       text={insight} 
@@ -202,12 +184,12 @@ const MarketRecapTab = () => {
                 </div>
               ))
             ) : (
-              // Enhanced fallback insights with current market themes
+              // Fallback data
               <>
                 <div className="text-sm">
                   <p className="text-muted-foreground">
                     <TermHighlighter 
-                      text="Growth stocks continue to outperform value investments amid changing market dynamics." 
+                      text="Strong quarterly earnings boosted investor confidence in growth stocks." 
                       terms={financialTerms}
                     />
                   </p>
@@ -215,7 +197,7 @@ const MarketRecapTab = () => {
                 <div className="text-sm">
                   <p className="text-muted-foreground">
                     <TermHighlighter 
-                      text="Federal Reserve policy expectations continue shaping bond yields and equity valuations." 
+                      text="Interest rate speculation continues to influence bond market dynamics." 
                       terms={financialTerms}
                     />
                   </p>
@@ -223,7 +205,7 @@ const MarketRecapTab = () => {
                 <div className="text-sm">
                   <p className="text-muted-foreground">
                     <TermHighlighter 
-                      text="Sector rotation patterns indicate evolving investor risk appetite and economic outlook." 
+                      text="Commodity prices showed resilience despite global economic concerns." 
                       terms={financialTerms}
                     />
                   </p>
