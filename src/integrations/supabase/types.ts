@@ -9,6 +9,51 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      career_videos: {
+        Row: {
+          career_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          duration: string
+          id: string
+          level: number
+          speaker_type: string
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+          video_url: string
+        }
+        Insert: {
+          career_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          duration: string
+          id?: string
+          level: number
+          speaker_type: string
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+          video_url: string
+        }
+        Update: {
+          career_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          duration?: string
+          id?: string
+          level?: number
+          speaker_type?: string
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+          video_url?: string
+        }
+        Relationships: []
+      }
       comment_votes: {
         Row: {
           comment_id: string
@@ -329,6 +374,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      phils_friends_videos: {
+        Row: {
+          category: string
+          company: string
+          course_category: string
+          created_at: string
+          created_by: string | null
+          description: string
+          duration: string
+          id: string
+          name: string
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+          video_url: string
+        }
+        Insert: {
+          category: string
+          company: string
+          course_category: string
+          created_at?: string
+          created_by?: string | null
+          description: string
+          duration: string
+          id?: string
+          name: string
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+          video_url: string
+        }
+        Update: {
+          category?: string
+          company?: string
+          course_category?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          duration?: string
+          id?: string
+          name?: string
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+          video_url?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
