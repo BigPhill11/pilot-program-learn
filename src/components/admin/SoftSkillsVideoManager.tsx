@@ -67,9 +67,21 @@ const SoftSkillsVideoManager = () => {
   // Add video mutation
   const addVideoMutation = useMutation({
     mutationFn: async (data: VideoFormData) => {
+      const insertData = {
+        title: data.title,
+        description: data.description,
+        video_url: data.video_url,
+        thumbnail_url: data.thumbnail_url || null,
+        name: data.name,
+        company: data.company,
+        duration: data.duration,
+        category: data.category,
+        course_category: data.course_category
+      };
+      
       const { data: result, error } = await supabase
         .from('phils_friends_videos')
-        .insert([data])
+        .insert(insertData)
         .select();
       if (error) throw error;
       return result;
@@ -92,9 +104,21 @@ const SoftSkillsVideoManager = () => {
   // Update video mutation
   const updateVideoMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: VideoFormData }) => {
+      const updateData = {
+        title: data.title,
+        description: data.description,
+        video_url: data.video_url,
+        thumbnail_url: data.thumbnail_url || null,
+        name: data.name,
+        company: data.company,
+        duration: data.duration,
+        category: data.category,
+        course_category: data.course_category
+      };
+      
       const { data: result, error } = await supabase
         .from('phils_friends_videos')
-        .update(data)
+        .update(updateData)
         .eq('id', id)
         .select();
       if (error) throw error;
@@ -147,7 +171,17 @@ const SoftSkillsVideoManager = () => {
 
   const startEdit = (video: any) => {
     setEditingVideo(video);
-    form.reset(video);
+    form.reset({
+      title: video.title,
+      description: video.description,
+      video_url: video.video_url,
+      thumbnail_url: video.thumbnail_url || '',
+      name: video.name,
+      company: video.company,
+      duration: video.duration,
+      category: video.category,
+      course_category: video.course_category
+    });
     setIsAddingVideo(true);
   };
 

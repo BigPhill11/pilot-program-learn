@@ -66,9 +66,20 @@ const CareerVideoManager = () => {
   // Add video mutation
   const addVideoMutation = useMutation({
     mutationFn: async (data: CareerVideoFormData) => {
+      const insertData = {
+        title: data.title,
+        description: data.description,
+        video_url: data.video_url,
+        thumbnail_url: data.thumbnail_url || null,
+        career_id: data.career_id,
+        level: data.level,
+        speaker_type: data.speaker_type,
+        duration: data.duration
+      };
+      
       const { data: result, error } = await supabase
         .from('career_videos')
-        .insert([data])
+        .insert(insertData)
         .select();
       if (error) throw error;
       return result;
@@ -91,9 +102,20 @@ const CareerVideoManager = () => {
   // Update video mutation
   const updateVideoMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: CareerVideoFormData }) => {
+      const updateData = {
+        title: data.title,
+        description: data.description,
+        video_url: data.video_url,
+        thumbnail_url: data.thumbnail_url || null,
+        career_id: data.career_id,
+        level: data.level,
+        speaker_type: data.speaker_type,
+        duration: data.duration
+      };
+      
       const { data: result, error } = await supabase
         .from('career_videos')
-        .update(data)
+        .update(updateData)
         .eq('id', id)
         .select();
       if (error) throw error;
@@ -146,7 +168,16 @@ const CareerVideoManager = () => {
 
   const startEdit = (video: any) => {
     setEditingVideo(video);
-    form.reset(video);
+    form.reset({
+      title: video.title,
+      description: video.description || '',
+      video_url: video.video_url,
+      thumbnail_url: video.thumbnail_url || '',
+      career_id: video.career_id,
+      level: video.level,
+      speaker_type: video.speaker_type,
+      duration: video.duration
+    });
     setIsAddingVideo(true);
   };
 
