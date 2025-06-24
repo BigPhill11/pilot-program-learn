@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -303,9 +302,25 @@ const SoftSkillsVideoManager = () => {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Course Category</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Course category" {...field} />
-                        </FormControl>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select course category" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="interviewing">Interviewing</SelectItem>
+                            <SelectItem value="networking">Networking</SelectItem>
+                            <SelectItem value="professional_communication">Professional Communication</SelectItem>
+                            <SelectItem value="business_attire">Business Attire</SelectItem>
+                            <SelectItem value="workplace_etiquette">Workplace Etiquette</SelectItem>
+                            <SelectItem value="career_development">Career Development</SelectItem>
+                            <SelectItem value="leadership">Leadership</SelectItem>
+                            <SelectItem value="teamwork">Teamwork</SelectItem>
+                            <SelectItem value="time_management">Time Management</SelectItem>
+                            <SelectItem value="presentation_skills">Presentation Skills</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
