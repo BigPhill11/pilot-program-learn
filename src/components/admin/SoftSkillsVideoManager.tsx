@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
@@ -26,8 +25,8 @@ const SoftSkillsVideoManager = () => {
       name: '',
       company: '',
       duration: '',
-      category: '',
-      course_category: ''
+      category: 'interviewing',
+      course_category: 'interviewing'
     }
   });
 
@@ -169,7 +168,17 @@ const SoftSkillsVideoManager = () => {
   const handleCancel = () => {
     setIsAddingVideo(false);
     setEditingVideo(null);
-    form.reset();
+    form.reset({
+      title: '',
+      description: '',
+      video_url: '',
+      thumbnail_url: '',
+      name: '',
+      company: '',
+      duration: '',
+      category: 'interviewing',
+      course_category: 'interviewing'
+    });
   };
 
   return (
