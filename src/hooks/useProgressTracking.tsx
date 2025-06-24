@@ -167,16 +167,19 @@ export const useProgressTracking = () => {
     }
   };
 
-  const updateLearningProgress = async (increment: number = 1) => {
+  const updateLearningProgress = async (pointsToAdd: number = 1) => {
     if (!user) return;
 
-    const newLearningProgress = Math.min(progress.learning_progress + increment, 100);
+    // For module completion, add points instead of just incrementing learning progress
+    const newTotalPoints = progress.total_points + pointsToAdd;
+    const newLearningProgress = Math.min(progress.learning_progress + 1, 100);
 
     try {
       const { error } = await supabase
         .from('user_progress')
         .update({
           learning_progress: newLearningProgress,
+          total_points: newTotalPoints,
           updated_at: new Date().toISOString()
         })
         .eq('user_id', user.id);
@@ -185,8 +188,12 @@ export const useProgressTracking = () => {
 
       setProgress(prev => ({
         ...prev,
-        learning_progress: newLearningProgress
+        learning_progress: newLearningProgress,
+        total_points: newTotalPoints
       }));
+
+      // Check for level up
+      await checkLevelUp(newTotalPoints);
     } catch (error) {
       console.error('Error updating learning progress:', error);
     }
