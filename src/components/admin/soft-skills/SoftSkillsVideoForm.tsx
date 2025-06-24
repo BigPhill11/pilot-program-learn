@@ -17,8 +17,8 @@ const videoSchema = z.object({
   name: z.string().min(1, 'Instructor name is required'),
   company: z.string().min(1, 'Company is required'),
   duration: z.string().min(1, 'Duration is required'),
-  category: z.string().min(1, 'Category is required'),
-  course_category: z.string().min(1, 'Course category is required')
+  category: z.enum(['interviewing', 'networking', 'professional_communication', 'business_attire', 'workplace_etiquette']),
+  course_category: z.enum(['interviewing', 'networking', 'professional_communication', 'business_attire', 'workplace_etiquette', 'career_development', 'leadership', 'teamwork', 'time_management', 'presentation_skills'])
 });
 
 export type VideoFormData = z.infer<typeof videoSchema>;
