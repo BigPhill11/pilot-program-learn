@@ -18,7 +18,7 @@ const videoSchema = z.object({
   company: z.string().min(1, 'Company is required'),
   duration: z.string().min(1, 'Duration is required'),
   category: z.enum(['interviewing', 'networking', 'professional_communication', 'business_attire', 'workplace_etiquette']),
-  course_category: z.enum(['interviewing', 'networking', 'professional_communication', 'business_attire', 'workplace_etiquette', 'career_development', 'leadership', 'teamwork', 'time_management', 'presentation_skills'])
+  course_category: z.enum(['interviewing', 'networking', 'professional_communication', 'business_attire', 'workplace_etiquette', 'career_development', 'leadership', 'teamwork', 'time_management', 'presentation_skills']).optional()
 });
 
 export type VideoFormData = z.infer<typeof videoSchema>;
@@ -133,11 +133,11 @@ export const SoftSkillsVideoForm: React.FC<SoftSkillsVideoFormProps> = ({
                 name="course_category"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Course Category</FormLabel>
+                    <FormLabel>Course Category (Optional)</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select course category" />
+                          <SelectValue placeholder="Select course category (optional)" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>

@@ -26,7 +26,7 @@ const SoftSkillsVideoManager = () => {
       company: '',
       duration: '',
       category: 'interviewing',
-      course_category: 'interviewing'
+      course_category: undefined
     }
   });
 
@@ -56,7 +56,7 @@ const SoftSkillsVideoManager = () => {
         company: data.company,
         duration: data.duration,
         category: data.category,
-        course_category: data.course_category
+        course_category: data.course_category || null
       };
       
       const { data: result, error } = await supabase
@@ -93,7 +93,7 @@ const SoftSkillsVideoManager = () => {
         company: data.company,
         duration: data.duration,
         category: data.category,
-        course_category: data.course_category
+        course_category: data.course_category || null
       };
       
       const { data: result, error } = await supabase
@@ -160,7 +160,7 @@ const SoftSkillsVideoManager = () => {
       company: video.company,
       duration: video.duration,
       category: video.category,
-      course_category: video.course_category
+      course_category: video.course_category || undefined
     });
     setIsAddingVideo(true);
   };
@@ -177,7 +177,7 @@ const SoftSkillsVideoManager = () => {
       company: '',
       duration: '',
       category: 'interviewing',
-      course_category: 'interviewing'
+      course_category: undefined
     });
   };
 
