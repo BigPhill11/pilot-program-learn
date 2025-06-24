@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, BookOpen, Users, Play } from 'lucide-react';
 import PhilsFriendsSection from './PhilsFriendsSection';
+import InterviewMasteryCourse from './InterviewMasteryCourse';
 
 interface Course {
   id: string;
@@ -21,6 +22,13 @@ interface CourseDetailViewProps {
 }
 
 const CourseDetailView: React.FC<CourseDetailViewProps> = ({ course, onBack }) => {
+  // Check if this is the Professional Interviewing Mastery course
+  const isInterviewMasteryCourse = course.title === 'Professional Interviewing Mastery';
+
+  if (isInterviewMasteryCourse) {
+    return <InterviewMasteryCourse onBack={onBack} />;
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center space-x-4">
