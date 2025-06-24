@@ -7,6 +7,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PandaLogo from '@/components/icons/PandaLogo';
 import type { FinanceCareerData } from '@/data/finance-careers';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import CareerVideoModal from './CareerVideoModal';
 
 interface FinanceCareerJourneyProps {
   career: FinanceCareerData;
@@ -15,7 +18,23 @@ interface FinanceCareerJourneyProps {
 
 const FinanceCareerJourney: React.FC<FinanceCareerJourneyProps> = ({ career, onBack }) => {
   const [currentLevel, setCurrentLevel] = useState(1);
+  const [selectedVideo, setSelectedVideo] = useState<any>(null);
   const isMobile = useIsMobile();
+
+  // Fetch career videos from database
+  const { data: careerVideos, isLoading: videosLoading } = useQuery({
+    queryKey: ['career-videos', career.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('career_videos')
+        .select('*')
+        .eq('career_id', career.id)
+        .order('speaker_type', { ascending: true });
+      
+      if (error) throw error;
+      return data || [];
+    }
+  });
 
   const getSpeakerIcon = (speaker: string) => {
     switch (speaker) {
@@ -40,6 +59,19 @@ const FinanceCareerJourney: React.FC<FinanceCareerJourneyProps> = ({ career, onB
         return 'text-purple-600 bg-purple-50 border-purple-200';
       default:
         return 'text-gray-600 bg-gray-50 border-gray-200';
+    }
+  };
+
+  const getSpeakerLabel = (speaker: string) => {
+    switch (speaker) {
+      case 'intern':
+        return 'Intern';
+      case 'professional':
+        return 'Professional';
+      case 'professor':
+        return 'Professor';
+      default:
+        return speaker.charAt(0).toUpperCase() + speaker.slice(1);
     }
   };
 
@@ -175,26 +207,44 @@ const FinanceCareerJourney: React.FC<FinanceCareerJourneyProps> = ({ career, onB
         </TabsContent>
         
         <TabsContent value="videos" className="space-y-6">
-          <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-3'} gap-4 md:gap-6`}>
-            {career.videos.map((video) => (
-              <Card key={video.id} className={`transition-all hover:shadow-lg cursor-pointer ${getSpeakerColor(video.speaker)}`}>
-                <CardHeader className={isMobile ? 'pb-3' : ''}>
-                  <CardTitle className={`flex items-center gap-2 ${isMobile ? 'text-base' : 'text-lg'}`}>
-                    {getSpeakerIcon(video.speaker)}
-                    {video.speaker.charAt(0).toUpperCase() + video.speaker.slice(1)}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className={isMobile ? 'pt-0' : ''}>
-                  <div className={`aspect-video bg-gray-200 rounded-lg ${isMobile ? 'mb-3' : 'mb-4'} flex items-center justify-center`}>
-                    <Play className={`${isMobile ? 'h-8 w-8' : 'h-12 w-12'} text-gray-500`} />
-                  </div>
-                  <h4 className={`font-semibold ${isMobile ? 'mb-1 text-sm' : 'mb-2'}`}>{video.title}</h4>
-                  <p className={`text-muted-foreground ${isMobile ? 'mb-1 text-xs' : 'mb-2 text-sm'}`}>{video.description}</p>
-                  <span className={`font-medium ${isMobile ? 'text-xs' : 'text-xs'}`}>Duration: {video.duration}</span>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          {videosLoading ? (
+            <div className="text-center py-8">Loading career videos...</div>
+          ) : careerVideos && careerVideos.length > 0 ? (
+            <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-3'} gap-4 md:gap-6`}>
+              {careerVideos.map((video) => (
+                <Card 
+                  key={video.id} 
+                  className={`transition-all hover:shadow-lg cursor-pointer ${getSpeakerColor(video.speaker_type)}`}
+                  onClick={() => setSelectedVideo(video)}
+                >
+                  <CardHeader className={isMobile ? 'pb-3' : ''}>
+                    <CardTitle className={`flex items-center gap-2 ${isMobile ? 'text-base' : 'text-lg'}`}>
+                      {getSpeakerIcon(video.speaker_type)}
+                      {getSpeakerLabel(video.speaker_type)}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className={isMobile ? 'pt-0' : ''}>
+                    <div className={`aspect-video bg-gray-200 rounded-lg ${isMobile ? 'mb-3' : 'mb-4'} flex items-center justify-center`}>
+                      <Play className={`${isMobile ? 'h-8 w-8' : 'h-12 w-12'} text-gray-500`} />
+                    </div>
+                    <h4 className={`font-semibold ${isMobile ? 'mb-1 text-sm' : 'mb-2'}`}>{video.title}</h4>
+                    <p className={`text-muted-foreground ${isMobile ? 'mb-1 text-xs' : 'mb-2 text-sm'} line-clamp-2`}>
+                      {video.description}
+                    </p>
+                    <span className={`font-medium ${isMobile ? 'text-xs' : 'text-xs'}`}>Duration: {video.duration}</span>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <Play className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+              <h3 className="text-lg font-semibold mb-2">No Videos Available</h3>
+              <p className="text-muted-foreground">
+                Videos for this career path are coming soon! Check back later.
+              </p>
+            </div>
+          )}
           
           <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
             <CardContent className={`${isMobile ? 'p-4' : 'p-6'}`}>
@@ -212,6 +262,15 @@ const FinanceCareerJourney: React.FC<FinanceCareerJourneyProps> = ({ career, onB
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Video Modal */}
+      {selectedVideo && (
+        <CareerVideoModal 
+          video={selectedVideo}
+          isOpen={!!selectedVideo}
+          onClose={() => setSelectedVideo(null)}
+        />
+      )}
     </div>
   );
 };
