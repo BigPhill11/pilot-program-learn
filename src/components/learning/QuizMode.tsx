@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -187,14 +186,16 @@ const QuizMode: React.FC<QuizModeProps> = ({ terms, userLevel, selectedDifficult
 
       <Progress value={((currentQuestionIndex + 1) / questions.length) * 100} />
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl text-center">
+      <Card className="overflow-hidden">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-xl text-center break-words">
             What is the definition of "{currentQuestion.term.term}"?
           </CardTitle>
-          <Badge className="mx-auto w-fit">{currentQuestion.term.category}</Badge>
+          <div className="flex justify-center">
+            <Badge className="w-fit">{currentQuestion.term.category}</Badge>
+          </div>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-3 px-4 pb-6">
           {currentQuestion.options.map((option, index) => {
             const isSelected = selectedAnswer === option;
             const isCorrect = option === currentQuestion.correctAnswer;
@@ -205,7 +206,9 @@ const QuizMode: React.FC<QuizModeProps> = ({ terms, userLevel, selectedDifficult
               <Button
                 key={index}
                 variant={showCorrect ? "default" : showIncorrect ? "destructive" : isSelected ? "secondary" : "outline"}
-                className={`w-full text-left justify-start h-auto p-4 ${showCorrect ? 'bg-green-500 hover:bg-green-600' : ''}`}
+                className={`w-full text-left justify-start min-h-[60px] p-4 whitespace-normal break-words ${
+                  showCorrect ? 'bg-green-500 hover:bg-green-600' : ''
+                }`}
                 onClick={() => handleAnswerSelect(option)}
                 disabled={showResult}
               >
@@ -219,7 +222,9 @@ const QuizMode: React.FC<QuizModeProps> = ({ terms, userLevel, selectedDifficult
                       ) : null}
                     </div>
                   )}
-                  <span className="text-sm leading-relaxed">{option}</span>
+                  <span className="text-sm leading-relaxed flex-1 text-left break-words overflow-wrap-anywhere">
+                    {option}
+                  </span>
                 </div>
               </Button>
             );
