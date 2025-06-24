@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -240,11 +239,13 @@ const CareerVideoManager = () => {
                           </FormControl>
                           <SelectContent>
                             <SelectItem value="investment-banking">Investment Banking</SelectItem>
-                            <SelectItem value="financial-advisor">Financial Advisor</SelectItem>
-                            <SelectItem value="equity-research">Equity Research</SelectItem>
-                            <SelectItem value="corporate-finance">Corporate Finance</SelectItem>
-                            <SelectItem value="asset-management">Asset Management</SelectItem>
-                            <SelectItem value="financial-planning">Financial Planning</SelectItem>
+                            <SelectItem value="private-equity">Private Equity</SelectItem>
+                            <SelectItem value="credit">Credit</SelectItem>
+                            <SelectItem value="fixed-income">Fixed Income</SelectItem>
+                            <SelectItem value="mergers-acquisitions">Mergers & Acquisitions</SelectItem>
+                            <SelectItem value="wealth-management">Wealth Management</SelectItem>
+                            <SelectItem value="real-estate">Real Estate Finance</SelectItem>
+                            <SelectItem value="consulting">Financial Consulting</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
