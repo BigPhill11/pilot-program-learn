@@ -1,22 +1,22 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { BookOpen, Brain, Gamepad2, Trophy, Settings } from 'lucide-react';
+import { BookOpen, Brain, Gamepad2, Trophy, Settings, GraduationCap } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useFinancialTerms } from '@/hooks/useFinancialTerms';
 import FlashcardMode from './FlashcardMode';
 import QuizMode from './QuizMode';
 import MatchingGame from './MatchingGame';
 import LearningModule from './LearningModule';
+import StructuredLearningOverview from './StructuredLearningOverview';
 import HighlightableTerm from '@/components/HighlightableTerm';
 
 const AdaptiveLearningContent: React.FC = () => {
   const { profile } = useAuth();
   const { terms, loading } = useFinancialTerms();
-  const [activeMode, setActiveMode] = useState('overview');
+  const [activeMode, setActiveMode] = useState('structured');
   const [selectedDifficulty, setSelectedDifficulty] = useState('all');
   const [quizTermCount, setQuizTermCount] = useState(10);
   const [matchingTermCount, setMatchingTermCount] = useState(6);
@@ -113,66 +113,76 @@ const AdaptiveLearningContent: React.FC = () => {
         </p>
         
         {/* Difficulty Level Selector */}
-        <div className="mb-6 p-4 bg-muted/50 rounded-lg">
-          <div className="flex items-center gap-4 flex-wrap">
-            <div className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              <span className="text-sm font-medium">Difficulty Level:</span>
+        {(activeMode === 'flashcards' || activeMode === 'quiz' || activeMode === 'matching') && (
+          <div className="mb-6 p-4 bg-muted/50 rounded-lg">
+            <div className="flex items-center gap-4 flex-wrap">
+              <div className="flex items-center gap-2">
+                <Settings className="h-4 w-4" />
+                <span className="text-sm font-medium">Difficulty Level:</span>
+              </div>
+              <Select value={selectedDifficulty} onValueChange={setSelectedDifficulty}>
+                <SelectTrigger className="w-40">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Levels</SelectItem>
+                  <SelectItem value="beginner">Beginner</SelectItem>
+                  <SelectItem value="intermediate">Intermediate</SelectItem>
+                  <SelectItem value="advanced">Advanced</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              {(activeMode === 'quiz' || activeMode === 'matching') && (
+                <>
+                  <span className="text-sm font-medium">
+                    {activeMode === 'quiz' ? 'Quiz Questions:' : 'Matching Pairs:'}
+                  </span>
+                  <Select 
+                    value={activeMode === 'quiz' ? quizTermCount.toString() : matchingTermCount.toString()} 
+                    onValueChange={(value) => {
+                      if (activeMode === 'quiz') {
+                        setQuizTermCount(parseInt(value));
+                      } else {
+                        setMatchingTermCount(parseInt(value));
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="w-20">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {activeMode === 'quiz' ? (
+                        <>
+                          <SelectItem value="5">5</SelectItem>
+                          <SelectItem value="10">10</SelectItem>
+                          <SelectItem value="15">15</SelectItem>
+                          <SelectItem value="20">20</SelectItem>
+                        </>
+                      ) : (
+                        <>
+                          <SelectItem value="4">4</SelectItem>
+                          <SelectItem value="6">6</SelectItem>
+                          <SelectItem value="8">8</SelectItem>
+                          <SelectItem value="10">10</SelectItem>
+                        </>
+                      )}
+                    </SelectContent>
+                  </Select>
+                </>
+              )}
             </div>
-            <Select value={selectedDifficulty} onValueChange={setSelectedDifficulty}>
-              <SelectTrigger className="w-40">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Levels</SelectItem>
-                <SelectItem value="beginner">Beginner</SelectItem>
-                <SelectItem value="intermediate">Intermediate</SelectItem>
-                <SelectItem value="advanced">Advanced</SelectItem>
-              </SelectContent>
-            </Select>
-            
-            {(activeMode === 'quiz' || activeMode === 'matching') && (
-              <>
-                <span className="text-sm font-medium">
-                  {activeMode === 'quiz' ? 'Quiz Questions:' : 'Matching Pairs:'}
-                </span>
-                <Select 
-                  value={activeMode === 'quiz' ? quizTermCount.toString() : matchingTermCount.toString()} 
-                  onValueChange={(value) => {
-                    if (activeMode === 'quiz') {
-                      setQuizTermCount(parseInt(value));
-                    } else {
-                      setMatchingTermCount(parseInt(value));
-                    }
-                  }}
-                >
-                  <SelectTrigger className="w-20">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {activeMode === 'quiz' ? (
-                      <>
-                        <SelectItem value="5">5</SelectItem>
-                        <SelectItem value="10">10</SelectItem>
-                        <SelectItem value="15">15</SelectItem>
-                        <SelectItem value="20">20</SelectItem>
-                      </>
-                    ) : (
-                      <>
-                        <SelectItem value="4">4</SelectItem>
-                        <SelectItem value="6">6</SelectItem>
-                        <SelectItem value="8">8</SelectItem>
-                        <SelectItem value="10">10</SelectItem>
-                      </>
-                    )}
-                  </SelectContent>
-                </Select>
-              </>
-            )}
           </div>
-        </div>
+        )}
         
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+          <Button
+            variant={activeMode === 'structured' ? 'default' : 'outline'}
+            onClick={() => setActiveMode('structured')}
+            className="h-auto py-4 flex flex-col gap-2"
+          >
+            <GraduationCap className="h-6 w-6" />
+            <span className="text-sm">Structured</span>
+          </Button>
           <Button
             variant={activeMode === 'overview' ? 'default' : 'outline'}
             onClick={() => setActiveMode('overview')}
@@ -207,6 +217,8 @@ const AdaptiveLearningContent: React.FC = () => {
           </Button>
         </div>
       </div>
+
+      {activeMode === 'structured' && <StructuredLearningOverview />}
 
       {activeMode === 'overview' && (
         <div className="space-y-6">

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -50,11 +49,29 @@ const FlashcardMode: React.FC<FlashcardModeProps> = ({ terms, userLevel, selecte
     return filtered;
   }, [terms, selectedDifficulty, userLevel]);
 
-  // Initialize shuffled terms
+  // Create a date-based shuffle for daily rotation
+  const createDailyShuffle = (termsArray: FinancialTerm[]) => {
+    const today = new Date();
+    const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
+    
+    // Use the day of year as a seed for consistent daily shuffling
+    const shuffled = [...termsArray];
+    const seed = dayOfYear;
+    
+    // Seeded random shuffle - same order each day but different from previous days
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(((seed * (i + 1)) % 1000) / 1000 * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    
+    return shuffled;
+  };
+
+  // Initialize shuffled terms with daily rotation
   useEffect(() => {
     if (filteredTerms.length > 0) {
-      const shuffled = [...filteredTerms].sort(() => Math.random() - 0.5);
-      setShuffledTerms(shuffled);
+      const dailyShuffled = createDailyShuffle(filteredTerms);
+      setShuffledTerms(dailyShuffled);
       setCurrentIndex(0);
       setIsFlipped(false);
     }
@@ -64,6 +81,7 @@ const FlashcardMode: React.FC<FlashcardModeProps> = ({ terms, userLevel, selecte
 
   const shuffleTerms = () => {
     if (filteredTerms.length > 0) {
+      // Manual shuffle for immediate randomization
       const shuffled = [...filteredTerms].sort(() => Math.random() - 0.5);
       setShuffledTerms(shuffled);
       setCurrentIndex(0);
@@ -128,7 +146,7 @@ const FlashcardMode: React.FC<FlashcardModeProps> = ({ terms, userLevel, selecte
           {/* Front of card */}
           <Card className="absolute inset-0 backface-hidden border-2 border-primary/20 hover:border-primary/40 transition-colors">
             <CardContent className="flex flex-col items-center justify-center h-full p-6 text-center">
-              <h2 className="text-3xl font-bold text-primary mb-4">{currentTerm.term}</h2>
+              <h2 className="text-3xl font-bold text-primary mb-4 break-words">{currentTerm.term}</h2>
               <Badge className="mb-4">{currentTerm.category}</Badge>
               <p className="text-muted-foreground">Click to reveal definition</p>
             </CardContent>
@@ -138,17 +156,17 @@ const FlashcardMode: React.FC<FlashcardModeProps> = ({ terms, userLevel, selecte
           <Card className="absolute inset-0 backface-hidden rotate-y-180 border-2 border-green-500/30 bg-green-50">
             <CardContent className="flex flex-col justify-between h-full p-6">
               <div className="flex-1 flex flex-col justify-center">
-                <p className="text-lg leading-relaxed mb-4">{currentTerm.definition}</p>
+                <p className="text-lg leading-relaxed mb-4 break-words">{currentTerm.definition}</p>
                 {currentTerm.analogy && (
                   <div className="bg-blue-50 p-3 rounded-lg mb-3">
                     <p className="text-sm font-medium text-blue-700 mb-1">💡 Analogy:</p>
-                    <p className="text-sm text-blue-600">{currentTerm.analogy}</p>
+                    <p className="text-sm text-blue-600 break-words">{currentTerm.analogy}</p>
                   </div>
                 )}
                 {currentTerm.real_world_example && (
                   <div className="bg-green-100 p-3 rounded-lg">
                     <p className="text-sm font-medium text-green-700 mb-1">🌟 Example:</p>
-                    <p className="text-sm text-green-600">{currentTerm.real_world_example}</p>
+                    <p className="text-sm text-green-600 break-words">{currentTerm.real_world_example}</p>
                   </div>
                 )}
               </div>
@@ -193,6 +211,8 @@ const FlashcardMode: React.FC<FlashcardModeProps> = ({ terms, userLevel, selecte
 
       <div className="text-center text-sm text-muted-foreground">
         Mastered: {masteredTerms.size} / {shuffledTerms.length} terms
+        <br />
+        <span className="text-xs">Daily rotation ensures you see different terms each day</span>
       </div>
     </div>
   );
