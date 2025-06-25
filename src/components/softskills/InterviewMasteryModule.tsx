@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle, Play, BookOpen, GamepadIcon, Award, Info, Target, Lightbulb, ArrowLeft } from 'lucide-react';
 import InteractiveQuiz from '@/components/InteractiveQuiz';
+import PandaCelebration from '@/components/ui/PandaCelebration';
 import { useProgressTracking } from '@/hooks/useProgressTracking';
 
 interface ContentItem {
@@ -43,46 +43,6 @@ interface InterviewMasteryModuleProps {
   onQuizComplete: (topicId: string, isCorrect: boolean) => void;
 }
 
-const PandaCelebration: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-  const celebrationMessages = [
-    "🎉 Outstanding work! You're becoming an interview master!",
-    "💪 Fantastic progress! Keep up the amazing effort!",
-    "⭐ Brilliant! You're one step closer to your dream job!",
-    "🚀 Incredible! Your interview skills are leveling up!",
-    "🏆 Well done! You're crushing this course!"
-  ];
-
-  const randomMessage = celebrationMessages[Math.floor(Math.random() * celebrationMessages.length)];
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fade-in">
-      <Card className="bg-gradient-to-br from-green-100 to-emerald-200 border-green-300 max-w-md mx-4 animate-scale-in">
-        <CardContent className="p-8 text-center">
-          <div className="mb-6 animate-bounce">
-            <div className="text-6xl mb-2">🐼</div>
-            <div className="text-4xl">💰</div>
-          </div>
-          <h3 className="text-2xl font-bold text-green-800 mb-3">
-            Module Completed!
-          </h3>
-          <p className="text-green-700 mb-4 text-lg">
-            {randomMessage}
-          </p>
-          <Badge className="bg-green-600 text-white text-lg px-4 py-2 mb-6">
-            +5 Points Earned! 🎯
-          </Badge>
-          <Button 
-            onClick={onClose}
-            className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg"
-          >
-            Continue Learning! 🚀
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
-  );
-};
-
 const InterviewMasteryModule: React.FC<InterviewMasteryModuleProps> = ({
   module,
   isUnlocked,
@@ -94,7 +54,7 @@ const InterviewMasteryModule: React.FC<InterviewMasteryModuleProps> = ({
   const [contentProgress, setContentProgress] = useState(0);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
-  const { updateLearningProgress } = useProgressTracking();
+  const { updateSoftSkillsProgress } = useProgressTracking();
 
   const handleNextSection = () => {
     if (currentSection === 'intro') {
@@ -126,8 +86,8 @@ const InterviewMasteryModule: React.FC<InterviewMasteryModuleProps> = ({
   };
 
   const handleModuleComplete = () => {
-    // Award 5 points for module completion
-    updateLearningProgress(5);
+    // Award 5 points for module completion and save to soft skills progress
+    updateSoftSkillsProgress('interview-mastery', module.id.toString(), 5);
     setShowCelebration(true);
     setTimeout(() => {
       setShowCelebration(false);
@@ -361,7 +321,14 @@ const InterviewMasteryModule: React.FC<InterviewMasteryModuleProps> = ({
         </CardContent>
       </Card>
       
-      {showCelebration && <PandaCelebration onClose={() => setShowCelebration(false)} />}
+      {showCelebration && (
+        <PandaCelebration 
+          onClose={() => setShowCelebration(false)}
+          title="Module Completed!"
+          message="🎉 Outstanding work! You're becoming an interview master!"
+          points={5}
+        />
+      )}
     </>
   );
 };
