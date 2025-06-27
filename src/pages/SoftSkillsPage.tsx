@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -83,9 +84,7 @@ const SoftSkillsPage = () => {
   const getCourseProgress = (courseId: string) => {
     if (!userProgress) return 0;
     const courseProgress = userProgress.filter(p => p.course_id === courseId);
-    if (courseProgress.length === 0) return 0;
-    const completedCount = courseProgress.filter(p => p.completed).length;
-    return Math.round((completedCount / courseProgress.length) * 100);
+    return courseProgress.length > 0 ? (courseProgress.filter(p => p.completed).length / courseProgress.length) * 100 : 0;
   };
 
   const groupedCourses = courses?.reduce((acc, course) => {
@@ -130,7 +129,7 @@ const SoftSkillsPage = () => {
             </div>
             <div className="flex items-center space-x-1">
               <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-              <span>{progress > 0 ? `${progress}%` : 'Not started'}</span>
+              <span>{progress > 0 ? `${progress.toFixed(0)}%` : 'Not started'}</span>
             </div>
           </div>
           
