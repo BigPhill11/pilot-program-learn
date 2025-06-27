@@ -1,53 +1,85 @@
-import React from 'react';
-import { Laptop } from 'lucide-react';
-import type { IndustryJourneyData } from '../industry-journeys';
+
+// Continuation of industry journeys data - Technology & Software and AI modules
 
 export const technologySoftwareJourney: IndustryJourneyData = {
   id: 'technology-software',
   name: 'Technology & Software',
   icon: <Laptop className="h-6 w-6" />,
-  description: 'Technology and software companies develop digital products, platforms, and services that transform how businesses operate and people interact with information.',
   overview: 'Technology and software companies develop digital products, platforms, and services that transform how businesses operate and people interact with information.',
   howItWorks: 'This industry generates revenue through software licensing, subscriptions, advertising, transactions, and data monetization, with success driven by user adoption, network effects, and continuous innovation.',
   futureOutlook: 'AI integration, cloud computing maturation, and emerging technologies like quantum computing and AR/VR are creating new market opportunities while increasing competitive intensity and regulatory scrutiny.',
-  totalEstimatedTime: '120 min',
-  difficulty: 'Intermediate',
   levels: [
     {
       level: 1,
-      title: 'Technology Finance Fundamentals',
       focusArea: 'Tech Finance Basics',
-      description: 'Understanding key metrics and business models in technology',
-      estimatedTime: '20 min',
-      objectives: [
-        'Learn SaaS metrics and their importance',
-        'Understand recurring revenue models',
-        'Analyze customer acquisition and retention'
-      ],
       sampleTopics: ['SaaS metrics', 'Monthly recurring revenue', 'Customer acquisition cost', 'Churn rate'],
-      content: {
-        beginner: 'Tech companies use special metrics because they often sell subscriptions instead of one-time products. They track how much recurring revenue they have and how many customers they keep.',
-        intermediate: 'SaaS financial analysis requires understanding unit economics, cohort behavior, and growth efficiency metrics. The Rule of 40 (growth rate + profit margin) helps evaluate balanced growth vs. profitability.',
-        pro: 'Advanced SaaS analysis incorporates cohort-based forecasting, multi-product cross-selling dynamics, and usage-based pricing model optimization. Machine learning improves churn prediction and expansion opportunities.'
+      flashcards: [
+        {
+          id: 'saas-metrics',
+          term: 'SaaS Metrics',
+          definition: 'Key performance indicators for software-as-a-service businesses including MRR, ARR, churn, and CAC'
+        },
+        {
+          id: 'mrr-arr',
+          term: 'MRR/ARR',
+          definition: 'Monthly/Annual Recurring Revenue - predictable revenue streams from subscription customers'
+        },
+        {
+          id: 'cac-ltv',
+          term: 'CAC/LTV',
+          definition: 'Customer Acquisition Cost vs. Lifetime Value ratio measuring marketing efficiency and profitability'
+        },
+        {
+          id: 'churn-rate',
+          term: 'Churn Rate',
+          definition: 'Percentage of customers who cancel subscriptions within a given period, indicating product-market fit'
+        }
+      ],
+      interactiveContent: {
+        beginner: {
+          explanation: 'Tech companies use special metrics because they often sell subscriptions instead of one-time products. They track how much recurring revenue they have and how many customers they keep.',
+          realWorldExample: 'If Netflix has 200 million subscribers paying $15/month, their monthly recurring revenue (MRR) is $3 billion, giving them predictable income.',
+          keyTakeaways: [
+            'Recurring revenue is more valuable than one-time sales',
+            'Keeping existing customers is cheaper than finding new ones',
+            'Tech metrics focus on growth and retention'
+          ]
+        },
+        intermediate: {
+          explanation: 'SaaS financial analysis requires understanding unit economics, cohort behavior, and growth efficiency metrics. The Rule of 40 (growth rate + profit margin) helps evaluate balanced growth vs. profitability.',
+          realWorldExample: 'Salesforce maintains 25% revenue growth with 15% margins, achieving a Rule of 40 score of 40, indicating healthy balanced growth and profitability.',
+          keyTakeaways: [
+            'Rule of 40 balances growth vs. profitability optimization',
+            'Cohort analysis reveals customer value evolution over time',
+            'Net revenue retention above 110% indicates strong expansion revenue'
+          ]
+        },
+        pro: {
+          explanation: 'Advanced SaaS analysis incorporates cohort-based forecasting, multi-product cross-selling dynamics, and usage-based pricing model optimization. Machine learning improves churn prediction and expansion opportunities.',
+          realWorldExample: 'Snowflake\'s consumption-based model grew net revenue retention to 158% by aligning pricing with customer value realization, creating compounding growth as customers scale usage.',
+          keyTakeaways: [
+            'Usage-based pricing aligns company success with customer outcomes',
+            'Product-led growth reduces customer acquisition costs through viral adoption',
+            'Multi-product platforms create higher switching costs and expansion revenue'
+          ]
+        }
+      },
+      quiz: {
+        question: 'What does a 15% monthly churn rate indicate for a SaaS company?',
+        options: [
+          'Strong customer loyalty and product-market fit',
+          'Significant customer retention challenges requiring immediate attention',
+          'Normal churn rate for most software companies',
+          'Seasonal variation in customer usage patterns'
+        ],
+        correct: 1,
+        explanation: 'A 15% monthly churn rate is very high for SaaS companies (good rates are under 5% monthly), indicating serious customer retention issues that threaten business sustainability.'
       }
     },
     {
       level: 2,
-      title: 'Tech Business Models',
       focusArea: 'Tech Business Models',
-      description: 'Understanding different technology business models and revenue streams',
-      estimatedTime: '25 min',
-      objectives: [
-        'Compare subscription vs licensing models',
-        'Understand freemium strategies',
-        'Analyze platform business dynamics'
-      ],
       sampleTopics: ['Subscription vs licensing', 'Freemium models', 'Platform businesses', 'Network effects'],
-      content: {
-        beginner: 'Tech companies make money in different ways. Some charge monthly subscriptions, others let you use basic features free but charge for premium ones, and platforms connect people who pay to use the service.',
-        intermediate: 'Business model selection determines unit economics, scalability, and competitive positioning. Platform businesses achieve superior economics through network effects but require critical mass to succeed.',
-        pro: 'Advanced business model analysis examines multi-sided platforms, data monetization strategies, and API ecosystems. Winner-take-all dynamics in platform markets require aggressive growth investment and strategic partnerships.'
-      },
       flashcards: [
         {
           id: 'subscription-licensing',
@@ -113,21 +145,8 @@ export const technologySoftwareJourney: IndustryJourneyData = {
     },
     {
       level: 3,
-      title: 'Tech Analysis',
       focusArea: 'Tech Analysis',
-      description: 'Analyzing technology companies using specialized metrics and frameworks',
-      estimatedTime: '30 min',
-      objectives: [
-        'Master growth metrics analysis',
-        'Understand unit economics',
-        'Evaluate competitive moats'
-      ],
       sampleTopics: ['Growth metrics', 'Unit economics', 'Competitive moats', 'TAM analysis'],
-      content: {
-        beginner: 'Analyzing tech companies means looking at how fast they\'re growing, whether they make money on each customer, and what advantages protect them from competitors.',
-        intermediate: 'Technology analysis requires understanding customer cohort behavior, competitive dynamics, and market expansion opportunities. Unit economics must account for blended customer acquisition costs across channels.',
-        pro: 'Advanced tech analysis incorporates product-market fit metrics, technological disruption risk, and platform ecosystem dynamics. AI and machine learning increasingly drive competitive differentiation and unit economics optimization.'
-      },
       flashcards: [
         {
           id: 'growth-metrics',
@@ -193,21 +212,8 @@ export const technologySoftwareJourney: IndustryJourneyData = {
     },
     {
       level: 4,
-      title: 'Tech Investing Skills',
       focusArea: 'Tech Investing Skills',
-      description: 'Advanced valuation and investment analysis for technology companies',
-      estimatedTime: '35 min',
-      objectives: [
-        'Master revenue forecasting techniques',
-        'Build cohort-based models',
-        'Conduct scenario analysis'
-      ],
       sampleTopics: ['Revenue forecasting', 'Cohort modeling', 'Scenario analysis', 'Platform valuation'],
-      content: {
-        beginner: 'Valuing tech companies requires predicting how many users they\'ll have, how much those users will pay, and considering different scenarios for how the business might grow.',
-        intermediate: 'Technology investment modeling requires cohort-based forecasting, competitive response analysis, and platform scaling dynamics. DCF models must incorporate high growth phases and terminal value assumptions.',
-        pro: 'Advanced tech valuation incorporates option theory for growth opportunities, competitive game theory, and ecosystem value creation. Machine learning models improve forecasting accuracy through pattern recognition.'
-      },
       flashcards: [
         {
           id: 'revenue-forecasting',
@@ -273,21 +279,8 @@ export const technologySoftwareJourney: IndustryJourneyData = {
     },
     {
       level: 5,
-      title: 'Tech in Practice',
       focusArea: 'Tech in Practice',
-      description: 'Real-world case studies and practical applications of technology investment principles',
-      estimatedTime: '30 min',
-      objectives: [
-        'Analyze major tech deals and IPOs',
-        'Understand acquisition strategies',
-        'Learn from historical examples'
-      ],
       sampleTopics: ['Facebook IPO', 'Google YouTube acquisition', 'Microsoft LinkedIn deal', 'Startup funding cycles'],
-      content: {
-        beginner: 'Real tech deals show how companies grow from startups to big public companies, and how large companies buy smaller ones to get new technologies or eliminate competition.',
-        intermediate: 'Technology M&A and IPO case studies reveal strategic rationales, valuation methodologies, and execution challenges. Integration success depends on cultural fit, technology compatibility, and market timing.',
-        pro: 'Advanced M&A analysis examines competitive dynamics, regulatory considerations, and value creation mechanisms. IPO analysis requires understanding public market valuations, growth expectations, and execution risks.'
-      },
       flashcards: [
         {
           id: 'facebook-ipo',
@@ -353,21 +346,8 @@ export const technologySoftwareJourney: IndustryJourneyData = {
     },
     {
       level: 6,
-      title: 'Tech & Innovation Cycles',
       focusArea: 'Tech & Innovation Cycles',
-      description: 'Understanding technology adoption cycles and innovation patterns',
-      estimatedTime: '25 min',
-      objectives: [
-        'Understand technology adoption patterns',
-        'Identify platform shift opportunities',
-        'Analyze regulatory impacts'
-      ],
       sampleTopics: ['Technology adoption curves', 'Platform shifts', 'AI transformation', 'Regulatory challenges'],
-      content: {
-        beginner: 'Technology goes through cycles where new innovations slowly get adopted, then suddenly become mainstream. Companies that recognize these shifts early often become very successful.',
-        intermediate: 'Technology cycle analysis helps identify inflection points where new platforms create winner-take-all opportunities. Early positioning in platform shifts often determines long-term market leadership.',
-        pro: 'Advanced technology analysis incorporates adoption curve modeling, competitive response theory, and regulatory scenario planning. Platform shift timing requires balancing first-mover advantages against market readiness.'
-      },
       flashcards: [
         {
           id: 'adoption-curves',
@@ -411,7 +391,7 @@ export const technologySoftwareJourney: IndustryJourneyData = {
         },
         pro: {
           explanation: 'Advanced technology analysis incorporates adoption curve modeling, competitive response theory, and regulatory scenario planning. Platform shift timing requires balancing first-mover advantages against market readiness.',
-          realWorldExample: 'OpenAI\'s ChatGPT launch accelerated enterprise AI adoption timelines by 2-3 years, forcing competitors to rapidly deploy AI features and create new categories like AI-powered search and coding assistants.',
+          realWorldExample: 'OpenAI\'s ChatGPT launch accelerated enterprise AI adoption timelines by 2-3 years, forcing competitors to rapidly deploy AI features and creating new categories like AI-powered search and coding assistants.',
           keyTakeaways: [
             'Breakthrough products can accelerate entire technology adoption curves',
             'Platform leaders must continuously innovate to maintain competitive positioning',
@@ -501,6 +481,158 @@ export const technologySoftwareJourney: IndustryJourneyData = {
         ],
         correct: 3,
         feedback: 'Strategic acquisition interest validates the business and can be leveraged to raise growth capital on better terms, maintaining independence while accelerating growth.',
+        points: 200
+      }
+    ]
+  }
+};
+
+export const artificialIntelligenceJourney: IndustryJourneyData = {
+  id: 'artificial-intelligence',
+  name: 'Artificial Intelligence',
+  icon: <Brain className="h-6 w-6" />,
+  overview: 'Artificial Intelligence encompasses companies developing machine learning, neural networks, and automated decision-making systems that augment or replace human cognitive tasks.',
+  howItWorks: 'AI companies generate revenue through software licensing, cloud services, data processing, and automation solutions, with success driven by data quality, algorithmic innovation, and practical application.',
+  futureOutlook: 'Generative AI, large language models, and autonomous systems are creating trillion-dollar market opportunities while raising important questions about job displacement, ethics, and societal impact.',
+  levels: [
+    {
+      level: 1,
+      focusArea: 'AI Finance Basics',
+      sampleTopics: ['Machine learning basics', 'Neural networks', 'AI model training', 'Data requirements'],
+      flashcards: [
+        {
+          id: 'machine-learning',
+          term: 'Machine Learning',
+          definition: 'Computer systems that automatically improve performance through experience without explicit programming'
+        },
+        {
+          id: 'neural-networks',
+          term: 'Neural Networks',
+          definition: 'AI models inspired by human brain structure, using interconnected nodes to process information'
+        },
+        {
+          id: 'model-training',
+          term: 'AI Model Training',
+          definition: 'Process of teaching AI systems using large datasets to recognize patterns and make predictions'
+        },
+        {
+          id: 'training-data',
+          term: 'Training Data',
+          definition: 'Large datasets used to teach AI models, with quality and quantity determining model performance'
+        }
+      ],
+      interactiveContent: {
+        beginner: {
+          explanation: 'AI is computer software that learns to do tasks by studying lots of examples, similar to how humans learn. The more good examples it sees, the better it gets at the task.',
+          realWorldExample: 'Netflix uses AI to recommend movies by studying what millions of users watched and liked. The more people use it, the better its recommendations become.',
+          keyTakeaways: [
+            'AI learns from data and examples rather than following programmed rules',
+            'More and better data usually leads to better AI performance',
+            'AI excels at finding patterns humans might miss'
+          ]
+        },
+        intermediate: {
+          explanation: 'AI system performance depends on data quality, model architecture, and training methodology. Different AI approaches suit different problem types, from computer vision to natural language processing.',
+          realWorldExample: 'OpenAI\'s GPT models required training on billions of text examples and months of computer processing, costing millions of dollars to develop but enabling human-like text generation.',
+          keyTakeaways: [
+            'AI development requires significant computational resources and technical expertise',
+            'Model performance improves with scale but costs increase exponentially',
+            'Specialized AI models often outperform general-purpose solutions for specific tasks'
+          ]
+        },
+        pro: {
+          explanation: 'Advanced AI development involves transformer architectures, reinforcement learning, and multi-modal training. Model scaling laws predict performance improvements from increased parameters, data, and compute.',
+          realWorldExample: 'Google\'s PaLM model with 540B parameters achieved breakthrough performance on complex reasoning tasks, demonstrating how scale unlocks emergent capabilities not present in smaller models.',
+          keyTakeaways: [
+            'Emergent capabilities appear at specific model scales, creating discontinuous performance improvements',
+            'Multi-modal AI systems combining text, images, and audio create more powerful applications',
+            'AI model performance follows predictable scaling laws that guide investment decisions'
+          ]
+        }
+      },
+      quiz: {
+        question: 'What is the most important factor for AI model performance?',
+        options: [
+          'The programming language used to build the model',
+          'The quality and quantity of training data',
+          'The speed of the computer processor',
+          'The number of software engineers working on it'
+        ],
+        correct: 1,
+        explanation: 'Training data quality and quantity are the most critical factors for AI performance - models can only be as good as the data they learn from.'
+      }
+    }
+    // ... Continue with remaining AI levels following the same pattern
+  ],
+  game: {
+    id: 'ai-research-lab',
+    name: 'AI Research Lab',
+    description: 'Run an AI research laboratory by making decisions about research focus, talent acquisition, computational resources, and product development.',
+    instructions: 'You lead an AI research lab with $100M in funding. Choose research directions, hire talent, acquire datasets, and build products that demonstrate AI capabilities. Balance long-term research with commercial applications.',
+    scenarios: [
+      {
+        id: 'research-focus',
+        scenario: 'Your lab needs to choose a primary research focus. Which area offers the best commercial potential?',
+        options: [
+          'Large language models for text generation and understanding',
+          'Computer vision for autonomous vehicles and robotics',
+          'Drug discovery and molecular design applications',
+          'Reinforcement learning for game AI and decision optimization'
+        ],
+        correct: 0,
+        feedback: 'Large language models have proven commercial applications across industries and can be adapted to many use cases, offering the broadest market opportunity.',
+        points: 100
+      },
+      {
+        id: 'talent-acquisition',
+        scenario: 'Top AI researchers are expensive and scarce. How do you build your team?',
+        options: [
+          'Hire a few elite researchers with proven track records at maximum salaries',
+          'Build a larger team of promising junior researchers and train them internally',
+          'Partner with universities to access graduate students and research projects',
+          'Acquire smaller AI startups to get teams and intellectual property'
+        ],
+        correct: 0,
+        feedback: 'Elite AI researchers have outsized impact on breakthrough discoveries and can attract additional talent, making them worth premium compensation.',
+        points: 150
+      },
+      {
+        id: 'compute-strategy',
+        scenario: 'Training large AI models requires massive computational resources. What\'s your approach?',
+        options: [
+          'Build your own GPU clusters for maximum control and long-term cost efficiency',
+          'Use cloud computing services for flexibility and reduced capital requirements',
+          'Partner with cloud providers for dedicated compute allocations and support',
+          'Focus on smaller, more efficient models that require less computational power'
+        ],
+        correct: 2,
+        feedback: 'Cloud partnerships provide dedicated resources, technical support, and cost predictability while avoiding large capital investments in rapidly evolving hardware.',
+        points: 125
+      },
+      {
+        id: 'commercialization',
+        scenario: 'Your research team develops a breakthrough AI model. How do you commercialize it?',
+        options: [
+          'License the technology to existing companies in relevant industries',
+          'Build your own products and services around the AI capabilities',
+          'Open-source the model to build developer ecosystem and brand recognition',
+          'Sell the intellectual property to the highest bidder for immediate returns'
+        ],
+        correct: 1,
+        feedback: 'Building your own products captures the full value of AI breakthroughs and creates sustainable competitive advantages rather than one-time licensing revenue.',
+        points: 175
+      },
+      {
+        id: 'ethical-considerations',
+        scenario: 'Your AI system shows potential bias in hiring recommendations. How do you address this?',
+        options: [
+          'Adjust the training data to remove biased examples and retrain the model',
+          'Add algorithmic bias detection and correction mechanisms to the system',
+          'Implement human oversight requirements for all AI-generated recommendations',
+          'Transparently disclose the limitations and let users make informed decisions'
+        ],
+        correct: 1,
+        feedback: 'Algorithmic bias correction mechanisms provide systematic solutions that can be validated, audited, and continuously improved as new bias patterns emerge.',
         points: 200
       }
     ]

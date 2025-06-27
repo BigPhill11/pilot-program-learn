@@ -3,26 +3,12 @@ import React from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
-import { useFinancialTerms } from '@/hooks/useFinancialTerms';
-import TermHighlighter from '@/components/TermHighlighter';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import useHeadlines from '@/hooks/useHeadlines';
+import HeadlineCard from './headlines/HeadlineCard';
 
 const EnhancedHeadlinesSection = () => {
   const { profile } = useAuth();
-  const { terms: financialTerms = [] } = useFinancialTerms();
-
-  const { data: marketData, isLoading, isError } = useQuery({
-    queryKey: ['consolidatedMarketData'],
-    queryFn: async () => {
-      const { data, error } = await supabase.functions.invoke('enhanced-market-data');
-      if (error) {
-        throw new Error(error.message);
-      }
-      return data;
-    },
-    staleTime: 1000 * 60 * 5, // Re-fetch data every 5 minutes
-  });
+  const { data: headlinesData, isLoading, isError } = useHeadlines();
 
   const handleHeadlineClick = (headline: any) => {
     console.log('Clicking headline:', headline);
@@ -79,25 +65,23 @@ const EnhancedHeadlinesSection = () => {
   }
 
   // Extract headlines from the response
-  const headlines = marketData?.headlines || [];
+  const headlines = headlinesData?.headlines || [];
   console.log('Processing headlines:', headlines);
   
   const displayHeadlines = isError || !Array.isArray(headlines) || headlines.length === 0 ? [
     {
       id: '1',
       title: "Market Reaches New Heights",
-      description: "Stock prices continue to rise as investors show confidence in the market's future performance. Major indices are posting significant gains across multiple sectors. Analysts attribute the growth to strong economic indicators and corporate earnings reports.",
-      url: "https://finance.yahoo.com",
-      publishedAt: new Date().toISOString(),
-      source: { name: "Financial News" }
+      summary: "Stock prices continue to rise as investors show confidence in the market's future performance. Major indices are posting significant gains across multiple sectors. Analysts attribute the growth to strong economic indicators and corporate earnings reports.",
+      tldr: "Stock markets are up significantly due to positive investor sentiment and strong economic data.",
+      url: "https://finance.yahoo.com"
     },
     {
       id: '2',
       title: "Tech Companies Report Strong Earnings",
-      description: "Major technology companies exceeded profit expectations, driving significant trading volume. Revenue growth has been particularly strong in cloud computing and artificial intelligence sectors. Investors are responding positively to future growth projections and innovation investments.",
-      url: "https://finance.yahoo.com",
-      publishedAt: new Date().toISOString(),
-      source: { name: "Tech Report" }
+      summary: "Major technology companies exceeded profit expectations, driving significant trading volume. Revenue growth has been particularly strong in cloud computing and artificial intelligence sectors. Investors are responding positively to future growth projections and innovation investments.",
+      tldr: "Tech giants beat earnings expectations, boosting investor confidence in the sector.",
+      url: "https://finance.yahoo.com"
     }
   ] : headlines;
 
@@ -116,40 +100,12 @@ const EnhancedHeadlinesSection = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {displayHeadlines.map((headline, index) => (
-            <Card key={headline.id || index} className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleHeadlineClick(headline)}>
-              <CardContent className="p-4">
-                <div className="flex gap-4">
-                  {headline.urlToImage && (
-                    <img 
-                      src={headline.urlToImage} 
-                      alt=""
-                      className="w-20 h-20 object-cover rounded flex-shrink-0"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = 'none';
-                      }}
-                    />
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-sm mb-2 line-clamp-2">
-                      <TermHighlighter 
-                        text={headline.title} 
-                        terms={financialTerms}
-                      />
-                    </h3>
-                    <p className="text-xs text-muted-foreground mb-2 line-clamp-3">
-                      <TermHighlighter 
-                        text={headline.description || ''} 
-                        terms={financialTerms}
-                      />
-                    </p>
-                    <div className="flex justify-between items-center text-xs text-muted-foreground">
-                      <span>{headline.source?.name || 'Unknown Source'}</span>
-                      <span>{new Date(headline.publishedAt).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <HeadlineCard
+              key={headline.id || index}
+              headline={headline}
+              userLevel={userLevel}
+              onHeadlineClick={handleHeadlineClick}
+            />
           ))}
         </div>
       </div>

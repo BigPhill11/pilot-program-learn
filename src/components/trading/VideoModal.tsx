@@ -1,17 +1,30 @@
 
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Clock, Eye, User, Award } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
+import { 
+  Star, 
+  User, 
+  Award, 
+  Clock, 
+  Eye, 
+  MessageCircle,
+  ThumbsUp,
+  Send
+} from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import VideoRating from './VideoRating';
+import { useAuth } from '@/hooks/useAuth';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { toast } from 'sonner';
 
 interface TradingVideo {
   id: string;
   title: string;
   description: string;
   video_url: string;
-  thumbnail_url: string | null;
   instructor_name: string;
   instructor_bio: string | null;
   instructor_credentials: string | null;
@@ -19,35 +32,181 @@ interface TradingVideo {
   difficulty_level: string;
   duration_minutes: number | null;
   view_count: number;
-  created_at: string;
 }
 
 interface VideoModalProps {
-  video: TradingVideo | null;
+  video: TradingVideo;
   isOpen: boolean;
   onClose: () => void;
 }
 
-const VideoModal: React.FC<VideoModalProps> = ({ video, isOpen, onClose }) => {
-  useEffect(() => {
-    if (video && isOpen) {
-      // Increment view count when video is opened
-      const incrementViewCount = async () => {
-        try {
-          await supabase
-            .from('trading_videos')
-            .update({ view_count: (video.view_count || 0) + 1 })
-            .eq('id', video.id);
-        } catch (error) {
-          console.error('Error incrementing view count:', error);
-        }
-      };
-      
-      incrementViewCount();
-    }
-  }, [video, isOpen]);
+interface Comment {
+  id: string;
+  content: string;
+  created_at: string;
+  helpful_votes: number;
+  user_id: string;
+  parent_comment_id: string | null;
+}
 
-  if (!video) return null;
+const VideoModal: React.FC<VideoModalProps> = ({ video, isOpen, onClose }) => {
+  const { user } = useAuth();
+  const isMobile = useIsMobile();
+  const [userRating, setUserRating] = useState({
+    clarity_rating: 0,
+    usefulness_rating: 0,
+    entertainment_rating: 0,
+    difficulty_rating: 0
+  });
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [newComment, setNewComment] = useState('');
+  const [hasRated, setHasRated] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isOpen && video) {
+      fetchComments();
+      if (user) {
+        checkExistingRating();
+        incrementViewCount();
+      }
+    }
+  }, [isOpen, video, user]);
+
+  const fetchComments = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('video_comments')
+        .select('*')
+        .eq('video_id', video.id)
+        .is('parent_comment_id', null)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setComments(data || []);
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+    }
+  };
+
+  const checkExistingRating = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('video_ratings')
+        .select('*')
+        .eq('video_id', video.id)
+        .eq('user_id', user!.id)
+        .single();
+
+      if (data) {
+        setUserRating({
+          clarity_rating: data.clarity_rating,
+          usefulness_rating: data.usefulness_rating,
+          entertainment_rating: data.entertainment_rating,
+          difficulty_rating: data.difficulty_rating
+        });
+        setHasRated(true);
+      }
+    } catch (error) {
+      // No existing rating found, which is fine
+    }
+  };
+
+  const incrementViewCount = async () => {
+    try {
+      await supabase
+        .from('trading_videos')
+        .update({ view_count: video.view_count + 1 })
+        .eq('id', video.id);
+    } catch (error) {
+      console.error('Error incrementing view count:', error);
+    }
+  };
+
+  const handleRatingSubmit = async () => {
+    if (!user) {
+      toast.error('You must be logged in to rate videos');
+      return;
+    }
+
+    if (Object.values(userRating).some(rating => rating === 0)) {
+      toast.error('Please rate all categories');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const { error } = await supabase
+        .from('video_ratings')
+        .upsert({
+          video_id: video.id,
+          user_id: user.id,
+          ...userRating
+        });
+
+      if (error) throw error;
+
+      setHasRated(true);
+      toast.success('Rating submitted successfully!');
+    } catch (error) {
+      console.error('Error submitting rating:', error);
+      toast.error('Failed to submit rating');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCommentSubmit = async () => {
+    if (!user) {
+      toast.error('You must be logged in to comment');
+      return;
+    }
+
+    if (!newComment.trim()) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('video_comments')
+        .insert({
+          video_id: video.id,
+          user_id: user.id,
+          content: newComment.trim()
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setComments(prev => [data, ...prev]);
+      setNewComment('');
+      toast.success('Comment added successfully!');
+    } catch (error) {
+      console.error('Error submitting comment:', error);
+      toast.error('Failed to submit comment');
+    }
+  };
+
+  const renderStarRating = (category: keyof typeof userRating, label: string) => {
+    return (
+      <div className="space-y-2">
+        <label className={`text-sm font-medium ${isMobile ? 'text-xs' : ''}`}>{label}</label>
+        <div className="flex gap-1">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <Star
+              key={star}
+              className={`h-6 w-6 cursor-pointer transition-colors ${
+                star <= userRating[category]
+                  ? 'text-yellow-400 fill-current'
+                  : 'text-gray-300 hover:text-yellow-200'
+              }`}
+              onClick={() => setUserRating(prev => ({ ...prev, [category]: star }))}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -58,97 +217,165 @@ const VideoModal: React.FC<VideoModalProps> = ({ video, isOpen, onClose }) => {
     }
   };
 
-  const getCategoryLabel = (category: string) => {
-    switch (category) {
-      case 'company-analysis': return 'Reading Companies';
-      case 'market-psychology': return 'Market Psychology';
-      case 'forecasting': return 'Forecasting';
-      case 'general': return 'General';
-      default: return category;
-    }
-  };
-
-  const getVideoEmbedUrl = (url: string) => {
-    if (url.includes('youtube.com/watch?v=')) {
-      const videoId = url.split('v=')[1]?.split('&')[0];
-      return `https://www.youtube.com/embed/${videoId}`;
-    } else if (url.includes('youtu.be/')) {
-      const videoId = url.split('youtu.be/')[1]?.split('?')[0];
-      return `https://www.youtube.com/embed/${videoId}`;
-    }
-    return url;
-  };
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className={`${isMobile ? 'max-w-[95vw] max-h-[95vh]' : 'max-w-4xl max-h-[90vh]'} overflow-y-auto`}>
         <DialogHeader>
-          <DialogTitle className="text-xl">{video.title}</DialogTitle>
+          <DialogTitle className={`${isMobile ? 'text-lg' : 'text-xl'} text-emerald-800`}>
+            {video.title}
+          </DialogTitle>
         </DialogHeader>
-        
+
         <div className="space-y-6">
-          {/* Video Player */}
-          <div className="aspect-video w-full">
-            <iframe
-              src={getVideoEmbedUrl(video.video_url)}
-              title={video.title}
-              className="w-full h-full rounded-lg"
-              allowFullScreen
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            />
+          {/* Video Embed Placeholder */}
+          <div className="aspect-video bg-black rounded-lg flex items-center justify-center">
+            <div className="text-white text-center">
+              <p className={`${isMobile ? 'text-sm' : ''} mb-2`}>Video Player</p>
+              <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-300`}>
+                URL: {video.video_url}
+              </p>
+            </div>
           </div>
 
           {/* Video Info */}
           <div className="space-y-4">
             <div className="flex flex-wrap gap-2">
-              <Badge 
-                variant="outline" 
-                className={getDifficultyColor(video.difficulty_level)}
-              >
+              <Badge className={getDifficultyColor(video.difficulty_level)}>
                 {video.difficulty_level}
               </Badge>
-              <Badge variant="secondary">
-                {getCategoryLabel(video.topic_category)}
+              <Badge variant="outline">
+                {video.topic_category.replace('-', ' ')}
               </Badge>
+            </div>
+
+            <div className={`flex items-center gap-4 ${isMobile ? 'text-sm' : ''} text-muted-foreground`}>
+              <div className="flex items-center gap-1">
+                <User className="h-4 w-4" />
+                <span>{video.instructor_name}</span>
+                {video.instructor_credentials && (
+                  <Award className="h-3 w-3 text-emerald-600" />
+                )}
+              </div>
               {video.duration_minutes && (
-                <Badge variant="outline" className="flex items-center gap-1">
-                  <Clock className="h-3 w-3" />
-                  {video.duration_minutes}m
-                </Badge>
+                <div className="flex items-center gap-1">
+                  <Clock className="h-4 w-4" />
+                  <span>{video.duration_minutes} min</span>
+                </div>
               )}
-              <Badge variant="outline" className="flex items-center gap-1">
-                <Eye className="h-3 w-3" />
-                {video.view_count} views
-              </Badge>
+              <div className="flex items-center gap-1">
+                <Eye className="h-4 w-4" />
+                <span>{video.view_count} views</span>
+              </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <User className="h-4 w-4" />
-              <span className="font-medium">{video.instructor_name}</span>
-              {video.instructor_credentials && (
-                <Award className="h-4 w-4 text-emerald-600" />
-              )}
-            </div>
-
-            {video.description && (
-              <p className="text-muted-foreground">{video.description}</p>
-            )}
+            <p className={`${isMobile ? 'text-sm' : ''} text-muted-foreground`}>
+              {video.description}
+            </p>
 
             {video.instructor_bio && (
-              <div className="bg-muted/50 p-4 rounded-lg">
-                <h4 className="font-semibold mb-2">About the Instructor</h4>
-                <p className="text-sm text-muted-foreground">{video.instructor_bio}</p>
+              <div className="bg-emerald-50 p-4 rounded-lg">
+                <h4 className={`font-semibold text-emerald-800 mb-2 ${isMobile ? 'text-sm' : ''}`}>
+                  About the Instructor
+                </h4>
+                <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-emerald-700`}>
+                  {video.instructor_bio}
+                </p>
                 {video.instructor_credentials && (
-                  <p className="text-sm text-muted-foreground mt-1">
-                    <strong>Credentials:</strong> {video.instructor_credentials}
+                  <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-emerald-600 mt-1 font-medium`}>
+                    Credentials: {video.instructor_credentials}
                   </p>
                 )}
               </div>
             )}
           </div>
 
-          {/* Rating and Comments Section */}
-          <VideoRating videoId={video.id} />
+          <Separator />
+
+          {/* Rating Section */}
+          {user && (
+            <div className="space-y-4">
+              <h3 className={`font-semibold text-emerald-800 ${isMobile ? 'text-base' : 'text-lg'}`}>
+                Rate This Video
+              </h3>
+              
+              <div className={`grid ${isMobile ? 'grid-cols-1 gap-4' : 'grid-cols-2 gap-6'}`}>
+                {renderStarRating('clarity_rating', 'Clarity')}
+                {renderStarRating('usefulness_rating', 'Usefulness')}
+                {renderStarRating('entertainment_rating', 'Entertainment')}
+                {renderStarRating('difficulty_rating', 'Difficulty')}
+              </div>
+
+              <Button
+                onClick={handleRatingSubmit}
+                disabled={loading || hasRated}
+                className="bg-emerald-600 hover:bg-emerald-700"
+                size={isMobile ? 'sm' : 'default'}
+              >
+                {hasRated ? 'Rating Updated' : 'Submit Rating'}
+              </Button>
+            </div>
+          )}
+
+          <Separator />
+
+          {/* Comments Section */}
+          <div className="space-y-4">
+            <h3 className={`font-semibold text-emerald-800 flex items-center gap-2 ${isMobile ? 'text-base' : 'text-lg'}`}>
+              <MessageCircle className="h-5 w-5" />
+              Comments ({comments.length})
+            </h3>
+
+            {user && (
+              <div className="space-y-3">
+                <Textarea
+                  placeholder="Share your thoughts about this video..."
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  className="border-emerald-200 focus:border-emerald-400"
+                />
+                <Button
+                  onClick={handleCommentSubmit}
+                  disabled={!newComment.trim()}
+                  size={isMobile ? 'sm' : 'default'}
+                  className="bg-emerald-600 hover:bg-emerald-700"
+                >
+                  <Send className="mr-2 h-4 w-4" />
+                  Post Comment
+                </Button>
+              </div>
+            )}
+
+            <div className="space-y-3">
+              {comments.map((comment) => (
+                <div key={comment.id} className="bg-gray-50 p-4 rounded-lg">
+                  <div className={`flex items-center justify-between mb-2 ${isMobile ? 'text-xs' : 'text-sm'}`}>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <User className="h-4 w-4" />
+                      <span>User</span>
+                    </div>
+                    <span className="text-muted-foreground">
+                      {new Date(comment.created_at).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <p className={`${isMobile ? 'text-sm' : ''} mb-2`}>{comment.content}</p>
+                  <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="sm" className="h-8 px-2">
+                      <ThumbsUp className="h-3 w-3 mr-1" />
+                      <span className={isMobile ? 'text-xs' : 'text-sm'}>
+                        {comment.helpful_votes}
+                      </span>
+                    </Button>
+                  </div>
+                </div>
+              ))}
+
+              {comments.length === 0 && (
+                <p className={`text-center text-muted-foreground ${isMobile ? 'text-sm' : ''} py-4`}>
+                  No comments yet. Be the first to share your thoughts!
+                </p>
+              )}
+            </div>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
