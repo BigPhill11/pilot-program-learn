@@ -9,6 +9,51 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      career_videos: {
+        Row: {
+          career_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          duration: string
+          id: string
+          level: number
+          speaker_type: string
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+          video_url: string
+        }
+        Insert: {
+          career_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          duration: string
+          id?: string
+          level: number
+          speaker_type: string
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+          video_url: string
+        }
+        Update: {
+          career_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          duration?: string
+          id?: string
+          level?: number
+          speaker_type?: string
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+          video_url?: string
+        }
+        Relationships: []
+      }
       comment_votes: {
         Row: {
           comment_id: string
@@ -59,6 +104,60 @@ export type Database = {
           id?: string
           login_date?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      financial_terms_database: {
+        Row: {
+          analogy: string | null
+          category: string
+          created_at: string
+          created_by: string | null
+          definition: string
+          difficulty_level: string
+          example_usage: string | null
+          id: string
+          real_world_example: string | null
+          related_terms: string[] | null
+          source: string | null
+          status: string
+          tags: string[] | null
+          term: string
+          updated_at: string
+        }
+        Insert: {
+          analogy?: string | null
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          definition: string
+          difficulty_level?: string
+          example_usage?: string | null
+          id?: string
+          real_world_example?: string | null
+          related_terms?: string[] | null
+          source?: string | null
+          status?: string
+          tags?: string[] | null
+          term: string
+          updated_at?: string
+        }
+        Update: {
+          analogy?: string | null
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          definition?: string
+          difficulty_level?: string
+          example_usage?: string | null
+          id?: string
+          real_world_example?: string | null
+          related_terms?: string[] | null
+          source?: string | null
+          status?: string
+          tags?: string[] | null
+          term?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -275,6 +374,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      phils_friends_videos: {
+        Row: {
+          category: string
+          company: string
+          course_category: string
+          created_at: string
+          created_by: string | null
+          description: string
+          duration: string
+          id: string
+          name: string
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+          video_url: string
+        }
+        Insert: {
+          category: string
+          company: string
+          course_category: string
+          created_at?: string
+          created_by?: string | null
+          description: string
+          duration: string
+          id?: string
+          name: string
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+          video_url: string
+        }
+        Update: {
+          category?: string
+          company?: string
+          course_category?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          duration?: string
+          id?: string
+          name?: string
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+          video_url?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -657,6 +804,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      bulk_insert_financial_terms: {
+        Args: { terms_data: Json }
+        Returns: {
+          inserted_count: number
+          error_count: number
+          errors: string[]
+        }[]
+      }
       calculate_user_streak: {
         Args: { p_user_id: string }
         Returns: number
