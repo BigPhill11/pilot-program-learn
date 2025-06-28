@@ -30,10 +30,10 @@ const IndustryDeepDiveTab = () => {
                         <div className="p-6 flex-grow">
                             <div className="flex items-center justify-center mb-4">
                                 <div className="p-4 rounded-full bg-muted transition-transform group-hover:scale-110">
-                                    {React.cloneElement(industry.icon, { className: 'h-8 w-8 text-primary' })}
+                                    <industry.icon className='h-8 w-8 text-primary' />
                                 </div>
                             </div>
-                            <CardTitle className="text-xl mb-2 text-center">{industry.name}</CardTitle>
+                            <CardTitle className="text-xl mb-2 text-center">{industry.name || industry.title}</CardTitle>
                             <Badge variant="outline" className="mx-auto block w-fit mb-4">AI Insights Available</Badge>
                             
                             <CardDescription className="text-sm leading-relaxed">

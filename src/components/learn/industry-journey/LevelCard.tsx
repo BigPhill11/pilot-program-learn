@@ -19,6 +19,9 @@ const LevelCard: React.FC<LevelCardProps> = ({
   onLevelSelect
 }) => {
   const isMobile = useIsMobile();
+  const levelId = level.level || level.id;
+  const focusArea = level.focusArea || level.title;
+  const topics = level.sampleTopics || level.keyTakeaways || [];
 
   return (
     <Card 
@@ -32,19 +35,19 @@ const LevelCard: React.FC<LevelCardProps> = ({
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className={`${isMobile ? 'text-base' : 'text-lg'}`}>
-            Level {level.level}
+            Level {levelId}
           </CardTitle>
           {isCompleted && (
             <CheckCircle className="h-5 w-5 text-green-500" />
           )}
         </div>
         <h4 className={`font-medium ${isMobile ? 'text-sm' : ''}`}>
-          {level.focusArea}
+          {focusArea}
         </h4>
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
-          {level.sampleTopics.slice(0, 3).map((topic: string, idx: number) => (
+          {topics.slice(0, 3).map((topic: string, idx: number) => (
             <div key={idx} className="flex items-center gap-2">
               <div className={`w-2 h-2 rounded-full ${
                 isCompleted ? 'bg-green-500' : 

@@ -49,11 +49,15 @@ const IndustryJourneyNode: React.FC<IndustryJourneyNodeProps> = ({ levelData, st
             <config.Icon className={cn('h-6 w-6', config.iconColor)} />
           </div>
           <CardHeader>
-            <CardTitle className={cn('text-xl', config.textColor)}>Level {levelData.level}: {levelData.focusArea}</CardTitle>
+            <CardTitle className={cn('text-xl', config.textColor)}>
+              Level {levelData.level || levelData.id}: {levelData.focusArea || levelData.title}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-              {levelData.sampleTopics.map(topic => <li key={topic}>{topic}</li>)}
+              {(levelData.sampleTopics || levelData.keyTakeaways || []).map(topic => 
+                <li key={topic}>{topic}</li>
+              )}
             </ul>
             <Button variant={status === 'active' ? 'default' : 'secondary'} disabled={status === 'locked'} className="w-full mt-4">
               {config.buttonText}

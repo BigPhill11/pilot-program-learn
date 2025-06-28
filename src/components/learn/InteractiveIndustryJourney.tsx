@@ -62,7 +62,7 @@ const InteractiveIndustryJourney: React.FC<InteractiveIndustryJourneyProps> = ({
     const content = level.interactiveContent?.[difficulty];
     if (!content) {
       return {
-        explanation: `Learn about ${level.focusArea} in ${journey.name}`,
+        explanation: `Learn about ${level.focusArea || level.title} in ${journey.name || journey.title}`,
         realWorldExample: "This is an important concept in the industry.",
         keyTakeaways: ["Understanding this topic is crucial", "Apply this knowledge in practice"]
       };
@@ -71,7 +71,7 @@ const InteractiveIndustryJourney: React.FC<InteractiveIndustryJourneyProps> = ({
   };
 
   if (selectedLevelId) {
-    const selectedLevel = journey.levels.find(level => level.level === selectedLevelId);
+    const selectedLevel = journey.levels.find(level => (level.level || level.id) === selectedLevelId);
     if (selectedLevel) {
       return (
         <LevelContent

@@ -28,8 +28,8 @@ const IndustryJourney = ({ journey, onBack }: { journey: IndustryJourneyData; on
       
       <header className="text-center mb-12">
         <div className="flex justify-center items-center gap-4 mb-2">
-          {React.cloneElement(journey.icon, { className: 'h-10 w-10 text-primary' })}
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">{journey.name}</h2>
+          <journey.icon className='h-10 w-10 text-primary' />
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">{journey.name || journey.title}</h2>
         </div>
         <p className="mt-3 max-w-2xl mx-auto text-lg text-muted-foreground">
           Explore this industry's fundamentals, operations, and future outlook.
@@ -46,7 +46,7 @@ const IndustryJourney = ({ journey, onBack }: { journey: IndustryJourneyData; on
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-700 leading-relaxed">{journey.overview}</p>
+            <p className="text-gray-700 leading-relaxed">{journey.overview || journey.description}</p>
           </CardContent>
         </Card>
 
@@ -59,7 +59,7 @@ const IndustryJourney = ({ journey, onBack }: { journey: IndustryJourneyData; on
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-700 leading-relaxed">{journey.howItWorks}</p>
+            <p className="text-gray-700 leading-relaxed">{journey.howItWorks || 'Learn about the fundamental operations and business models in this industry.'}</p>
           </CardContent>
         </Card>
       </div>
@@ -74,7 +74,7 @@ const IndustryJourney = ({ journey, onBack }: { journey: IndustryJourneyData; on
         </CardHeader>
         <CardContent>
           <p className="text-purple-800 leading-relaxed font-medium">
-            {journey.futureOutlook}
+            {journey.futureOutlook || 'This industry is poised for continued growth and innovation, driven by technological advances and changing consumer demands.'}
           </p>
         </CardContent>
       </Card>
@@ -113,10 +113,10 @@ const IndustryJourney = ({ journey, onBack }: { journey: IndustryJourneyData; on
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {journey.levels.slice(0, 6).map((level) => (
-              <div key={level.level} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
-                <h4 className="font-semibold mb-2">Level {level.level}: {level.focusArea}</h4>
+              <div key={level.level || level.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
+                <h4 className="font-semibold mb-2">Level {level.level || level.id}: {level.focusArea || level.title}</h4>
                 <ul className="text-sm text-muted-foreground space-y-1">
-                  {level.sampleTopics.slice(0, 3).map((topic, index) => (
+                  {(level.sampleTopics || level.keyTakeaways).slice(0, 3).map((topic, index) => (
                     <li key={index}>• {topic}</li>
                   ))}
                 </ul>

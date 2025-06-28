@@ -31,7 +31,7 @@ const JourneyOverview: React.FC<JourneyOverviewProps> = ({
         </Button>
         <div className="flex-1">
           <h1 className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold`}>
-            {journey.name} Learning Journey
+            {journey.name || journey.title} Learning Journey
           </h1>
           <p className="text-muted-foreground">
             Interactive lessons with multiple difficulty levels
@@ -43,16 +43,17 @@ const JourneyOverview: React.FC<JourneyOverviewProps> = ({
 
       <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'} gap-4`}>
         {journey.levels.map((level: any) => {
-          const isCompleted = progress.completedLevels.includes(level.level);
-          const isUnlocked = level.level <= progress.currentLevel;
+          const levelId = level.level || level.id;
+          const isCompleted = progress.completedLevels.includes(levelId);
+          const isUnlocked = levelId <= progress.currentLevel;
           
           return (
             <LevelCard
-              key={level.level}
+              key={levelId}
               level={level}
               isCompleted={isCompleted}
               isUnlocked={isUnlocked}
-              onLevelSelect={() => onLevelSelect(level.level)}
+              onLevelSelect={() => onLevelSelect(levelId)}
             />
           );
         })}
