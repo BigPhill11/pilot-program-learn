@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -79,6 +78,15 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ level }) => {
     updateStudyCards(updatedCards);
   };
 
+  const shuffleArray = (array: any[]) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
   const handleMasteryChoice = (masteryLevel: 'mastered' | 'learning' | 'unsure') => {
     if (studyCards.length === 0) return;
 
@@ -98,14 +106,24 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ level }) => {
 
     saveFlashcards(updatedCards);
 
-    // Move to next card or end study session
-    if (currentIndex < studyCards.length - 1) {
-      nextCard();
-    } else {
-      // Study session complete
+    // Shuffle cards if user is still learning or unsure
+    if (masteryLevel === 'learning' || masteryLevel === 'unsure') {
+      const remainingCards = studyCards.filter((_, idx) => idx !== currentIndex);
+      const shuffledRemaining = shuffleArray(remainingCards);
+      setStudyCards(shuffledRemaining);
       setCurrentIndex(0);
       setIsFlipped(false);
       setShowExamples(false);
+    } else {
+      // Move to next card or end study session for mastered cards
+      if (currentIndex < studyCards.length - 1) {
+        nextCard();
+      } else {
+        // Study session complete
+        setCurrentIndex(0);
+        setIsFlipped(false);
+        setShowExamples(false);
+      }
     }
   };
 
@@ -210,16 +228,20 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ level }) => {
       </div>
 
       {/* Flashcard with flip animation */}
-      <div className="perspective-1000 min-h-[400px]">
+      <div className="perspective-1000">
         <div 
-          className={`relative w-full min-h-[400px] transition-transform duration-700 transform-style-preserve-3d cursor-pointer ${
+          className={`relative w-full transition-transform duration-700 transform-style-preserve-3d cursor-pointer ${
             isFlipped ? 'rotate-y-180' : ''
-          }`}
+          } ${showExamples ? 'min-h-[600px]' : 'min-h-[400px]'}`}
           onClick={() => !isFlipped && setIsFlipped(true)}
         >
           {/* Front of card - Term */}
-          <Card className="absolute inset-0 backface-hidden border-2 hover:border-primary/40 transition-colors">
-            <CardContent className="p-8 flex items-center justify-center min-h-[400px]">
+          <Card className={`absolute inset-0 backface-hidden border-2 hover:border-primary/40 transition-colors ${
+            showExamples ? 'min-h-[600px]' : 'min-h-[400px]'
+          }`}>
+            <CardContent className={`p-8 flex items-center justify-center ${
+              showExamples ? 'min-h-[600px]' : 'min-h-[400px]'
+            }`}>
               <div className="text-center">
                 <h3 className="text-3xl font-bold mb-4 text-primary">{currentCard.term}</h3>
                 <p className="text-muted-foreground">Click to reveal definition</p>
@@ -228,8 +250,12 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ level }) => {
           </Card>
 
           {/* Back of card - Definition and Examples */}
-          <Card className="absolute inset-0 backface-hidden rotate-y-180 bg-blue-50 border-2 border-blue-200">
-            <CardContent className="p-8 min-h-[400px] flex flex-col">
+          <Card className={`absolute inset-0 backface-hidden rotate-y-180 bg-blue-50 border-2 border-blue-200 ${
+            showExamples ? 'min-h-[600px]' : 'min-h-[400px]'
+          }`}>
+            <CardContent className={`p-8 flex flex-col ${
+              showExamples ? 'min-h-[600px]' : 'min-h-[400px]'
+            }`}>
               <div className="flex-1">
                 <div className="text-center mb-6">
                   <h4 className="text-lg font-semibold mb-3 text-blue-800">{currentCard.term}</h4>
@@ -254,7 +280,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ level }) => {
                 )}
                 
                 {showExamples && (
-                  <div className="grid gap-4">
+                  <div className="grid gap-4 mb-6">
                     {currentCard.philExample && (
                       <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
                         <div className="flex items-center gap-2 mb-2">
@@ -279,7 +305,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ level }) => {
               </div>
 
               {/* Mastery Options */}
-              <div className="mt-6 space-y-3">
+              <div className="mt-auto space-y-3">
                 <p className="text-center text-sm font-medium text-gray-600">How well do you know this?</p>
                 <div className="grid grid-cols-3 gap-2">
                   <Button 
