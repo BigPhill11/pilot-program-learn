@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,6 +33,17 @@ const FlashcardUploader: React.FC<FlashcardUploaderProps> = ({ onUploadComplete 
     }
   };
 
+  const saveAndNotify = (updatedCards: any[], levelKey: string) => {
+    localStorage.setItem(levelKey, JSON.stringify(updatedCards));
+    onUploadComplete();
+    
+    // Trigger update event for the game
+    const levelName = levelKey.replace('flashcards_', '') as 'beginner' | 'intermediate' | 'pro';
+    window.dispatchEvent(new CustomEvent('flashcardsUpdated', { 
+      detail: { level: levelName, cards: updatedCards } 
+    }));
+  };
+
   const handleCSVUpload = async () => {
     if (!file || !level) {
       toast.error('Please select a file and difficulty level');
@@ -60,10 +70,9 @@ const FlashcardUploader: React.FC<FlashcardUploaderProps> = ({ onUploadComplete 
       const storageKey = `flashcards_${level}`;
       const existing = JSON.parse(localStorage.getItem(storageKey) || '[]');
       const updated = [...existing, ...flashcards];
-      localStorage.setItem(storageKey, JSON.stringify(updated));
-
+      
+      saveAndNotify(updated, storageKey);
       toast.success(`Uploaded ${flashcards.length} flashcards to ${level} level`);
-      onUploadComplete();
       setFile(null);
       setLevel('');
     } catch (error) {
@@ -91,14 +100,13 @@ const FlashcardUploader: React.FC<FlashcardUploaderProps> = ({ onUploadComplete 
     const storageKey = `flashcards_${level}`;
     const existing = JSON.parse(localStorage.getItem(storageKey) || '[]');
     const updated = [...existing, newCard];
-    localStorage.setItem(storageKey, JSON.stringify(updated));
-
+    
+    saveAndNotify(updated, storageKey);
     toast.success('Flashcard added successfully!');
     setNewTerm('');
     setNewDefinition('');
     setPhilExample('');
     setRealWorldExample('');
-    onUploadComplete();
   };
 
   return (
