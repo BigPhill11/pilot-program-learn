@@ -71,6 +71,13 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ level }) => {
     setShowExamples(false);
   };
 
+  const replayAllCards = () => {
+    setStudyCards([...allFlashcards]);
+    setCurrentIndex(0);
+    setIsFlipped(false);
+    setShowExamples(false);
+  };
+
   const saveFlashcards = (updatedCards: Flashcard[]) => {
     const storageKey = `flashcards_${level}`;
     localStorage.setItem(storageKey, JSON.stringify(updatedCards));
@@ -175,16 +182,24 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ level }) => {
               You've completed all available flashcards for {level} level.
             </p>
             <Progress value={progressPercentage} className="mb-4" />
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground mb-6">
               {masteredCards} out of {totalCards} cards mastered ({Math.round(progressPercentage)}%)
             </p>
-            <Button 
-              onClick={() => updateStudyCards(allFlashcards)} 
-              className="mt-4"
-              variant="outline"
-            >
-              Review All Cards
-            </Button>
+            <div className="flex gap-4 justify-center">
+              <Button 
+                onClick={() => updateStudyCards(allFlashcards)} 
+                variant="outline"
+              >
+                Review Unmastered Cards
+              </Button>
+              <Button 
+                onClick={replayAllCards}
+                className="bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                <RotateCcw className="h-4 w-4 mr-2" />
+                Replay All Cards
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
