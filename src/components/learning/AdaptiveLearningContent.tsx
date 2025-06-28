@@ -1,6 +1,6 @@
-
 import React from 'react';
 import LearningModule from './LearningModule';
+import InteractiveLearningHub from './InteractiveLearningHub';
 import HighlightableTerm from '@/components/HighlightableTerm';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -85,7 +85,7 @@ const AdaptiveLearningContent: React.FC = () => {
   );
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="max-w-4xl mx-auto p-6 space-y-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Financial Learning Hub</h1>
         <p className="text-muted-foreground">
@@ -93,59 +93,70 @@ const AdaptiveLearningContent: React.FC = () => {
         </p>
       </div>
 
-      <LearningModule
-        title="Stock Basics"
-        level="beginner"
-        content={stockBasicsContent}
-        quiz={{
-          topicId: "stock_basics",
-          question: "What does owning a stock represent?",
-          options: [
-            "Lending money to a company",
-            "Owning part of a company", 
-            "Working for a company",
-            "Buying products from a company"
-          ],
-          correctAnswerIndex: 1,
-          feedbackForIncorrect: "Remember: A stock represents ownership! You become a part-owner of the company, not just a customer or lender."
-        }}
-      />
+      {/* Interactive Learning Hub */}
+      <InteractiveLearningHub />
 
-      <LearningModule
-        title="Understanding Dividends"
-        level="intermediate"
-        content={dividendContent}
-        quiz={{
-          topicId: "dividends",
-          question: "If a stock costs $100 and pays $4 in annual dividends, what's the dividend yield?",
-          options: [
-            "2%",
-            "4%",
-            "6%", 
-            "8%"
-          ],
-          correctAnswerIndex: 1,
-          feedbackForIncorrect: "Dividend yield = Annual dividends ÷ Stock price. So $4 ÷ $100 = 4%"
-        }}
-      />
+      {/* Separator */}
+      <div className="border-t border-gray-200 my-8"></div>
 
-      <LearningModule
-        title="Options Trading"
-        level="advanced"
-        content={optionsContent}
-        quiz={{
-          topicId: "options",
-          question: "You buy a call option for XYZ stock with a strike price of $50. XYZ is now trading at $60. What should you do?",
-          options: [
-            "Let the option expire worthless",
-            "Exercise the option to buy at $50",
-            "Sell the option immediately",
-            "Wait for the stock to go higher"
-          ],
-          correctAnswerIndex: 1,
-          feedbackForIncorrect: "Since the stock is at $60 and your call option lets you buy at $50, you should exercise it to capture the $10 difference!"
-        }}
-      />
+      {/* Existing Learning Modules */}
+      <div className="space-y-6">
+        <h2 className="text-2xl font-bold">Learning Modules</h2>
+        
+        <LearningModule
+          title="Stock Basics"
+          level="beginner"
+          content={stockBasicsContent}
+          quiz={{
+            topicId: "stock_basics",
+            question: "What does owning a stock represent?",
+            options: [
+              "Lending money to a company",
+              "Owning part of a company", 
+              "Working for a company",
+              "Buying products from a company"
+            ],
+            correctAnswerIndex: 1,
+            feedbackForIncorrect: "Remember: A stock represents ownership! You become a part-owner of the company, not just a customer or lender."
+          }}
+        />
+
+        <LearningModule
+          title="Understanding Dividends"
+          level="intermediate"
+          content={dividendContent}
+          quiz={{
+            topicId: "dividends",
+            question: "If a stock costs $100 and pays $4 in annual dividends, what's the dividend yield?",
+            options: [
+              "2%",
+              "4%",
+              "6%", 
+              "8%"
+            ],
+            correctAnswerIndex: 1,
+            feedbackForIncorrect: "Dividend yield = Annual dividends ÷ Stock price. So $4 ÷ $100 = 4%"
+          }}
+        />
+
+        <LearningModule
+          title="Options Trading"
+          level="advanced"
+          content={optionsContent}
+          quiz={{
+            topicId: "options",
+            question: "You buy a call option for XYZ stock with a strike price of $50. XYZ is now trading at $60. What should you do?",
+            options: [
+              "Let the option expire worthless",
+              "Exercise the option to buy at $50",
+              "Sell the option immediately",
+              "Wait for the stock to go higher"
+            ],
+            correctAnswerIndex: 1,
+            feedbackForIncorrect: "Since the stock is at $60 and your call option lets you buy at $50, you should exercise it to capture the $10 difference!"
+          }}
+        />
+      </div>
     </div>
   );
 };
