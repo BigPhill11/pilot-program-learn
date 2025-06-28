@@ -23,7 +23,6 @@ interface PowerUp {
   description: string;
   cost: number;
   icon: React.ReactNode;
-  owned: number;
 }
 
 interface GameState {
