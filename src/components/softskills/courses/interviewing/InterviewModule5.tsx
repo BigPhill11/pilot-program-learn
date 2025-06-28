@@ -7,6 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, Mail, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import AudioRecorder from './AudioRecorder';
 
 interface InterviewModule5Props {
   onComplete: () => void;
@@ -42,6 +43,19 @@ const InterviewModule5: React.FC<InterviewModule5Props> = ({ onComplete, onBack 
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="prose max-w-none">
+            <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400 mb-6">
+              <h3 className="text-blue-800 font-semibold mb-2">🎯 Module Objectives:</h3>
+              <p className="text-blue-700 mb-2">
+                Master professional post-interview communication that reinforces your candidacy and 
+                maintains relationships regardless of outcome.
+              </p>
+              <p className="text-blue-700 text-sm">
+                <strong>Why this matters:</strong> The interview doesn't end when you leave the room. 
+                Professional follow-up can differentiate you from other candidates, while poor communication 
+                can undo a great interview. Finance is relationship-driven, and this shows your client-ready professionalism.
+              </p>
+            </div>
+
             <p className="text-lg">
               How you handle post-interview communication can make or break your candidacy. Learn to maintain 
               professionalism whether you receive good news or bad news.
@@ -70,6 +84,10 @@ const InterviewModule5: React.FC<InterviewModule5Props> = ({ onComplete, onBack 
                 onChange={(e) => setThankYouNote(e.target.value)}
                 className="min-h-32"
               />
+              <AudioRecorder 
+                onTranscription={(text) => setThankYouNote(prev => prev + '\n\n' + text)}
+                placeholder="Record your thank you note. Make it personal and reference specific conversation points."
+              />
             </div>
 
             <div>
@@ -82,6 +100,10 @@ const InterviewModule5: React.FC<InterviewModule5Props> = ({ onComplete, onBack 
                 value={rejectionResponse}
                 onChange={(e) => setRejectionResponse(e.target.value)}
                 className="min-h-32"
+              />
+              <AudioRecorder 
+                onTranscription={(text) => setRejectionResponse(prev => prev + '\n\n' + text)}
+                placeholder="Record a gracious rejection response that maintains professionalism and future opportunities."
               />
             </div>
           </div>

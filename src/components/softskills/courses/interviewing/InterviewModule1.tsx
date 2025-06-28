@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, Target, Lightbulb, CheckCircle, Play, Trophy, Star } from 'lucide-react';
 import { toast } from 'sonner';
+import AudioRecorder from './AudioRecorder';
 
 interface InterviewModule1Props {
   onComplete: () => void;
@@ -100,6 +100,19 @@ const InterviewModule1: React.FC<InterviewModule1Props> = ({ onComplete, onBack 
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="prose max-w-none">
+                <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400 mb-6">
+                  <h3 className="text-blue-800 font-semibold mb-2">🎯 Module Objectives:</h3>
+                  <p className="text-blue-700 mb-2">
+                    This foundational module builds your interview confidence and preparation strategy. 
+                    You'll develop the core narratives and mindset that separate good candidates from great ones.
+                  </p>
+                  <p className="text-blue-700 text-sm">
+                    <strong>Why this matters:</strong> First impressions are everything in finance interviews. 
+                    Having a clear story and confident delivery sets the tone for the entire conversation 
+                    and shows you've done the self-reflection work that top firms expect.
+                  </p>
+                </div>
+
                 <p className="text-lg">
                   Welcome to Module 1! This foundational module will set you up for interview success by building 
                   the right mindset and preparation strategies.
@@ -111,7 +124,7 @@ const InterviewModule1: React.FC<InterviewModule1Props> = ({ onComplete, onBack 
                 </p>
                 
                 <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400 my-6">
-                  <h3 className="text-blue-800 font-semibold mb-2">🎯 Module 1 Objectives:</h3>
+                  <h3 className="text-blue-800 font-semibold mb-2">🎯 What You'll Master:</h3>
                   <ul className="text-blue-700 space-y-1">
                     <li>• Develop your authentic "Why Finance" narrative</li>
                     <li>• Create a compelling 60-second elevator pitch</li>
@@ -159,6 +172,18 @@ const InterviewModule1: React.FC<InterviewModule1Props> = ({ onComplete, onBack 
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="prose max-w-none">
+                <div className="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400 mb-4">
+                  <h3 className="text-yellow-800 font-semibold mb-2">🎯 Objective:</h3>
+                  <p className="text-yellow-700 mb-2">
+                    Develop an authentic, compelling narrative that explains your genuine interest in finance.
+                  </p>
+                  <p className="text-yellow-700 text-sm">
+                    <strong>Why this matters:</strong> Generic answers like "I'm good with numbers" immediately 
+                    signal lack of self-awareness. Your story should be memorable and demonstrate deeper thinking 
+                    about your career path.
+                  </p>
+                </div>
+
                 <p>
                   Your "Why Finance" story is the foundation of every great interview. It should be authentic, 
                   specific, and demonstrate genuine passion for the field.
@@ -182,6 +207,11 @@ const InterviewModule1: React.FC<InterviewModule1Props> = ({ onComplete, onBack 
                   value={whyFinance}
                   onChange={(e) => setWhyFinance(e.target.value)}
                   className="min-h-32"
+                />
+                
+                <AudioRecorder 
+                  onTranscription={(text) => setWhyFinance(prev => prev + '\n\n' + text)}
+                  placeholder="Tell your authentic 'Why Finance' story. What sparked your interest? What aspects excite you most?"
                 />
                 
                 <div className="grid md:grid-cols-2 gap-4 text-sm">
@@ -225,6 +255,18 @@ const InterviewModule1: React.FC<InterviewModule1Props> = ({ onComplete, onBack 
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="prose max-w-none">
+                <div className="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-400 mb-4">
+                  <h3 className="text-purple-800 font-semibold mb-2">🎯 Objective:</h3>
+                  <p className="text-purple-700 mb-2">
+                    Create a concise, compelling 60-second introduction that makes a strong first impression.
+                  </p>
+                  <p className="text-purple-700 text-sm">
+                    <strong>Why this matters:</strong> Your elevator pitch sets the tone for the entire interview. 
+                    It's often the first substantial thing you say, and interviewers form quick judgments. 
+                    A polished pitch shows preparation and professionalism.
+                  </p>
+                </div>
+
                 <p>
                   Your elevator pitch is a concise, compelling introduction that you can deliver in 60 seconds or less. 
                   It's your chance to make a strong first impression and set the tone for the entire interview.
@@ -252,6 +294,11 @@ const InterviewModule1: React.FC<InterviewModule1Props> = ({ onComplete, onBack 
                   value={elevatorPitch}
                   onChange={(e) => setElevatorPitch(e.target.value)}
                   className="min-h-32"
+                />
+                
+                <AudioRecorder 
+                  onTranscription={(text) => setElevatorPitch(prev => prev + '\n\n' + text)}
+                  placeholder="Record your 60-second elevator pitch. Practice until it sounds natural and confident!"
                 />
                 
                 <div className="flex justify-between text-sm text-muted-foreground">
@@ -292,6 +339,18 @@ const InterviewModule1: React.FC<InterviewModule1Props> = ({ onComplete, onBack 
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="prose max-w-none">
+                <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-400 mb-4">
+                  <h3 className="text-green-800 font-semibold mb-2">🎯 Objective:</h3>
+                  <p className="text-green-700 mb-2">
+                    Master the STAR framework for structured, compelling behavioral storytelling.
+                  </p>
+                  <p className="text-green-700 text-sm">
+                    <strong>Why this matters:</strong> Behavioral questions can make or break your interview. 
+                    The STAR method ensures your stories are structured, impactful, and highlight your 
+                    specific contributions rather than rambling narratives.
+                  </p>
+                </div>
+
                 <p>
                   The STAR method (Situation, Task, Action, Result) is your secret weapon for behavioral interviews. 
                   It provides structure for compelling storytelling that showcases your skills and impact.
@@ -334,6 +393,10 @@ const InterviewModule1: React.FC<InterviewModule1Props> = ({ onComplete, onBack 
                       onChange={(e) => setStarStory({...starStory, situation: e.target.value})}
                       className="mt-1"
                     />
+                    <AudioRecorder 
+                      onTranscription={(text) => setStarStory(prev => ({...prev, situation: prev.situation + '\n\n' + text}))}
+                      placeholder="Describe the challenging situation you faced..."
+                    />
                   </div>
                   <div>
                     <label className="text-sm font-medium">Task (Your responsibility)</label>
@@ -342,6 +405,10 @@ const InterviewModule1: React.FC<InterviewModule1Props> = ({ onComplete, onBack 
                       value={starStory.task}
                       onChange={(e) => setStarStory({...starStory, task: e.target.value})}
                       className="mt-1"
+                    />
+                    <AudioRecorder 
+                      onTranscription={(text) => setStarStory(prev => ({...prev, task: prev.task + '\n\n' + text}))}
+                      placeholder="What was your specific responsibility in this situation?"
                     />
                   </div>
                   <div>
@@ -352,6 +419,10 @@ const InterviewModule1: React.FC<InterviewModule1Props> = ({ onComplete, onBack 
                       onChange={(e) => setStarStory({...starStory, action: e.target.value})}
                       className="mt-1"
                     />
+                    <AudioRecorder 
+                      onTranscription={(text) => setStarStory(prev => ({...prev, action: prev.action + '\n\n' + text}))}
+                      placeholder="Detail the specific actions YOU took to address the challenge..."
+                    />
                   </div>
                   <div>
                     <label className="text-sm font-medium">Result (Quantified outcome)</label>
@@ -360,6 +431,10 @@ const InterviewModule1: React.FC<InterviewModule1Props> = ({ onComplete, onBack 
                       value={starStory.result}
                       onChange={(e) => setStarStory({...starStory, result: e.target.value})}
                       className="mt-1"
+                    />
+                    <AudioRecorder 
+                      onTranscription={(text) => setStarStory(prev => ({...prev, result: prev.result + '\n\n' + text}))}
+                      placeholder="What was the quantified result of your actions?"
                     />
                   </div>
                 </div>

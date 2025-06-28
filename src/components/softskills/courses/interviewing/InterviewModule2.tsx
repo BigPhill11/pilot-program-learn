@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, Users, Star, Target, Trophy, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import AudioRecorder from './AudioRecorder';
 
 interface InterviewModule2Props {
   onComplete: () => void;
@@ -99,6 +100,19 @@ const InterviewModule2: React.FC<InterviewModule2Props> = ({ onComplete, onBack 
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="prose max-w-none">
+                <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400 mb-6">
+                  <h3 className="text-blue-800 font-semibold mb-2">🎯 Module Objectives:</h3>
+                  <p className="text-blue-700 mb-2">
+                    Master behavioral storytelling that showcases your personality, values, and cultural fit. 
+                    Transform your experiences into compelling narratives that demonstrate finance-relevant traits.
+                  </p>
+                  <p className="text-blue-700 text-sm">
+                    <strong>Why this matters:</strong> Technical skills get you in the door, but behavioral interviews 
+                    determine if you get the offer. Finance firms hire for cultural fit and soft skills—they need 
+                    to trust you'll represent them well with clients and work effectively under pressure.
+                  </p>
+                </div>
+
                 <p className="text-lg">
                   Welcome to Module 2! Behavioral interviews are where you showcase your personality, values, 
                   and fit for the role beyond technical skills.
@@ -227,6 +241,18 @@ const InterviewModule2: React.FC<InterviewModule2Props> = ({ onComplete, onBack 
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="prose max-w-none">
+                <div className="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400 mb-4">
+                  <h3 className="text-yellow-800 font-semibold mb-2">🎯 Objective:</h3>
+                  <p className="text-yellow-700 mb-2">
+                    Build a "bank" of versatile STAR stories that can be adapted for different behavioral questions.
+                  </p>
+                  <p className="text-yellow-700 text-sm">
+                    <strong>Why this matters:</strong> Having prepared stories prevents you from blanking out during 
+                    interviews. With 5 solid stories, you can adapt them to answer dozens of different behavioral questions 
+                    while sounding natural and unrehearsed.
+                  </p>
+                </div>
+
                 <p>
                   Create a "bank" of 5 versatile STAR stories that can be adapted for different behavioral questions. 
                   Each story should demonstrate different strengths.
@@ -258,6 +284,13 @@ const InterviewModule2: React.FC<InterviewModule2Props> = ({ onComplete, onBack 
                         [`story${index}`]: e.target.value
                       })}
                       className="min-h-24"
+                    />
+                    <AudioRecorder 
+                      onTranscription={(text) => setBehavioralStories(prev => ({
+                        ...prev,
+                        [`story${index}`]: (prev[`story${index}`] || '') + '\n\n' + text
+                      }))}
+                      placeholder={`Record your STAR story for: "${question}"`}
                     />
                     <div className="text-xs text-muted-foreground">
                       Characters: {(behavioralStories[`story${index}`] || '').length}

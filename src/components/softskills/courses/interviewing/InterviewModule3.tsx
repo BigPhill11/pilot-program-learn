@@ -76,6 +76,19 @@ const InterviewModule3: React.FC<InterviewModule3Props> = ({ onComplete, onBack 
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="prose max-w-none">
+            <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-400 mb-6">
+              <h3 className="text-green-800 font-semibold mb-2">🎯 Module Objectives:</h3>
+              <p className="text-green-700 mb-2">
+                Master the technical finance knowledge required for interviews, from financial statements 
+                to valuation methods and market awareness.
+              </p>
+              <p className="text-green-700 text-sm">
+                <strong>Why this matters:</strong> Technical competency is table stakes in finance interviews. 
+                Even if you nail the behavioral questions, weak technical answers will eliminate you immediately. 
+                This module ensures you can confidently discuss core finance concepts and current market conditions.
+              </p>
+            </div>
+
             <p className="text-lg">
               Master technical finance questions with confidence! This module covers the essential technical 
               knowledge you need for finance interviews.
