@@ -8,9 +8,11 @@ import { Gamepad2, Play, Trophy, Star, Crown, TreePine } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import PandaLogo from '@/components/icons/PandaLogo';
 import BambooEmpireGame from './games/BambooEmpireGame';
+import PandaJumpGame from './games/PandaJumpGame';
 
 const PandaJumpSection: React.FC = () => {
   const [selectedLevel, setSelectedLevel] = useState<'beginner' | 'intermediate' | 'pro'>('beginner');
+  const [activeGame, setActiveGame] = useState<'bamboo-empire' | 'panda-jump' | null>(null);
   const isMobile = useIsMobile();
 
   const levels = [
@@ -18,6 +20,10 @@ const PandaJumpSection: React.FC = () => {
     { value: 'intermediate', label: 'Intermediate', color: 'bg-yellow-500', description: 'Challenging obstacles' },
     { value: 'pro', label: 'Pro', color: 'bg-red-500', description: 'Expert panda moves' }
   ] as const;
+
+  if (activeGame === 'panda-jump') {
+    return <PandaJumpGame level={selectedLevel} onExit={() => setActiveGame(null)} />;
+  }
 
   return (
     <div className="space-y-6">
@@ -80,74 +86,92 @@ const PandaJumpSection: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="panda-jump" className="mt-6">
-          {/* Panda Jump Preview - Coming Soon */}
-          <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-3'} gap-4`}>
-            {levels.map((level) => (
-              <Card key={level.value} className="opacity-75">
-                <CardContent className="p-6 text-center">
-                  <Badge className={`${level.color} text-white mb-3`}>
-                    {level.label}
-                  </Badge>
-                  <h3 className="font-semibold mb-2">{level.description}</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Jump through financial obstacles and collect coins!
-                  </p>
-                  <Button disabled className="w-full">
-                    <Play className="h-4 w-4 mr-2" />
-                    Coming Soon
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Game Features Preview */}
-          <Card className="mt-6">
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Trophy className="h-5 w-5" />
-                Panda Jump Features (Preview)
+                <TreePine className="h-5 w-5 text-green-600" />
+                Panda Jump Challenge
               </CardTitle>
+              <p className="text-muted-foreground">
+                Help Phil jump from bamboo branch to bamboo branch by answering questions correctly!
+              </p>
             </CardHeader>
             <CardContent>
-              <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2'} gap-6`}>
-                <div className="flex items-start gap-3">
-                  <Star className="h-5 w-5 text-yellow-500 mt-1" />
-                  <div>
-                    <h4 className="font-semibold">Educational Gameplay</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Answer financial questions to help Phil jump higher
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <Star className="h-5 w-5 text-yellow-500 mt-1" />
-                  <div>
-                    <h4 className="font-semibold">Bamboo Rewards</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Collect bamboo coins for correct answers and achievements
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <Star className="h-5 w-5 text-yellow-500 mt-1" />
-                  <div>
-                    <h4 className="font-semibold">Progressive Difficulty</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Three difficulty levels with unique challenges
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <Star className="h-5 w-5 text-yellow-500 mt-1" />
-                  <div>
-                    <h4 className="font-semibold">Leaderboards</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Compete with other learners for the highest scores
-                    </p>
-                  </div>
-                </div>
+              <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-3'} gap-4 mb-6`}>
+                {levels.map((level) => (
+                  <Card key={level.value} className="text-center">
+                    <CardContent className="p-6">
+                      <Badge className={`${level.color} text-white mb-3`}>
+                        {level.label}
+                      </Badge>
+                      <h3 className="font-semibold mb-2">{level.description}</h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Time-based jumping challenge with decreasing answer time!
+                      </p>
+                      <Button 
+                        className="w-full"
+                        onClick={() => {
+                          setSelectedLevel(level.value);
+                          setActiveGame('panda-jump');
+                        }}
+                      >
+                        <Play className="h-4 w-4 mr-2" />
+                        Start Jumping
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
+
+              {/* Game Features */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Trophy className="h-5 w-5" />
+                    Game Features
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2'} gap-6`}>
+                    <div className="flex items-start gap-3">
+                      <Star className="h-5 w-5 text-yellow-500 mt-1" />
+                      <div>
+                        <h4 className="font-semibold">Timed Questions</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Start with 20 seconds, decrease to 7 seconds per question
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Star className="h-5 w-5 text-yellow-500 mt-1" />
+                      <div>
+                        <h4 className="font-semibold">Visual Climbing</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Watch Phil jump from branch to branch as you answer
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Star className="h-5 w-5 text-yellow-500 mt-1" />
+                      <div>
+                        <h4 className="font-semibold">Lives System</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Three lives to reach the highest bamboo branches
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Star className="h-5 w-5 text-yellow-500 mt-1" />
+                      <div>
+                        <h4 className="font-semibold">High Scores</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Beat your personal best height and score records
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </CardContent>
           </Card>
         </TabsContent>

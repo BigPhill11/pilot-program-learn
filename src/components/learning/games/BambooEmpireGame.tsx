@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Crown, Zap, Heart, TreePine, Coins, Star, ChevronRight } from 'lucide-react';
+import { Crown, Zap, Heart, TreePine, Coins, Star, ChevronRight, RotateCcw, Shield, Bolt, Gem } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import PandaLogo from '@/components/icons/PandaLogo';
 import { toast } from 'sonner';
@@ -18,6 +17,15 @@ interface Flashcard {
   level: string;
 }
 
+interface PowerUp {
+  id: string;
+  name: string;
+  description: string;
+  cost: number;
+  icon: React.ReactNode;
+  owned: number;
+}
+
 interface GameState {
   level: number;
   experience: number;
@@ -27,6 +35,9 @@ interface GameState {
   currentQuestion?: Flashcard;
   answeredQuestions: string[];
   achievements: string[];
+  powerUps: { [key: string]: number };
+  streak: number;
+  totalAnswered: number;
 }
 
 interface BambooEmpireGameProps {
@@ -42,20 +53,47 @@ const BambooEmpireGame: React.FC<BambooEmpireGameProps> = ({ level }) => {
     energy: 100,
     territories: 1,
     answeredQuestions: [],
-    achievements: []
+    achievements: [],
+    powerUps: {},
+    streak: 0,
+    totalAnswered: 0
   });
   const [currentQuestion, setCurrentQuestion] = useState<Flashcard | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string>('');
   const [showAnswer, setShowAnswer] = useState(false);
   const [multipleChoiceOptions, setMultipleChoiceOptions] = useState<string[]>([]);
-  const [gamePhase, setGamePhase] = useState<'exploration' | 'question' | 'result'>('exploration');
+  const [gamePhase, setGamePhase] = useState<'exploration' | 'question' | 'result' | 'shop'>('exploration');
+  const [showPowerUpShop, setShowPowerUpShop] = useState(false);
   const isMobile = useIsMobile();
+
+  const powerUps: PowerUp[] = [
+    {
+      id: 'energy_boost',
+      name: 'Energy Boost',
+      description: 'Restore 50 energy instantly',
+      cost: 75,
+      icon: <Bolt className="h-5 w-5 text-yellow-500" />
+    },
+    {
+      id: 'double_coins',
+      name: 'Double Coins',
+      description: 'Next 3 correct answers give double coins',
+      cost: 150,
+      icon: <Gem className="h-5 w-5 text-purple-500" />
+    },
+    {
+      id: 'streak_shield',
+      name: 'Streak Shield',
+      description: 'Protect your streak from one wrong answer',
+      cost: 200,
+      icon: <Shield className="h-5 w-5 text-blue-500" />
+    }
+  ];
 
   useEffect(() => {
     loadFlashcards();
     loadGameState();
     
-    // Listen for flashcard updates
     const handleFlashcardsUpdate = (event: CustomEvent) => {
       if (event.detail.level === level) {
         setFlashcards(event.detail.cards);
@@ -88,9 +126,70 @@ const BambooEmpireGame: React.FC<BambooEmpireGameProps> = ({ level }) => {
     setGameState(newState);
   };
 
+  const resetGame = () => {
+    const newState: GameState = {
+      level: 1,
+      experience: 0,
+      bambooCoins: 100,
+      energy: 100,
+      territories: 1,
+      answeredQuestions: [],
+      achievements: [],
+      powerUps: {},
+      streak: 0,
+      totalAnswered: 0
+    };
+    saveGameState(newState);
+    setGamePhase('exploration');
+    toast.success("Game reset! Phil starts his adventure anew!");
+  };
+
+  const usePowerUp = (powerUpId: string) => {
+    const owned = gameState.powerUps[powerUpId] || 0;
+    if (owned <= 0) return;
+
+    let newState = { ...gameState };
+    newState.powerUps[powerUpId] = owned - 1;
+
+    switch (powerUpId) {
+      case 'energy_boost':
+        newState.energy = Math.min(100, newState.energy + 50);
+        toast.success("Energy restored!");
+        break;
+      case 'double_coins':
+        // This would be handled in the answer logic
+        toast.success("Double coins activated for next 3 answers!");
+        break;
+      case 'streak_shield':
+        toast.success("Streak shield activated!");
+        break;
+    }
+
+    saveGameState(newState);
+  };
+
+  const buyPowerUp = (powerUp: PowerUp) => {
+    if (gameState.bambooCoins < powerUp.cost) {
+      toast.error("Not enough bamboo coins!");
+      return;
+    }
+
+    const newState = {
+      ...gameState,
+      bambooCoins: gameState.bambooCoins - powerUp.cost,
+      powerUps: {
+        ...gameState.powerUps,
+        [powerUp.id]: (gameState.powerUps[powerUp.id] || 0) + 1
+      }
+    };
+
+    saveGameState(newState);
+    toast.success(`${powerUp.name} purchased!`);
+  };
+
   const startExploration = () => {
     if (gameState.energy < 10) {
-      toast.error("Not enough energy! Rest to recover.");
+      toast.error("Not enough energy! Rest to recover or use an Energy Boost!");
       return;
     }
 
@@ -99,7 +198,6 @@ const BambooEmpireGame: React.FC<BambooEmpireGameProps> = ({ level }) => {
       return;
     }
 
-    // Get unanswered questions or reset if all answered
     const unansweredCards = flashcards.filter(card => 
       !gameState.answeredQuestions.includes(card.id)
     );
@@ -108,7 +206,6 @@ const BambooEmpireGame: React.FC<BambooEmpireGameProps> = ({ level }) => {
     const randomCard = availableCards[Math.floor(Math.random() * availableCards.length)];
     setCurrentQuestion(randomCard);
     
-    // Generate multiple choice options
     generateMultipleChoice(randomCard);
     setGamePhase('question');
     setShowAnswer(false);
@@ -120,12 +217,10 @@ const BambooEmpireGame: React.FC<BambooEmpireGameProps> = ({ level }) => {
       .filter(card => card.id !== correctCard.id)
       .map(card => card.definition);
     
-    // Get 3 random wrong answers
     const wrongAnswers = allDefinitions
       .sort(() => Math.random() - 0.5)
       .slice(0, 3);
     
-    // Mix with correct answer and shuffle
     const options = [...wrongAnswers, correctCard.definition]
       .sort(() => Math.random() - 0.5);
     
@@ -140,14 +235,22 @@ const BambooEmpireGame: React.FC<BambooEmpireGameProps> = ({ level }) => {
     
     const isCorrect = answer === currentQuestion.definition;
     const expGain = isCorrect ? 25 : 5;
-    const coinGain = isCorrect ? 50 : 10;
+    let coinGain = isCorrect ? 50 : 10;
+    
+    // Double coins power-up effect
+    if (gameState.powerUps['double_coins'] > 0 && isCorrect) {
+      coinGain *= 2;
+    }
+    
     const energyCost = 10;
     
-    const newState = {
+    let newState = {
       ...gameState,
       experience: gameState.experience + expGain,
       bambooCoins: gameState.bambooCoins + coinGain,
       energy: Math.max(0, gameState.energy - energyCost),
+      totalAnswered: gameState.totalAnswered + 1,
+      streak: isCorrect ? gameState.streak + 1 : 0,
       answeredQuestions: isCorrect ? 
         [...gameState.answeredQuestions, currentQuestion.id] : 
         gameState.answeredQuestions
@@ -158,7 +261,7 @@ const BambooEmpireGame: React.FC<BambooEmpireGameProps> = ({ level }) => {
     if (newState.experience >= expRequired) {
       newState.level += 1;
       newState.territories += 1;
-      newState.energy = 100; // Full energy on level up
+      newState.energy = 100;
       toast.success(`Level up! You're now level ${newState.level}!`);
     }
     
@@ -253,6 +356,80 @@ const BambooEmpireGame: React.FC<BambooEmpireGameProps> = ({ level }) => {
         </Card>
       </div>
 
+      {/* Power-ups and Actions Bar */}
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex justify-between items-center">
+            <div className="flex gap-2">
+              {powerUps.map(powerUp => {
+                const owned = gameState.powerUps[powerUp.id] || 0;
+                return (
+                  <Button
+                    key={powerUp.id}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => usePowerUp(powerUp.id)}
+                    disabled={owned <= 0}
+                    className="flex items-center gap-1"
+                  >
+                    {powerUp.icon}
+                    {owned > 0 && <Badge variant="secondary" className="ml-1">{owned}</Badge>}
+                  </Button>
+                );
+              })}
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={() => setShowPowerUpShop(true)} variant="outline">
+                🏪 Power-up Shop
+              </Button>
+              <Button onClick={resetGame} variant="outline" size="sm">
+                <RotateCcw className="h-4 w-4 mr-1" />
+                Reset Game
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Power-up Shop Modal */}
+      {showPowerUpShop && (
+        <Card className="border-2 border-purple-300">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              🏪 Phil's Power-up Shop
+              <Button variant="outline" size="sm" onClick={() => setShowPowerUpShop(false)}>
+                Close
+              </Button>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4">
+              {powerUps.map(powerUp => (
+                <div key={powerUp.id} className="flex items-center justify-between p-3 border rounded">
+                  <div className="flex items-center gap-3">
+                    {powerUp.icon}
+                    <div>
+                      <h4 className="font-semibold">{powerUp.name}</h4>
+                      <p className="text-sm text-muted-foreground">{powerUp.description}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline">{powerUp.cost} coins</Badge>
+                    <Button
+                      size="sm"
+                      onClick={() => buyPowerUp(powerUp)}
+                      disabled={gameState.bambooCoins < powerUp.cost}
+                    >
+                      Buy
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Main Game Area */}
       {gamePhase === 'exploration' && (
         <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
@@ -286,6 +463,12 @@ const BambooEmpireGame: React.FC<BambooEmpireGameProps> = ({ level }) => {
                   <Heart className="h-4 w-4 mr-2" />
                   Rest & Recover
                 </Button>
+              </div>
+              
+              {/* Stats Display */}
+              <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
+                <div>Current Streak: <span className="font-bold text-green-600">{gameState.streak}</span></div>
+                <div>Total Answered: <span className="font-bold text-blue-600">{gameState.totalAnswered}</span></div>
               </div>
             </div>
           </CardContent>

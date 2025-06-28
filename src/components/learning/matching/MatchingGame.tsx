@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -27,8 +27,27 @@ const MatchingGame: React.FC<MatchingGameProps> = ({ level, onComplete, onExit }
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [gameStarted, setGameStarted] = useState(false);
 
+  // Memoize shuffled definitions to prevent re-shuffling
+  const shuffledDefinitions = useMemo(() => {
+    if (pairs.length === 0) return [];
+    return [...pairs].sort(() => Math.random() - 0.5);
+  }, [pairs.length]); // Only re-shuffle when pairs length changes, not on every render
+
   useEffect(() => {
-    // Generate pairs based on level
+    initializeGame();
+  }, [level]);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (gameStarted && matches < pairs.length) {
+      interval = setInterval(() => {
+        setTimeElapsed(prev => prev + 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [gameStarted, matches, pairs.length]);
+
+  const initializeGame = () => {
     const pairCounts = { beginner: 6, intermediate: 8, pro: 12 };
     const pairCount = pairCounts[level];
 
@@ -85,17 +104,7 @@ const MatchingGame: React.FC<MatchingGameProps> = ({ level, onComplete, onExit }
 
     setPairs(gamePairs);
     setGameStarted(true);
-  }, [level]);
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (gameStarted && matches < pairs.length) {
-      interval = setInterval(() => {
-        setTimeElapsed(prev => prev + 1);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [gameStarted, matches, pairs.length]);
+  };
 
   const handleTermClick = (id: string, term: string) => {
     if (pairs.find(p => p.id === id)?.matched) return;
@@ -176,41 +185,41 @@ const MatchingGame: React.FC<MatchingGameProps> = ({ level, onComplete, onExit }
                       pair.matched ? "secondary" : 
                       selectedTerm === pair.id ? "default" : "outline"
                     }
-                    className={`w-full justify-start h-auto p-4 ${
+                    className={`w-full justify-start h-auto p-4 text-left break-words whitespace-normal ${
                       pair.matched ? 'opacity-50' : ''
                     }`}
                     onClick={() => handleTermClick(pair.id, pair.term)}
                     disabled={pair.matched}
                   >
-                    <div className="flex items-center gap-2">
-                      {pair.matched && <CheckCircle className="h-4 w-4 text-green-600" />}
-                      {pair.term}
+                    <div className="flex items-center gap-2 w-full">
+                      {pair.matched && <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />}
+                      <span className="text-wrap">{pair.term}</span>
                     </div>
                   </Button>
                 ))}
               </div>
             </div>
 
-            {/* Definitions Column */}
+            {/* Definitions Column - Use memoized shuffled order */}
             <div>
               <h3 className="font-semibold mb-4 text-center">Definitions</h3>
               <div className="space-y-2">
-                {pairs.sort(() => Math.random() - 0.5).map((pair) => (
+                {shuffledDefinitions.map((pair) => (
                   <Button
                     key={`def-${pair.id}`}
                     variant={
                       pair.matched ? "secondary" : 
                       selectedDefinition === pair.id ? "default" : "outline"
                     }
-                    className={`w-full justify-start h-auto p-4 text-left ${
+                    className={`w-full justify-start h-auto p-4 text-left break-words whitespace-normal ${
                       pair.matched ? 'opacity-50' : ''
                     }`}
                     onClick={() => handleDefinitionClick(pair.id, pair.definition)}
                     disabled={pair.matched}
                   >
-                    <div className="flex items-center gap-2">
-                      {pair.matched && <CheckCircle className="h-4 w-4 text-green-600" />}
-                      {pair.definition}
+                    <div className="flex items-center gap-2 w-full">
+                      {pair.matched && <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />}
+                      <span className="text-wrap">{pair.definition}</span>
                     </div>
                   </Button>
                 ))}
@@ -218,7 +227,7 @@ const MatchingGame: React.FC<MatchingGameProps> = ({ level, onComplete, onExit }
             </div>
           </div>
 
-          {matches === pairs.length && (
+          {matches === pairs.length && pairs.length > 0 && (
             <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg text-center">
               <h3 className="font-semibold text-green-800 mb-2">Congratulations! 🎉</h3>
               <p className="text-green-700">

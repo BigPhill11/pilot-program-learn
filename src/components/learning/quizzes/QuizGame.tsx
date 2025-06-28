@@ -8,7 +8,8 @@ import { X, CheckCircle, XCircle } from 'lucide-react';
 
 interface QuizGameProps {
   level: 'beginner' | 'intermediate' | 'pro';
-  onComplete: () => void;
+  questionCount: number;
+  onComplete: (score: number, totalQuestions: number, streak: number) => void;
   onExit: () => void;
 }
 
@@ -19,16 +20,21 @@ interface QuizQuestion {
   explanation: string;
 }
 
-const QuizGame: React.FC<QuizGameProps> = ({ level, onComplete, onExit }) => {
+const QuizGame: React.FC<QuizGameProps> = ({ level, questionCount, onComplete, onExit }) => {
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [score, setScore] = useState(0);
   const [answers, setAnswers] = useState<boolean[]>([]);
+  const [streak, setStreak] = useState(0);
+  const [bestStreak, setBestStreak] = useState(0);
 
   useEffect(() => {
-    // Generate questions based on flashcards and level
+    generateQuestions();
+  }, [level, questionCount]);
+
+  const generateQuestions = () => {
     const storageKey = `flashcards_${level}`;
     const flashcards = JSON.parse(localStorage.getItem(storageKey) || '[]');
     
@@ -47,44 +53,77 @@ const QuizGame: React.FC<QuizGameProps> = ({ level, onComplete, onExit }) => {
             options: ["A fee for trading", "A payment to shareholders", "A type of stock", "A market index"],
             correctAnswer: 1,
             explanation: "Dividends are payments made by companies to their shareholders."
+          },
+          {
+            question: "What is compound interest?",
+            options: ["Simple interest", "Interest earned on both principal and previously earned interest", "A loan fee", "A bank charge"],
+            correctAnswer: 1,
+            explanation: "Compound interest is interest calculated on the initial principal and accumulated interest."
           }
         ],
         intermediate: [
           {
             question: "What does P/E ratio measure?",
-            options: ["Company's debt", "Stock's valuation", "Dividend yield", "Market volatility"],
+            options: ["Company's debt", "Stock's valuation relative to earnings", "Dividend yield", "Market volatility"],
             correctAnswer: 1,
-            explanation: "P/E ratio compares stock price to earnings per share."
+            explanation: "P/E ratio compares a company's stock price to its earnings per share."
           }
         ],
         pro: [
           {
             question: "What is Beta coefficient?",
-            options: ["Dividend rate", "Stock's volatility vs market", "Profit margin", "Interest rate"],
+            options: ["Dividend rate", "Stock's volatility compared to market", "Profit margin", "Interest rate"],
             correctAnswer: 1,
-            explanation: "Beta measures how much a stock moves relative to the overall market."
+            explanation: "Beta measures how much a stock's price moves relative to the overall market."
           }
         ]
       };
-      setQuestions(defaultQuestions[level] || []);
+      
+      const availableQuestions = defaultQuestions[level] || [];
+      const repeatedQuestions = [];
+      
+      // Repeat questions if we need more than available
+      for (let i = 0; i < questionCount; i++) {
+        repeatedQuestions.push(availableQuestions[i % availableQuestions.length]);
+      }
+      
+      setQuestions(repeatedQuestions);
     } else {
       // Generate questions from uploaded flashcards
-      const generatedQuestions = flashcards.slice(0, 10).map((card: any) => ({
-        question: `What is the definition of "${card.term}"?`,
-        options: [
-          card.definition,
-          "A type of investment vehicle",
-          "A market indicator",
-          "A financial instrument"
-        ].sort(() => Math.random() - 0.5),
-        correctAnswer: 0, // Will need to find correct index after shuffling
-        explanation: `${card.term}: ${card.definition}`
-      }));
+      const shuffledCards = [...flashcards].sort(() => Math.random() - 0.5);
+      const selectedCards = shuffledCards.slice(0, Math.min(questionCount, flashcards.length));
+      
+      // If we need more questions than available cards, repeat some
+      const repeatedCards = [];
+      for (let i = 0; i < questionCount; i++) {
+        repeatedCards.push(selectedCards[i % selectedCards.length]);
+      }
+      
+      const generatedQuestions = repeatedCards.map((card: any) => {
+        // Generate wrong answers from other cards
+        const wrongOptions = flashcards
+          .filter((c: any) => c.id !== card.id)
+          .map((c: any) => c.definition)
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 3);
+        
+        const allOptions = [card.definition, ...wrongOptions].sort(() => Math.random() - 0.5);
+        const correctIndex = allOptions.findIndex(option => option === card.definition);
+        
+        return {
+          question: `What is the definition of "${card.term}"?`,
+          options: allOptions,
+          correctAnswer: correctIndex,
+          explanation: `${card.term}: ${card.definition}${card.philExample ? `\n\n💡 Phil's Example: ${card.philExample}` : ''}`
+        };
+      });
+      
       setQuestions(generatedQuestions);
     }
-  }, [level]);
+  };
 
   const handleAnswerSelect = (answerIndex: number) => {
+    if (showResult) return;
     setSelectedAnswer(answerIndex);
   };
 
@@ -92,8 +131,16 @@ const QuizGame: React.FC<QuizGameProps> = ({ level, onComplete, onExit }) => {
     if (selectedAnswer === null) return;
 
     const isCorrect = selectedAnswer === questions[currentQuestion].correctAnswer;
-    setAnswers([...answers, isCorrect]);
-    if (isCorrect) setScore(score + 1);
+    const newAnswers = [...answers, isCorrect];
+    setAnswers(newAnswers);
+    
+    if (isCorrect) {
+      setScore(score + 1);
+      setStreak(streak + 1);
+      setBestStreak(Math.max(bestStreak, streak + 1));
+    } else {
+      setStreak(0);
+    }
 
     setShowResult(true);
     
@@ -103,7 +150,8 @@ const QuizGame: React.FC<QuizGameProps> = ({ level, onComplete, onExit }) => {
         setSelectedAnswer(null);
         setShowResult(false);
       } else {
-        onComplete();
+        // Quiz completed
+        onComplete(score + (isCorrect ? 1 : 0), questions.length, bestStreak);
       }
     }, 2000);
   };
@@ -136,7 +184,11 @@ const QuizGame: React.FC<QuizGameProps> = ({ level, onComplete, onExit }) => {
                   {currentQuestion + 1}/{questions.length}
                 </Badge>
               </CardTitle>
-              <p className="text-sm text-muted-foreground">Score: {score}/{answers.length}</p>
+              <div className="flex gap-4 text-sm text-muted-foreground mt-2">
+                <span>Score: {score}/{answers.length}</span>
+                <span>Streak: {streak}</span>
+                <span>Best: {bestStreak}</span>
+              </div>
             </div>
             <Button variant="ghost" size="sm" onClick={onExit}>
               <X className="h-4 w-4" />
@@ -147,28 +199,32 @@ const QuizGame: React.FC<QuizGameProps> = ({ level, onComplete, onExit }) => {
         
         <CardContent className="space-y-6">
           <div>
-            <h3 className="text-xl font-semibold mb-4">{question.question}</h3>
+            <h3 className="text-xl font-semibold mb-4 break-words">{question.question}</h3>
             
             <div className="space-y-2">
               {question.options.map((option, index) => (
                 <Button
                   key={index}
                   variant={selectedAnswer === index ? "default" : "outline"}
-                  className="w-full justify-start text-left h-auto p-4"
+                  className={`w-full justify-start text-left h-auto p-4 break-words whitespace-normal ${
+                    showResult && index === question.correctAnswer ? 'bg-green-500 hover:bg-green-600 text-white' :
+                    showResult && selectedAnswer === index && index !== question.correctAnswer ? 'bg-red-500 hover:bg-red-600 text-white' : 
+                    showResult ? 'opacity-50' : ''
+                  }`}
                   onClick={() => handleAnswerSelect(index)}
                   disabled={showResult}
                 >
-                  {option}
+                  <span className="w-full text-wrap">{option}</span>
                 </Button>
               ))}
             </div>
           </div>
 
           {showResult && (
-            <div className={`p-4 rounded-lg ${
+            <div className={`p-4 rounded-lg border ${
               selectedAnswer === question.correctAnswer 
-                ? 'bg-green-50 border border-green-200' 
-                : 'bg-red-50 border border-red-200'
+                ? 'bg-green-50 border-green-200' 
+                : 'bg-red-50 border-red-200'
             }`}>
               <div className="flex items-center gap-2 mb-2">
                 {selectedAnswer === question.correctAnswer ? (
@@ -182,7 +238,9 @@ const QuizGame: React.FC<QuizGameProps> = ({ level, onComplete, onExit }) => {
                   {selectedAnswer === question.correctAnswer ? 'Correct!' : 'Incorrect'}
                 </span>
               </div>
-              <p className="text-sm text-muted-foreground">{question.explanation}</p>
+              <p className="text-sm text-muted-foreground whitespace-pre-line break-words">
+                {question.explanation}
+              </p>
             </div>
           )}
 
