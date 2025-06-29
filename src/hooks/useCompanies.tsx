@@ -21,7 +21,7 @@ export const useCompanies = () => {
 
       if (error) throw error;
 
-      // Convert database companies to CompanyProfile format
+      // Convert database companies to CompanyProfile format with proper type casting
       const dbCompanies: CompanyProfile[] = (data || []).map(company => ({
         id: company.id,
         name: company.name,
@@ -34,8 +34,14 @@ export const useCompanies = () => {
         peRatio: company.pe_ratio,
         professional: {
           overview: company.overview,
-          kpis: Array.isArray(company.kpis) ? company.kpis : [],
-          financials: Array.isArray(company.financials) ? company.financials : []
+          kpis: Array.isArray(company.kpis) ? 
+            company.kpis.filter((kpi): kpi is { title: string; value: string } => 
+              typeof kpi === 'object' && kpi !== null && 'title' in kpi && 'value' in kpi
+            ) : [],
+          financials: Array.isArray(company.financials) ? 
+            company.financials.filter((fin): fin is { title: string; value: string } => 
+              typeof fin === 'object' && fin !== null && 'title' in fin && 'value' in fin
+            ) : []
         },
         dating: {
           marketSentiment: company.market_sentiment || "Just getting to know the market, but I'm optimistic about the future!",

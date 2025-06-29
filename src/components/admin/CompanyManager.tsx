@@ -53,7 +53,7 @@ const CompanyManager: React.FC = () => {
 
       if (error) throw error;
       
-      // Convert database format to component format
+      // Convert database format to component format with proper type casting
       const convertedData: Company[] = (data || []).map(company => ({
         id: company.id,
         name: company.name,
@@ -65,8 +65,14 @@ const CompanyManager: React.FC = () => {
         revenue_ttm: company.revenue_ttm,
         pe_ratio: company.pe_ratio,
         overview: company.overview,
-        kpis: Array.isArray(company.kpis) ? company.kpis : [],
-        financials: Array.isArray(company.financials) ? company.financials : [],
+        kpis: Array.isArray(company.kpis) ? 
+          company.kpis.filter((kpi): kpi is { title: string; value: string } => 
+            typeof kpi === 'object' && kpi !== null && 'title' in kpi && 'value' in kpi
+          ) : [],
+        financials: Array.isArray(company.financials) ? 
+          company.financials.filter((fin): fin is { title: string; value: string } => 
+            typeof fin === 'object' && fin !== null && 'title' in fin && 'value' in fin
+          ) : [],
         market_sentiment: company.market_sentiment,
         analyst_sentiment: company.analyst_sentiment,
         historical_performance: company.historical_performance,
@@ -153,8 +159,8 @@ const CompanyManager: React.FC = () => {
         revenue_ttm: row.revenue_ttm || row['Revenue TTM'] || row.Revenue || '',
         pe_ratio: row.pe_ratio || row['P/E Ratio'] || row.PE || '',
         overview: row.overview || row.Overview || row.Description || '',
-        kpis: row.kpis ? JSON.parse(row.kpis) : [],
-        financials: row.financials ? JSON.parse(row.financials) : [],
+        kpis: row.kpis ? (typeof row.kpis === 'string' ? JSON.parse(row.kpis) : row.kpis) : [],
+        financials: row.financials ? (typeof row.financials === 'string' ? JSON.parse(row.financials) : row.financials) : [],
         market_sentiment: row.market_sentiment || row['Market Sentiment'] || '',
         analyst_sentiment: row.analyst_sentiment || row['Analyst Sentiment'] || '',
         historical_performance: row.historical_performance || row['Historical Performance'] || '',
