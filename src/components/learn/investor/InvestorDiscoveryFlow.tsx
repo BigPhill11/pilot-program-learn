@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,8 +6,7 @@ import { ArrowLeft, Sparkles, Target, TrendingUp } from 'lucide-react';
 import SectorSubdivisionSelector from './SectorSubdivisionSelector';
 import InvestorProfileBuilder from './InvestorProfileBuilder';
 import EnhancedCompanySwipeCard from './EnhancedCompanySwipeCard';
-import { InvestorProfile, CompanyMatch } from '@/types/investor-profile';
-import { SectorSubdivision } from '@/data/sector-subdivisions';
+import { InvestorProfile, CompanyMatch, SectorSubdivision } from '@/types/investor-profile';
 import { companyProfiles } from '@/data/company-profiles';
 import { CompanyProfile } from '@/components/learn/CompanySwipeCard';
 

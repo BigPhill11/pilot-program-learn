@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, Zap, DollarSign, Stethoscope, Building2, Cpu } from 'lucide-react';
-import { sectorSubdivisions, SectorSubdivision } from '@/data/sector-subdivisions';
+import { sectorSubdivisions } from '@/data/sector-subdivisions';
+import { SectorSubdivision } from '@/types/investor-profile';
 
 interface SectorSubdivisionSelectorProps {
   onSelection: (subdivision: SectorSubdivision) => void;
