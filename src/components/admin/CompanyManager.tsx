@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -152,40 +151,35 @@ const CompanyManager: React.FC = () => {
 
   const handleCSVUpload = async (csvData: any[]) => {
     try {
-      const companiesToInsert = csvData.map(row => {
-        // Ensure all required fields have values
-        const companyData = {
-          name: row.name || row.Company || 'Unknown Company',
-          ticker: row.ticker || row.Ticker || row.Symbol || 'N/A',
-          industry: row.industry || row.Industry || 'Unknown',
-          headquarters: row.headquarters || row.Headquarters || row.HQ || 'Unknown',
-          market_cap: row.market_cap || row['Market Cap'] || 'N/A',
-          revenue_ttm: row.revenue_ttm || row['Revenue TTM'] || row.Revenue || 'N/A',
-          pe_ratio: row.pe_ratio || row['P/E Ratio'] || row.PE || 'N/A',
-          overview: row.overview || row.Overview || row.Description || 'No description available',
-          kpis: row.kpis ? (typeof row.kpis === 'string' ? JSON.parse(row.kpis) : row.kpis) : [],
-          financials: row.financials ? (typeof row.financials === 'string' ? JSON.parse(row.financials) : row.financials) : [],
-          market_sentiment: row.market_sentiment || row['Market Sentiment'] || null,
-          analyst_sentiment: row.analyst_sentiment || row['Analyst Sentiment'] || null,
-          historical_performance: row.historical_performance || row['Historical Performance'] || null,
-          sector: row.sector || row.Sector || null,
-          sub_sector: row.sub_sector || row['Sub Sector'] || null,
-          logo_url: row.logo_url || row['Logo URL'] || null,
-          created_by: user?.id
-        };
-        
-        return companyData;
-      });
-
-      // Insert each company individually to handle potential errors better
       let successCount = 0;
       let errorCount = 0;
       
-      for (const company of companiesToInsert) {
+      for (const row of csvData) {
         try {
+          // Ensure all required fields have values with proper validation
+          const companyData = {
+            name: row.name || row.Company || row.company_name || 'Unknown Company',
+            ticker: row.ticker || row.Ticker || row.Symbol || row.symbol || 'N/A',
+            industry: row.industry || row.Industry || row.sector || 'Unknown',
+            headquarters: row.headquarters || row.Headquarters || row.HQ || row.location || 'Unknown',
+            market_cap: row.market_cap || row['Market Cap'] || row.marketCap || 'N/A',
+            revenue_ttm: row.revenue_ttm || row['Revenue TTM'] || row.Revenue || row.revenue || 'N/A',
+            pe_ratio: row.pe_ratio || row['P/E Ratio'] || row.PE || row.peRatio || 'N/A',
+            overview: row.overview || row.Overview || row.Description || row.description || 'No description available',
+            kpis: this.parseJSONField(row.kpis) || [],
+            financials: this.parseJSONField(row.financials) || [],
+            market_sentiment: row.market_sentiment || row['Market Sentiment'] || null,
+            analyst_sentiment: row.analyst_sentiment || row['Analyst Sentiment'] || null,
+            historical_performance: row.historical_performance || row['Historical Performance'] || null,
+            sector: row.sector || row.Sector || null,
+            sub_sector: row.sub_sector || row['Sub Sector'] || row.subSector || null,
+            logo_url: row.logo_url || row['Logo URL'] || row.logoUrl || null,
+            created_by: user?.id
+          };
+
           const { error } = await supabase
             .from('companies')
-            .insert([company]);
+            .insert([companyData]);
           
           if (error) throw error;
           successCount++;
@@ -207,6 +201,29 @@ const CompanyManager: React.FC = () => {
       console.error('Error uploading CSV:', error);
       toast.error('Failed to upload companies from CSV');
     }
+  };
+
+  // Helper method to parse JSON fields safely
+  private parseJSONField = (field: any): Array<{ title: string; value: string }> => {
+    if (!field) return [];
+    
+    try {
+      if (typeof field === 'string') {
+        const parsed = JSON.parse(field);
+        return Array.isArray(parsed) ? parsed.filter(item => 
+          item && typeof item === 'object' && 'title' in item && 'value' in item
+        ) : [];
+      }
+      if (Array.isArray(field)) {
+        return field.filter(item => 
+          item && typeof item === 'object' && 'title' in item && 'value' in item
+        );
+      }
+    } catch (e) {
+      console.warn('Failed to parse JSON field:', field);
+    }
+    
+    return [];
   };
 
   if (!user) {
