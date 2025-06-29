@@ -34,4 +34,5 @@ export interface SectorSubdivision {
   description: string;
   keyMetrics: string[];
   companies: string[]; // Company IDs
+  industryKeywords: string[]; // Added missing property
 }
