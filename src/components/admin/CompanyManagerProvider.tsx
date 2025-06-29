@@ -1,9 +1,9 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { Company } from './CompanyManager';
+import { findMatchingSubdivision, sectorSubdivisions } from '@/data/sector-subdivisions';
 
 interface CompanyManagerContextType {
   companies: Company[];
@@ -39,6 +39,19 @@ export const CompanyManagerProvider: React.FC<CompanyManagerProviderProps> = ({ 
   const [loading, setLoading] = useState(true);
   const [editingCompany, setEditingCompany] = useState<Company | null>(null);
   const [showForm, setShowForm] = useState(false);
+
+  // Auto-assign subdivision and update subdivision data
+  const assignToSubdivision = (company: { industry: string; sector?: string; ticker: string }) => {
+    const matchingSubdivision = findMatchingSubdivision(company);
+    
+    if (matchingSubdivision && !matchingSubdivision.companies.includes(company.ticker)) {
+      // Add company to subdivision
+      matchingSubdivision.companies.push(company.ticker);
+      console.log(`Auto-assigned ${company.ticker} to subdivision: ${matchingSubdivision.name}`);
+    }
+    
+    return matchingSubdivision;
+  };
 
   const parseJSONField = (field: any): Array<{ title: string; value: string }> => {
     if (!field) return [];
@@ -101,6 +114,15 @@ export const CompanyManagerProvider: React.FC<CompanyManagerProviderProps> = ({ 
         updated_at: company.updated_at
       }));
       
+      // Auto-assign companies to subdivisions
+      convertedData.forEach(company => {
+        assignToSubdivision({
+          industry: company.industry,
+          sector: company.sector,
+          ticker: company.ticker
+        });
+      });
+      
       setCompanies(convertedData);
     } catch (error) {
       console.error('Error fetching companies:', error);
@@ -147,6 +169,16 @@ export const CompanyManagerProvider: React.FC<CompanyManagerProviderProps> = ({ 
           });
 
         if (error) throw error;
+        
+        // Auto-assign to subdivision
+        if (companyData.ticker && companyData.industry) {
+          assignToSubdivision({
+            industry: companyData.industry,
+            sector: companyData.sector,
+            ticker: companyData.ticker
+          });
+        }
+        
         toast.success('Company added successfully');
       }
 
@@ -186,6 +218,7 @@ export const CompanyManagerProvider: React.FC<CompanyManagerProviderProps> = ({ 
     try {
       let successCount = 0;
       let errorCount = 0;
+      let assignedCount = 0;
       
       for (const row of csvData) {
         try {
@@ -214,6 +247,18 @@ export const CompanyManagerProvider: React.FC<CompanyManagerProviderProps> = ({ 
             .insert(companyData);
           
           if (error) throw error;
+          
+          // Auto-assign to subdivision
+          const subdivision = assignToSubdivision({
+            industry: companyData.industry,
+            sector: companyData.sector,
+            ticker: companyData.ticker
+          });
+          
+          if (subdivision) {
+            assignedCount++;
+          }
+          
           successCount++;
         } catch (error) {
           console.error('Error inserting company:', error);
@@ -223,6 +268,9 @@ export const CompanyManagerProvider: React.FC<CompanyManagerProviderProps> = ({ 
 
       if (successCount > 0) {
         toast.success(`Successfully uploaded ${successCount} companies`);
+        if (assignedCount > 0) {
+          toast.success(`Auto-assigned ${assignedCount} companies to investment subdivisions`);
+        }
       }
       if (errorCount > 0) {
         toast.error(`Failed to upload ${errorCount} companies`);

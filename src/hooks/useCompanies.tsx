@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { companyProfiles } from '@/data/company-profiles';
 import { CompanyProfile } from '@/components/learn/CompanySwipeCard';
+import { getAllSubdivisions } from '@/data/sector-subdivisions';
 
 export const useCompanies = () => {
   const [companies, setCompanies] = useState<CompanyProfile[]>([]);
@@ -49,6 +50,23 @@ export const useCompanies = () => {
           historicalPerformance: company.historical_performance || "I've had my ups and downs, but I'm here for the long haul."
         }
       }));
+
+      // Update subdivision data with all companies (static + dynamic)
+      const allCompanies = [...companyProfiles, ...dbCompanies];
+      const subdivisions = getAllSubdivisions();
+      
+      // Update subdivision company lists to include both static and uploaded companies
+      subdivisions.forEach(subdivision => {
+        const matchingCompanies = allCompanies.filter(company => 
+          subdivision.companies.includes(company.ticker) ||
+          subdivision.industryKeywords.some(keyword => 
+            company.industry.toLowerCase().includes(keyword)
+          )
+        );
+        
+        // Update the subdivision with all matching tickers
+        subdivision.companies = [...new Set(matchingCompanies.map(c => c.ticker))];
+      });
 
       // Merge with static companies, avoiding duplicates
       const staticCompanyTickers = companyProfiles.map(c => c.ticker);

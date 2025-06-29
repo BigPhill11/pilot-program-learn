@@ -24,12 +24,18 @@ const InvestorDiscoveryFlow: React.FC = () => {
   const handleSectorSelection = (subdivision: SectorSubdivision) => {
     setSelectedSubdivision(subdivision);
     
-    // Filter companies based on subdivision
+    // Filter companies based on subdivision - now includes uploaded companies
     const filteredCompanies = allCompanies.filter(company => 
-      subdivision.companies.includes(company.ticker)
+      subdivision.companies.includes(company.ticker) ||
+      subdivision.industryKeywords.some(keyword => 
+        company.industry.toLowerCase().includes(keyword)
+      )
     );
-    setAvailableCompanies(filteredCompanies);
     
+    console.log(`Found ${filteredCompanies.length} companies for ${subdivision.name}:`, 
+                filteredCompanies.map(c => c.ticker));
+    
+    setAvailableCompanies(filteredCompanies);
     setCurrentStep('profile');
   };
 
