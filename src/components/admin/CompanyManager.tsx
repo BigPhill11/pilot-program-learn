@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -151,22 +150,22 @@ const CompanyManager: React.FC = () => {
   const handleCSVUpload = async (csvData: any[]) => {
     try {
       const companiesToInsert = csvData.map(row => ({
-        name: row.name || row.Company || '',
-        ticker: row.ticker || row.Ticker || row.Symbol || '',
-        industry: row.industry || row.Industry || '',
-        headquarters: row.headquarters || row.Headquarters || row.HQ || '',
-        market_cap: row.market_cap || row['Market Cap'] || '',
-        revenue_ttm: row.revenue_ttm || row['Revenue TTM'] || row.Revenue || '',
-        pe_ratio: row.pe_ratio || row['P/E Ratio'] || row.PE || '',
-        overview: row.overview || row.Overview || row.Description || '',
+        name: row.name || row.Company || 'Unknown Company',
+        ticker: row.ticker || row.Ticker || row.Symbol || 'N/A',
+        industry: row.industry || row.Industry || 'Unknown',
+        headquarters: row.headquarters || row.Headquarters || row.HQ || 'Unknown',
+        market_cap: row.market_cap || row['Market Cap'] || 'N/A',
+        revenue_ttm: row.revenue_ttm || row['Revenue TTM'] || row.Revenue || 'N/A',
+        pe_ratio: row.pe_ratio || row['P/E Ratio'] || row.PE || 'N/A',
+        overview: row.overview || row.Overview || row.Description || 'No description available',
         kpis: row.kpis ? (typeof row.kpis === 'string' ? JSON.parse(row.kpis) : row.kpis) : [],
         financials: row.financials ? (typeof row.financials === 'string' ? JSON.parse(row.financials) : row.financials) : [],
-        market_sentiment: row.market_sentiment || row['Market Sentiment'] || '',
-        analyst_sentiment: row.analyst_sentiment || row['Analyst Sentiment'] || '',
-        historical_performance: row.historical_performance || row['Historical Performance'] || '',
-        sector: row.sector || row.Sector || '',
-        sub_sector: row.sub_sector || row['Sub Sector'] || '',
-        logo_url: row.logo_url || row['Logo URL'] || '',
+        market_sentiment: row.market_sentiment || row['Market Sentiment'] || null,
+        analyst_sentiment: row.analyst_sentiment || row['Analyst Sentiment'] || null,
+        historical_performance: row.historical_performance || row['Historical Performance'] || null,
+        sector: row.sector || row.Sector || null,
+        sub_sector: row.sub_sector || row['Sub Sector'] || null,
+        logo_url: row.logo_url || row['Logo URL'] || null,
         created_by: user?.id
       }));
 
