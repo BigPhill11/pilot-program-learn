@@ -86,6 +86,75 @@ export type Database = {
           },
         ]
       }
+      companies: {
+        Row: {
+          analyst_sentiment: string | null
+          created_at: string
+          created_by: string | null
+          financials: Json
+          headquarters: string
+          historical_performance: string | null
+          id: string
+          industry: string
+          kpis: Json
+          logo_url: string | null
+          market_cap: string
+          market_sentiment: string | null
+          name: string
+          overview: string
+          pe_ratio: string
+          revenue_ttm: string
+          sector: string | null
+          sub_sector: string | null
+          ticker: string
+          updated_at: string
+        }
+        Insert: {
+          analyst_sentiment?: string | null
+          created_at?: string
+          created_by?: string | null
+          financials?: Json
+          headquarters: string
+          historical_performance?: string | null
+          id?: string
+          industry: string
+          kpis?: Json
+          logo_url?: string | null
+          market_cap: string
+          market_sentiment?: string | null
+          name: string
+          overview: string
+          pe_ratio: string
+          revenue_ttm: string
+          sector?: string | null
+          sub_sector?: string | null
+          ticker: string
+          updated_at?: string
+        }
+        Update: {
+          analyst_sentiment?: string | null
+          created_at?: string
+          created_by?: string | null
+          financials?: Json
+          headquarters?: string
+          historical_performance?: string | null
+          id?: string
+          industry?: string
+          kpis?: Json
+          logo_url?: string | null
+          market_cap?: string
+          market_sentiment?: string | null
+          name?: string
+          overview?: string
+          pe_ratio?: string
+          revenue_ttm?: string
+          sector?: string | null
+          sub_sector?: string | null
+          ticker?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       daily_logins: {
         Row: {
           created_at: string
@@ -610,6 +679,38 @@ export type Database = {
           view_count?: number | null
         }
         Relationships: []
+      }
+      user_company_interactions: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          interaction_type: string
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          interaction_type: string
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          interaction_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_company_interactions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_progress: {
         Row: {

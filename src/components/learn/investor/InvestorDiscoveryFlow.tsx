@@ -7,12 +7,13 @@ import SectorSubdivisionSelector from './SectorSubdivisionSelector';
 import InvestorProfileBuilder from './InvestorProfileBuilder';
 import EnhancedCompanySwipeCard from './EnhancedCompanySwipeCard';
 import { InvestorProfile, CompanyMatch, SectorSubdivision } from '@/types/investor-profile';
-import { companyProfiles } from '@/data/company-profiles';
+import { useCompanies } from '@/hooks/useCompanies';
 import { CompanyProfile } from '@/components/learn/CompanySwipeCard';
 
 type FlowStep = 'sector' | 'profile' | 'swiping' | 'matches';
 
 const InvestorDiscoveryFlow: React.FC = () => {
+  const { companies: allCompanies, loading } = useCompanies();
   const [currentStep, setCurrentStep] = useState<FlowStep>('sector');
   const [selectedSubdivision, setSelectedSubdivision] = useState<SectorSubdivision | null>(null);
   const [investorProfile, setInvestorProfile] = useState<Partial<InvestorProfile> | null>(null);
@@ -24,7 +25,7 @@ const InvestorDiscoveryFlow: React.FC = () => {
     setSelectedSubdivision(subdivision);
     
     // Filter companies based on subdivision
-    const filteredCompanies = companyProfiles.filter(company => 
+    const filteredCompanies = allCompanies.filter(company => 
       subdivision.companies.includes(company.ticker)
     );
     setAvailableCompanies(filteredCompanies);
@@ -118,6 +119,14 @@ const InvestorDiscoveryFlow: React.FC = () => {
 
   const currentCompany = availableCompanies[currentCompanyIndex];
   const matchData = currentCompany ? calculateMatchScore(currentCompany) : { score: 0, reasons: [] };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <p className="text-muted-foreground">Loading investment opportunities...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
