@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -38,6 +39,29 @@ const CompanyManager: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [editingCompany, setEditingCompany] = useState<Company | null>(null);
   const [showForm, setShowForm] = useState(false);
+
+  // Helper function to parse JSON fields safely
+  const parseJSONField = (field: any): Array<{ title: string; value: string }> => {
+    if (!field) return [];
+    
+    try {
+      if (typeof field === 'string') {
+        const parsed = JSON.parse(field);
+        return Array.isArray(parsed) ? parsed.filter(item => 
+          item && typeof item === 'object' && 'title' in item && 'value' in item
+        ) : [];
+      }
+      if (Array.isArray(field)) {
+        return field.filter(item => 
+          item && typeof item === 'object' && 'title' in item && 'value' in item
+        );
+      }
+    } catch (e) {
+      console.warn('Failed to parse JSON field:', field);
+    }
+    
+    return [];
+  };
 
   useEffect(() => {
     fetchCompanies();
@@ -166,8 +190,8 @@ const CompanyManager: React.FC = () => {
             revenue_ttm: row.revenue_ttm || row['Revenue TTM'] || row.Revenue || row.revenue || 'N/A',
             pe_ratio: row.pe_ratio || row['P/E Ratio'] || row.PE || row.peRatio || 'N/A',
             overview: row.overview || row.Overview || row.Description || row.description || 'No description available',
-            kpis: this.parseJSONField(row.kpis) || [],
-            financials: this.parseJSONField(row.financials) || [],
+            kpis: parseJSONField(row.kpis) || [],
+            financials: parseJSONField(row.financials) || [],
             market_sentiment: row.market_sentiment || row['Market Sentiment'] || null,
             analyst_sentiment: row.analyst_sentiment || row['Analyst Sentiment'] || null,
             historical_performance: row.historical_performance || row['Historical Performance'] || null,
@@ -201,29 +225,6 @@ const CompanyManager: React.FC = () => {
       console.error('Error uploading CSV:', error);
       toast.error('Failed to upload companies from CSV');
     }
-  };
-
-  // Helper method to parse JSON fields safely
-  private parseJSONField = (field: any): Array<{ title: string; value: string }> => {
-    if (!field) return [];
-    
-    try {
-      if (typeof field === 'string') {
-        const parsed = JSON.parse(field);
-        return Array.isArray(parsed) ? parsed.filter(item => 
-          item && typeof item === 'object' && 'title' in item && 'value' in item
-        ) : [];
-      }
-      if (Array.isArray(field)) {
-        return field.filter(item => 
-          item && typeof item === 'object' && 'title' in item && 'value' in item
-        );
-      }
-    } catch (e) {
-      console.warn('Failed to parse JSON field:', field);
-    }
-    
-    return [];
   };
 
   if (!user) {
