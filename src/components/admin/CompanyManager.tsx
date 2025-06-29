@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -66,11 +67,13 @@ const CompanyManager: React.FC = () => {
         overview: company.overview,
         kpis: Array.isArray(company.kpis) ? 
           company.kpis.filter((kpi): kpi is { title: string; value: string } => 
-            typeof kpi === 'object' && kpi !== null && 'title' in kpi && 'value' in kpi
+            typeof kpi === 'object' && kpi !== null && 'title' in kpi && 'value' in kpi &&
+            typeof kpi.title === 'string' && typeof kpi.value === 'string'
           ) : [],
         financials: Array.isArray(company.financials) ? 
           company.financials.filter((fin): fin is { title: string; value: string } => 
-            typeof fin === 'object' && fin !== null && 'title' in fin && 'value' in fin
+            typeof fin === 'object' && fin !== null && 'title' in fin && 'value' in fin &&
+            typeof fin.title === 'string' && typeof fin.value === 'string'
           ) : [],
         market_sentiment: company.market_sentiment,
         analyst_sentiment: company.analyst_sentiment,
@@ -149,32 +152,56 @@ const CompanyManager: React.FC = () => {
 
   const handleCSVUpload = async (csvData: any[]) => {
     try {
-      const companiesToInsert = csvData.map(row => ({
-        name: row.name || row.Company || 'Unknown Company',
-        ticker: row.ticker || row.Ticker || row.Symbol || 'N/A',
-        industry: row.industry || row.Industry || 'Unknown',
-        headquarters: row.headquarters || row.Headquarters || row.HQ || 'Unknown',
-        market_cap: row.market_cap || row['Market Cap'] || 'N/A',
-        revenue_ttm: row.revenue_ttm || row['Revenue TTM'] || row.Revenue || 'N/A',
-        pe_ratio: row.pe_ratio || row['P/E Ratio'] || row.PE || 'N/A',
-        overview: row.overview || row.Overview || row.Description || 'No description available',
-        kpis: row.kpis ? (typeof row.kpis === 'string' ? JSON.parse(row.kpis) : row.kpis) : [],
-        financials: row.financials ? (typeof row.financials === 'string' ? JSON.parse(row.financials) : row.financials) : [],
-        market_sentiment: row.market_sentiment || row['Market Sentiment'] || null,
-        analyst_sentiment: row.analyst_sentiment || row['Analyst Sentiment'] || null,
-        historical_performance: row.historical_performance || row['Historical Performance'] || null,
-        sector: row.sector || row.Sector || null,
-        sub_sector: row.sub_sector || row['Sub Sector'] || null,
-        logo_url: row.logo_url || row['Logo URL'] || null,
-        created_by: user?.id
-      }));
+      const companiesToInsert = csvData.map(row => {
+        // Ensure all required fields have values
+        const companyData = {
+          name: row.name || row.Company || 'Unknown Company',
+          ticker: row.ticker || row.Ticker || row.Symbol || 'N/A',
+          industry: row.industry || row.Industry || 'Unknown',
+          headquarters: row.headquarters || row.Headquarters || row.HQ || 'Unknown',
+          market_cap: row.market_cap || row['Market Cap'] || 'N/A',
+          revenue_ttm: row.revenue_ttm || row['Revenue TTM'] || row.Revenue || 'N/A',
+          pe_ratio: row.pe_ratio || row['P/E Ratio'] || row.PE || 'N/A',
+          overview: row.overview || row.Overview || row.Description || 'No description available',
+          kpis: row.kpis ? (typeof row.kpis === 'string' ? JSON.parse(row.kpis) : row.kpis) : [],
+          financials: row.financials ? (typeof row.financials === 'string' ? JSON.parse(row.financials) : row.financials) : [],
+          market_sentiment: row.market_sentiment || row['Market Sentiment'] || null,
+          analyst_sentiment: row.analyst_sentiment || row['Analyst Sentiment'] || null,
+          historical_performance: row.historical_performance || row['Historical Performance'] || null,
+          sector: row.sector || row.Sector || null,
+          sub_sector: row.sub_sector || row['Sub Sector'] || null,
+          logo_url: row.logo_url || row['Logo URL'] || null,
+          created_by: user?.id
+        };
+        
+        return companyData;
+      });
 
-      const { error } = await supabase
-        .from('companies')
-        .insert(companiesToInsert);
+      // Insert each company individually to handle potential errors better
+      let successCount = 0;
+      let errorCount = 0;
+      
+      for (const company of companiesToInsert) {
+        try {
+          const { error } = await supabase
+            .from('companies')
+            .insert([company]);
+          
+          if (error) throw error;
+          successCount++;
+        } catch (error) {
+          console.error('Error inserting company:', error);
+          errorCount++;
+        }
+      }
 
-      if (error) throw error;
-      toast.success(`Successfully uploaded ${csvData.length} companies`);
+      if (successCount > 0) {
+        toast.success(`Successfully uploaded ${successCount} companies`);
+      }
+      if (errorCount > 0) {
+        toast.error(`Failed to upload ${errorCount} companies`);
+      }
+      
       fetchCompanies();
     } catch (error) {
       console.error('Error uploading CSV:', error);
