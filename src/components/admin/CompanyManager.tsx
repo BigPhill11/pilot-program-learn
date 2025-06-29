@@ -130,12 +130,28 @@ const CompanyManager: React.FC = () => {
         if (error) throw error;
         toast.success('Company updated successfully');
       } else {
+        // Fix: Remove array brackets and ensure all required fields are present
         const { error } = await supabase
           .from('companies')
-          .insert([{
-            ...companyData,
+          .insert({
+            name: companyData.name || '',
+            ticker: companyData.ticker || '',
+            industry: companyData.industry || '',
+            headquarters: companyData.headquarters || '',
+            market_cap: companyData.market_cap || '',
+            revenue_ttm: companyData.revenue_ttm || '',
+            pe_ratio: companyData.pe_ratio || '',
+            overview: companyData.overview || '',
+            kpis: companyData.kpis || [],
+            financials: companyData.financials || [],
+            logo_url: companyData.logo_url,
+            market_sentiment: companyData.market_sentiment,
+            analyst_sentiment: companyData.analyst_sentiment,
+            historical_performance: companyData.historical_performance,
+            sector: companyData.sector,
+            sub_sector: companyData.sub_sector,
             created_by: user?.id
-          }]);
+          });
 
         if (error) throw error;
         toast.success('Company added successfully');
@@ -203,7 +219,7 @@ const CompanyManager: React.FC = () => {
 
           const { error } = await supabase
             .from('companies')
-            .insert([companyData]);
+            .insert(companyData);
           
           if (error) throw error;
           successCount++;
