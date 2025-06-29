@@ -52,7 +52,31 @@ const CompanyManager: React.FC = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setCompanies(data || []);
+      
+      // Convert database format to component format
+      const convertedData: Company[] = (data || []).map(company => ({
+        id: company.id,
+        name: company.name,
+        ticker: company.ticker,
+        logo_url: company.logo_url,
+        industry: company.industry,
+        headquarters: company.headquarters,
+        market_cap: company.market_cap,
+        revenue_ttm: company.revenue_ttm,
+        pe_ratio: company.pe_ratio,
+        overview: company.overview,
+        kpis: Array.isArray(company.kpis) ? company.kpis : [],
+        financials: Array.isArray(company.financials) ? company.financials : [],
+        market_sentiment: company.market_sentiment,
+        analyst_sentiment: company.analyst_sentiment,
+        historical_performance: company.historical_performance,
+        sector: company.sector,
+        sub_sector: company.sub_sector,
+        created_at: company.created_at,
+        updated_at: company.updated_at
+      }));
+      
+      setCompanies(convertedData);
     } catch (error) {
       console.error('Error fetching companies:', error);
       toast.error('Failed to load companies');

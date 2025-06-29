@@ -34,8 +34,8 @@ export const useCompanies = () => {
         peRatio: company.pe_ratio,
         professional: {
           overview: company.overview,
-          kpis: company.kpis || [],
-          financials: company.financials || []
+          kpis: Array.isArray(company.kpis) ? company.kpis : [],
+          financials: Array.isArray(company.financials) ? company.financials : []
         },
         dating: {
           marketSentiment: company.market_sentiment || "Just getting to know the market, but I'm optimistic about the future!",
