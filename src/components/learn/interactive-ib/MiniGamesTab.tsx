@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,8 +23,8 @@ const MiniGamesTab: React.FC<MiniGamesTabProps> = ({
   const [activeGame, setActiveGame] = useState<string | null>(null);
   const { updateActivityComplete } = useProgressTracking();
 
-  const handleGameComplete = (gameId: string, score: number) => {
-    console.log(`Game ${gameId} completed with score: ${score}`);
+  const handleGameComplete = (gameId: string) => {
+    console.log(`Game ${gameId} completed`);
     const xpReward = gameId === 'ib-basics-matching' ? 50 : 75;
     updateActivityComplete(gameId, xpReward);
     onActivityComplete(gameId);
@@ -47,8 +48,8 @@ const MiniGamesTab: React.FC<MiniGamesTabProps> = ({
           Back to Games
         </Button>
         <WallStreetWordMatch
-          onComplete={(score) => handleGameComplete('ib-basics-matching', score)}
-          onExit={handleGameExit}
+          onComplete={handleGameComplete}
+          isCompleted={completedActivities.includes('ib-basics-matching')}
         />
       </div>
     );
@@ -62,8 +63,8 @@ const MiniGamesTab: React.FC<MiniGamesTabProps> = ({
           Back to Games
         </Button>
         <DealTypeDetective
-          onComplete={(score) => handleGameComplete('deal-type-sorter', score)}
-          onExit={handleGameExit}
+          onComplete={handleGameComplete}
+          isCompleted={completedActivities.includes('deal-type-sorter')}
         />
       </div>
     );
