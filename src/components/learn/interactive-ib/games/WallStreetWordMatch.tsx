@@ -76,8 +76,8 @@ const WallStreetWordMatch: React.FC<WallStreetWordMatchProps> = ({ onComplete, i
             setGameCompleted(true);
             const finalScore = score + 10;
             const bonusPoints = attempts < gameTerms.length * 1.5 ? 25 : 15;
-            updateActivityComplete('wall-street-word-match', bonusPoints);
-            onComplete('wall-street-word-match');
+            updateActivityComplete('ib-basics-matching', bonusPoints);
+            onComplete('ib-basics-matching');
           }
         } else {
           // Incorrect match
@@ -107,6 +107,53 @@ const WallStreetWordMatch: React.FC<WallStreetWordMatchProps> = ({ onComplete, i
     if (isMatched) return "bg-green-500 text-white cursor-default";
     if (isSelected) return "bg-blue-500 text-white";
     return "bg-white hover:bg-gray-100 border-2 border-gray-200";
+  };
+
+  const renderTextWithTermHighlights = (text: string) => {
+    let processedText = text;
+    
+    // Find all terms that exist in our ibTerms and wrap them with highlights
+    Object.keys(ibTerms).forEach(termKey => {
+      const term = ibTerms[termKey];
+      const termDisplayName = term.term;
+      
+      // Create regex to find the term (case insensitive, whole word)
+      const regex = new RegExp(`\\b${termDisplayName}\\b`, 'gi');
+      
+      processedText = processedText.replace(regex, (match) => {
+        return `<TERM_HIGHLIGHT>${match}</TERM_HIGHLIGHT>`;
+      });
+    });
+
+    // Split the text and render with highlights
+    const parts = processedText.split(/(<TERM_HIGHLIGHT>.*?<\/TERM_HIGHLIGHT>)/);
+    
+    return parts.map((part, index) => {
+      const termMatch = part.match(/<TERM_HIGHLIGHT>(.*?)<\/TERM_HIGHLIGHT>/);
+      if (termMatch) {
+        const termText = termMatch[1];
+        // Find matching term data
+        const termData = Object.values(ibTerms).find(term => 
+          term.term.toLowerCase() === termText.toLowerCase()
+        );
+        
+        if (termData) {
+          return (
+            <HighlightableTerm
+              key={index}
+              term={termData.term}
+              definition={termData.definition}
+              analogy={termData.analogy}
+            >
+              <span className="font-semibold text-primary cursor-help underline decoration-dotted">
+                {termText}
+              </span>
+            </HighlightableTerm>
+          );
+        }
+      }
+      return <span key={index}>{part}</span>;
+    });
   };
 
   return (
@@ -179,7 +226,7 @@ const WallStreetWordMatch: React.FC<WallStreetWordMatchProps> = ({ onComplete, i
                   disabled={matches.has(termKey) || gameCompleted}
                 >
                   <span className="text-sm leading-relaxed">
-                    {termData.definition}
+                    {renderTextWithTermHighlights(termData.definition)}
                   </span>
                 </Button>
               ))}
