@@ -1,12 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shuffle, RotateCcw } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 import { getIBTermsForLevel } from '@/data/investment-banking-terms';
 import { useAuth } from '@/hooks/useAuth';
-import HighlightableTerm from '@/components/HighlightableTerm';
 import { useProgressTracking } from '@/hooks/useProgressTracking';
+import GameHeader from './components/GameHeader';
+import GameControls from './components/GameControls';
+import TermButton from './components/TermButton';
+import GameCompletionBanner from './components/GameCompletionBanner';
+import TermHighlighter from './components/TermHighlighter';
 
 interface WallStreetWordMatchProps {
   onComplete: (gameId: string) => void;
@@ -101,91 +103,14 @@ const WallStreetWordMatch: React.FC<WallStreetWordMatchProps> = ({ onComplete, i
     shuffleGame();
   };
 
-  const getButtonClass = (termKey: string, isDefinition: boolean = false) => {
-    const isMatched = matches.has(termKey);
-    const isSelected = isDefinition ? selectedDefinition === termKey : selectedTerm === termKey;
-    
-    if (isMatched) return "bg-green-500 text-white cursor-default";
-    if (isSelected) return "bg-blue-500 text-white";
-    return "bg-white hover:bg-gray-100 border-2 border-gray-200";
-  };
-
-  const renderTextWithTermHighlights = (text: string) => {
-    let processedText = text;
-    
-    // Find all terms that exist in our ibTerms and wrap them with highlights
-    Object.keys(ibTerms).forEach(termKey => {
-      const term = ibTerms[termKey];
-      const termDisplayName = term.term;
-      
-      // Create regex to find the term (case insensitive, whole word)
-      const regex = new RegExp(`\\b${termDisplayName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
-      
-      processedText = processedText.replace(regex, (match) => {
-        return `<TERM_HIGHLIGHT_${termKey}>${match}</TERM_HIGHLIGHT_${termKey}>`;
-      });
-    });
-
-    // Split the text and render with highlights
-    const parts = processedText.split(/(<TERM_HIGHLIGHT_\w+>.*?<\/TERM_HIGHLIGHT_\w+>)/);
-    
-    return parts.map((part, index) => {
-      const termMatch = part.match(/<TERM_HIGHLIGHT_(\w+)>(.*?)<\/TERM_HIGHLIGHT_\w+>/);
-      if (termMatch) {
-        const termKey = termMatch[1];
-        const termText = termMatch[2];
-        const termData = ibTerms[termKey];
-        
-        if (termData) {
-          return (
-            <HighlightableTerm
-              key={index}
-              term={termData.term}
-              definition={termData.definition}
-              analogy={termData.analogy}
-            >
-              <span className="font-semibold text-primary cursor-help underline decoration-dotted">
-                {termText}
-              </span>
-            </HighlightableTerm>
-          );
-        }
-      }
-      return <span key={index}>{part}</span>;
-    });
-  };
-
   return (
     <Card className="w-full max-w-4xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <span>Wall Street Word Match</span>
-          <div className="flex items-center gap-4">
-            <span className="text-sm font-normal">Score: {score}</span>
-            <span className="text-sm font-normal">Attempts: {attempts}</span>
-          </div>
-        </CardTitle>
-      </CardHeader>
+      <GameHeader score={score} attempts={attempts} />
+      
       <CardContent className="space-y-6">
-        {gameCompleted && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
-            <h3 className="text-lg font-semibold text-green-800 mb-2">🎉 Congratulations!</h3>
-            <p className="text-green-700">
-              You matched all terms! Final Score: {score} points
-            </p>
-          </div>
-        )}
+        {gameCompleted && <GameCompletionBanner score={score} />}
 
-        <div className="flex justify-center gap-2 mb-6">
-          <Button onClick={shuffleGame} variant="outline" size="sm">
-            <Shuffle className="h-4 w-4 mr-2" />
-            Shuffle
-          </Button>
-          <Button onClick={resetGame} variant="outline" size="sm">
-            <RotateCcw className="h-4 w-4 mr-2" />
-            Reset
-          </Button>
-        </div>
+        <GameControls onShuffle={shuffleGame} onReset={resetGame} />
 
         <div className="grid md:grid-cols-2 gap-8">
           <div>
@@ -194,23 +119,19 @@ const WallStreetWordMatch: React.FC<WallStreetWordMatchProps> = ({ onComplete, i
               {shuffledTerms.map((termKey) => {
                 const termData = ibTerms[termKey];
                 return (
-                  <Button
+                  <TermButton
                     key={`term-${termKey}`}
-                    onClick={() => handleTermClick(termKey)}
-                    className={`w-full p-4 h-auto text-left justify-start text-wrap break-words whitespace-normal ${getButtonClass(termKey)}`}
-                    variant="outline"
-                    disabled={matches.has(termKey) || gameCompleted}
+                    termKey={termKey}
+                    termData={termData}
+                    isMatched={matches.has(termKey)}
+                    isSelected={selectedTerm === termKey}
+                    gameCompleted={gameCompleted}
+                    onClick={handleTermClick}
                   >
-                    <HighlightableTerm
-                      term={termData.term}
-                      definition={termData.definition}
-                      analogy={termData.analogy}
-                    >
-                      <span className="font-medium">
-                        {termData.term}
-                      </span>
-                    </HighlightableTerm>
-                  </Button>
+                    <span className="font-medium">
+                      {termData.term}
+                    </span>
+                  </TermButton>
                 );
               })}
             </div>
@@ -222,17 +143,19 @@ const WallStreetWordMatch: React.FC<WallStreetWordMatchProps> = ({ onComplete, i
               {shuffledDefinitions.map((termKey) => {
                 const termData = ibTerms[termKey];
                 return (
-                  <Button
+                  <TermButton
                     key={`def-${termKey}`}
-                    onClick={() => handleDefinitionClick(termKey)}
-                    className={`w-full p-4 h-auto text-left justify-start text-wrap break-words whitespace-normal ${getButtonClass(termKey, true)}`}
-                    variant="outline"
-                    disabled={matches.has(termKey) || gameCompleted}
+                    termKey={termKey}
+                    termData={termData}
+                    isMatched={matches.has(termKey)}
+                    isSelected={selectedDefinition === termKey}
+                    gameCompleted={gameCompleted}
+                    onClick={handleDefinitionClick}
                   >
                     <span className="text-sm leading-relaxed">
-                      {renderTextWithTermHighlights(termData.definition)}
+                      <TermHighlighter text={termData.definition} ibTerms={ibTerms} />
                     </span>
-                  </Button>
+                  </TermButton>
                 );
               })}
             </div>
