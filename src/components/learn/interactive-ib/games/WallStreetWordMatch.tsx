@@ -29,16 +29,17 @@ const WallStreetWordMatch: React.FC<WallStreetWordMatchProps> = ({ onComplete, i
   const [attempts, setAttempts] = useState(0);
   const [gameCompleted, setGameCompleted] = useState(false);
 
-  const [shuffledTerms, setShuffledTerms] = useState<Array<[string, any]>>([]);
-  const [shuffledDefinitions, setShuffledDefinitions] = useState<Array<[string, any]>>([]);
+  const [shuffledTerms, setShuffledTerms] = useState<string[]>([]);
+  const [shuffledDefinitions, setShuffledDefinitions] = useState<string[]>([]);
 
   useEffect(() => {
     shuffleGame();
   }, []);
 
   const shuffleGame = () => {
-    const shuffled1 = [...gameTerms].sort(() => Math.random() - 0.5);
-    const shuffled2 = [...gameTerms].sort(() => Math.random() - 0.5);
+    const termKeys = gameTerms.map(([key]) => key);
+    const shuffled1 = [...termKeys].sort(() => Math.random() - 0.5);
+    const shuffled2 = [...termKeys].sort(() => Math.random() - 0.5);
     setShuffledTerms(shuffled1);
     setShuffledDefinitions(shuffled2);
   };
@@ -118,24 +119,22 @@ const WallStreetWordMatch: React.FC<WallStreetWordMatchProps> = ({ onComplete, i
       const termDisplayName = term.term;
       
       // Create regex to find the term (case insensitive, whole word)
-      const regex = new RegExp(`\\b${termDisplayName}\\b`, 'gi');
+      const regex = new RegExp(`\\b${termDisplayName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
       
       processedText = processedText.replace(regex, (match) => {
-        return `<TERM_HIGHLIGHT>${match}</TERM_HIGHLIGHT>`;
+        return `<TERM_HIGHLIGHT_${termKey}>${match}</TERM_HIGHLIGHT_${termKey}>`;
       });
     });
 
     // Split the text and render with highlights
-    const parts = processedText.split(/(<TERM_HIGHLIGHT>.*?<\/TERM_HIGHLIGHT>)/);
+    const parts = processedText.split(/(<TERM_HIGHLIGHT_\w+>.*?<\/TERM_HIGHLIGHT_\w+>)/);
     
     return parts.map((part, index) => {
-      const termMatch = part.match(/<TERM_HIGHLIGHT>(.*?)<\/TERM_HIGHLIGHT>/);
+      const termMatch = part.match(/<TERM_HIGHLIGHT_(\w+)>(.*?)<\/TERM_HIGHLIGHT_\w+>/);
       if (termMatch) {
-        const termText = termMatch[1];
-        // Find matching term data
-        const termData = Object.values(ibTerms).find(term => 
-          term.term.toLowerCase() === termText.toLowerCase()
-        );
+        const termKey = termMatch[1];
+        const termText = termMatch[2];
+        const termData = ibTerms[termKey];
         
         if (termData) {
           return (
@@ -192,44 +191,50 @@ const WallStreetWordMatch: React.FC<WallStreetWordMatchProps> = ({ onComplete, i
           <div>
             <h3 className="font-semibold mb-4 text-center">Terms</h3>
             <div className="space-y-2">
-              {shuffledTerms.map(([termKey, termData]) => (
-                <Button
-                  key={`term-${termKey}`}
-                  onClick={() => handleTermClick(termKey)}
-                  className={`w-full p-4 h-auto text-left justify-start text-wrap break-words whitespace-normal ${getButtonClass(termKey)}`}
-                  variant="outline"
-                  disabled={matches.has(termKey) || gameCompleted}
-                >
-                  <HighlightableTerm
-                    term={termData.term}
-                    definition={termData.definition}
-                    analogy={termData.analogy}
+              {shuffledTerms.map((termKey) => {
+                const termData = ibTerms[termKey];
+                return (
+                  <Button
+                    key={`term-${termKey}`}
+                    onClick={() => handleTermClick(termKey)}
+                    className={`w-full p-4 h-auto text-left justify-start text-wrap break-words whitespace-normal ${getButtonClass(termKey)}`}
+                    variant="outline"
+                    disabled={matches.has(termKey) || gameCompleted}
                   >
-                    <span className="font-medium">
-                      {termData.term}
-                    </span>
-                  </HighlightableTerm>
-                </Button>
-              ))}
+                    <HighlightableTerm
+                      term={termData.term}
+                      definition={termData.definition}
+                      analogy={termData.analogy}
+                    >
+                      <span className="font-medium">
+                        {termData.term}
+                      </span>
+                    </HighlightableTerm>
+                  </Button>
+                );
+              })}
             </div>
           </div>
 
           <div>
             <h3 className="font-semibold mb-4 text-center">Definitions</h3>
             <div className="space-y-2">
-              {shuffledDefinitions.map(([termKey, termData]) => (
-                <Button
-                  key={`def-${termKey}`}
-                  onClick={() => handleDefinitionClick(termKey)}
-                  className={`w-full p-4 h-auto text-left justify-start text-wrap break-words whitespace-normal ${getButtonClass(termKey, true)}`}
-                  variant="outline"
-                  disabled={matches.has(termKey) || gameCompleted}
-                >
-                  <span className="text-sm leading-relaxed">
-                    {renderTextWithTermHighlights(termData.definition)}
-                  </span>
-                </Button>
-              ))}
+              {shuffledDefinitions.map((termKey) => {
+                const termData = ibTerms[termKey];
+                return (
+                  <Button
+                    key={`def-${termKey}`}
+                    onClick={() => handleDefinitionClick(termKey)}
+                    className={`w-full p-4 h-auto text-left justify-start text-wrap break-words whitespace-normal ${getButtonClass(termKey, true)}`}
+                    variant="outline"
+                    disabled={matches.has(termKey) || gameCompleted}
+                  >
+                    <span className="text-sm leading-relaxed">
+                      {renderTextWithTermHighlights(termData.definition)}
+                    </span>
+                  </Button>
+                );
+              })}
             </div>
           </div>
         </div>
