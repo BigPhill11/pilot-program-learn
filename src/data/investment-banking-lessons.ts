@@ -1,4 +1,3 @@
-
 import { CareerLevel } from '@/data/finance-careers';
 
 export interface InteractiveLessonContent {
@@ -21,6 +20,7 @@ export interface MiniGameConfig {
   description: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   xpReward: number;
+  gameData?: any;
 }
 
 export interface RealWorldExample {
@@ -31,6 +31,8 @@ export interface RealWorldExample {
   description: string;
   keyLearning: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
+  dealValue?: string;
+  outcome?: string;
 }
 
 export interface QuizConfig {
@@ -53,47 +55,68 @@ export interface PracticalActivity {
   description: string;
   steps: string[];
   deliverable: string;
+  evaluationCriteria: string[];
+  timeEstimate: string;
 }
 
 export const investmentBankingLessons: InteractiveLessonContent[] = [
   {
     level: 1,
     title: "Welcome to Wall Street",
-    description: "Learn the basics of investment banking through fun games and simple explanations",
+    description: "Master the fundamentals of investment banking through interactive games, real examples, and hands-on practice",
     theme: "Foundation Building",
     objectives: [
-      "Understand what investment banking is",
-      "Learn key terminology in simple terms",
-      "Explore different types of deals",
-      "Meet your first virtual clients"
+      "Understand what investment banking is and how it helps companies grow",
+      "Learn essential Wall Street vocabulary with memorable analogies",
+      "Explore different types of deals and when companies use them",
+      "Practice explaining investment banking concepts in simple terms",
+      "Create your first investment banking presentation"
     ],
     miniGames: [
       {
         id: "ib-basics-matching",
         name: "Wall Street Word Match",
         type: "matching",
-        description: "Match investment banking terms with their simple explanations",
+        description: "Match investment banking terms with their simple explanations and fun analogies",
         difficulty: "beginner",
-        xpReward: 50
+        xpReward: 50,
+        gameData: {
+          pairs: [
+            { term: "IPO", definition: "When a company sells shares to the public for the first time", analogy: "Like a lemonade stand going from neighborhood-only to stores everywhere!" },
+            { term: "Merger", definition: "Two companies combining to become one", analogy: "Two friend groups becoming one big group!" },
+            { term: "Stock", definition: "A piece of ownership in a company", analogy: "Like owning a slice of pizza!" },
+            { term: "Client", definition: "Company asking for investment banking help", analogy: "A friend asking for important advice!" }
+          ]
+        }
       },
       {
         id: "deal-type-sorter",
         name: "Deal Type Detective",
         type: "drag-drop",
-        description: "Sort different business situations into IPO, M&A, or other categories",
+        description: "Sort different business situations into IPO, M&A, or financing categories",
         difficulty: "beginner",
-        xpReward: 75
+        xpReward: 75,
+        gameData: {
+          scenarios: [
+            { text: "TechStart wants to sell shares to raise money for expansion", category: "IPO", explanation: "This is an IPO because they're selling shares to the public!" },
+            { text: "BigCorp wants to buy SmallCorp to expand their business", category: "M&A", explanation: "This is an acquisition - one company buying another!" },
+            { text: "GrowthCo needs a loan to build a new factory", category: "Financing", explanation: "This is financing - borrowing money for a specific project!" },
+            { text: "RetailChain and DeliveryService want to combine forces", category: "M&A", explanation: "This is a merger - two companies joining together!" }
+          ]
+        }
       }
     ],
     realWorldExamples: [
       {
         id: "facebook-ipo",
-        title: "Facebook Goes Public",
+        title: "Facebook's Historic Public Debut",
         company: "Facebook (Meta)",
         year: 2012,
-        description: "How Facebook sold shares to the public for the first time",
-        keyLearning: "IPOs help companies raise money from many investors",
-        difficulty: "beginner"
+        description: "In May 2012, Facebook made one of the biggest debuts in stock market history. The social media giant, which started in Mark Zuckerberg's college dorm room just eight years earlier, decided it was time to 'go public' - meaning regular people could buy shares in the company for the first time. Facebook worked with investment banks like Morgan Stanley, JPMorgan, and Goldman Sachs to help them through this complex process. The banks helped Facebook figure out how much the company was worth (they settled on about $104 billion), how many shares to sell (421 million shares), and what price to charge ($38 per share). The investment banks also organized a 'roadshow' where Facebook executives traveled around the country presenting to potential investors, explaining why Facebook would be a good investment. On the day of the IPO, Facebook raised $16 billion from selling these shares - money they used to hire more employees, build new features, and expand globally. The investment banks earned hundreds of millions in fees for their work guiding Facebook through this process.",
+        keyLearning: "IPOs help successful private companies raise massive amounts of money from public investors, but require expert guidance from investment banks to navigate the complex legal and financial requirements.",
+        difficulty: "beginner",
+        dealValue: "$16 billion raised",
+        outcome: "Facebook became a public company and used the money to expand worldwide"
       }
     ],
     interactiveQuiz: {
@@ -104,23 +127,58 @@ export const investmentBankingLessons: InteractiveLessonContent[] = [
           question: "What does IPO stand for?",
           options: ["Internet Public Offering", "Initial Public Offering", "Investment Portfolio Option", "International Private Office"],
           correctAnswer: 1,
-          explanation: "IPO stands for Initial Public Offering - when a company sells shares to the public for the first time!",
+          explanation: "IPO stands for Initial Public Offering - when a company sells shares to the public for the first time! Just like Facebook did in 2012.",
+          difficulty: "beginner"
+        },
+        {
+          id: "q1-2",
+          question: "In the Facebook IPO example, what did the investment banks help Facebook do?",
+          options: ["Build their website", "Determine company value and share price", "Create social media posts", "Hire new programmers"],
+          correctAnswer: 1,
+          explanation: "Investment banks helped Facebook figure out how much the company was worth and what price to charge for shares. They also organized the roadshow and handled the complex legal process.",
+          difficulty: "beginner"
+        },
+        {
+          id: "q1-3",
+          question: "What's the best analogy for a stock?",
+          options: ["A loan to a company", "A slice of pizza representing company ownership", "A company's bank account", "A business contract"],
+          correctAnswer: 1,
+          explanation: "A stock is like owning a slice of pizza - each slice represents a piece of ownership in the company. The more slices (stocks) you own, the bigger piece of the company you have!",
+          difficulty: "beginner"
+        },
+        {
+          id: "q1-4",
+          question: "Why do companies work with investment banks for IPOs?",
+          options: ["Because it's required by law", "Because the process is complex and requires expertise", "Because banks have the best computers", "Because banks own the stock market"],
+          correctAnswer: 1,
+          explanation: "Companies work with investment banks because going public involves complex legal, financial, and regulatory requirements that require specialized expertise - just like Facebook needed help from Morgan Stanley and other banks.",
           difficulty: "beginner"
         }
       ]
     },
-    terminology: ["ipo", "merger", "acquisition", "stock", "client", "deal"],
+    terminology: ["ipo", "merger", "acquisition", "stock", "client", "deal", "investment_bank", "shares", "valuation", "pitch"],
     practicalActivity: {
       id: "create-pitch",
-      name: "Your First Pitch",
-      description: "Create a simple presentation about why a lemonade stand should work with your 'bank'",
+      name: "Your First Investment Banking Pitch",
+      description: "Create a simple but professional presentation explaining how an investment bank could help a local business grow, using the concepts you've learned",
       steps: [
-        "Choose a local business (like a lemonade stand)",
-        "Think of one way you could help them grow",
-        "Create 3 slides explaining your idea",
-        "Present to Phil the Panda"
+        "Choose a real local business in your area (restaurant, retail store, service company)",
+        "Research basic information about the business (what they do, how long they've been operating)",
+        "Identify one major growth opportunity (expanding locations, launching online, buying a competitor)",
+        "Explain which investment banking service would help (IPO for raising money, M&A for buying competitors, etc.)",
+        "Create a 4-slide presentation: (1) Business Overview, (2) Growth Opportunity, (3) Our Solution, (4) Expected Outcome",
+        "Use simple language and include at least 3 key terms from the lesson",
+        "Practice your 2-minute pitch explaining why this business should work with your investment bank"
       ],
-      deliverable: "3-slide presentation with simple language"
+      deliverable: "4-slide presentation with 2-minute recorded pitch using investment banking terminology",
+      evaluationCriteria: [
+        "Clear explanation of the business and growth opportunity",
+        "Correct use of at least 3 investment banking terms",
+        "Logical connection between business need and IB solution",
+        "Professional presentation format",
+        "Confident delivery in pitch recording"
+      ],
+      timeEstimate: "45-60 minutes"
     }
   },
   {
@@ -187,7 +245,9 @@ export const investmentBankingLessons: InteractiveLessonContent[] = [
         "Calculate a fair purchase price",
         "Present your recommendation"
       ],
-      deliverable: "Deal summary with price recommendation"
+      deliverable: "Deal summary with price recommendation",
+      evaluationCriteria: ["Clear analysis", "Logical reasoning"],
+      timeEstimate: "30 minutes"
     }
   },
   {
@@ -254,7 +314,9 @@ export const investmentBankingLessons: InteractiveLessonContent[] = [
         "Complete your section of the pitch",
         "Review the final presentation"
       ],
-      deliverable: "One section of a professional pitch book"
+      deliverable: "One section of a professional pitch book",
+      evaluationCriteria: ["Quality of work", "Team coordination"],
+      timeEstimate: "45 minutes"
     }
   },
   {
@@ -322,7 +384,9 @@ export const investmentBankingLessons: InteractiveLessonContent[] = [
         "Determine terminal value",
         "Present your valuation range"
       ],
-      deliverable: "Complete DCF model with executive summary"
+      deliverable: "Complete DCF model with executive summary",
+      evaluationCriteria: ["Model accuracy", "Clear assumptions"],
+      timeEstimate: "90 minutes"
     }
   },
   {
@@ -399,7 +463,9 @@ export const investmentBankingLessons: InteractiveLessonContent[] = [
         "Evaluate the outcomes 2+ years later",
         "Present lessons learned"
       ],
-      deliverable: "Comprehensive case study with recommendations"
+      deliverable: "Comprehensive case study with recommendations",
+      evaluationCriteria: ["Thorough research", "Critical analysis"],
+      timeEstimate: "120 minutes"
     }
   },
   {
@@ -467,7 +533,9 @@ export const investmentBankingLessons: InteractiveLessonContent[] = [
         "Make predictions for next 12 months",
         "Present findings with supporting data"
       ],
-      deliverable: "Economic outlook report with deal activity predictions"
+      deliverable: "Economic outlook report with deal activity predictions",
+      evaluationCriteria: ["Data-driven analysis", "Logical conclusions"],
+      timeEstimate: "90 minutes"
     }
   },
   {
@@ -535,7 +603,9 @@ export const investmentBankingLessons: InteractiveLessonContent[] = [
         "Prepare interview materials",
         "Set 6-month and 2-year goals"
       ],
-      deliverable: "Personal career development plan with action items"
+      deliverable: "Personal career development plan with action items",
+      evaluationCriteria: ["Realistic goals", "Actionable steps"],
+      timeEstimate: "60 minutes"
     }
   }
 ];
