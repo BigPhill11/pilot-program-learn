@@ -1,9 +1,11 @@
-import { StaticImageData } from 'next/image';
 
 export interface InteractiveLessonContent {
   level: number;
   title: string;
   description: string;
+  theme: string;
+  objectives: string[];
+  terminology: string[];
   keyTerms: string[];
   keyQuestions: string[];
   miniGames: MiniGameConfig[];
@@ -52,8 +54,16 @@ export interface PracticalActivityConfig {
 
 const level1Lesson: InteractiveLessonContent = {
   level: 1,
-  title: "Investment Banking Basics",
-  description: "Get an introduction to the world of investment banking and its role in finance",
+  title: "Welcome to Wall Street",
+  description: "Your first step into the exciting world of investment banking - learn the basics that every Wall Street professional knows",
+  theme: "Foundation Building",
+  objectives: [
+    "Understand what investment banks do and why they matter",
+    "Learn key terminology used in investment banking",
+    "Recognize different types of financial deals",
+    "Practice explaining investment banking concepts to others"
+  ],
+  terminology: ['investment_bank', 'ipo', 'merger', 'financing', 'client', 'underwriting', 'stock', 'capital'],
   keyTerms: ['investment_bank', 'ipo', 'merger', 'financing', 'client'],
   keyQuestions: [
     "What do investment banks do?",
@@ -79,21 +89,12 @@ const level1Lesson: InteractiveLessonContent = {
   ],
   realWorldExamples: [
     {
-      id: 'apple-ipo-1980',
-      title: "Apple's IPO (1980)",
-      company: "Apple",
-      year: 1980,
-      description: "Apple went public in December 1980, raising $100 million and creating more millionaires than any IPO before it. Investment bank Morgan Stanley managed the IPO, valuing Apple at $1.778 billion. This event marked a turning point in the tech industry, demonstrating the potential for high-growth companies to access public markets and fuel further innovation.",
-      keyLearning: "IPOs provide companies with capital for growth and can create significant wealth for early investors and employees.",
-      difficulty: 'beginner'
-    },
-    {
-      id: 'kraft-heinz-merger-2015',
-      title: "Kraft-Heinz Merger (2015)",
-      company: "Kraft-Heinz",
-      year: 2015,
-      description: "In 2015, Kraft Foods and Heinz merged in a deal orchestrated by Warren Buffett's Berkshire Hathaway and 3G Capital. The merger created one of the largest food companies in the world, valued at $87 billion. Investment banks Lazard and Centerview Partners advised on the deal, which aimed to create synergies and cost savings through consolidation.",
-      keyLearning: "Mergers can create larger, more efficient companies by combining resources and reducing redundancies.",
+      id: 'facebook-ipo-2012',
+      title: "Facebook's Historic IPO Journey (2012)",
+      company: "Facebook (Meta)",
+      year: 2012,
+      description: "Facebook's IPO was one of the most anticipated public offerings in tech history. The social media giant raised $16 billion, making it the largest tech IPO at the time. Morgan Stanley, JPMorgan Chase, and Goldman Sachs served as the lead underwriters. The IPO was priced at $38 per share, valuing Facebook at $104 billion. However, the launch faced technical glitches on NASDAQ, and the stock initially struggled, dropping below the IPO price. This case shows how investment banks help companies go public, the complexities involved, and how market conditions can affect even the biggest deals. Despite initial challenges, Facebook's stock eventually soared, validating the long-term value that investment bankers saw in the company.",
+      keyLearning: "IPOs are complex processes where investment banks help companies raise money from public investors, but success depends on proper pricing, market conditions, and flawless execution.",
       difficulty: 'beginner'
     }
   ],
@@ -103,13 +104,13 @@ const level1Lesson: InteractiveLessonContent = {
         id: 'what-is-ib',
         question: "What is the primary role of an investment bank?",
         options: [
-          "Managing personal bank accounts",
-          "Providing financial advice and services to corporations and governments",
-          "Selling insurance policies",
-          "Operating retail stores"
+          "Managing personal savings accounts like a regular bank",
+          "Helping companies raise money and providing financial advice",
+          "Selling insurance policies to businesses",
+          "Operating retail stores and restaurants"
         ],
         correctAnswer: 1,
-        explanation: "Investment banks provide financial advice, raise capital, and assist with mergers and acquisitions for corporations and governments.",
+        explanation: "Investment banks are like financial advisors for big companies - they help them raise money, buy other companies, and make important financial decisions. Think of them as the financial coaches for the business world!",
         difficulty: 'beginner'
       },
       {
@@ -122,28 +123,49 @@ const level1Lesson: InteractiveLessonContent = {
           "Individual Pension Obligation"
         ],
         correctAnswer: 0,
-        explanation: "IPO stands for Initial Public Offering, which is when a company sells shares to the public for the first time.",
+        explanation: "IPO stands for Initial Public Offering - it's when a private company sells shares to regular people for the first time, like when your favorite private company becomes available for anyone to buy stock in!",
+        difficulty: 'beginner'
+      },
+      {
+        id: 'facebook-ipo-lesson',
+        question: "What made Facebook's 2012 IPO particularly significant?",
+        options: [
+          "It was the smallest tech IPO ever",
+          "It was the largest tech IPO at the time, raising $16 billion",
+          "Facebook decided not to go public after all",
+          "Only investment banks could buy the shares"
+        ],
+        correctAnswer: 1,
+        explanation: "Facebook's IPO was huge! It raised $16 billion and was the largest tech company to go public at that time. Even though it had some early challenges, it showed how investment banks help big companies reach everyday investors.",
         difficulty: 'beginner'
       }
     ]
   },
   practicalActivity: {
-    name: "Elevator Pitch",
-    description: "Create a 30-second elevator pitch explaining what investment banking is to someone you meet in an elevator.",
+    name: "Your Investment Banking Elevator Pitch",
+    description: "Create a 30-second elevator pitch explaining what investment banking is to someone who has never heard of it. Imagine you're in an elevator with a curious friend!",
     steps: [
-      "Start with a hook: 'I help companies grow and achieve their financial goals.'",
-      "Explain the core functions: 'We provide advice, raise capital, and facilitate mergers.'",
-      "Give a real-world example: 'Like when Apple went public or Kraft and Heinz merged.'",
-      "End with a question: 'Interested in learning more?'"
+      "Start with a friendly hook: 'You know how companies sometimes need help with big financial decisions?'",
+      "Explain the core job: 'Investment banks are like financial advisors for big companies - they help them raise money and make smart business moves.'",
+      "Give a relatable example: 'Like when Facebook went public so anyone could buy their stock, or when Disney bought other companies to grow bigger.'",
+      "End with enthusiasm: 'It's basically helping shape how the business world works - pretty cool, right?'"
     ],
-    deliverable: "A written script for your 30-second elevator pitch."
+    deliverable: "A written 30-second elevator pitch that you could actually say to a friend, plus practice saying it out loud!"
   }
 };
 
 const level2Lesson: InteractiveLessonContent = {
   level: 2,
   title: "The Deal Factory: How Investment Banks Work",
-  description: "Learn how investment banks operate, their different divisions, and the key players in Wall Street deals",
+  description: "Discover the inner workings of investment banks, their different divisions, and the key players who make Wall Street deals happen",
+  theme: "Operations & Structure",
+  objectives: [
+    "Understand how investment banks are organized and structured",
+    "Learn about underwriting and why it's crucial for capital markets",
+    "Explore how investment banks work together in syndicates",
+    "Master the key documents and processes in investment banking deals"
+  ],
+  terminology: ['underwriting', 'syndicate', 'prospectus', 'due_diligence', 'pitch_book', 'mandates', 'roadshow', 'bookrunner'],
   keyTerms: ['underwriting', 'syndicate', 'prospectus', 'due_diligence', 'pitch_book', 'mandates'],
   keyQuestions: [
     "What is underwriting and why is it important?",
@@ -261,6 +283,14 @@ const level3Lesson: InteractiveLessonContent = {
   level: 3,
   title: "Mergers & Acquisitions: The Art of Corporate Deals",
   description: "Explore how companies buy, sell, and merge with each other, and the investment bankers who make it happen",
+  theme: "M&A Mastery",
+  objectives: [
+    "Distinguish between mergers, acquisitions, and other deal types",
+    "Understand how investment bankers value companies in M&A deals",
+    "Learn about synergies and why they drive M&A decisions",
+    "Explore hostile takeovers and defensive strategies"
+  ],
+  terminology: ['merger', 'acquisition', 'hostile_takeover', 'due_diligence', 'synergies', 'valuation', 'premium', 'accretion'],
   keyTerms: ['merger', 'acquisition', 'hostile_takeover', 'due_diligence', 'synergies', 'valuation'],
   keyQuestions: [
     "What's the difference between a merger and an acquisition?",

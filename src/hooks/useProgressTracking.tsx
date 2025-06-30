@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -56,7 +55,7 @@ export const useProgressTracking = () => {
           total_points: data.total_points || 0,
           level_progress: data.level_progress || 0,
           achievements: Array.isArray(data.achievements) ? (data.achievements as string[]) : [],
-          completed_activities: Array.isArray(data.completed_activities) ? (data.completed_activities as string[]) : []
+          completed_activities: Array.isArray(data.achievements) ? (data.achievements as string[]) : []
         });
       }
     } catch (error) {
@@ -81,7 +80,7 @@ export const useProgressTracking = () => {
       const { error } = await supabase
         .from('user_progress')
         .update({
-          completed_activities: newCompletedActivities,
+          achievements: newCompletedActivities,
           total_points: newTotalPoints,
           updated_at: new Date().toISOString()
         })
