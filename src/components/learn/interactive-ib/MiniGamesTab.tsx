@@ -1,10 +1,12 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Gamepad2, Play, Trophy } from 'lucide-react';
+import { Gamepad2, Play, Trophy, ArrowLeft } from 'lucide-react';
 import { MiniGameConfig } from '@/data/investment-banking-lessons';
+import WallStreetWordMatch from './games/WallStreetWordMatch';
+import DealTypeDetective from './games/DealTypeDetective';
 
 interface MiniGamesTabProps {
   filteredMiniGames: MiniGameConfig[];
@@ -17,6 +19,54 @@ const MiniGamesTab: React.FC<MiniGamesTabProps> = ({
   completedActivities, 
   onActivityComplete 
 }) => {
+  const [activeGame, setActiveGame] = useState<string | null>(null);
+
+  const handleGameComplete = (gameId: string, score: number) => {
+    console.log(`Game ${gameId} completed with score: ${score}`);
+    onActivityComplete(gameId);
+    setActiveGame(null);
+  };
+
+  const handleGameExit = () => {
+    setActiveGame(null);
+  };
+
+  const startGame = (gameId: string) => {
+    setActiveGame(gameId);
+  };
+
+  // If a game is active, render the game component
+  if (activeGame === 'ib-basics-matching') {
+    return (
+      <div className="space-y-4">
+        <Button variant="ghost" onClick={handleGameExit} className="mb-4">
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Games
+        </Button>
+        <WallStreetWordMatch
+          onComplete={(score) => handleGameComplete('ib-basics-matching', score)}
+          onExit={handleGameExit}
+        />
+      </div>
+    );
+  }
+
+  if (activeGame === 'deal-type-sorter') {
+    return (
+      <div className="space-y-4">
+        <Button variant="ghost" onClick={handleGameExit} className="mb-4">
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Games
+        </Button>
+        <DealTypeDetective
+          onComplete={(score) => handleGameComplete('deal-type-sorter', score)}
+          onExit={handleGameExit}
+        />
+      </div>
+    );
+  }
+
+  // Default view - show game selection
   return (
     <div className="grid gap-6">
       {filteredMiniGames.map((game) => (
@@ -40,12 +90,12 @@ const MiniGamesTab: React.FC<MiniGamesTabProps> = ({
           <CardContent>
             <p className="text-muted-foreground mb-4">{game.description}</p>
             <Button 
-              onClick={() => onActivityComplete(game.id)}
+              onClick={() => startGame(game.id)}
               disabled={completedActivities.includes(game.id)}
               className="w-full"
             >
               <Play className="h-4 w-4 mr-2" />
-              {completedActivities.includes(game.id) ? 'Completed!' : 'Start Game'}
+              {completedActivities.includes(game.id) ? 'Play Again' : 'Start Game'}
             </Button>
           </CardContent>
         </Card>
