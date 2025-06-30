@@ -1,253 +1,197 @@
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { CheckCircle, X, RotateCcw } from 'lucide-react';
-
-interface MatchPair {
-  id: string;
-  term: string;
-  definition: string;
-  analogy: string;
-  matched: boolean;
-}
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Shuffle, RotateCcw } from 'lucide-react';
+import { getIBTermsForLevel } from '@/data/investment-banking-terms';
+import { useAuth } from '@/hooks/useAuth';
+import HighlightableTerm from '@/components/HighlightableTerm';
+import { useProgressTracking } from '@/hooks/useProgressTracking';
 
 interface WallStreetWordMatchProps {
-  onComplete: (score: number) => void;
-  onExit: () => void;
+  onComplete: (gameId: string) => void;
+  isCompleted: boolean;
 }
 
-const WallStreetWordMatch: React.FC<WallStreetWordMatchProps> = ({ onComplete, onExit }) => {
-  const [pairs] = useState<MatchPair[]>([
-    {
-      id: '1',
-      term: 'IPO',
-      definition: 'When a company sells shares to the public for the first time',
-      analogy: 'Like a lemonade stand going from neighborhood-only to stores everywhere!',
-      matched: false
-    },
-    {
-      id: '2',
-      term: 'Merger',
-      definition: 'Two companies combining to become one',
-      analogy: 'Two friend groups becoming one big group!',
-      matched: false
-    },
-    {
-      id: '3',
-      term: 'Stock',
-      definition: 'A piece of ownership in a company',
-      analogy: 'Like owning a slice of pizza!',
-      matched: false
-    },
-    {
-      id: '4',
-      term: 'Client',
-      definition: 'Company asking for investment banking help',
-      analogy: 'A friend asking for important advice!',
-      matched: false
-    }
-  ]);
+const WallStreetWordMatch: React.FC<WallStreetWordMatchProps> = ({ onComplete, isCompleted }) => {
+  const { profile } = useAuth();
+  const { updateActivityComplete } = useProgressTracking();
+  const userLevel = profile?.app_version || 'beginner';
+  const ibTerms = getIBTermsForLevel(userLevel);
+  
+  // Get appropriate terms for the game
+  const gameTerms = Object.entries(ibTerms).slice(0, 6);
+  
+  const [selectedTerm, setSelectedTerm] = useState<string | null>(null);
+  const [selectedDefinition, setSelectedDefinition] = useState<string | null>(null);
+  const [matches, setMatches] = useState<Set<string>>(new Set());
+  const [score, setScore] = useState(0);
+  const [attempts, setAttempts] = useState(0);
+  const [gameCompleted, setGameCompleted] = useState(false);
 
-  const [gameState, setGameState] = useState({
-    selectedTerm: null as string | null,
-    selectedDefinition: null as string | null,
-    matches: 0,
-    attempts: 0,
-    showFeedback: false,
-    feedbackMessage: '',
-    isCorrect: false,
-    matchedPairs: [] as string[]
-  });
+  const [shuffledTerms, setShuffledTerms] = useState<Array<[string, any]>>([]);
+  const [shuffledDefinitions, setShuffledDefinitions] = useState<Array<[string, any]>>([]);
 
-  const handleTermClick = (id: string) => {
-    if (gameState.matchedPairs.includes(id)) return;
-    
-    setGameState(prev => ({
-      ...prev,
-      selectedTerm: prev.selectedTerm === id ? null : id,
-      selectedDefinition: null,
-      showFeedback: false
-    }));
+  useEffect(() => {
+    shuffleGame();
+  }, []);
+
+  const shuffleGame = () => {
+    const shuffled1 = [...gameTerms].sort(() => Math.random() - 0.5);
+    const shuffled2 = [...gameTerms].sort(() => Math.random() - 0.5);
+    setShuffledTerms(shuffled1);
+    setShuffledDefinitions(shuffled2);
   };
 
-  const handleDefinitionClick = (id: string) => {
-    if (gameState.matchedPairs.includes(id)) return;
-
-    if (gameState.selectedTerm) {
-      const newAttempts = gameState.attempts + 1;
-      const isMatch = gameState.selectedTerm === id;
-      
-      if (isMatch) {
-        const newMatches = gameState.matches + 1;
-        const newMatchedPairs = [...gameState.matchedPairs, id];
-        
-        setGameState(prev => ({
-          ...prev,
-          matches: newMatches,
-          attempts: newAttempts,
-          matchedPairs: newMatchedPairs,
-          selectedTerm: null,
-          showFeedback: true,
-          feedbackMessage: `Correct! ${pairs.find(p => p.id === id)?.analogy}`,
-          isCorrect: true
-        }));
-
-        if (newMatches === pairs.length) {
-          setTimeout(() => {
-            onComplete(Math.round((newMatches / newAttempts) * 100));
-          }, 2000);
-        }
-      } else {
-        setGameState(prev => ({
-          ...prev,
-          attempts: newAttempts,
-          selectedTerm: null,
-          showFeedback: true,
-          feedbackMessage: 'Not quite right! Try again.',
-          isCorrect: false
-        }));
-      }
+  const handleTermClick = (termKey: string) => {
+    if (matches.has(termKey) || gameCompleted) return;
+    
+    if (selectedTerm === termKey) {
+      setSelectedTerm(null);
     } else {
-      setGameState(prev => ({
-        ...prev,
-        selectedDefinition: prev.selectedDefinition === id ? null : id
-      }));
+      setSelectedTerm(termKey);
+    }
+  };
+
+  const handleDefinitionClick = (termKey: string) => {
+    if (matches.has(termKey) || gameCompleted) return;
+    
+    if (selectedDefinition === termKey) {
+      setSelectedDefinition(null);
+    } else {
+      setSelectedDefinition(termKey);
+      
+      if (selectedTerm) {
+        setAttempts(prev => prev + 1);
+        
+        if (selectedTerm === termKey) {
+          // Correct match
+          const newMatches = new Set([...matches, termKey]);
+          setMatches(newMatches);
+          setScore(prev => prev + 10);
+          setSelectedTerm(null);
+          setSelectedDefinition(null);
+          
+          if (newMatches.size === gameTerms.length) {
+            setGameCompleted(true);
+            const finalScore = score + 10;
+            const bonusPoints = attempts < gameTerms.length * 1.5 ? 25 : 15;
+            updateActivityComplete('wall-street-word-match', bonusPoints);
+            onComplete('wall-street-word-match');
+          }
+        } else {
+          // Incorrect match
+          setTimeout(() => {
+            setSelectedTerm(null);
+            setSelectedDefinition(null);
+          }, 1000);
+        }
+      }
     }
   };
 
   const resetGame = () => {
-    setGameState({
-      selectedTerm: null,
-      selectedDefinition: null,
-      matches: 0,
-      attempts: 0,
-      showFeedback: false,
-      feedbackMessage: '',
-      isCorrect: false,
-      matchedPairs: []
-    });
+    setSelectedTerm(null);
+    setSelectedDefinition(null);
+    setMatches(new Set());
+    setScore(0);
+    setAttempts(0);
+    setGameCompleted(false);
+    shuffleGame();
   };
 
-  useEffect(() => {
-    if (gameState.showFeedback) {
-      const timer = setTimeout(() => {
-        setGameState(prev => ({ ...prev, showFeedback: false }));
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [gameState.showFeedback]);
-
-  const accuracy = gameState.attempts > 0 ? Math.round((gameState.matches / gameState.attempts) * 100) : 0;
+  const getButtonClass = (termKey: string, isDefinition: boolean = false) => {
+    const isMatched = matches.has(termKey);
+    const isSelected = isDefinition ? selectedDefinition === termKey : selectedTerm === termKey;
+    
+    if (isMatched) return "bg-green-500 text-white cursor-default";
+    if (isSelected) return "bg-blue-500 text-white";
+    return "bg-white hover:bg-gray-100 border-2 border-gray-200";
+  };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle className="flex items-center gap-2">
-              🎯 Wall Street Word Match
-              <Badge variant="outline">
-                {gameState.matches}/{pairs.length} matched
-              </Badge>
-            </CardTitle>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={resetGame}>
-                <RotateCcw className="h-4 w-4 mr-1" />
-                Reset
-              </Button>
-              <Button variant="ghost" size="sm" onClick={onExit}>
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
+    <Card className="w-full max-w-4xl mx-auto">
+      <CardHeader>
+        <CardTitle className="flex items-center justify-between">
+          <span>Wall Street Word Match</span>
+          <div className="flex items-center gap-4">
+            <span className="text-sm font-normal">Score: {score}</span>
+            <span className="text-sm font-normal">Attempts: {attempts}</span>
           </div>
-          <div className="flex gap-4 text-sm text-muted-foreground">
-            <span>Accuracy: {accuracy}%</span>
-            <span>Attempts: {gameState.attempts}</span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {gameCompleted && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+            <h3 className="text-lg font-semibold text-green-800 mb-2">🎉 Congratulations!</h3>
+            <p className="text-green-700">
+              You matched all terms! Final Score: {score} points
+            </p>
           </div>
-        </CardHeader>
-        
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Terms Column */}
-            <div>
-              <h3 className="font-semibold mb-4 text-center">Terms</h3>
-              <div className="space-y-2">
-                {pairs.map((pair) => (
-                  <Button
-                    key={`term-${pair.id}`}
-                    variant={
-                      gameState.matchedPairs.includes(pair.id) ? "secondary" : 
-                      gameState.selectedTerm === pair.id ? "default" : "outline"
-                    }
-                    className={`w-full justify-start h-auto p-4 text-left break-words whitespace-normal min-h-[60px] ${
-                      gameState.matchedPairs.includes(pair.id) ? 'opacity-70' : ''
-                    }`}
-                    onClick={() => handleTermClick(pair.id)}
-                    disabled={gameState.matchedPairs.includes(pair.id)}
+        )}
+
+        <div className="flex justify-center gap-2 mb-6">
+          <Button onClick={shuffleGame} variant="outline" size="sm">
+            <Shuffle className="h-4 w-4 mr-2" />
+            Shuffle
+          </Button>
+          <Button onClick={resetGame} variant="outline" size="sm">
+            <RotateCcw className="h-4 w-4 mr-2" />
+            Reset
+          </Button>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-8">
+          <div>
+            <h3 className="font-semibold mb-4 text-center">Terms</h3>
+            <div className="space-y-2">
+              {shuffledTerms.map(([termKey, termData]) => (
+                <Button
+                  key={`term-${termKey}`}
+                  onClick={() => handleTermClick(termKey)}
+                  className={`w-full p-4 h-auto text-left justify-start text-wrap break-words whitespace-normal ${getButtonClass(termKey)}`}
+                  variant="outline"
+                  disabled={matches.has(termKey) || gameCompleted}
+                >
+                  <HighlightableTerm
+                    term={termData.term}
+                    definition={termData.definition}
+                    analogy={termData.analogy}
                   >
-                    <div className="flex items-center gap-2 w-full">
-                      {gameState.matchedPairs.includes(pair.id) && 
-                        <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
-                      }
-                      <span className="font-semibold text-wrap">{pair.term}</span>
-                    </div>
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            {/* Definitions Column */}
-            <div>
-              <h3 className="font-semibold mb-4 text-center">Definitions</h3>
-              <div className="space-y-2">
-                {pairs.map((pair) => (
-                  <Button
-                    key={`def-${pair.id}`}
-                    variant={
-                      gameState.matchedPairs.includes(pair.id) ? "secondary" : 
-                      gameState.selectedDefinition === pair.id ? "default" : "outline"
-                    }
-                    className={`w-full justify-start h-auto p-4 text-left break-words whitespace-normal min-h-[60px] ${
-                      gameState.matchedPairs.includes(pair.id) ? 'opacity-70' : ''
-                    }`}
-                    onClick={() => handleDefinitionClick(pair.id)}
-                    disabled={gameState.matchedPairs.includes(pair.id)}
-                  >
-                    <div className="flex items-center gap-2 w-full">
-                      {gameState.matchedPairs.includes(pair.id) && 
-                        <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
-                      }
-                      <span className="text-wrap">{pair.definition}</span>
-                    </div>
-                  </Button>
-                ))}
-              </div>
+                    <span className="font-medium">
+                      {termData.term}
+                    </span>
+                  </HighlightableTerm>
+                </Button>
+              ))}
             </div>
           </div>
 
-          {gameState.showFeedback && (
-            <div className={`mt-4 p-4 rounded-lg border break-words ${
-              gameState.isCorrect 
-                ? 'bg-green-50 border-green-200 text-green-800' 
-                : 'bg-red-50 border-red-200 text-red-800'
-            }`}>
-              <p className="font-medium whitespace-pre-wrap">{gameState.feedbackMessage}</p>
+          <div>
+            <h3 className="font-semibold mb-4 text-center">Definitions</h3>
+            <div className="space-y-2">
+              {shuffledDefinitions.map(([termKey, termData]) => (
+                <Button
+                  key={`def-${termKey}`}
+                  onClick={() => handleDefinitionClick(termKey)}
+                  className={`w-full p-4 h-auto text-left justify-start text-wrap break-words whitespace-normal ${getButtonClass(termKey, true)}`}
+                  variant="outline"
+                  disabled={matches.has(termKey) || gameCompleted}
+                >
+                  <span className="text-sm leading-relaxed">
+                    {termData.definition}
+                  </span>
+                </Button>
+              ))}
             </div>
-          )}
+          </div>
+        </div>
 
-          {gameState.matches === pairs.length && (
-            <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg text-center">
-              <h3 className="font-semibold text-green-800 mb-2">🎉 Congratulations!</h3>
-              <p className="text-green-700">
-                You matched all terms with {accuracy}% accuracy! You've earned 50 XP!
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+        <div className="text-center text-sm text-muted-foreground">
+          Click a term, then click its matching definition. Hover over terms to see Phil's explanations!
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

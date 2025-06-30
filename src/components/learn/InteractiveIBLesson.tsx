@@ -66,6 +66,53 @@ const InteractiveIBLesson: React.FC<InteractiveIBLessonProps> = ({
     return <span className="font-semibold">{term.replace('_', ' ')}</span>;
   };
 
+  const renderTextWithTermHighlights = (text: string) => {
+    let processedText = text;
+    
+    // Find all terms that exist in our ibTerms and wrap them with HighlightableTerm
+    Object.keys(ibTerms).forEach(termKey => {
+      const term = ibTerms[termKey];
+      const termDisplayName = term.term;
+      
+      // Create regex to find the term (case insensitive, whole word)
+      const regex = new RegExp(`\\b${termDisplayName}\\b`, 'gi');
+      
+      processedText = processedText.replace(regex, (match) => {
+        return `<TERM_HIGHLIGHT>${match}</TERM_HIGHLIGHT>`;
+      });
+    });
+
+    // Split the text and render with highlights
+    const parts = processedText.split(/(<TERM_HIGHLIGHT>.*?<\/TERM_HIGHLIGHT>)/);
+    
+    return parts.map((part, index) => {
+      const termMatch = part.match(/<TERM_HIGHLIGHT>(.*?)<\/TERM_HIGHLIGHT>/);
+      if (termMatch) {
+        const termText = termMatch[1];
+        // Find matching term data
+        const termData = Object.values(ibTerms).find(term => 
+          term.term.toLowerCase() === termText.toLowerCase()
+        );
+        
+        if (termData) {
+          return (
+            <HighlightableTerm
+              key={index}
+              term={termData.term}
+              definition={termData.definition}
+              analogy={termData.analogy}
+            >
+              <span className="font-semibold text-primary cursor-help underline decoration-dotted">
+                {termText}
+              </span>
+            </HighlightableTerm>
+          );
+        }
+      }
+      return <span key={index}>{part}</span>;
+    });
+  };
+
   const getLevelAppropriateContent = (content: any[], userLevel: string) => {
     return content.filter(item => 
       item.difficulty === userLevel || 
@@ -135,10 +182,10 @@ const InteractiveIBLesson: React.FC<InteractiveIBLessonProps> = ({
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <p>{example.description}</p>
+                  <p>{renderTextWithTermHighlights(example.description)}</p>
                   <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
                     <h4 className="font-semibold text-blue-800 mb-2">💡 Key Learning:</h4>
-                    <p className="text-blue-700">{example.keyLearning}</p>
+                    <p className="text-blue-700">{renderTextWithTermHighlights(example.keyLearning)}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -160,18 +207,19 @@ const InteractiveIBLesson: React.FC<InteractiveIBLessonProps> = ({
                   (userLevel === 'intermediate' && q.difficulty === 'beginner') ||
                   (userLevel === 'advanced' && ['beginner', 'intermediate'].includes(q.difficulty)))
                 .map((question) => (
-                <InteractiveQuiz
-                  key={question.id}
-                  topicId={question.id}
-                  question={question.question}
-                  options={question.options}
-                  correctAnswerIndex={question.correctAnswer}
-                  feedbackForIncorrect={question.explanation}
-                  onQuizComplete={(id, isCorrect) => {
-                    if (isCorrect) handleActivityComplete('quiz');
-                  }}
-                  isCompleted={completedActivities.includes('quiz')}
-                />
+                <div key={question.id} className="mb-6">
+                  <InteractiveQuiz
+                    topicId={question.id}
+                    question={question.question}
+                    options={question.options}
+                    correctAnswerIndex={question.correctAnswer}
+                    feedbackForIncorrect={question.explanation}
+                    onQuizComplete={(id, isCorrect) => {
+                      if (isCorrect) handleActivityComplete('quiz');
+                    }}
+                    isCompleted={completedActivities.includes('quiz')}
+                  />
+                </div>
               ))}
             </CardContent>
           </Card>
@@ -186,7 +234,7 @@ const InteractiveIBLesson: React.FC<InteractiveIBLessonProps> = ({
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-lg">{lesson.practicalActivity.description}</p>
+              <p className="text-lg">{renderTextWithTermHighlights(lesson.practicalActivity.description)}</p>
               
               <div>
                 <h4 className="font-semibold mb-3">Steps to Complete:</h4>
@@ -196,7 +244,7 @@ const InteractiveIBLesson: React.FC<InteractiveIBLessonProps> = ({
                       <div className="w-6 h-6 rounded-full bg-primary text-white text-sm flex items-center justify-center flex-shrink-0 mt-0.5">
                         {index + 1}
                       </div>
-                      <span>{step}</span>
+                      <span>{renderTextWithTermHighlights(step)}</span>
                     </div>
                   ))}
                 </div>
@@ -204,7 +252,7 @@ const InteractiveIBLesson: React.FC<InteractiveIBLessonProps> = ({
 
               <div className="bg-green-50 p-4 rounded-lg border border-green-200">
                 <h4 className="font-semibold text-green-800 mb-2">📋 Deliverable:</h4>
-                <p className="text-green-700">{lesson.practicalActivity.deliverable}</p>
+                <p className="text-green-700">{renderTextWithTermHighlights(lesson.practicalActivity.deliverable)}</p>
               </div>
 
               <Button 
