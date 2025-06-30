@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,6 +6,7 @@ import { Gamepad2, Play, Trophy, ArrowLeft } from 'lucide-react';
 import { MiniGameConfig } from '@/data/investment-banking-lessons';
 import WallStreetWordMatch from './games/WallStreetWordMatch';
 import DealTypeDetective from './games/DealTypeDetective';
+import { useProgressTracking } from '@/hooks/useProgressTracking';
 
 interface MiniGamesTabProps {
   filteredMiniGames: MiniGameConfig[];
@@ -20,9 +20,12 @@ const MiniGamesTab: React.FC<MiniGamesTabProps> = ({
   onActivityComplete 
 }) => {
   const [activeGame, setActiveGame] = useState<string | null>(null);
+  const { updateActivityComplete } = useProgressTracking();
 
   const handleGameComplete = (gameId: string, score: number) => {
     console.log(`Game ${gameId} completed with score: ${score}`);
+    const xpReward = gameId === 'ib-basics-matching' ? 50 : 75;
+    updateActivityComplete(gameId, xpReward);
     onActivityComplete(gameId);
     setActiveGame(null);
   };
@@ -75,7 +78,7 @@ const MiniGamesTab: React.FC<MiniGamesTabProps> = ({
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center space-x-2">
                 <Gamepad2 className="h-5 w-5 text-primary" />
-                <span>{game.name}</span>
+                <span className="break-words">{game.name}</span>
               </CardTitle>
               <div className="flex items-center space-x-2">
                 <Badge variant={completedActivities.includes(game.id) ? "default" : "outline"}>
@@ -88,7 +91,7 @@ const MiniGamesTab: React.FC<MiniGamesTabProps> = ({
             </div>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground mb-4">{game.description}</p>
+            <p className="text-muted-foreground mb-4 break-words whitespace-normal">{game.description}</p>
             <Button 
               onClick={() => startGame(game.id)}
               disabled={completedActivities.includes(game.id)}

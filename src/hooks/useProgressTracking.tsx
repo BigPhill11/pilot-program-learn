@@ -11,6 +11,7 @@ interface ProgressData {
   total_points: number;
   level_progress: number;
   achievements: string[];
+  completed_activities: string[];
 }
 
 export const useProgressTracking = () => {
@@ -21,7 +22,8 @@ export const useProgressTracking = () => {
     engagement_score: 0,
     total_points: 0,
     level_progress: 0,
-    achievements: []
+    achievements: [],
+    completed_activities: []
   });
   const [loading, setLoading] = useState(true);
 
@@ -53,13 +55,54 @@ export const useProgressTracking = () => {
           engagement_score: data.engagement_score || 0,
           total_points: data.total_points || 0,
           level_progress: data.level_progress || 0,
-          achievements: Array.isArray(data.achievements) ? (data.achievements as string[]) : []
+          achievements: Array.isArray(data.achievements) ? (data.achievements as string[]) : [],
+          completed_activities: Array.isArray(data.completed_activities) ? (data.completed_activities as string[]) : []
         });
       }
     } catch (error) {
       console.error('Error fetching progress:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const updateActivityComplete = async (activityId: string, pointsEarned: number = 10) => {
+    if (!user) return;
+
+    const newCompletedActivities = progress.completed_activities.includes(activityId) 
+      ? progress.completed_activities 
+      : [...progress.completed_activities, activityId];
+    
+    const newTotalPoints = progress.completed_activities.includes(activityId) 
+      ? progress.total_points 
+      : progress.total_points + pointsEarned;
+
+    try {
+      const { error } = await supabase
+        .from('user_progress')
+        .update({
+          completed_activities: newCompletedActivities,
+          total_points: newTotalPoints,
+          updated_at: new Date().toISOString()
+        })
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      setProgress(prev => ({
+        ...prev,
+        completed_activities: newCompletedActivities,
+        total_points: newTotalPoints
+      }));
+
+      if (!progress.completed_activities.includes(activityId)) {
+        toast.success(`+${pointsEarned} points! Activity completed! 🎉`);
+      }
+
+      await checkLevelUp(newTotalPoints);
+    } catch (error) {
+      console.error('Error updating activity completion:', error);
+      toast.error('Failed to save progress');
     }
   };
 
@@ -71,7 +114,6 @@ export const useProgressTracking = () => {
       [topicId]: isCorrect
     };
 
-    // Updated point system: 5 points for correct answers
     const pointsEarned = isCorrect ? 5 : 0;
     const newTotalPoints = progress.total_points + pointsEarned;
     const newEngagementScore = progress.engagement_score + 2;
@@ -100,7 +142,6 @@ export const useProgressTracking = () => {
         toast.success(`+${pointsEarned} points! Great job! 🎉`);
       }
 
-      // Check for level up
       await checkLevelUp(newTotalPoints);
     } catch (error) {
       console.error('Error updating quiz score:', error);
@@ -198,6 +239,7 @@ export const useProgressTracking = () => {
     updateQuizScore,
     updateMarketPrediction,
     updateLearningProgress,
+    updateActivityComplete,
     refreshProgress: fetchProgress
   };
 };

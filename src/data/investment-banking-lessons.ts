@@ -1,29 +1,26 @@
-import { CareerLevel } from '@/data/finance-careers';
+import { StaticImageData } from 'next/image';
 
 export interface InteractiveLessonContent {
   level: number;
   title: string;
   description: string;
-  theme: string;
-  objectives: string[];
+  keyTerms: string[];
+  keyQuestions: string[];
   miniGames: MiniGameConfig[];
-  realWorldExamples: RealWorldExample[];
-  interactiveQuiz: QuizConfig;
-  terminology: string[];
-  practicalActivity: PracticalActivity;
+  realWorldExamples: RealWorldExampleConfig[];
+  interactiveQuiz: InteractiveQuizConfig;
+  practicalActivity: PracticalActivityConfig;
 }
 
 export interface MiniGameConfig {
   id: string;
   name: string;
-  type: 'matching' | 'scenario' | 'simulation' | 'drag-drop' | 'timeline';
   description: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
   xpReward: number;
-  gameData?: any;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
 }
 
-export interface RealWorldExample {
+export interface RealWorldExampleConfig {
   id: string;
   title: string;
   company: string;
@@ -31,12 +28,9 @@ export interface RealWorldExample {
   description: string;
   keyLearning: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
-  dealValue?: string;
-  outcome?: string;
 }
 
-export interface QuizConfig {
-  id: string;
+export interface InteractiveQuizConfig {
   questions: QuizQuestion[];
 }
 
@@ -49,563 +43,340 @@ export interface QuizQuestion {
   difficulty: 'beginner' | 'intermediate' | 'advanced';
 }
 
-export interface PracticalActivity {
-  id: string;
+export interface PracticalActivityConfig {
   name: string;
   description: string;
   steps: string[];
   deliverable: string;
-  evaluationCriteria: string[];
-  timeEstimate: string;
 }
 
-export const investmentBankingLessons: InteractiveLessonContent[] = [
-  {
-    level: 1,
-    title: "Welcome to Wall Street",
-    description: "Master the fundamentals of investment banking through interactive games, real examples, and hands-on practice",
-    theme: "Foundation Building",
-    objectives: [
-      "Understand what investment banking is and how it helps companies grow",
-      "Learn essential Wall Street vocabulary with memorable analogies",
-      "Explore different types of deals and when companies use them",
-      "Practice explaining investment banking concepts in simple terms",
-      "Create your first investment banking presentation"
-    ],
-    miniGames: [
+const level1Lesson: InteractiveLessonContent = {
+  level: 1,
+  title: "Investment Banking Basics",
+  description: "Get an introduction to the world of investment banking and its role in finance",
+  keyTerms: ['investment_bank', 'ipo', 'merger', 'financing', 'client'],
+  keyQuestions: [
+    "What do investment banks do?",
+    "What is an IPO?",
+    "What is a merger?",
+    "What is financing?"
+  ],
+  miniGames: [
+    {
+      id: 'ib-basics-matching',
+      name: 'Wall Street Word Match',
+      description: 'Match key investment banking terms with their definitions',
+      xpReward: 50,
+      difficulty: 'beginner'
+    },
+    {
+      id: 'deal-type-sorter',
+      name: 'Deal Type Detective',
+      description: 'Identify different types of investment banking deals',
+      xpReward: 75,
+      difficulty: 'beginner'
+    }
+  ],
+  realWorldExamples: [
+    {
+      id: 'apple-ipo-1980',
+      title: "Apple's IPO (1980)",
+      company: "Apple",
+      year: 1980,
+      description: "Apple went public in December 1980, raising $100 million and creating more millionaires than any IPO before it. Investment bank Morgan Stanley managed the IPO, valuing Apple at $1.778 billion. This event marked a turning point in the tech industry, demonstrating the potential for high-growth companies to access public markets and fuel further innovation.",
+      keyLearning: "IPOs provide companies with capital for growth and can create significant wealth for early investors and employees.",
+      difficulty: 'beginner'
+    },
+    {
+      id: 'kraft-heinz-merger-2015',
+      title: "Kraft-Heinz Merger (2015)",
+      company: "Kraft-Heinz",
+      year: 2015,
+      description: "In 2015, Kraft Foods and Heinz merged in a deal orchestrated by Warren Buffett's Berkshire Hathaway and 3G Capital. The merger created one of the largest food companies in the world, valued at $87 billion. Investment banks Lazard and Centerview Partners advised on the deal, which aimed to create synergies and cost savings through consolidation.",
+      keyLearning: "Mergers can create larger, more efficient companies by combining resources and reducing redundancies.",
+      difficulty: 'beginner'
+    }
+  ],
+  interactiveQuiz: {
+    questions: [
       {
-        id: "ib-basics-matching",
-        name: "Wall Street Word Match",
-        type: "matching",
-        description: "Match investment banking terms with their simple explanations and fun analogies",
-        difficulty: "beginner",
-        xpReward: 50,
-        gameData: {
-          pairs: [
-            { term: "IPO", definition: "When a company sells shares to the public for the first time", analogy: "Like a lemonade stand going from neighborhood-only to stores everywhere!" },
-            { term: "Merger", definition: "Two companies combining to become one", analogy: "Two friend groups becoming one big group!" },
-            { term: "Stock", definition: "A piece of ownership in a company", analogy: "Like owning a slice of pizza!" },
-            { term: "Client", definition: "Company asking for investment banking help", analogy: "A friend asking for important advice!" }
-          ]
-        }
+        id: 'what-is-ib',
+        question: "What is the primary role of an investment bank?",
+        options: [
+          "Managing personal bank accounts",
+          "Providing financial advice and services to corporations and governments",
+          "Selling insurance policies",
+          "Operating retail stores"
+        ],
+        correctAnswer: 1,
+        explanation: "Investment banks provide financial advice, raise capital, and assist with mergers and acquisitions for corporations and governments.",
+        difficulty: 'beginner'
       },
       {
-        id: "deal-type-sorter",
-        name: "Deal Type Detective",
-        type: "drag-drop",
-        description: "Sort different business situations into IPO, M&A, or financing categories",
-        difficulty: "beginner",
-        xpReward: 75,
-        gameData: {
-          scenarios: [
-            { text: "TechStart wants to sell shares to raise money for expansion", category: "IPO", explanation: "This is an IPO because they're selling shares to the public!" },
-            { text: "BigCorp wants to buy SmallCorp to expand their business", category: "M&A", explanation: "This is an acquisition - one company buying another!" },
-            { text: "GrowthCo needs a loan to build a new factory", category: "Financing", explanation: "This is financing - borrowing money for a specific project!" },
-            { text: "RetailChain and DeliveryService want to combine forces", category: "M&A", explanation: "This is a merger - two companies joining together!" }
-          ]
-        }
+        id: 'what-is-ipo',
+        question: "What does IPO stand for?",
+        options: [
+          "Initial Public Offering",
+          "Investment Portfolio Option",
+          "Income Property Opportunity",
+          "Individual Pension Obligation"
+        ],
+        correctAnswer: 0,
+        explanation: "IPO stands for Initial Public Offering, which is when a company sells shares to the public for the first time.",
+        difficulty: 'beginner'
       }
-    ],
-    realWorldExamples: [
-      {
-        id: "facebook-ipo",
-        title: "Facebook's Historic Public Debut",
-        company: "Facebook (Meta)",
-        year: 2012,
-        description: "In May 2012, Facebook made one of the biggest debuts in stock market history. The social media giant, which started in Mark Zuckerberg's college dorm room just eight years earlier, decided it was time to 'go public' - meaning regular people could buy shares in the company for the first time. Facebook worked with investment banks like Morgan Stanley, JPMorgan, and Goldman Sachs to help them through this complex process. The banks helped Facebook figure out how much the company was worth (they settled on about $104 billion), how many shares to sell (421 million shares), and what price to charge ($38 per share). The investment banks also organized a 'roadshow' where Facebook executives traveled around the country presenting to potential investors, explaining why Facebook would be a good investment. On the day of the IPO, Facebook raised $16 billion from selling these shares - money they used to hire more employees, build new features, and expand globally. The investment banks earned hundreds of millions in fees for their work guiding Facebook through this process.",
-        keyLearning: "IPOs help successful private companies raise massive amounts of money from public investors, but require expert guidance from investment banks to navigate the complex legal and financial requirements.",
-        difficulty: "beginner",
-        dealValue: "$16 billion raised",
-        outcome: "Facebook became a public company and used the money to expand worldwide"
-      }
-    ],
-    interactiveQuiz: {
-      id: "level-1-quiz",
-      questions: [
-        {
-          id: "q1-1",
-          question: "What does IPO stand for?",
-          options: ["Internet Public Offering", "Initial Public Offering", "Investment Portfolio Option", "International Private Office"],
-          correctAnswer: 1,
-          explanation: "IPO stands for Initial Public Offering - when a company sells shares to the public for the first time! Just like Facebook did in 2012.",
-          difficulty: "beginner"
-        },
-        {
-          id: "q1-2",
-          question: "In the Facebook IPO example, what did the investment banks help Facebook do?",
-          options: ["Build their website", "Determine company value and share price", "Create social media posts", "Hire new programmers"],
-          correctAnswer: 1,
-          explanation: "Investment banks helped Facebook figure out how much the company was worth and what price to charge for shares. They also organized the roadshow and handled the complex legal process.",
-          difficulty: "beginner"
-        },
-        {
-          id: "q1-3",
-          question: "What's the best analogy for a stock?",
-          options: ["A loan to a company", "A slice of pizza representing company ownership", "A company's bank account", "A business contract"],
-          correctAnswer: 1,
-          explanation: "A stock is like owning a slice of pizza - each slice represents a piece of ownership in the company. The more slices (stocks) you own, the bigger piece of the company you have!",
-          difficulty: "beginner"
-        },
-        {
-          id: "q1-4",
-          question: "Why do companies work with investment banks for IPOs?",
-          options: ["Because it's required by law", "Because the process is complex and requires expertise", "Because banks have the best computers", "Because banks own the stock market"],
-          correctAnswer: 1,
-          explanation: "Companies work with investment banks because going public involves complex legal, financial, and regulatory requirements that require specialized expertise - just like Facebook needed help from Morgan Stanley and other banks.",
-          difficulty: "beginner"
-        }
-      ]
-    },
-    terminology: ["ipo", "merger", "acquisition", "stock", "client", "deal", "investment_bank", "shares", "valuation", "pitch"],
-    practicalActivity: {
-      id: "create-pitch",
-      name: "Your First Investment Banking Pitch",
-      description: "Create a simple but professional presentation explaining how an investment bank could help a local business grow, using the concepts you've learned",
-      steps: [
-        "Choose a real local business in your area (restaurant, retail store, service company)",
-        "Research basic information about the business (what they do, how long they've been operating)",
-        "Identify one major growth opportunity (expanding locations, launching online, buying a competitor)",
-        "Explain which investment banking service would help (IPO for raising money, M&A for buying competitors, etc.)",
-        "Create a 4-slide presentation: (1) Business Overview, (2) Growth Opportunity, (3) Our Solution, (4) Expected Outcome",
-        "Use simple language and include at least 3 key terms from the lesson",
-        "Practice your 2-minute pitch explaining why this business should work with your investment bank"
-      ],
-      deliverable: "4-slide presentation with 2-minute recorded pitch using investment banking terminology",
-      evaluationCriteria: [
-        "Clear explanation of the business and growth opportunity",
-        "Correct use of at least 3 investment banking terms",
-        "Logical connection between business need and IB solution",
-        "Professional presentation format",
-        "Confident delivery in pitch recording"
-      ],
-      timeEstimate: "45-60 minutes"
-    }
+    ]
   },
-  {
-    level: 2,
-    title: "The Deal Making Process",
-    description: "Dive deeper into how investment bankers structure and execute deals",
-    theme: "Process Mastery",
-    objectives: [
-      "Understand the complete deal process",
-      "Learn about client relationships",
-      "Practice basic financial analysis",
-      "Experience a mock deal simulation"
+  practicalActivity: {
+    name: "Elevator Pitch",
+    description: "Create a 30-second elevator pitch explaining what investment banking is to someone you meet in an elevator.",
+    steps: [
+      "Start with a hook: 'I help companies grow and achieve their financial goals.'",
+      "Explain the core functions: 'We provide advice, raise capital, and facilitate mergers.'",
+      "Give a real-world example: 'Like when Apple went public or Kraft and Heinz merged.'",
+      "End with a question: 'Interested in learning more?'"
     ],
-    miniGames: [
-      {
-        id: "deal-timeline",
-        name: "Deal Flow Builder",
-        type: "timeline",
-        description: "Arrange the steps of an M&A process in the correct order",
-        difficulty: "intermediate",
-        xpReward: 100
-      },
-      {
-        id: "client-scenario",
-        name: "Client Meeting Simulator",
-        type: "scenario",
-        description: "Navigate different client conversations and choose the best responses",
-        difficulty: "intermediate",
-        xpReward: 125
-      }
-    ],
-    realWorldExamples: [
-      {
-        id: "disney-fox",
-        title: "Disney Acquires 21st Century Fox",
-        company: "Disney & Fox",
-        year: 2019,
-        description: "How Disney bought Fox's entertainment assets for $71 billion",
-        keyLearning: "Large acquisitions require careful planning and regulatory approval",
-        difficulty: "intermediate"
-      }
-    ],
-    interactiveQuiz: {
-      id: "level-2-quiz",
-      questions: [
-        {
-          id: "q2-1",
-          question: "What is the first step in most M&A deals?",
-          options: ["Sign the contract", "Do due diligence", "Initial discussion and NDA", "Calculate the price"],
-          correctAnswer: 2,
-          explanation: "Most deals start with initial discussions and signing a Non-Disclosure Agreement (NDA) to share confidential information.",
-          difficulty: "intermediate"
-        }
-      ]
-    },
-    terminology: ["due_diligence", "synergy", "nda", "loi", "closing"],
-    practicalActivity: {
-      id: "mini-deal",
-      name: "Mock M&A Deal",
-      description: "Guide two fictional companies through a merger process",
-      steps: [
-        "Review both companies' basic information",
-        "Identify potential synergies",
-        "Calculate a fair purchase price",
-        "Present your recommendation"
-      ],
-      deliverable: "Deal summary with price recommendation",
-      evaluationCriteria: ["Clear analysis", "Logical reasoning"],
-      timeEstimate: "30 minutes"
-    }
-  },
-  {
-    level: 3,
-    title: "Life on the Street",
-    description: "Experience the daily reality of working in investment banking",
-    theme: "Culture & Environment",
-    objectives: [
-      "Understand IB work culture and expectations",
-      "Learn about team dynamics and hierarchy",
-      "Practice time management with multiple deals",
-      "Develop professional communication skills"
-    ],
-    miniGames: [
-      {
-        id: "day-planner",
-        name: "IB Day Scheduler",
-        type: "simulation",
-        description: "Manage a busy day with multiple client calls, due diligence, and pitch prep",
-        difficulty: "intermediate",
-        xpReward: 150
-      },
-      {
-        id: "hierarchy-game",
-        name: "Know Your Team",
-        type: "matching",
-        description: "Match team members with their roles and responsibilities",
-        difficulty: "intermediate",
-        xpReward: 100
-      }
-    ],
-    realWorldExamples: [
-      {
-        id: "goldman-culture",
-        title: "Goldman Sachs Team Structure",
-        company: "Goldman Sachs",
-        year: 2023,
-        description: "How investment banking teams are organized and work together",
-        keyLearning: "Successful deals require coordination between analysts, associates, VPs, and MDs",
-        difficulty: "intermediate"
-      }
-    ],
-    interactiveQuiz: {
-      id: "level-3-quiz",
-      questions: [
-        {
-          id: "q3-1",
-          question: "What is typically the most junior role in an investment banking team?",
-          options: ["Associate", "Vice President", "Analyst", "Managing Director"],
-          correctAnswer: 2,
-          explanation: "Analysts are typically the most junior role, often recent college graduates who do much of the financial modeling and research.",
-          difficulty: "intermediate"
-        }
-      ]
-    },
-    terminology: ["analyst", "associate", "vp", "md", "pitch_book", "all_nighter"],
-    practicalActivity: {
-      id: "team-project",
-      name: "Virtual Team Exercise",
-      description: "Work with AI teammates to complete a pitch book section",
-      steps: [
-        "Receive your role assignment",
-        "Coordinate with team members",
-        "Complete your section of the pitch",
-        "Review the final presentation"
-      ],
-      deliverable: "One section of a professional pitch book",
-      evaluationCriteria: ["Quality of work", "Team coordination"],
-      timeEstimate: "45 minutes"
-    }
-  },
-  {
-    level: 4,
-    title: "Excel & Analysis Mastery",
-    description: "Master the technical skills that make investment bankers valuable",
-    theme: "Technical Excellence",
-    objectives: [
-      "Build financial models from scratch",
-      "Learn advanced Excel techniques",
-      "Understand valuation methodologies",
-      "Practice scenario analysis"
-    ],
-    miniGames: [
-      {
-        id: "excel-race",
-        name: "Spreadsheet Speed Challenge",
-        type: "simulation",
-        description: "Complete financial calculations quickly and accurately",
-        difficulty: "advanced",
-        xpReward: 200
-      },
-      {
-        id: "valuation-builder",
-        name: "Company Value Calculator",
-        type: "simulation",
-        description: "Build a simple DCF model to value a company",
-        difficulty: "advanced",
-        xpReward: 250
-      }
-    ],
-    realWorldExamples: [
-      {
-        id: "tesla-valuation",
-        title: "Tesla's Unique Valuation Challenge",
-        company: "Tesla",
-        year: 2020,
-        description: "How analysts struggled to value Tesla during its rapid growth phase",
-        keyLearning: "Valuing high-growth companies requires multiple methodologies and assumptions",
-        difficulty: "advanced"
-      }
-    ],
-    interactiveQuiz: {
-      id: "level-4-quiz",
-      questions: [
-        {
-          id: "q4-1",
-          question: "What does DCF stand for in valuation?",
-          options: ["Direct Cash Flow", "Discounted Cash Flow", "Dividend Capital Fund", "Debt Coverage Factor"],
-          correctAnswer: 1,
-          explanation: "DCF stands for Discounted Cash Flow - a method to value companies based on their expected future cash flows.",
-          difficulty: "advanced"
-        }
-      ]
-    },
-    terminology: ["dcf_model", "wacc", "terminal_value", "sensitivity_analysis", "comparable_analysis"],
-    practicalActivity: {
-      id: "build-model",
-      name: "Your First Financial Model",
-      description: "Create a complete DCF model for a real company",
-      steps: [
-        "Download historical financial data",
-        "Project future cash flows",
-        "Calculate discount rate (WACC)",
-        "Determine terminal value",
-        "Present your valuation range"
-      ],
-      deliverable: "Complete DCF model with executive summary",
-      evaluationCriteria: ["Model accuracy", "Clear assumptions"],
-      timeEstimate: "90 minutes"
-    }
-  },
-  {
-    level: 5,
-    title: "Real Deals & Case Studies",
-    description: "Analyze actual investment banking transactions and their impact",
-    theme: "Market Reality",
-    objectives: [
-      "Study famous deals and their outcomes",
-      "Understand market cycles and timing",
-      "Learn from both successes and failures",
-      "Connect theory to practice"
-    ],
-    miniGames: [
-      {
-        id: "deal-detective",
-        name: "Historical Deal Analysis",
-        type: "scenario",
-        description: "Investigate famous deals and predict their outcomes",
-        difficulty: "advanced",
-        xpReward: 300
-      },
-      {
-        id: "market-timing",
-        name: "IPO Timing Game",
-        type: "simulation",
-        description: "Choose the best time to take companies public based on market conditions",
-        difficulty: "advanced",
-        xpReward: 275
-      }
-    ],
-    realWorldExamples: [
-      {
-        id: "wework-ipo",
-        title: "WeWork's Failed IPO",
-        company: "WeWork",
-        year: 2019,
-        description: "How WeWork's IPO attempt revealed fundamental business problems",
-        keyLearning: "Due diligence and honest valuation are crucial - hype doesn't replace fundamentals",
-        difficulty: "advanced"
-      },
-      {
-        id: "berkshire-acquisitions",
-        title: "Berkshire Hathaway's Acquisition Strategy",
-        company: "Berkshire Hathaway",
-        year: 2023,
-        description: "Warren Buffett's long-term approach to acquiring businesses",
-        keyLearning: "Different acquisition strategies work for different types of buyers",
-        difficulty: "advanced"
-      }
-    ],
-    interactiveQuiz: {
-      id: "level-5-quiz",
-      questions: [
-        {
-          id: "q5-1",
-          question: "What often causes IPOs to be postponed or cancelled?",
-          options: ["High interest rates", "Market volatility", "Poor company fundamentals", "All of the above"],
-          correctAnswer: 3,
-          explanation: "IPO timing depends on multiple factors: market conditions, interest rates, and the company's readiness and fundamentals.",
-          difficulty: "advanced"
-        }
-      ]
-    },
-    terminology: ["market_conditions", "ipo_window", "deal_flow", "sector_rotation", "credit_markets"],
-    practicalActivity: {
-      id: "case-analysis",
-      name: "Deal Post-Mortem Analysis",
-      description: "Analyze a completed deal and assess its success factors",
-      steps: [
-        "Choose a major deal from the past 5 years",
-        "Research the strategic rationale",
-        "Analyze the execution process",
-        "Evaluate the outcomes 2+ years later",
-        "Present lessons learned"
-      ],
-      deliverable: "Comprehensive case study with recommendations",
-      evaluationCriteria: ["Thorough research", "Critical analysis"],
-      timeEstimate: "120 minutes"
-    }
-  },
-  {
-    level: 6,
-    title: "Economics & Global Markets",
-    description: "Understand how macroeconomic factors influence investment banking",
-    theme: "Macro Perspective",
-    objectives: [
-      "Connect economic indicators to deal activity",
-      "Understand regulatory environment",
-      "Learn about cross-border transactions",
-      "Analyze sector-specific trends"
-    ],
-    miniGames: [
-      {
-        id: "macro-predictor",
-        name: "Economic Impact Simulator",
-        type: "simulation",
-        description: "Predict how economic changes will affect different types of deals",
-        difficulty: "advanced",
-        xpReward: 350
-      },
-      {
-        id: "global-deals",
-        name: "Cross-Border Deal Builder",
-        type: "scenario",
-        description: "Navigate the complexities of international M&A transactions",
-        difficulty: "advanced",
-        xpReward: 325
-      }
-    ],
-    realWorldExamples: [
-      {
-        id: "covid-deals",
-        title: "M&A During COVID-19",
-        company: "Various",
-        year: 2020,
-        description: "How the pandemic changed deal dynamics and created new opportunities",
-        keyLearning: "Economic disruption creates both challenges and opportunities for strategic transactions",
-        difficulty: "advanced"
-      }
-    ],
-    interactiveQuiz: {
-      id: "level-6-quiz",
-      questions: [
-        {
-          id: "q6-1",
-          question: "How do rising interest rates typically affect M&A activity?",
-          options: ["Increase activity", "Decrease activity", "No effect", "Only affects certain sectors"],
-          correctAnswer: 1,
-          explanation: "Rising interest rates generally decrease M&A activity because financing becomes more expensive and company valuations often decline.",
-          difficulty: "advanced"
-        }
-      ]
-    },
-    terminology: ["fed_policy", "credit_spreads", "regulatory_approval", "antitrust", "cross_border"],
-    practicalActivity: {
-      id: "macro-analysis",
-      name: "Economic Trend Report",
-      description: "Analyze current economic conditions and predict impact on deal activity",
-      steps: [
-        "Research current economic indicators",
-        "Identify key trends affecting M&A",
-        "Select 2-3 sectors to analyze in detail",
-        "Make predictions for next 12 months",
-        "Present findings with supporting data"
-      ],
-      deliverable: "Economic outlook report with deal activity predictions",
-      evaluationCriteria: ["Data-driven analysis", "Logical conclusions"],
-      timeEstimate: "90 minutes"
-    }
-  },
-  {
-    level: 7,
-    title: "Career Mastery & Leadership",
-    description: "Prepare for advanced roles and interview success",
-    theme: "Professional Excellence",
-    objectives: [
-      "Master advanced interview techniques",
-      "Develop leadership and client skills",
-      "Build your professional network",
-      "Plan your career trajectory"
-    ],
-    miniGames: [
-      {
-        id: "interview-master",
-        name: "Investment Banking Interview Simulator",
-        type: "scenario",
-        description: "Practice technical and behavioral questions with AI feedback",
-        difficulty: "advanced",
-        xpReward: 400
-      },
-      {
-        id: "client-pitch",
-        name: "Executive Presentation Challenge",
-        type: "simulation",
-        description: "Present to demanding C-suite executives and handle tough questions",
-        difficulty: "advanced",
-        xpReward: 450
-      }
-    ],
-    realWorldExamples: [
-      {
-        id: "successful-careers",
-        title: "IB Alumni Success Stories",
-        company: "Various",
-        year: 2023,
-        description: "How investment banking experience launches diverse career paths",
-        keyLearning: "IB skills transfer to many industries - private equity, corporate development, entrepreneurship",
-        difficulty: "advanced"
-      }
-    ],
-    interactiveQuiz: {
-      id: "level-7-quiz",
-      questions: [
-        {
-          id: "q7-1",
-          question: "What's the most important skill for senior investment bankers?",
-          options: ["Excel modeling", "Client relationship management", "Financial analysis", "Working long hours"],
-          correctAnswer: 1,
-          explanation: "While technical skills are important, senior bankers succeed primarily through building and maintaining strong client relationships.",
-          difficulty: "advanced"
-        }
-      ]
-    },
-    terminology: ["client_coverage", "origination", "relationship_management", "thought_leadership", "deal_captain"],
-    practicalActivity: {
-      id: "career-plan",
-      name: "Personal Career Strategy",
-      description: "Develop a comprehensive plan for your investment banking career",
-      steps: [
-        "Assess your current skills and experience",
-        "Research target firms and roles",
-        "Create a networking strategy",
-        "Prepare interview materials",
-        "Set 6-month and 2-year goals"
-      ],
-      deliverable: "Personal career development plan with action items",
-      evaluationCriteria: ["Realistic goals", "Actionable steps"],
-      timeEstimate: "60 minutes"
-    }
+    deliverable: "A written script for your 30-second elevator pitch."
   }
+};
+
+const level2Lesson: InteractiveLessonContent = {
+  level: 2,
+  title: "The Deal Factory: How Investment Banks Work",
+  description: "Learn how investment banks operate, their different divisions, and the key players in Wall Street deals",
+  keyTerms: ['underwriting', 'syndicate', 'prospectus', 'due_diligence', 'pitch_book', 'mandates'],
+  keyQuestions: [
+    "What is underwriting and why is it important?",
+    "How do investment banks form syndicates?",
+    "What information goes into a prospectus?",
+    "Why is due diligence critical for deals?"
+  ],
+  miniGames: [
+    {
+      id: 'ib-divisions-match',
+      name: 'Division Detective',
+      description: 'Match different investment banking divisions with their responsibilities',
+      xpReward: 60,
+      difficulty: 'beginner'
+    },
+    {
+      id: 'underwriting-simulator',
+      name: 'Underwriting Challenge',
+      description: 'Help structure and price a new stock offering for a growing company',
+      xpReward: 80,
+      difficulty: 'intermediate'
+    }
+  ],
+  realWorldExamples: [
+    {
+      id: 'spotify-ipo-2018',
+      title: "Spotify's Revolutionary Direct Listing (2018)",
+      company: "Spotify",
+      year: 2018,
+      description: "In April 2018, Spotify disrupted the traditional IPO process by choosing a direct listing on the NYSE instead of a conventional IPO. Unlike traditional IPOs where investment banks underwrite and sell new shares, Spotify allowed existing shareholders to sell their shares directly to the public without creating new shares or raising capital. This groundbreaking approach saved millions in underwriting fees and avoided the typical 'pop' that new IPOs experience. Goldman Sachs, Morgan Stanley, and Allen & Company served as financial advisors (not underwriters) to guide the process. The company's shares opened at $165.90, giving it a market value of about $29.5 billion. This direct listing method challenged the traditional investment banking model and paved the way for other companies like Slack and Palantir to follow suit. The success demonstrated that companies with strong brand recognition and sufficient liquidity could bypass traditional IPO constraints.",
+      keyLearning: "Direct listings show how companies can innovate around traditional investment banking services, though they require strong market presence and don't raise new capital for the company.",
+      difficulty: 'beginner'
+    },
+    {
+      id: 'aramco-ipo-2019',
+      title: "Saudi Aramco's Record-Breaking IPO (2019)",
+      company: "Saudi Aramco",
+      year: 2019,
+      description: "Saudi Aramco's IPO in December 2019 became the world's largest public offering, raising $25.6 billion and valuing the oil giant at $1.7 trillion. The deal showcased the massive coordination required for mega-IPOs. A syndicate of 27 global investment banks worked together, with JPMorgan Chase, Morgan Stanley, and HSBC as lead underwriters. The process involved extensive due diligence across the company's vast oil operations, geopolitical risk assessments, and regulatory compliance across multiple jurisdictions. The prospectus exceeded 600 pages, detailing everything from oil reserves to environmental risks. The underwriting syndicate had to price the shares carefully - initially targeting $8.53 per share but settling at the top of the range. The deal required coordination between Saudi regulators, international exchanges, and global investor roadshows. This IPO demonstrated how investment banks manage enormous complexity, regulatory requirements, and market timing for transformational deals.",
+      keyLearning: "Mega-IPOs require extensive syndicate coordination, thorough due diligence, and careful pricing to balance company objectives with market conditions.",
+      difficulty: 'intermediate'
+    }
+  ],
+  interactiveQuiz: {
+    questions: [
+      {
+        id: 'underwriting-definition',
+        question: "What is the primary role of underwriting in investment banking?",
+        options: [
+          "Buying shares from companies and reselling them to investors",
+          "Providing loans to companies for expansion",
+          "Managing company bank accounts",
+          "Filing tax returns for corporations"
+        ],
+        correctAnswer: 0,
+        explanation: "Underwriting means the investment bank buys shares from the company and takes on the risk of selling them to investors, like a middleman who guarantees the company gets paid.",
+        difficulty: 'beginner'
+      },
+      {
+        id: 'syndicate-purpose',
+        question: "Why do investment banks form syndicates for large deals?",
+        options: [
+          "To reduce competition between banks",
+          "To share risk and bring more expertise and investor networks",
+          "To increase fees charged to companies",
+          "To comply with government regulations"
+        ],
+        correctAnswer: 1,
+        explanation: "Syndicates allow banks to share the financial risk of large deals and combine their expertise and investor relationships to ensure successful completion.",
+        difficulty: 'beginner'
+      },
+      {
+        id: 'spotify-innovation',
+        question: "How did Spotify's 2018 direct listing differ from traditional IPOs?",
+        options: [
+          "It raised more money than typical IPOs",
+          "It used more investment banks as underwriters",
+          "It allowed existing shareholders to sell directly without creating new shares",
+          "It was only available to institutional investors"
+        ],
+        correctAnswer: 2,
+        explanation: "Spotify's direct listing bypassed traditional underwriting by letting existing shareholders sell directly to the public, without the company issuing new shares or raising capital.",
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'aramco-complexity',
+        question: "What made Saudi Aramco's IPO particularly complex for the underwriting syndicate?",
+        options: [
+          "The company was too small for a public offering",
+          "No investors were interested in oil companies",
+          "It required coordination across 27 banks, multiple jurisdictions, and extensive due diligence",
+          "The Saudi government refused to cooperate"
+        ],
+        correctAnswer: 2,
+        explanation: "Aramco's massive scale required unprecedented coordination between 27 global banks, compliance across multiple countries, and extensive due diligence on the world's largest oil company.",
+        difficulty: 'intermediate'
+      }
+    ]
+  },
+  practicalActivity: {
+    name: "Build Your Investment Bank Pitch",
+    description: "Create a pitch presentation for a fictional company seeking investment banking services. You'll act as an investment banker pitching your services to TechGrow Inc., a successful software company considering going public.",
+    steps: [
+      "Research TechGrow Inc.'s business model: cloud-based project management software with 50,000 customers",
+      "Identify 3 key reasons why TechGrow should go public now (growth funding, employee stock options, market visibility)",
+      "Create a simple pitch outline covering: company overview, IPO benefits, your bank's qualifications, timeline, and next steps",
+      "Calculate basic IPO math: if TechGrow wants to raise $100M at a $1B valuation, how many shares should they sell?",
+      "Prepare answers to likely client questions: 'How long will the process take?' and 'What are the main risks?'"
+    ],
+    deliverable: "A 5-slide pitch presentation outline with speaker notes explaining your recommendations for TechGrow's IPO strategy."
+  }
+};
+
+const level3Lesson: InteractiveLessonContent = {
+  level: 3,
+  title: "Mergers & Acquisitions: The Art of Corporate Deals",
+  description: "Explore how companies buy, sell, and merge with each other, and the investment bankers who make it happen",
+  keyTerms: ['merger', 'acquisition', 'hostile_takeover', 'due_diligence', 'synergies', 'valuation'],
+  keyQuestions: [
+    "What's the difference between a merger and an acquisition?",
+    "How do investment bankers value companies in M&A deals?",
+    "What are synergies and why do they matter?",
+    "How do hostile takeovers work?"
+  ],
+  miniGames: [
+    {
+      id: 'ma-deal-builder',
+      name: 'M&A Deal Architect',
+      description: 'Structure a merger between two companies by identifying synergies and negotiating terms',
+      xpReward: 75,
+      difficulty: 'intermediate'
+    },
+    {
+      id: 'valuation-challenge',
+      name: 'Company Valuation Master',
+      description: 'Use different methods to value companies and see which price makes sense',
+      xpReward: 85,
+      difficulty: 'advanced'
+    }
+  ],
+  realWorldExamples: [
+    {
+      id: 'disney-fox-2019',
+      title: "Disney's $71 Billion Acquisition of 21st Century Fox (2019)",
+      company: "Disney & 21st Century Fox",
+      year: 2019,
+      description: "Disney's acquisition of 21st Century Fox entertainment assets was one of the largest media deals in history, showcasing complex M&A strategy and execution. The deal took nearly two years to complete, involving intense negotiations, regulatory approvals across multiple countries, and a bidding war with Comcast. Goldman Sachs and JPMorgan advised Disney, while Centerview Partners and Guggenheim Securities advised Fox. The transaction included Fox's movie studio, TV production companies, cable networks like FX, and international properties like Star India. Disney's strategic rationale centered on content synergies for its streaming service Disney+ and international expansion. The investment banks had to navigate complex regulatory reviews, including antitrust concerns about Disney's growing media dominance. The deal structure included both cash and stock, requiring careful valuation work as both companies' share prices fluctuated during the lengthy process. Due diligence involved analyzing thousands of content assets, international operations, and potential regulatory outcomes.",
+      keyLearning: "Large M&A deals require extensive regulatory navigation, multiple valuation approaches, and strategic vision to identify and execute on synergies across different business lines.",
+      difficulty: 'intermediate'
+    },
+    {
+      id: 'broadcom-qualcomm-failed',
+      title: "Broadcom's Failed $117 Billion Hostile Takeover of Qualcomm (2018)",
+      company: "Broadcom & Qualcomm",
+      year: 2018,
+      description: "Broadcom's attempted hostile takeover of Qualcomm demonstrated the complexities and risks of unsolicited M&A deals. Broadcom, advised by Citi and JPMorgan, offered $117 billion for Qualcomm, which was advised by Goldman Sachs and Evercore. The deal became hostile when Qualcomm's board rejected multiple offers, forcing Broadcom to attempt a proxy fight to replace Qualcomm's directors. The transaction faced multiple obstacles: national security concerns over foreign ownership of critical U.S. semiconductor technology, regulatory scrutiny from multiple countries, and Qualcomm's own pending acquisition of NXP Semiconductors. Investment bankers had to navigate geopolitical risks, technology transfer concerns, and complex semiconductor industry dynamics. The deal ultimately collapsed when the U.S. Treasury's CFIUS (Committee on Foreign Investment) blocked it due to national security concerns, despite Broadcom's promise to move its headquarters to the U.S. This case highlighted how geopolitical factors can override financial logic in major M&A transactions.",
+      keyLearning: "Hostile takeovers face additional complexities including proxy battles, regulatory risks, and geopolitical considerations that can derail even well-financed deals.",
+      difficulty: 'advanced'
+    }
+  ],
+  interactiveQuiz: {
+    questions: [
+      {
+        id: 'merger-vs-acquisition',
+        question: "What's the key difference between a merger and an acquisition?",
+        options: [
+          "Mergers are always larger than acquisitions",
+          "In mergers, companies combine as equals; in acquisitions, one company buys another",
+          "Mergers only happen between competitors",
+          "Acquisitions require more regulatory approval"
+        ],
+        correctAnswer: 1,
+        explanation: "In a merger, two companies combine to form a new entity as relative equals. In an acquisition, one company (acquirer) buys and absorbs another company (target).",
+        difficulty: 'beginner'
+      },
+      {
+        id: 'synergies-meaning',
+        question: "What are synergies in M&A deals?",
+        options: [
+          "The total value of both companies combined",
+          "Legal fees paid to investment banks",
+          "Benefits created when two companies work better together than separately",
+          "The premium paid above market price"
+        ],
+        correctAnswer: 2,
+        explanation: "Synergies are the additional value created when two companies combine - like cost savings from eliminating duplicate departments or increased revenue from cross-selling products.",
+        difficulty: 'beginner'
+      },
+      {
+        id: 'disney-fox-strategy',
+        question: "What was Disney's main strategic rationale for acquiring Fox's entertainment assets?",
+        options: [
+          "To eliminate a competitor from the market",
+          "To gain content and international assets for Disney+ streaming service",
+          "To reduce operating costs through layoffs",
+          "To diversify into news and sports broadcasting"
+        ],
+        correctAnswer: 1,
+        explanation: "Disney acquired Fox primarily to gain valuable content for its Disney+ streaming service and expand internationally, especially with assets like Star India.",
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'hostile-takeover-challenges',
+        question: "Why did Broadcom's hostile takeover of Qualcomm fail?",
+        options: [
+          "Broadcom couldn't raise enough financing",
+          "Qualcomm's stock price was too high",
+          "U.S. government blocked it due to national security concerns",
+          "Shareholders rejected the deal"
+        ],
+        correctAnswer: 2,
+        explanation: "The U.S. Treasury's CFIUS blocked the deal due to national security concerns about foreign control of critical U.S. semiconductor technology, showing how geopolitical factors can override financial considerations.",
+        difficulty: 'advanced'
+      }
+    ]
+  },
+  practicalActivity: {
+    name: "M&A Deal Analysis Project",
+    description: "Analyze a potential merger between two fictional companies and create a recommendation memo. You're advising GreenTech Energy (solar panel manufacturer) on whether to acquire CleanCar Motors (electric vehicle startup).",
+    steps: [
+      "Analyze both companies: GreenTech has $500M revenue, strong manufacturing; CleanCar has $50M revenue, innovative battery technology",
+      "Identify potential synergies: shared battery technology, combined clean energy ecosystem, cost savings from shared R&D",
+      "Calculate basic valuation: If GreenTech trades at 3x revenue and CleanCar at 5x revenue, what would be fair acquisition prices?",
+      "Assess risks: integration challenges, technology compatibility, market competition from Tesla",
+      "Make recommendation: Should GreenTech pursue this acquisition? What price range makes sense?"
+    ],
+    deliverable: "A 2-page executive memo with your analysis and recommendation, including financial calculations and risk assessment."
+  }
+};
+
+export const investmentBankingLessons: InteractiveLessonContent[] = [
+  level1Lesson,
+  level2Lesson,
+  level3Lesson
+  // More levels will be added progressively
 ];

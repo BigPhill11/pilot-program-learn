@@ -181,7 +181,7 @@ const WallStreetWordMatch: React.FC<WallStreetWordMatchProps> = ({ onComplete, o
                       gameState.matchedPairs.includes(pair.id) ? "secondary" : 
                       gameState.selectedTerm === pair.id ? "default" : "outline"
                     }
-                    className={`w-full justify-start h-auto p-4 text-left ${
+                    className={`w-full justify-start h-auto p-4 text-left break-words whitespace-normal min-h-[60px] ${
                       gameState.matchedPairs.includes(pair.id) ? 'opacity-70' : ''
                     }`}
                     onClick={() => handleTermClick(pair.id)}
@@ -189,9 +189,9 @@ const WallStreetWordMatch: React.FC<WallStreetWordMatchProps> = ({ onComplete, o
                   >
                     <div className="flex items-center gap-2 w-full">
                       {gameState.matchedPairs.includes(pair.id) && 
-                        <CheckCircle className="h-4 w-4 text-green-600" />
+                        <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
                       }
-                      <span className="font-semibold">{pair.term}</span>
+                      <span className="font-semibold text-wrap">{pair.term}</span>
                     </div>
                   </Button>
                 ))}
@@ -209,7 +209,7 @@ const WallStreetWordMatch: React.FC<WallStreetWordMatchProps> = ({ onComplete, o
                       gameState.matchedPairs.includes(pair.id) ? "secondary" : 
                       gameState.selectedDefinition === pair.id ? "default" : "outline"
                     }
-                    className={`w-full justify-start h-auto p-4 text-left ${
+                    className={`w-full justify-start h-auto p-4 text-left break-words whitespace-normal min-h-[60px] ${
                       gameState.matchedPairs.includes(pair.id) ? 'opacity-70' : ''
                     }`}
                     onClick={() => handleDefinitionClick(pair.id)}
@@ -217,9 +217,9 @@ const WallStreetWordMatch: React.FC<WallStreetWordMatchProps> = ({ onComplete, o
                   >
                     <div className="flex items-center gap-2 w-full">
                       {gameState.matchedPairs.includes(pair.id) && 
-                        <CheckCircle className="h-4 w-4 text-green-600" />
+                        <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
                       }
-                      <span>{pair.definition}</span>
+                      <span className="text-wrap">{pair.definition}</span>
                     </div>
                   </Button>
                 ))}
@@ -228,12 +228,12 @@ const WallStreetWordMatch: React.FC<WallStreetWordMatchProps> = ({ onComplete, o
           </div>
 
           {gameState.showFeedback && (
-            <div className={`mt-4 p-4 rounded-lg border ${
+            <div className={`mt-4 p-4 rounded-lg border break-words ${
               gameState.isCorrect 
                 ? 'bg-green-50 border-green-200 text-green-800' 
                 : 'bg-red-50 border-red-200 text-red-800'
             }`}>
-              <p className="font-medium">{gameState.feedbackMessage}</p>
+              <p className="font-medium whitespace-pre-wrap">{gameState.feedbackMessage}</p>
             </div>
           )}
 

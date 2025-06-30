@@ -48,13 +48,13 @@ const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({
 
   const showIncorrectFeedback = hasAttempted && 
     selectedAnswerIndex !== correctAnswerIndex && 
-    feedbackForIncorrect;
+    feedbackForIncorrected;
 
   const showCompletedFeedback = isCompleted && !hasAttempted;
 
   return (
     <div className="mt-6 p-4 border rounded-lg bg-muted/30">
-      <p className="font-semibold mb-3 text-md">{question}</p>
+      <p className="font-semibold mb-3 text-md break-words whitespace-normal">{question}</p>
       <div className="space-y-1">
         {options.map((option, index) => (
           <QuizOption

@@ -30,7 +30,7 @@ const QuizOption: React.FC<QuizOptionProps> = ({
   };
 
   const getButtonClassName = () => {
-    let baseClasses = "w-full justify-start text-left text-sm py-2 px-3 h-auto mb-2";
+    let baseClasses = "w-full justify-start text-left text-sm py-3 px-4 h-auto mb-2 break-words whitespace-normal min-h-[48px]";
     if (!hasAttempted && !isCompleted) return `${baseClasses} hover:bg-accent`;
     
     if (isCorrect) {
@@ -49,9 +49,9 @@ const QuizOption: React.FC<QuizOptionProps> = ({
       onClick={onClick}
       disabled={hasAttempted || isCompleted}
     >
-      <span className="flex-grow">{option}</span>
-      {(hasAttempted || isCompleted) && isCorrect && <CheckCircle2 className="h-5 w-5 ml-2" />}
-      {hasAttempted && isSelected && !isCorrect && <XCircle className="h-5 w-5 ml-2" />}
+      <span className="flex-grow text-wrap leading-relaxed">{option}</span>
+      {(hasAttempted || isCompleted) && isCorrect && <CheckCircle2 className="h-5 w-5 ml-2 flex-shrink-0" />}
+      {hasAttempted && isSelected && !isCorrect && <XCircle className="h-5 w-5 ml-2 flex-shrink-0" />}
     </Button>
   );
 };
