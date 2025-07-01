@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -28,18 +29,14 @@ const InteractiveIBLesson: React.FC<InteractiveIBLessonProps> = ({
 }) => {
   const { profile } = useAuth();
   const [currentTab, setCurrentTab] = useState('overview');
-  const { progress, markTermMastered, saveQuizScore, markActivityCompleted, getProgressPercentage } = useLessonProgress(lesson.id);
+  const { progress, markTermMastered, saveQuizScore, markActivityCompleted, getProgressPercentage } = useLessonProgress(lesson.level.toString());
 
   const userLevel = profile?.app_version || 'beginner';
   const ibTerms = getIBTermsForLevel(userLevel);
 
-  // Get key terms from the lesson content
-  const keyTerms = lesson.keyPoints.map(point => {
-    const termKey = Object.keys(ibTerms).find(key => 
-      ibTerms[key].term.toLowerCase() === point.toLowerCase() ||
-      point.toLowerCase().includes(ibTerms[key].term.toLowerCase())
-    );
-    return termKey ? ibTerms[termKey] : null;
+  // Get key terms from the lesson content using keyTerms instead of keyPoints
+  const keyTerms = lesson.keyTerms.map(termKey => {
+    return ibTerms[termKey] || null;
   }).filter(Boolean);
 
   // Generate 5 quiz questions from the lesson content
