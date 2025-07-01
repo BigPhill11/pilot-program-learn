@@ -1,21 +1,41 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Target, BookOpen } from 'lucide-react';
+import { Target, BookOpen, Trophy } from 'lucide-react';
 import { InteractiveLessonContent } from '@/data/investment-banking-lessons';
 import HighlightableTerm from '@/components/HighlightableTerm';
 import PandaLogo from '@/components/icons/PandaLogo';
 import { useAuth } from '@/hooks/useAuth';
+import KeyTermFlashcard from './KeyTermFlashcard';
 
 interface OverviewTabProps {
   lesson: InteractiveLessonContent;
   ibTerms: any;
   renderTermWithTooltip: (term: string) => JSX.Element;
+  onTermMastered: (term: string) => void;
+  masteredTerms: string[];
 }
 
-const OverviewTab: React.FC<OverviewTabProps> = ({ lesson, ibTerms, renderTermWithTooltip }) => {
+const OverviewTab: React.FC<OverviewTabProps> = ({ 
+  lesson, 
+  ibTerms, 
+  renderTermWithTooltip, 
+  onTermMastered, 
+  masteredTerms 
+}) => {
   const { profile } = useAuth();
   const userLevel = profile?.app_version || 'beginner';
+  const [showFlashcards, setShowFlashcards] = useState(false);
+
+  // Get terminology terms as flashcard data
+  const terminologyFlashcards = lesson.terminology.map(termKey => {
+    const termData = ibTerms[termKey];
+    return termData ? {
+      term: termData.term,
+      definition: termData.definition,
+      analogy: termData.analogy
+    } : null;
+  }).filter(Boolean);
 
   return (
     <div className="space-y-6">
@@ -42,19 +62,53 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ lesson, ibTerms, renderTermWi
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <BookOpen className="h-5 w-5" />
-            <span>Key Terms You'll Learn</span>
+          <CardTitle className="flex items-center justify-between">
+            <span className="flex items-center space-x-2">
+              <BookOpen className="h-5 w-5" />
+              <span>Key Terms You'll Learn</span>
+            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-normal text-muted-foreground">
+                {masteredTerms.length}/{terminologyFlashcards.length} mastered
+              </span>
+              <button
+                onClick={() => setShowFlashcards(!showFlashcards)}
+                className="text-sm text-primary hover:text-primary/80 font-medium"
+              >
+                {showFlashcards ? 'Hide Flashcards' : 'Show Flashcards'}
+              </button>
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-wrap gap-2">
-            {lesson.terminology.map((term, index) => (
-              <div key={index} className="inline-block">
-                {renderTermWithTooltip(term)}
+          {!showFlashcards ? (
+            <div className="flex flex-wrap gap-2">
+              {lesson.terminology.map((term, index) => (
+                <div key={index} className="inline-block">
+                  {renderTermWithTooltip(term)}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="text-center py-2">
+                <Trophy className="h-6 w-6 mx-auto mb-2 text-yellow-500" />
+                <p className="text-sm text-muted-foreground">Study these key terms with interactive flashcards!</p>
               </div>
-            ))}
-          </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {terminologyFlashcards.map((term, index) => (
+                  <KeyTermFlashcard
+                    key={index}
+                    term={term.term}
+                    definition={term.definition}
+                    analogy={term.analogy}
+                    onMastered={onTermMastered}
+                    isMastered={masteredTerms.includes(term.term)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
