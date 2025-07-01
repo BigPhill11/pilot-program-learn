@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,6 +28,7 @@ const InteractiveIBLesson: React.FC<InteractiveIBLessonProps> = ({
   const [currentTab, setCurrentTab] = useState('overview');
   const [completedActivities, setCompletedActivities] = useState<string[]>([]);
   const [lessonProgress, setLessonProgress] = useState(0);
+  const [masteredTerms, setMasteredTerms] = useState<string[]>([]);
 
   const userLevel = profile?.app_version || 'beginner';
   const ibTerms = getIBTermsForLevel(userLevel);
@@ -46,6 +46,14 @@ const InteractiveIBLesson: React.FC<InteractiveIBLessonProps> = ({
         onComplete();
       }
     }
+  };
+
+  const handleTermMastered = (term: string) => {
+    setMasteredTerms(prev => 
+      prev.includes(term) 
+        ? prev.filter(t => t !== term)
+        : [...prev, term]
+    );
   };
 
   const renderTermWithTooltip = (term: string) => {
@@ -158,6 +166,8 @@ const InteractiveIBLesson: React.FC<InteractiveIBLessonProps> = ({
             lesson={lesson} 
             ibTerms={ibTerms} 
             renderTermWithTooltip={renderTermWithTooltip}
+            onTermMastered={handleTermMastered}
+            masteredTerms={masteredTerms}
           />
         </TabsContent>
 
