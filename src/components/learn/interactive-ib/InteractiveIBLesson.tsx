@@ -1,4 +1,5 @@
 
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -39,13 +40,18 @@ const InteractiveIBLesson: React.FC<InteractiveIBLessonProps> = ({
     return ibTerms[termKey] || null;
   }).filter(Boolean);
 
-  // Generate 5 quiz questions from the lesson content
+  // Generate exactly 5 quiz questions from the lesson content
   const generateQuizQuestions = () => {
-    const questions = lesson.interactiveQuiz.questions
+    const allQuestions = lesson.interactiveQuiz.questions
       .filter(q => q.difficulty === userLevel || 
         (userLevel === 'intermediate' && q.difficulty === 'beginner') ||
-        (userLevel === 'advanced' && ['beginner', 'intermediate'].includes(q.difficulty)))
-      .slice(0, 5);
+        (userLevel === 'advanced' && ['beginner', 'intermediate'].includes(q.difficulty)));
+    
+    // Take exactly 5 questions, repeat if necessary
+    const questions = [];
+    for (let i = 0; i < 5; i++) {
+      questions.push(allQuestions[i % allQuestions.length]);
+    }
     
     return questions;
   };
@@ -263,3 +269,4 @@ const InteractiveIBLesson: React.FC<InteractiveIBLessonProps> = ({
 };
 
 export default InteractiveIBLesson;
+
