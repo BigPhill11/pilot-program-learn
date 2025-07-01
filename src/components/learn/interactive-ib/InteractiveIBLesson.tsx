@@ -1,5 +1,3 @@
-
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,7 +27,7 @@ const InteractiveIBLesson: React.FC<InteractiveIBLessonProps> = ({
   onComplete
 }) => {
   const { profile } = useAuth();
-  const [currentTab, setCurrentTab] = useState('overview');
+  const [currentTab, setCurrentTab] = useState('flashcards'); // Start with flashcards tab
   const { progress, markTermMastered, saveQuizScore, markActivityCompleted, getProgressPercentage } = useLessonProgress(lesson.level.toString());
 
   const userLevel = profile?.app_version || 'beginner';
@@ -138,25 +136,35 @@ const InteractiveIBLesson: React.FC<InteractiveIBLessonProps> = ({
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
-                <span>Master Key Terms</span>
-                <span className="text-sm font-normal">
+                <span className="flex items-center gap-2">
+                  <Trophy className="h-5 w-5 text-yellow-500" />
+                  Master Key Terms
+                </span>
+                <span className="text-sm font-normal text-muted-foreground">
                   {progress.masteredTerms.length}/{keyTerms.length} mastered
                 </span>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {keyTerms.map((term, index) => (
-                  <KeyTermFlashcard
-                    key={index}
-                    term={term.term}
-                    definition={term.definition}
-                    analogy={term.analogy}
-                    onMastered={markTermMastered}
-                    isMastered={progress.masteredTerms.includes(term.term)}
-                  />
-                ))}
-              </div>
+              {keyTerms.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {keyTerms.map((term, index) => (
+                    <KeyTermFlashcard
+                      key={index}
+                      term={term.term}
+                      definition={term.definition}
+                      analogy={term.analogy}
+                      onMastered={markTermMastered}
+                      isMastered={progress.masteredTerms.includes(term.term)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Trophy className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No key terms available for this lesson.</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -269,4 +277,3 @@ const InteractiveIBLesson: React.FC<InteractiveIBLessonProps> = ({
 };
 
 export default InteractiveIBLesson;
-
