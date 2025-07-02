@@ -82,12 +82,12 @@ const FinanceCareerJourney: React.FC<FinanceCareerJourneyProps> = ({ career, onB
             
             <div className="space-y-6">
               {career.levels.map((level, index) => {
-                const isCompleted = level.level < currentLevel;
-                const isCurrent = level.level === currentLevel;
-                const isLocked = level.level > currentLevel;
+                const isCompleted = level.id < currentLevel;
+                const isCurrent = level.id === currentLevel;
+                const isLocked = level.id > currentLevel;
                 
                 return (
-                  <div key={level.level} className={`flex items-center ${isMobile ? 'flex-row' : (index % 2 === 0 ? 'flex-row' : 'flex-row-reverse')}`}>
+                  <div key={level.id} className={`flex items-center ${isMobile ? 'flex-row' : (index % 2 === 0 ? 'flex-row' : 'flex-row-reverse')}`}>
                     {/* Level node - always on left for mobile */}
                     <div className={`flex-shrink-0 ${isMobile ? 'w-16' : 'w-1/2'} flex ${isMobile ? 'justify-start' : 'justify-center'}`}>
                       <div className={`relative z-10 ${isMobile ? 'w-12 h-12' : 'w-16 h-16'} rounded-full flex items-center justify-center border-4 transition-all ${
@@ -100,7 +100,7 @@ const FinanceCareerJourney: React.FC<FinanceCareerJourneyProps> = ({ career, onB
                         ) : isLocked ? (
                           <Lock className={`${isMobile ? 'h-4 w-4' : 'h-6 w-6'}`} />
                         ) : (
-                          <span className={`font-bold ${isMobile ? 'text-sm' : 'text-lg'}`}>{level.level}</span>
+                          <span className={`font-bold ${isMobile ? 'text-sm' : 'text-lg'}`}>{level.id}</span>
                         )}
                       </div>
                     </div>
@@ -114,20 +114,20 @@ const FinanceCareerJourney: React.FC<FinanceCareerJourneyProps> = ({ career, onB
                       }`}>
                         <CardHeader className={isMobile ? 'pb-3' : ''}>
                           <CardTitle className={`${isMobile ? 'text-base' : 'text-lg'} flex items-center gap-2`}>
-                            Level {level.level}: {level.focusArea}
+                            Level {level.id}: {level.title}
                             <PandaLogo className={`${isMobile ? 'h-4 w-4' : 'h-6 w-6'}`} />
                           </CardTitle>
                         </CardHeader>
                         <CardContent className={isMobile ? 'pt-0' : ''}>
                           <div className="space-y-2">
-                            {level.sampleTopics.map((topic, idx) => (
+                            {level.points.map((point, idx) => (
                               <div key={idx} className="flex items-center gap-2">
                                 <div className={`w-2 h-2 rounded-full ${
                                   isCompleted ? 'bg-green-500' : 
                                   isCurrent ? 'bg-primary' : 
                                   'bg-muted-foreground'
                                 }`}></div>
-                                <span className={`${isMobile ? 'text-xs' : 'text-sm'}`}>{topic}</span>
+                                <span className={`${isMobile ? 'text-xs' : 'text-sm'}`}>{point}</span>
                               </div>
                             ))}
                           </div>
