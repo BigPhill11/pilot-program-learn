@@ -6,8 +6,10 @@ import { ArrowLeft, Play, Star, Trophy } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PandaLogo from '@/components/icons/PandaLogo';
 import InteractiveIBLesson from './InteractiveIBLesson';
+import InteractivePELesson from './InteractivePELesson';
 import type { FinanceCareerData } from '@/data/finance-careers';
 import { investmentBankingLessons } from '@/data/investment-banking-lessons';
+import { privateEquityLessons } from '@/data/private-equity-lessons';
 import { useAuth } from '@/hooks/useAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
 import CareerProgressCard from './enhanced-career/CareerProgressCard';
@@ -39,15 +41,28 @@ const EnhancedFinanceCareerJourney: React.FC<EnhancedFinanceCareerJourneyProps> 
 
   // If we're in a lesson, show the lesson component
   if (currentLesson !== null) {
-    const lesson = investmentBankingLessons.find(l => l.level === currentLesson);
-    if (lesson) {
-      return (
-        <InteractiveIBLesson
-          lesson={lesson}
-          onBack={() => setCurrentLesson(null)}
-          onComplete={() => handleLessonComplete(currentLesson)}
-        />
-      );
+    if (career.id === 'investment-banking') {
+      const lesson = investmentBankingLessons.find(l => l.level === currentLesson);
+      if (lesson) {
+        return (
+          <InteractiveIBLesson
+            lesson={lesson}
+            onBack={() => setCurrentLesson(null)}
+            onComplete={() => handleLessonComplete(currentLesson)}
+          />
+        );
+      }
+    } else if (career.id === 'private-equity') {
+      const lesson = privateEquityLessons.find(l => l.level === currentLesson);
+      if (lesson) {
+        return (
+          <InteractivePELesson
+            lesson={lesson}
+            onBack={() => setCurrentLesson(null)}
+            onComplete={() => handleLessonComplete(currentLesson)}
+          />
+        );
+      }
     }
   }
 
@@ -111,7 +126,9 @@ const EnhancedFinanceCareerJourney: React.FC<EnhancedFinanceCareerJourneyProps> 
             <div className={`absolute ${isMobile ? 'left-8' : 'left-1/2 transform -translate-x-1/2'} w-1 bg-muted h-full`}></div>
             
             <div className="space-y-6">
-              {investmentBankingLessons.map((lesson, index) => {
+              {(career.id === 'investment-banking' ? investmentBankingLessons : 
+                career.id === 'private-equity' ? privateEquityLessons : 
+                investmentBankingLessons).map((lesson, index) => {
                 const isCompleted = completedLevels.includes(lesson.level);
                 const isCurrent = lesson.level === currentLevel;
                 const isLocked = lesson.level > currentLevel;
