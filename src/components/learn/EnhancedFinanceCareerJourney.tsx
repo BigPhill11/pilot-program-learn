@@ -12,6 +12,7 @@ import { investmentBankingLessons } from '@/data/investment-banking-lessons';
 import { privateEquityLessons } from '@/data/private-equity-lessons';
 import { useAuth } from '@/hooks/useAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useLessonCompletions } from '@/hooks/useLessonCompletions';
 import CareerProgressCard from './enhanced-career/CareerProgressCard';
 import LessonCard from './enhanced-career/LessonCard';
 
@@ -21,22 +22,24 @@ interface EnhancedFinanceCareerJourneyProps {
 }
 
 const EnhancedFinanceCareerJourney: React.FC<EnhancedFinanceCareerJourneyProps> = ({ career, onBack }) => {
-  const [currentLevel, setCurrentLevel] = useState(1);
   const [currentLesson, setCurrentLesson] = useState<number | null>(null);
-  const [completedLevels, setCompletedLevels] = useState<number[]>([]);
   const { profile } = useAuth();
   const isMobile = useIsMobile();
+  const { 
+    isLevelComplete, 
+    isLevelAvailable, 
+    getCompletedLevels, 
+    getCurrentLevel,
+    markLessonComplete 
+  } = useLessonCompletions(career.id);
 
   const userLevel = profile?.app_version || 'beginner';
+  const completedLevels = getCompletedLevels();
+  const currentLevel = getCurrentLevel();
 
-  const handleLessonComplete = (levelNumber: number) => {
-    if (!completedLevels.includes(levelNumber)) {
-      setCompletedLevels([...completedLevels, levelNumber]);
-    }
+  const handleLessonComplete = async (levelNumber: number) => {
+    await markLessonComplete(levelNumber);
     setCurrentLesson(null);
-    if (levelNumber === currentLevel) {
-      setCurrentLevel(Math.min(currentLevel + 1, 7));
-    }
   };
 
   // If we're in a lesson, show the lesson component
@@ -129,9 +132,9 @@ const EnhancedFinanceCareerJourney: React.FC<EnhancedFinanceCareerJourneyProps> 
               {(career.id === 'investment-banking' ? investmentBankingLessons : 
                 career.id === 'private-equity' ? privateEquityLessons : 
                 investmentBankingLessons).map((lesson, index) => {
-                const isCompleted = completedLevels.includes(lesson.level);
+                const isCompleted = isLevelComplete(lesson.level);
                 const isCurrent = lesson.level === currentLevel;
-                const isLocked = lesson.level > currentLevel;
+                const isLocked = !isLevelAvailable(lesson.level);
                 
                 return (
                   <LessonCard
