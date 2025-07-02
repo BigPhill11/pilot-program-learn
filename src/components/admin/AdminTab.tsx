@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -54,6 +55,19 @@ const AdminTab = () => {
     }
   };
 
+  const getNextAvailableLevel = (careerId: string) => {
+    const careerCompletions = completions.filter(c => c.career_id === careerId);
+    const completedLevels = careerCompletions.map(c => c.lesson_level).sort((a, b) => a - b);
+    
+    // Find the first gap in the sequence or return the next level after the highest completed
+    for (let i = 1; i <= 7; i++) {
+      if (!completedLevels.includes(i)) {
+        return i;
+      }
+    }
+    return 8; // All levels completed
+  };
+
   const markLessonComplete = async (careerId: string, level: number) => {
     if (!user) return;
 
@@ -73,7 +87,7 @@ const AdminTab = () => {
 
       toast({
         title: 'Success',
-        description: `Marked ${careerId} Level ${level} as complete`,
+        description: `Marked ${careerId} Level ${level} as complete. ${level < 7 ? `Level ${level + 1} is now available!` : 'All levels completed!'}`,
       });
 
       fetchCompletions();
@@ -160,6 +174,11 @@ const AdminTab = () => {
     return completions.some(c => c.career_id === careerId && c.lesson_level === level);
   };
 
+  const isLevelAvailable = (careerId: string, level: number) => {
+    if (level === 1) return true; // First level is always available
+    return isLevelComplete(careerId, level - 1); // Level is available if previous level is complete
+  };
+
   const getCompletedCount = (careerId: string) => {
     return completions.filter(c => c.career_id === careerId).length;
   };
@@ -190,6 +209,7 @@ const AdminTab = () => {
 
       {careers.map((career) => {
         const completedCount = getCompletedCount(career.id);
+        const nextAvailableLevel = getNextAvailableLevel(career.id);
         
         return (
           <Card key={career.id}>
@@ -199,9 +219,16 @@ const AdminTab = () => {
                   <BookOpen className="h-5 w-5" />
                   {career.name}
                 </CardTitle>
-                <Badge variant={completedCount === career.levels ? 'default' : 'outline'}>
-                  {completedCount}/{career.levels} Complete
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <Badge variant={completedCount === career.levels ? 'default' : 'outline'}>
+                    {completedCount}/{career.levels} Complete
+                  </Badge>
+                  {nextAvailableLevel <= career.levels && (
+                    <Badge variant="secondary">
+                      Next: Level {nextAvailableLevel}
+                    </Badge>
+                  )}
+                </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -209,17 +236,26 @@ const AdminTab = () => {
                 {Array.from({ length: career.levels }, (_, i) => {
                   const level = i + 1;
                   const isComplete = isLevelComplete(career.id, level);
+                  const isAvailable = isLevelAvailable(career.id, level);
                   
                   return (
                     <Button
                       key={level}
-                      variant={isComplete ? 'default' : 'outline'}
+                      variant={isComplete ? 'default' : isAvailable ? 'outline' : 'ghost'}
                       size="sm"
                       onClick={() => markLessonComplete(career.id, level)}
-                      className="h-12 flex flex-col items-center justify-center"
+                      disabled={!isAvailable && !isComplete}
+                      className={`h-12 flex flex-col items-center justify-center ${
+                        isComplete ? 'bg-green-500 hover:bg-green-600' :
+                        isAvailable ? 'border-blue-500 hover:border-blue-600' :
+                        'opacity-50 cursor-not-allowed'
+                      }`}
                     >
                       {isComplete && <CheckCircle className="h-3 w-3 mb-1" />}
                       <span className="text-xs">L{level}</span>
+                      {!isAvailable && !isComplete && (
+                        <span className="text-xs opacity-60">🔒</span>
+                      )}
                     </Button>
                   );
                 })}
@@ -241,6 +277,12 @@ const AdminTab = () => {
                   <RotateCcw className="h-4 w-4 mr-2" />
                   Reset
                 </Button>
+              </div>
+
+              <div className="text-sm text-muted-foreground">
+                <p>• Green buttons: Completed lessons</p>
+                <p>• Blue outlined buttons: Available to complete</p>
+                <p>• Locked buttons: Complete previous levels first</p>
               </div>
             </CardContent>
           </Card>
