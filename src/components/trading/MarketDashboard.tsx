@@ -43,19 +43,19 @@ const MarketDashboard: React.FC = () => {
     setLoading(true);
     try {
       const [sectorsResponse, gainersResponse, losersResponse, earningsResponse] = await Promise.all([
-        supabase.functions.invoke('fmp-unified-service', {
+        supabase.functions.invoke('fmp-market-data', {
           body: JSON.stringify({ service: 'sector-performance' }),
           headers: { 'Content-Type': 'application/json' }
         }),
-        supabase.functions.invoke('fmp-unified-service', {
+        supabase.functions.invoke('fmp-market-data', {
           body: JSON.stringify({ service: 'market-gainers' }),
           headers: { 'Content-Type': 'application/json' }
         }),
-        supabase.functions.invoke('fmp-unified-service', {
+        supabase.functions.invoke('fmp-market-data', {
           body: JSON.stringify({ service: 'market-losers' }),
           headers: { 'Content-Type': 'application/json' }
         }),
-        supabase.functions.invoke('fmp-unified-service', {
+        supabase.functions.invoke('fmp-market-data', {
           body: JSON.stringify({ service: 'earnings-calendar' }),
           headers: { 'Content-Type': 'application/json' }
         })

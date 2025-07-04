@@ -57,8 +57,8 @@ const EnhancedSecuritiesSearch: React.FC<EnhancedSecuritiesSearchProps> = ({ onS
 
     setIsSearching(true);
     try {
-      const response = await supabase.functions.invoke('fmp-unified-service', {
-        body: JSON.stringify({ service: 'search', query: searchQuery }),
+      const response = await supabase.functions.invoke('fmp-securities-search', {
+        body: JSON.stringify({ query: searchQuery }),
         headers: { 'Content-Type': 'application/json' }
       });
 
@@ -82,12 +82,12 @@ const EnhancedSecuritiesSearch: React.FC<EnhancedSecuritiesSearchProps> = ({ onS
       
       // Get company profile and quote data
       const [profileResponse, quoteResponse] = await Promise.all([
-        supabase.functions.invoke('fmp-unified-service', {
-          body: JSON.stringify({ service: 'company-profile', symbol }),
+        supabase.functions.invoke('fmp-company-profile', {
+          body: JSON.stringify({ symbol }),
           headers: { 'Content-Type': 'application/json' }
         }),
-        supabase.functions.invoke('fmp-unified-service', {
-          body: JSON.stringify({ service: 'quote', symbol }),
+        supabase.functions.invoke('fmp-stock-price', {
+          body: JSON.stringify({ symbol }),
           headers: { 'Content-Type': 'application/json' }
         })
       ]);

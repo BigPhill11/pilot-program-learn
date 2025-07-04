@@ -64,82 +64,93 @@ const FinancialStatementsViewer: React.FC = () => {
 
     setLoading(true);
     try {
-      // Get company profile
-      const profileResponse = await fetch(`https://financialmodelingprep.com/api/v3/profile/${symbol.toUpperCase()}?apikey=${import.meta.env.VITE_FMP_API_KEY || 'demo'}`);
-      const profileData = await profileResponse.json();
+      // Get company profile using dedicated service
+      const profileResponse = await supabase.functions.invoke('fmp-company-profile', {
+        body: JSON.stringify({ symbol: symbol.toUpperCase() }),
+        headers: { 'Content-Type': 'application/json' }
+      });
       
-      if (!profileData || profileData.length === 0) {
+      if (profileResponse.error || !profileResponse.data) {
         throw new Error('Company not found');
       }
 
+      const profileData = profileResponse.data;
       setCompany({
-        companyName: profileData[0].companyName,
-        sector: profileData[0].sector || 'Unknown',
-        industry: profileData[0].industry || 'Unknown',
-        marketCap: profileData[0].mktCap || 0,
-        description: profileData[0].description || 'No description available'
+        companyName: profileData.companyName,
+        sector: profileData.sector || 'Unknown',
+        industry: profileData.industry || 'Unknown',
+        marketCap: profileData.mktCap || 0,
+        description: profileData.description || 'No description available'
       });
 
-      // Get financial statements
+      // Get financial statements using dedicated service
       const [incomeResponse, balanceResponse, cashFlowResponse] = await Promise.all([
-        fetch(`https://financialmodelingprep.com/api/v3/income-statement/${symbol.toUpperCase()}?period=annual&limit=3&apikey=${import.meta.env.VITE_FMP_API_KEY || 'demo'}`),
-        fetch(`https://financialmodelingprep.com/api/v3/balance-sheet-statement/${symbol.toUpperCase()}?period=annual&limit=3&apikey=${import.meta.env.VITE_FMP_API_KEY || 'demo'}`),
-        fetch(`https://financialmodelingprep.com/api/v3/cash-flow-statement/${symbol.toUpperCase()}?period=annual&limit=3&apikey=${import.meta.env.VITE_FMP_API_KEY || 'demo'}`)
-      ]);
-
-      const [incomeJson, balanceJson, cashFlowJson] = await Promise.all([
-        incomeResponse.json(),
-        balanceResponse.json(),
-        cashFlowResponse.json()
+        supabase.functions.invoke('fmp-financial-statements', {
+          body: JSON.stringify({ symbol: symbol.toUpperCase(), statement: 'income' }),
+          headers: { 'Content-Type': 'application/json' }
+        }),
+        supabase.functions.invoke('fmp-financial-statements', {
+          body: JSON.stringify({ symbol: symbol.toUpperCase(), statement: 'balance' }),
+          headers: { 'Content-Type': 'application/json' }
+        }),
+        supabase.functions.invoke('fmp-financial-statements', {
+          body: JSON.stringify({ symbol: symbol.toUpperCase(), statement: 'cashflow' }),
+          headers: { 'Content-Type': 'application/json' }
+        })
       ]);
 
       // Process income statement data
-      const processedIncome = incomeJson.map((item: any) => ({
-        date: item.date,
-        revenue: item.revenue || 0,
-        grossProfit: item.grossProfit || 0,
-        operatingIncome: item.operatingIncome || 0,
-        netIncome: item.netIncome || 0,
-        totalAssets: 0,
-        totalLiabilities: 0,
-        totalEquity: 0,
-        operatingCashFlow: 0,
-        freeCashFlow: 0
-      }));
+      if (!incomeResponse.error && incomeResponse.data) {
+        const processedIncome = incomeResponse.data.map((item: any) => ({
+          date: item.date,
+          revenue: item.revenue || 0,
+          grossProfit: item.grossProfit || 0,
+          operatingIncome: item.operatingIncome || 0,
+          netIncome: item.netIncome || 0,
+          totalAssets: 0,
+          totalLiabilities: 0,
+          totalEquity: 0,
+          operatingCashFlow: 0,
+          freeCashFlow: 0
+        }));
+        setIncomeData(processedIncome);
+      }
 
       // Process balance sheet data
-      const processedBalance = balanceJson.map((item: any) => ({
-        date: item.date,
-        revenue: 0,
-        grossProfit: 0,
-        operatingIncome: 0,
-        netIncome: 0,
-        totalAssets: item.totalAssets || 0,
-        totalLiabilities: item.totalLiabilities || 0,
-        totalEquity: item.totalStockholdersEquity || 0,
-        operatingCashFlow: 0,
-        freeCashFlow: 0
-      }));
+      if (!balanceResponse.error && balanceResponse.data) {
+        const processedBalance = balanceResponse.data.map((item: any) => ({
+          date: item.date,
+          revenue: 0,
+          grossProfit: 0,
+          operatingIncome: 0,
+          netIncome: 0,
+          totalAssets: item.totalAssets || 0,
+          totalLiabilities: item.totalLiabilities || 0,
+          totalEquity: item.totalStockholdersEquity || 0,
+          operatingCashFlow: 0,
+          freeCashFlow: 0
+        }));
+        setBalanceData(processedBalance);
+      }
 
       // Process cash flow data
-      const processedCashFlow = cashFlowJson.map((item: any) => ({
-        date: item.date,
-        revenue: 0,
-        grossProfit: 0,
-        operatingIncome: 0,
-        netIncome: 0,
-        totalAssets: 0,
-        totalLiabilities: 0,
-        totalEquity: 0,
-        operatingCashFlow: item.operatingCashFlow || 0,
-        freeCashFlow: item.freeCashFlow || 0
-      }));
+      if (!cashFlowResponse.error && cashFlowResponse.data) {
+        const processedCashFlow = cashFlowResponse.data.map((item: any) => ({
+          date: item.date,
+          revenue: 0,
+          grossProfit: 0,
+          operatingIncome: 0,
+          netIncome: 0,
+          totalAssets: 0,
+          totalLiabilities: 0,
+          totalEquity: 0,
+          operatingCashFlow: item.operatingCashFlow || 0,
+          freeCashFlow: item.freeCashFlow || 0
+        }));
+        setCashFlowData(processedCashFlow);
+      }
 
-      setIncomeData(processedIncome);
-      setBalanceData(processedBalance);
-      setCashFlowData(processedCashFlow);
-
-      toast.success(`Found financial data for ${profileData[0].companyName}`);
+      toast.success(`Found financial data for ${profileData.companyName}`);
     } catch (error) {
       console.error('Error fetching financial data:', error);
       toast.error('Failed to fetch financial data. Please check the symbol and try again.');
