@@ -8,7 +8,7 @@ import MarketSimulation from '@/components/trading/MarketSimulation';
 import MarketPredictionGame from '@/components/trading/MarketPredictionGame';
 import EnhancedSecuritiesSearch from '@/components/trading/EnhancedSecuritiesSearch';
 import MarketDashboard from '@/components/trading/MarketDashboard';
-import FinancialAnalysis from '@/components/trading/FinancialAnalysis';
+import FinancialStatementsViewer from '@/components/trading/FinancialStatementsViewer';
 import PortfolioCharts from '@/components/trading/PortfolioCharts';
 import TradingAcademy from '@/components/trading/TradingAcademy';
 import PhilAdventures from '@/components/trading/PhilAdventures';
@@ -193,7 +193,7 @@ const PaperTradingPage = () => {
         </TabsContent>
 
         <TabsContent value="analysis" className="space-y-6">
-          <FinancialAnalysis />
+          <FinancialStatementsViewer />
         </TabsContent>
 
         <TabsContent value="academy" className="space-y-6">
