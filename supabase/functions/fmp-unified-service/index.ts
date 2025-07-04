@@ -146,7 +146,10 @@ serve(async (req) => {
         const body = await req.json();
         service = body.service || service;
         query = body.query || query;
+        console.log('POST request body:', body);
+        console.log('Extracted service:', service);
       } catch (e) {
+        console.error('JSON parsing error:', e);
         // If JSON parsing fails, continue with URL params
       }
     }
@@ -240,7 +243,18 @@ serve(async (req) => {
       }
 
       case 'company-profile': {
-        const symbol = url.searchParams.get('symbol');
+        let symbol = url.searchParams.get('symbol');
+        
+        // Check POST body for symbol parameter
+        if (req.method === 'POST' && !symbol) {
+          try {
+            const body = await req.json();
+            symbol = body.symbol;
+          } catch (e) {
+            // Continue with URL param
+          }
+        }
+        
         if (!symbol) {
           return new Response(
             JSON.stringify({ error: 'Symbol parameter required' }),
@@ -256,7 +270,18 @@ serve(async (req) => {
       }
 
       case 'financial-ratios': {
-        const symbol = url.searchParams.get('symbol');
+        let symbol = url.searchParams.get('symbol');
+        
+        // Check POST body for symbol parameter  
+        if (req.method === 'POST' && !symbol) {
+          try {
+            const body = await req.json();
+            symbol = body.symbol;
+          } catch (e) {
+            // Continue with URL param
+          }
+        }
+        
         if (!symbol) {
           return new Response(
             JSON.stringify({ error: 'Symbol parameter required' }),
@@ -272,7 +297,18 @@ serve(async (req) => {
       }
 
       case 'analyst-estimates': {
-        const symbol = url.searchParams.get('symbol');
+        let symbol = url.searchParams.get('symbol');
+        
+        // Check POST body for symbol parameter
+        if (req.method === 'POST' && !symbol) {
+          try {
+            const body = await req.json();
+            symbol = body.symbol;
+          } catch (e) {
+            // Continue with URL param
+          }
+        }
+        
         if (!symbol) {
           return new Response(
             JSON.stringify({ error: 'Symbol parameter required' }),
