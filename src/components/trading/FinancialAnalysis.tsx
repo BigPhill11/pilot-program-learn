@@ -89,14 +89,20 @@ const FinancialAnalysis: React.FC = () => {
           freeCashFlow: item.freeCashFlow || 0,
         }));
         setStatements(data.reverse()); // Reverse to show chronological order
+      } else {
+        console.error('Financial statements error:', statementsResponse.error);
       }
 
       if (!ratiosResponse.error && ratiosResponse.data) {
         setRatios(ratiosResponse.data);
+      } else {
+        console.error('Financial ratios error:', ratiosResponse.error);
       }
 
       if (!estimatesResponse.error && estimatesResponse.data) {
         setEstimates(estimatesResponse.data[0] || null);
+      } else {
+        console.error('Analyst estimates error:', estimatesResponse.error);
       }
     } catch (error) {
       console.error('Error loading financial data:', error);

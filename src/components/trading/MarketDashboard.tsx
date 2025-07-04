@@ -63,18 +63,26 @@ const MarketDashboard: React.FC = () => {
 
       if (!sectorsResponse.error && sectorsResponse.data) {
         setSectorPerformance(sectorsResponse.data.slice(0, 8));
+      } else {
+        console.error('Sectors response error:', sectorsResponse.error);
       }
 
       if (!gainersResponse.error && gainersResponse.data) {
         setGainers(gainersResponse.data.slice(0, 10));
+      } else {
+        console.error('Gainers response error:', gainersResponse.error);
       }
 
       if (!losersResponse.error && losersResponse.data) {
         setLosers(losersResponse.data.slice(0, 10));
+      } else {
+        console.error('Losers response error:', losersResponse.error);
       }
 
       if (!earningsResponse.error && earningsResponse.data) {
         setEarningsCalendar(earningsResponse.data.slice(0, 15));
+      } else {
+        console.error('Earnings response error:', earningsResponse.error);
       }
     } catch (error) {
       console.error('Error loading market data:', error);
