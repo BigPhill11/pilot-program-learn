@@ -1,19 +1,26 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, TrendingDown, DollarSign, Target, BarChart3 } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, Target, BarChart3, Search, Calculator, BookOpen, Map } from 'lucide-react';
 import MarketSimulation from '@/components/trading/MarketSimulation';
 import MarketPredictionGame from '@/components/trading/MarketPredictionGame';
+import EnhancedSecuritiesSearch from '@/components/trading/EnhancedSecuritiesSearch';
+import MarketDashboard from '@/components/trading/MarketDashboard';
+import FinancialAnalysis from '@/components/trading/FinancialAnalysis';
 import PortfolioCharts from '@/components/trading/PortfolioCharts';
 import TradingAcademy from '@/components/trading/TradingAcademy';
+import PhilAdventures from '@/components/trading/PhilAdventures';
 import { usePaperTrading } from '@/hooks/usePaperTrading';
 
 const PaperTradingPage = () => {
+  const [selectedSecurity, setSelectedSecurity] = useState<any>(null);
   const { portfolio, positions, transactions, loading, executeTrade } = usePaperTrading();
-  const [selectedStock, setSelectedStock] = useState<string>('');
+
+  const handleSecuritySelect = (security: any, profile: any) => {
+    setSelectedSecurity({ ...security, profile });
+  };
 
   // Mock current prices for demonstration
   const mockPrices = {
@@ -48,7 +55,7 @@ const PaperTradingPage = () => {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-emerald-700 mb-2">Panda Trading</h1>
         <p className="text-muted-foreground">
-          Practice trading with virtual money and build your investment skills.
+          Professional trading platform with real market data and advanced analytics.
         </p>
       </div>
 
@@ -102,27 +109,44 @@ const PaperTradingPage = () => {
       </div>
 
       <Tabs defaultValue="trading" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5 bg-emerald-50 border border-emerald-200">
-          <TabsTrigger value="trading" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white">Trading Simulator</TabsTrigger>
-          <TabsTrigger value="portfolio" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white">Portfolio Analysis</TabsTrigger>
-          <TabsTrigger value="predictions" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white">Market Predictions</TabsTrigger>
-          <TabsTrigger value="academy" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white">Phil's Academy</TabsTrigger>
-          <TabsTrigger value="transactions" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white">Transaction History</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-6 bg-emerald-50 border border-emerald-200">
+          <TabsTrigger value="trading" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white">
+            <TrendingUp className="h-4 w-4 mr-2" />
+            Trading
+          </TabsTrigger>
+          <TabsTrigger value="search" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white">
+            <Search className="h-4 w-4 mr-2" />
+            Search
+          </TabsTrigger>
+          <TabsTrigger value="dashboard" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white">
+            <BarChart3 className="h-4 w-4 mr-2" />
+            Market
+          </TabsTrigger>
+          <TabsTrigger value="analysis" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white">
+            <Calculator className="h-4 w-4 mr-2" />
+            Analysis
+          </TabsTrigger>
+          <TabsTrigger value="academy" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white">
+            <BookOpen className="h-4 w-4 mr-2" />
+            Academy
+          </TabsTrigger>
+          <TabsTrigger value="adventures" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white">
+            <Map className="h-4 w-4 mr-2" />
+            Adventures
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="trading" className="space-y-6">
           <MarketSimulation />
-        </TabsContent>
-
-        <TabsContent value="portfolio" className="space-y-6">
-          {/* Portfolio Charts */}
+          
+          {/* Portfolio Analysis */}
           <PortfolioCharts 
             cash={portfolio?.cash || 0}
             positions={positionsWithCurrentValue}
             totalValue={totalPortfolioValue}
           />
 
-          {/* Positions Table */}
+          {/* Current Positions */}
           <Card className="border-emerald-200">
             <CardHeader>
               <CardTitle className="text-emerald-700">Current Positions</CardTitle>
@@ -159,55 +183,25 @@ const PaperTradingPage = () => {
             </CardContent>
           </Card>
         </TabsContent>
+        
+        <TabsContent value="search" className="space-y-6">
+          <EnhancedSecuritiesSearch onSelectSecurity={handleSecuritySelect} />
+        </TabsContent>
 
-        <TabsContent value="predictions" className="space-y-6">
-          <MarketPredictionGame />
+        <TabsContent value="dashboard" className="space-y-6">
+          <MarketDashboard />
+        </TabsContent>
+
+        <TabsContent value="analysis" className="space-y-6">
+          <FinancialAnalysis />
         </TabsContent>
 
         <TabsContent value="academy" className="space-y-6">
           <TradingAcademy />
         </TabsContent>
 
-        <TabsContent value="transactions" className="space-y-6">
-          <Card className="border-emerald-200">
-            <CardHeader>
-              <CardTitle className="text-emerald-700">Recent Transactions</CardTitle>
-              <CardDescription>Your trading history</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {transactions.length > 0 ? (
-                <div className="space-y-2">
-                  {transactions.slice(0, 10).map((transaction) => (
-                    <div key={transaction.id} className="flex items-center justify-between p-3 border border-emerald-100 rounded-lg">
-                      <div className="flex items-center space-x-4">
-                        <Badge variant={transaction.transaction_type === 'buy' ? 'default' : 'secondary'} 
-                               className={transaction.transaction_type === 'buy' ? 'bg-emerald-500' : ''}>
-                          {transaction.transaction_type.toUpperCase()}
-                        </Badge>
-                        <div>
-                          <span className="font-medium">{transaction.symbol}</span>
-                          <span className="text-muted-foreground ml-2">
-                            {transaction.shares} shares @ ${transaction.price.toFixed(2)}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-semibold">${transaction.total_amount.toFixed(2)}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {new Date(transaction.created_at).toLocaleDateString()}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Target className="h-12 w-12 mx-auto mb-4 text-emerald-300" />
-                  <p>No transactions yet. Start trading to see your history!</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+        <TabsContent value="adventures" className="space-y-6">
+          <PhilAdventures />
         </TabsContent>
       </Tabs>
     </div>

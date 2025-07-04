@@ -167,7 +167,7 @@ serve(async (req) => {
         console.log('Fetching market data from FMP...');
         
         const symbols = ['%5EIXIC', '%5EDJI', '%5EGSPC', 'GLD', 'USO', '%5EVIX'];
-        const quotes = await makeRequest('quote', { symbol: symbols.join(',') });
+        const quotes = await makeFMPRequest('quote', { symbol: symbols.join(',') });
         
         const symbolMap: Record<string, { name: string, type: string }> = {
           '^IXIC': { name: 'NASDAQ', type: 'index' },
@@ -223,7 +223,7 @@ serve(async (req) => {
 
         console.log(`Searching securities with FMP: ${query}`);
         
-        const searchResults = await makeRequest('search', { query, limit: '20' });
+        const searchResults = await makeFMPRequest('search', { query, limit: '20' });
         
         const transformedResults = searchResults.map((item: any) => ({
           symbol: item.symbol,
@@ -248,9 +248,126 @@ serve(async (req) => {
           );
         }
 
-        const profile = await makeRequest(`profile/${symbol}`);
+        const profile = await makeFMPRequest(`profile/${symbol}`);
         return new Response(
           JSON.stringify(profile[0] || {}),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      case 'financial-ratios': {
+        const symbol = url.searchParams.get('symbol');
+        if (!symbol) {
+          return new Response(
+            JSON.stringify({ error: 'Symbol parameter required' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        const ratios = await makeFMPRequest(`ratios/${symbol}`, { limit: '1' });
+        return new Response(
+          JSON.stringify(ratios[0] || {}),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      case 'analyst-estimates': {
+        const symbol = url.searchParams.get('symbol');
+        if (!symbol) {
+          return new Response(
+            JSON.stringify({ error: 'Symbol parameter required' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        const estimates = await makeFMPRequest(`analyst-estimates/${symbol}`);
+        return new Response(
+          JSON.stringify(estimates),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      case 'earnings-calendar': {
+        const from = url.searchParams.get('from') || new Date().toISOString().split('T')[0];
+        const to = url.searchParams.get('to') || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+        
+        const earnings = await makeFMPRequest('earning_calendar', { from, to });
+        return new Response(
+          JSON.stringify(earnings),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      case 'sector-performance': {
+        const sectors = await makeFMPRequest('sector-performance');
+        return new Response(
+          JSON.stringify(sectors),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      case 'market-gainers': {
+        const gainers = await makeFMPRequest('stock_market/gainers');
+        return new Response(
+          JSON.stringify(gainers),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      case 'market-losers': {
+        const losers = await makeFMPRequest('stock_market/losers');
+        return new Response(
+          JSON.stringify(losers),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      case 'financial-statements': {
+        const symbol = url.searchParams.get('symbol');
+        const statement = url.searchParams.get('statement') || 'income'; // income, balance-sheet, cash-flow
+        const period = url.searchParams.get('period') || 'annual'; // annual, quarter
+        
+        if (!symbol) {
+          return new Response(
+            JSON.stringify({ error: 'Symbol parameter required' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        let endpoint = '';
+        switch (statement) {
+          case 'income':
+            endpoint = `income-statement/${symbol}`;
+            break;
+          case 'balance-sheet':
+            endpoint = `balance-sheet-statement/${symbol}`;
+            break;
+          case 'cash-flow':
+            endpoint = `cash-flow-statement/${symbol}`;
+            break;
+          default:
+            endpoint = `income-statement/${symbol}`;
+        }
+
+        const statements = await makeFMPRequest(endpoint, { period });
+        return new Response(
+          JSON.stringify(statements),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      case 'stock-screener': {
+        const marketCap = url.searchParams.get('marketCap') || 'largecap';
+        const sector = url.searchParams.get('sector') || '';
+        const limit = url.searchParams.get('limit') || '50';
+        
+        const params: Record<string, string> = { limit };
+        if (marketCap) params.marketCapMoreThan = marketCap === 'largecap' ? '10000000000' : '1000000000';
+        if (sector) params.sector = sector;
+
+        const results = await makeFMPRequest('stock-screener', params);
+        return new Response(
+          JSON.stringify(results),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
@@ -264,9 +381,37 @@ serve(async (req) => {
           );
         }
 
-        const quote = await makeRequest(`quote/${symbol}`);
+        const quote = await makeFMPRequest(`quote/${symbol}`);
         return new Response(
           JSON.stringify(quote[0] || {}),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      case 'historical-price': {
+        const symbol = url.searchParams.get('symbol');
+        const from = url.searchParams.get('from') || new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+        const to = url.searchParams.get('to') || new Date().toISOString().split('T')[0];
+        
+        if (!symbol) {
+          return new Response(
+            JSON.stringify({ error: 'Symbol parameter required' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        const historical = await makeFMPRequest(`historical-price-full/${symbol}`, { from, to });
+        return new Response(
+          JSON.stringify(historical.historical || []),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      case 'economic-indicators': {
+        const indicator = url.searchParams.get('indicator') || 'GDP';
+        const economic = await makeFMPRequest(`economic`, { name: indicator });
+        return new Response(
+          JSON.stringify(economic),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
@@ -283,7 +428,15 @@ serve(async (req) => {
 
       default: {
         return new Response(
-          JSON.stringify({ error: 'Service not found. Available: market-data, search, company-profile, quote, stats' }),
+          JSON.stringify({ 
+            error: 'Service not found', 
+            availableServices: [
+              'market-data', 'search', 'company-profile', 'financial-ratios', 
+              'analyst-estimates', 'earnings-calendar', 'sector-performance',
+              'market-gainers', 'market-losers', 'financial-statements', 
+              'stock-screener', 'quote', 'historical-price', 'economic-indicators', 'stats'
+            ]
+          }),
           { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
