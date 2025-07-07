@@ -43,18 +43,23 @@ const SecuritiesSearch: React.FC<SecuritiesSearchProps> = ({ onSelectSecurity })
 
     setIsSearching(true);
     try {
-      // Use the enhanced FMP unified service
-      const response = await supabase.functions.invoke('fmp-unified-service', {
-        body: JSON.stringify({ service: 'search', query: searchQuery }),
-        headers: { 'Content-Type': 'application/json' }
-      });
+      const response = await fetch(
+        `https://aqqbxivolegafwuurxxm.supabase.co/functions/v1/securities-search?query=${encodeURIComponent(searchQuery)}`,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFxcWJ4aXZvbGVnYWZ3dXVyeHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NjkwMTcsImV4cCI6MjA2NTU0NTAxN30.W5pB4lv_OTYvXn9dx6146ms16HZdfdfaTv2bs3cK-r0`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
-      if (response.error) {
-        throw new Error(response.error.message);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = response.data || [];
-      setSearchResults(data);
+      const data = await response.json();
+      setSearchResults(data || []);
     } catch (error) {
       console.error('Search error:', error);
       toast.error('Failed to search securities');

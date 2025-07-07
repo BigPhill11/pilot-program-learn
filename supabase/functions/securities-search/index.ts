@@ -24,37 +24,56 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Searching for securities with FMP: ${query}`);
+    console.log(`Searching for securities: ${query}`);
 
-    // Use FMP unified service for search
-    const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2.50.0');
-    const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-    
-    if (!supabaseUrl || !supabaseKey) {
-      return new Response(
-        JSON.stringify({ error: 'Supabase configuration missing' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    // Use Yahoo Finance search API (free, no API key required)
+    const response = await fetch(
+      `https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(query)}&quotesCount=20&newsCount=0`,
+      {
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          'Accept': 'application/json',
+        },
+      }
+    );
 
-    const supabase = createClient(supabaseUrl, supabaseKey);
-    
-    const fmpResponse = await supabase.functions.invoke('fmp-unified-service', {
-      body: JSON.stringify({ service: 'search', query }),
-      headers: { 'Content-Type': 'application/json' }
-    });
-
-    if (fmpResponse.error) {
-      console.error('FMP search error:', fmpResponse.error);
+    if (!response.ok) {
+      console.error('Yahoo Finance API error:', response.status, response.statusText);
       return new Response(
         JSON.stringify({ error: 'Failed to search securities' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const transformedData = fmpResponse.data || [];
-    console.log('FMP search completed, found', transformedData.length, 'results');
+    const data = await response.json();
+    console.log('Yahoo Finance search response received');
+
+    // Transform the data to match our expected format
+    const quotes = data.quotes || [];
+    const transformedData = quotes.slice(0, 20).map((item: any) => {
+      // Determine asset type based on quote type
+      let assetType = 'stock';
+      const quoteType = item.quoteType?.toLowerCase() || '';
+      
+      if (quoteType.includes('etf')) {
+        assetType = 'etf';
+      } else if (quoteType.includes('index')) {
+        assetType = 'index';
+      } else if (quoteType.includes('future') || quoteType.includes('commodity')) {
+        assetType = 'commodity';
+      } else if (quoteType.includes('bond')) {
+        assetType = 'bond';
+      }
+
+      return {
+        symbol: item.symbol || '',
+        name: item.longname || item.shortname || item.symbol || '',
+        exchange: item.exchange || item.exchDisp || 'US',
+        assetType,
+        currency: item.currency || 'USD'
+      };
+    }).filter(item => item.symbol && item.name); // Filter out items without symbol or name
 
     return new Response(
       JSON.stringify(transformedData),

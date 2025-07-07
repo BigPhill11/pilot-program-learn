@@ -26,21 +26,89 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    console.log('Fetching market data from FMP unified service...');
-    
-    // Use the new FMP unified service
-    const fmpResponse = await supabase.functions.invoke('fmp-unified-service', {
-      body: JSON.stringify({ service: 'market-data' }),
-      headers: { 'Content-Type': 'application/json' }
-    });
+    console.log('Fetching market data from Yahoo Finance...');
 
-    if (fmpResponse.error) {
-      console.error('FMP service error:', fmpResponse.error);
-      throw new Error(fmpResponse.error.message || 'Failed to fetch from FMP service');
+    // Define the symbols we want to fetch with their Yahoo Finance symbols
+    const symbols = [
+      { symbol: '^IXIC', name: 'NASDAQ', type: 'index' },
+      { symbol: '^DJI', name: 'Dow Jones', type: 'index' },
+      { symbol: '^GSPC', name: 'S&P 500', type: 'index' },
+      { symbol: 'GLD', name: 'Gold', type: 'commodity' },
+      { symbol: 'CL=F', name: 'Crude Oil', type: 'commodity' },
+      { symbol: '^VIX', name: 'Volatility Index', type: 'index' }
+    ];
+
+    const marketData = [];
+
+    for (const item of symbols) {
+      try {
+        console.log(`Fetching data for ${item.name} (${item.symbol})`);
+        
+        // Use Yahoo Finance API (free, no API key required)
+        const response = await fetch(
+          `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(item.symbol)}?interval=1d&range=1d`,
+          {
+            method: 'GET',
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+              'Accept': 'application/json',
+            },
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log(`Response for ${item.name}:`, JSON.stringify(data).substring(0, 200));
+          
+          if (data?.chart?.result?.[0]?.meta) {
+            const meta = data.chart.result[0].meta;
+            const price = meta.regularMarketPrice || meta.previousClose || 0;
+            const previousClose = meta.previousClose || price;
+            const change = price - previousClose;
+            const changePercent = previousClose !== 0 ? (change / previousClose) * 100 : 0;
+            
+            const marketItem = {
+              symbol: item.symbol,
+              name: item.name,
+              price: price,
+              change_amount: change,
+              change_percent: changePercent,
+              asset_type: item.type
+            };
+
+            marketData.push(marketItem);
+            console.log(`Added ${item.name} to market data:`, marketItem);
+
+            // Update cache in database
+            await supabase
+              .from('market_data_cache')
+              .upsert({
+                symbol: item.symbol,
+                name: item.name,
+                price: marketItem.price,
+                change_amount: marketItem.change_amount,
+                change_percent: marketItem.change_percent,
+                asset_type: item.type,
+                last_updated: new Date().toISOString()
+              });
+          } else {
+            console.log(`No data returned for ${item.name}:`, data);
+          }
+        } else {
+          console.error(`Failed to fetch ${item.name}: ${response.status} ${response.statusText}`);
+        }
+        
+        // Small delay to be respectful to the API
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+      } catch (error) {
+        console.error(`Error fetching ${item.name}:`, error);
+        // Continue with other symbols even if one fails
+      }
     }
 
-    const marketData = fmpResponse.data || [];
-    console.log('FMP market data received:', marketData);
+    console.log('Final market data array:', marketData);
+    console.log('Market data fetched and cached successfully with Yahoo Finance');
 
     return new Response(
       JSON.stringify(marketData),
