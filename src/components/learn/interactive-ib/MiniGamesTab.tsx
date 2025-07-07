@@ -12,6 +12,7 @@ import ValuationBattleGame from './games/ValuationBattleGame';
 import DealCoordinatorGame from './games/DealCoordinatorGame';
 import CrisisManagerGame from './games/CrisisManagerGame';
 import SectorSpecialistGame from './games/SectorSpecialistGame';
+import SectorDetectiveGame from './games/SectorDetectiveGame';
 import ESGInvestmentChallenge from './games/ESGInvestmentChallenge';
 import { useProgressTracking } from '@/hooks/useProgressTracking';
 
@@ -67,6 +68,8 @@ const MiniGamesTab: React.FC<MiniGamesTabProps> = ({
         return <CrisisManagerGame {...commonProps} />;
       case 'sector-specialist-game':
         return <SectorSpecialistGame {...commonProps} />;
+      case 'sector-detective-game':
+        return <SectorDetectiveGame {...commonProps} />;
       case 'esg-investment-challenge':
         return <ESGInvestmentChallenge {...commonProps} />;
       default:
