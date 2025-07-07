@@ -9,10 +9,11 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Index from "./pages/Index";
-import LearnPage from "./pages/LearnPage";
-import SoftSkillsPage from "./pages/SoftSkillsPage";
-import PaperTradingPage from "./pages/PaperTradingPage";
-import AskPhilPage from "./pages/AskPhilPage";
+import ContactsPage from "./pages/ContactsPage";
+import OrganizationsPage from "./pages/OrganizationsPage";
+import CoffeeChatsPage from "./pages/CoffeeChatsPage";
+import DashboardPage from "./pages/DashboardPage";
+import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,20 +27,39 @@ function App() {
             <Toaster />
             <BrowserRouter>
               <div className="min-h-screen bg-background text-foreground">
-                <ProtectedRoute>
-                  <Navbar />
-                  <main className="flex-1">
-                    <Routes>
-                      <Route path="/" element={<Index />} />
-                      <Route path="/learn" element={<LearnPage />} />
-                      <Route path="/soft-skills" element={<SoftSkillsPage />} />
-                      <Route path="/paper-trading" element={<PaperTradingPage />} />
-                      <Route path="/ask-phil" element={<AskPhilPage />} />
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                  </main>
-                  <Footer />
-                </ProtectedRoute>
+                <Navbar />
+                <main className="flex-1">
+                  <Routes>
+                    <Route path="/auth" element={<AuthPage />} />
+                    <Route path="/" element={
+                      <ProtectedRoute>
+                        <Index />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/dashboard" element={
+                      <ProtectedRoute>
+                        <DashboardPage />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/contacts" element={
+                      <ProtectedRoute>
+                        <ContactsPage />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/organizations" element={
+                      <ProtectedRoute>
+                        <OrganizationsPage />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/coffee-chats" element={
+                      <ProtectedRoute>
+                        <CoffeeChatsPage />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </main>
+                <Footer />
               </div>
             </BrowserRouter>
           </TooltipProvider>
