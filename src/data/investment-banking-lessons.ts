@@ -425,16 +425,16 @@ const level4Lesson: InteractiveLessonContent = {
   ],
   miniGames: [
     {
-      id: 'dcf-builder',
+      id: 'dcf-builder-game',
       name: 'DCF Model Builder',
-      description: 'Build a complete discounted cash flow model by assembling the right components',
+      description: 'Build a complete discounted cash flow model by selecting the right components and assumptions',
       xpReward: 100,
       difficulty: 'advanced'
     },
     {
-      id: 'valuation-olympics',
-      name: 'Valuation Olympics',
-      description: 'Compare three different valuation methods for the same company and see which gives the best result',
+      id: 'valuation-battle',
+      name: 'Valuation Battle Arena',
+      description: 'Race against time to value companies using different methods and see which gives the best result',
       xpReward: 120,
       difficulty: 'advanced'
     }
@@ -503,10 +503,17 @@ const level5Lesson: InteractiveLessonContent = {
   ],
   miniGames: [
     {
-      id: 'deal-coordinator',
+      id: 'deal-coordinator-game',
       name: 'Deal Coordination Master',
-      description: 'Manage a complex M&A transaction by coordinating timelines, approvals, and stakeholder requirements',
+      description: 'Manage a complex M&A transaction by coordinating timelines, approvals, and stakeholder requirements in real-time',
       xpReward: 110,
+      difficulty: 'advanced'
+    },
+    {
+      id: 'crisis-manager-game',
+      name: 'Deal Crisis Manager',
+      description: 'Navigate unexpected challenges that threaten to derail your transaction and find creative solutions',
+      xpReward: 130,
       difficulty: 'advanced'
     }
   ],
@@ -573,10 +580,17 @@ const level6Lesson: InteractiveLessonContent = {
   ],
   miniGames: [
     {
-      id: 'sector-specialist',
+      id: 'sector-specialist-game',
       name: 'Industry Expert Challenge',
-      description: 'Demonstrate expertise across different sectors by advising on sector-specific deals',
+      description: 'Match companies to their sectors and identify the right valuation metrics for each industry',
       xpReward: 120,
+      difficulty: 'advanced'
+    },
+    {
+      id: 'sector-detective-game',
+      name: 'Sector Detective',
+      description: 'Analyze deal announcements and predict which sector specialist would handle each transaction',
+      xpReward: 140,
       difficulty: 'advanced'
     }
   ],
@@ -643,10 +657,17 @@ const level7Lesson: InteractiveLessonContent = {
   ],
   miniGames: [
     {
-      id: 'future-banker',
+      id: 'future-banker-game',
       name: 'Future Investment Banker',
       description: 'Navigate the evolving landscape by adapting to new technologies and market trends',
       xpReward: 150,
+      difficulty: 'advanced'
+    },
+    {
+      id: 'esg-investment-challenge',
+      name: 'ESG Investment Challenge',
+      description: 'Balance financial returns with environmental and social impact in your investment decisions',
+      xpReward: 160,
       difficulty: 'advanced'
     }
   ],
