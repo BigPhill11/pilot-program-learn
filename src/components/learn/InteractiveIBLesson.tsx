@@ -32,7 +32,7 @@ const InteractiveIBLesson: React.FC<InteractiveIBLessonProps> = ({
   const [masteredTerms, setMasteredTerms] = useState<string[]>([]);
 
   const userLevel = profile?.app_version || 'beginner';
-  const ibTerms = getIBTermsForLevel(userLevel);
+  const ibTerms = getIBTermsForLevel(lesson.level);
 
   const handleActivityComplete = (activityId: string) => {
     if (!completedActivities.includes(activityId)) {
