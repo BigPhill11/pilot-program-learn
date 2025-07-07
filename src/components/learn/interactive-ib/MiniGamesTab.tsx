@@ -7,6 +7,12 @@ import { Gamepad2, Play, Trophy, ArrowLeft } from 'lucide-react';
 import { MiniGameConfig } from '@/data/investment-banking-lessons';
 import WallStreetWordMatch from './games/WallStreetWordMatch';
 import DealTypeDetective from './games/DealTypeDetective';
+import DCFBuilderGame from './games/DCFBuilderGame';
+import ValuationBattleGame from './games/ValuationBattleGame';
+import DealCoordinatorGame from './games/DealCoordinatorGame';
+import CrisisManagerGame from './games/CrisisManagerGame';
+import SectorSpecialistGame from './games/SectorSpecialistGame';
+import ESGInvestmentChallenge from './games/ESGInvestmentChallenge';
 import { useProgressTracking } from '@/hooks/useProgressTracking';
 
 interface MiniGamesTabProps {
@@ -23,9 +29,10 @@ const MiniGamesTab: React.FC<MiniGamesTabProps> = ({
   const [activeGame, setActiveGame] = useState<string | null>(null);
   const { updateActivityComplete } = useProgressTracking();
 
-  const handleGameComplete = (gameId: string) => {
-    console.log(`Game ${gameId} completed`);
-    const xpReward = gameId === 'ib-basics-matching' ? 50 : 75;
+  const handleGameComplete = (gameId: string, score?: number) => {
+    console.log(`Game ${gameId} completed with score:`, score);
+    const game = filteredMiniGames.find(g => g.id === gameId);
+    const xpReward = game?.xpReward || 50;
     updateActivityComplete(gameId, xpReward);
     onActivityComplete(gameId);
     setActiveGame(null);
@@ -39,33 +46,43 @@ const MiniGamesTab: React.FC<MiniGamesTabProps> = ({
     setActiveGame(gameId);
   };
 
-  // If a game is active, render the game component
-  if (activeGame === 'ib-basics-matching') {
-    return (
-      <div className="space-y-4">
-        <Button variant="ghost" onClick={handleGameExit} className="mb-4">
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Games
-        </Button>
-        <WallStreetWordMatch
-          onComplete={handleGameComplete}
-          isCompleted={completedActivities.includes('ib-basics-matching')}
-        />
-      </div>
-    );
-  }
+  // Render specific game components based on activeGame
+  const renderActiveGame = () => {
+    const commonProps = {
+      onComplete: (score: number) => handleGameComplete(activeGame!, score)
+    };
 
-  if (activeGame === 'deal-type-sorter') {
+    switch (activeGame) {
+      case 'ib-basics-matching':
+        return <WallStreetWordMatch onComplete={handleGameComplete} isCompleted={completedActivities.includes('ib-basics-matching')} />;
+      case 'deal-type-sorter':
+        return <DealTypeDetective onComplete={handleGameComplete} isCompleted={completedActivities.includes('deal-type-sorter')} />;
+      case 'dcf-builder-game':
+        return <DCFBuilderGame {...commonProps} />;
+      case 'valuation-battle':
+        return <ValuationBattleGame {...commonProps} />;
+      case 'deal-coordinator-game':
+        return <DealCoordinatorGame {...commonProps} />;
+      case 'crisis-manager-game':
+        return <CrisisManagerGame {...commonProps} />;
+      case 'sector-specialist-game':
+        return <SectorSpecialistGame {...commonProps} />;
+      case 'esg-investment-challenge':
+        return <ESGInvestmentChallenge {...commonProps} />;
+      default:
+        return <div>Game not found</div>;
+    }
+  };
+
+  // If a game is active, render the game component
+  if (activeGame) {
     return (
       <div className="space-y-4">
         <Button variant="ghost" onClick={handleGameExit} className="mb-4">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Games
         </Button>
-        <DealTypeDetective
-          onComplete={handleGameComplete}
-          isCompleted={completedActivities.includes('deal-type-sorter')}
-        />
+        {renderActiveGame()}
       </div>
     );
   }
