@@ -1,0 +1,67 @@
+import React from 'react';
+import WallStreetWordMatch from './WallStreetWordMatch';
+import DealTypeDetective from './DealTypeDetective';
+import DCFBuilderGame from './DCFBuilderGame';
+import ValuationBattleGame from './ValuationBattleGame';
+import DealCoordinatorGame from './DealCoordinatorGame';
+import CrisisManagerGame from './CrisisManagerGame';
+import SectorSpecialistGame from './SectorSpecialistGame';
+import SectorDetectiveGame from './SectorDetectiveGame';
+import ESGInvestmentChallenge from './ESGInvestmentChallenge';
+import DivisionDetectiveGame from './DivisionDetectiveGame';
+import UnderwritingChallengeGame from './UnderwritingChallengeGame';
+import MADealArchitectGame from './MADealArchitectGame';
+import CompanyValuationMasterGame from './CompanyValuationMasterGame';
+import FutureBankerGame from './FutureBankerGame';
+
+interface GameRendererProps {
+  gameId: string;
+  completedActivities: string[];
+  onComplete: (gameId: string, score?: number) => void;
+}
+
+const GameRenderer: React.FC<GameRendererProps> = ({ gameId, completedActivities, onComplete }) => {
+  const commonProps = {
+    onComplete: (score: number) => onComplete(gameId, score)
+  };
+
+  const legacyGameProps = {
+    onComplete: onComplete,
+    isCompleted: completedActivities.includes(gameId)
+  };
+
+  switch (gameId) {
+    case 'ib-basics-matching':
+      return <WallStreetWordMatch {...legacyGameProps} />;
+    case 'deal-type-sorter':
+      return <DealTypeDetective {...legacyGameProps} />;
+    case 'dcf-builder-game':
+      return <DCFBuilderGame {...commonProps} />;
+    case 'valuation-battle':
+      return <ValuationBattleGame {...commonProps} />;
+    case 'deal-coordinator-game':
+      return <DealCoordinatorGame {...commonProps} />;
+    case 'crisis-manager-game':
+      return <CrisisManagerGame {...commonProps} />;
+    case 'sector-specialist-game':
+      return <SectorSpecialistGame {...commonProps} />;
+    case 'sector-detective-game':
+      return <SectorDetectiveGame {...commonProps} />;
+    case 'esg-investment-challenge':
+      return <ESGInvestmentChallenge {...commonProps} />;
+    case 'ib-divisions-match':
+      return <DivisionDetectiveGame {...commonProps} />;
+    case 'underwriting-simulator':
+      return <UnderwritingChallengeGame {...commonProps} />;
+    case 'ma-deal-builder':
+      return <MADealArchitectGame {...commonProps} />;
+    case 'valuation-challenge':
+      return <CompanyValuationMasterGame {...commonProps} />;
+    case 'future-banker-game':
+      return <FutureBankerGame {...commonProps} />;
+    default:
+      return <div>Game not found</div>;
+  }
+};
+
+export default GameRenderer;
