@@ -415,7 +415,7 @@ const level4Lesson: InteractiveLessonContent = {
     "Understand how to present financial analysis to clients and stakeholders",
     "Learn to assess financial risk and create scenario analyses"
   ],
-  terminology: ['dcf_model', 'comparable_companies', 'precedent_transactions', 'lbo_model', 'accretion_dilution', 'beta', 'wacc', 'terminal_value'],
+  terminology: ['dcf_model', 'comparable_companies', 'precedent_transactions', 'lbo_model', 'accretion_dilution', 'beta', 'wacc', 'terminal_value', 'sensitivity_analysis', 'monte_carlo', 'irr', 'npv', 'financial_modeling'],
   keyTerms: ['dcf_model', 'comparable_companies', 'precedent_transactions', 'lbo_model', 'accretion_dilution'],
   keyQuestions: [
     "How do you build a DCF model and what are its key components?",
@@ -493,7 +493,7 @@ const level5Lesson: InteractiveLessonContent = {
     "Master the documentation and regulatory requirements for different deal types",
     "Develop project management skills for high-stakes financial transactions"
   ],
-  terminology: ['deal_timeline', 'closing_conditions', 'regulatory_approvals', 'fairness_opinion', 'comfort_letters', 'due_diligence_reports'],
+  terminology: ['deal_timeline', 'closing_conditions', 'regulatory_approvals', 'fairness_opinion', 'comfort_letters', 'due_diligence_reports', 'material_adverse_change', 'escrow_account', 'representations_warranties'],
   keyTerms: ['deal_timeline', 'closing_conditions', 'regulatory_approvals', 'fairness_opinion', 'comfort_letters'],
   keyQuestions: [
     "What are the typical phases of an investment banking deal from mandate to closing?",
@@ -633,7 +633,7 @@ const level7Lesson: InteractiveLessonContent = {
     "Explore the impact of cryptocurrency and blockchain on financial services",
     "Develop insights into future career opportunities in investment banking"
   ],
-  terminology: ['fintech_disruption', 'esg_investing', 'blockchain_finance', 'automated_trading', 'digital_assets', 'sustainable_finance'],
+  terminology: ['fintech_disruption', 'esg_investing', 'blockchain_finance', 'automated_trading', 'digital_assets', 'sustainable_finance', 'quantum_computing', 'regtech', 'cryptoassets'],
   keyTerms: ['fintech_disruption', 'esg_investing', 'blockchain_finance', 'sustainable_finance'],
   keyQuestions: [
     "How is technology changing the traditional investment banking model?",

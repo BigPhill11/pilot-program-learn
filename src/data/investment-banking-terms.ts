@@ -172,192 +172,234 @@ const level3Terms: Record<string, IBTerm> = {
   }
 };
 
-// Level 4: Capital Markets & Trading - Markets in Motion
+// Level 4: Financial Modeling & Valuation Mastery - Technical skills
 const level4Terms: Record<string, IBTerm> = {
-  market_making: {
-    term: 'Market Making',
-    definition: 'Providing liquidity by being ready to buy or sell securities at quoted prices',
-    analogy: 'Like being a store that always has products in stock and is ready to sell them',
+  dcf_model: {
+    term: 'DCF Model',
+    definition: 'Discounted Cash Flow model that values a company by projecting future cash flows and discounting them to present value',
+    analogy: 'Like calculating how much future allowance money is worth today',
     level: 4,
-    category: 'trading'
+    category: 'basics'
   },
-  fixed_income: {
-    term: 'Fixed Income',
-    definition: 'Securities that pay regular, fixed interest payments like bonds',
-    analogy: 'Like a savings account that pays you the same amount of interest every month',
+  comparable_companies: {
+    term: 'Comparable Companies',
+    definition: 'Valuation method that compares a company to similar public companies using trading multiples',
+    analogy: 'Like comparing house prices in the same neighborhood to estimate your home\'s value',
     level: 4,
-    category: 'capital_markets'
+    category: 'basics'
   },
-  equity_capital_markets: {
-    term: 'Equity Capital Markets',
-    definition: 'The division that helps companies raise money by selling stock',
-    analogy: 'Like a department store section that specializes in selling ownership pieces of companies',
+  precedent_transactions: {
+    term: 'Precedent Transactions',
+    definition: 'Valuation method using prices paid in similar past M&A deals',
+    analogy: 'Like looking at recent home sales to price your house',
     level: 4,
-    category: 'capital_markets'
+    category: 'basics'
   },
-  debt_capital_markets: {
-    term: 'Debt Capital Markets',
-    definition: 'The division that helps companies and governments raise money by issuing bonds',
-    analogy: 'Like a lending department that helps people create IOUs for investors',
+  lbo_model: {
+    term: 'LBO Model',
+    definition: 'Leveraged Buyout model that analyzes acquiring a company using significant debt financing',
+    analogy: 'Like buying a rental property with a big mortgage and using rental income to pay it off',
     level: 4,
-    category: 'capital_markets'
+    category: 'basics'
   },
-  bid_ask_spread: {
-    term: 'Bid-Ask Spread',
-    definition: 'The difference between what buyers want to pay and what sellers want to receive',
-    analogy: 'Like the gap between what you\'d pay for a used car and what the seller wants',
+  accretion_dilution: {
+    term: 'Accretion/Dilution',
+    definition: 'Analysis of whether an acquisition increases or decreases the buyer\'s earnings per share',
+    analogy: 'Like checking if adding a new store will increase or decrease your profit per location',
     level: 4,
-    category: 'trading'
+    category: 'basics'
   },
-  liquidity: {
-    term: 'Liquidity',
-    definition: 'How easily an asset can be bought or sold without affecting its price',
-    analogy: 'Like how easy it is to sell your bike - popular bikes sell quickly, rare ones take time',
+  beta: {
+    term: 'Beta',
+    definition: 'A measure of how much a stock moves relative to the overall market',
+    analogy: 'Like measuring how much your mood changes compared to the weather',
     level: 4,
-    category: 'trading'
+    category: 'basics'
   },
-  volatility: {
-    term: 'Volatility',
-    definition: 'How much an asset\'s price moves up and down over time',
-    analogy: 'Like how much the temperature changes throughout the day - some days are steady, others are all over the place',
+  wacc: {
+    term: 'WACC',
+    definition: 'Weighted Average Cost of Capital: the average rate a company pays to finance its assets',
+    analogy: 'Like the average interest rate you pay across all your credit cards and loans',
     level: 4,
-    category: 'trading'
-  }
-};
-
-// Level 5: Advanced Deal Structures - Financial Engineering
-const level5Terms: Record<string, IBTerm> = {
-  leveraged_buyout: {
-    term: 'Leveraged Buyout',
-    definition: 'Acquiring a company using a significant amount of borrowed money',
-    analogy: 'Like buying a house with a large mortgage - you use the house as collateral for the loan',
-    level: 5,
-    category: 'ma'
+    category: 'basics'
   },
-  mezzanine_financing: {
-    term: 'Mezzanine Financing',
-    definition: 'A hybrid of debt and equity financing that gives the lender rights to convert to equity',
-    analogy: 'Like a loan that can turn into ownership if certain conditions are met',
-    level: 5,
-    category: 'ib_services'
+  terminal_value: {
+    term: 'Terminal Value',
+    definition: 'The value of a company beyond the explicit forecast period in a DCF model',
+    analogy: 'Like estimating how much a tree will be worth when it\'s fully grown',
+    level: 4,
+    category: 'basics'
   },
-  convertible_bond: {
-    term: 'Convertible Bond',
-    definition: 'A bond that can be converted into a predetermined number of company shares',
-    analogy: 'Like a movie ticket that can also be exchanged for popcorn if you want',
-    level: 5,
-    category: 'capital_markets'
+  sensitivity_analysis: {
+    term: 'Sensitivity Analysis',
+    definition: 'Testing how changes in key assumptions affect the valuation outcome',
+    analogy: 'Like checking how much your pizza budget changes if gas prices go up or down',
+    level: 4,
+    category: 'basics'
   },
-  private_placement: {
-    term: 'Private Placement',
-    definition: 'Selling securities directly to institutional investors rather than through public markets',
-    analogy: 'Like selling your art directly to a gallery instead of at a public auction',
-    level: 5,
-    category: 'capital_markets'
+  monte_carlo: {
+    term: 'Monte Carlo',
+    definition: 'A mathematical technique that uses random sampling to model complex financial scenarios',
+    analogy: 'Like running thousands of coin flips to predict probability outcomes',
+    level: 4,
+    category: 'basics'
   },
-  spac: {
-    term: 'SPAC',
-    definition: 'Special Purpose Acquisition Company: A shell company that raises money to acquire another business',
-    analogy: 'Like creating an empty box, filling it with money from investors, then finding a company to put in the box',
-    level: 5,
-    category: 'capital_markets'
+  irr: {
+    term: 'IRR',
+    definition: 'Internal Rate of Return: the annual rate of growth an investment is expected to generate',
+    analogy: 'Like the interest rate your savings account would need to match your investment returns',
+    level: 4,
+    category: 'basics'
   },
-  derivative: {
-    term: 'Derivative',
-    definition: 'A financial contract whose value is derived from an underlying asset',
-    analogy: 'Like a ticket to a sports game - its value depends on the game itself',
-    level: 5,
-    category: 'trading'
+  npv: {
+    term: 'NPV',
+    definition: 'Net Present Value: the value of future cash flows minus the initial investment, in today\'s dollars',
+    analogy: 'Like calculating if a lemonade stand is worth starting after accounting for setup costs',
+    level: 4,
+    category: 'basics'
   },
-  credit_rating: {
-    term: 'Credit Rating',
-    definition: 'An assessment of the creditworthiness of a borrower or debt instrument',
-    analogy: 'Like a report card for how well someone pays back money they borrow',
-    level: 5,
+  financial_modeling: {
+    term: 'Financial Modeling',
+    definition: 'Building mathematical representations of a company\'s financial performance and projections',
+    analogy: 'Like creating a detailed blueprint that predicts how a business will perform',
+    level: 4,
     category: 'basics'
   }
 };
 
-// Level 6: Regulatory & Risk Management - Compliance & Control
-const level6Terms: Record<string, IBTerm> = {
-  compliance: {
-    term: 'Compliance',
-    definition: 'Ensuring all business activities follow laws, regulations, and internal policies',
-    analogy: 'Like making sure everyone follows the rules of the road when driving',
-    level: 6,
-    category: 'compliance'
+// Level 5: Deal Execution & Project Management - Deal Leadership  
+const level5Terms: Record<string, IBTerm> = {
+  deal_timeline: {
+    term: 'Deal Timeline',
+    definition: 'The sequence of activities and milestones from deal initiation to closing',
+    analogy: 'Like a wedding planning timeline that tracks all the steps from engagement to the big day',
+    level: 5,
+    category: 'ib_process'
   },
-  fiduciary_duty: {
-    term: 'Fiduciary Duty',
-    definition: 'Legal obligation to act in the best interest of clients',
-    analogy: 'Like a babysitter\'s responsibility to take care of kids as if they were their own',
-    level: 6,
-    category: 'compliance'
+  closing_conditions: {
+    term: 'Closing Conditions',
+    definition: 'Requirements that must be met before a transaction can be completed',
+    analogy: 'Like a checklist of things that must be done before you can move into a new house',
+    level: 5,
+    category: 'ib_process'
   },
-  chinese_wall: {
-    term: 'Chinese Wall',
-    definition: 'Information barriers between different divisions to prevent conflicts of interest',
-    analogy: 'Like having separate rooms for different activities so secrets don\'t accidentally get shared',
-    level: 6,
-    category: 'compliance'
+  regulatory_approvals: {
+    term: 'Regulatory Approvals',
+    definition: 'Permission from government agencies required for certain transactions',
+    analogy: 'Like getting a permit from the city before you can renovate your house',
+    level: 5,
+    category: 'ib_process'
   },
-  risk_management: {
-    term: 'Risk Management',
-    definition: 'Identifying, assessing, and mitigating potential risks in financial activities',
-    analogy: 'Like having insurance and safety equipment to protect against unexpected events',
-    level: 6,
-    category: 'compliance'
+  fairness_opinion: {
+    term: 'Fairness Opinion',
+    definition: 'An independent assessment of whether a transaction price is fair to shareholders',
+    analogy: 'Like getting a second opinion from a doctor to make sure the diagnosis is correct',
+    level: 5,
+    category: 'ib_documents'
   },
-  stress_testing: {
-    term: 'Stress Testing',
-    definition: 'Simulating extreme market conditions to see how portfolios or systems would perform',
-    analogy: 'Like testing a bridge with extra heavy trucks to make sure it won\'t collapse',
-    level: 6,
-    category: 'compliance'
+  comfort_letters: {
+    term: 'Comfort Letters',
+    definition: 'Letters from auditors providing assurance about financial information in securities offerings',
+    analogy: 'Like a teacher writing a reference letter confirming a student\'s grades are accurate',
+    level: 5,
+    category: 'ib_documents'
   },
-  kyc: {
-    term: 'Know Your Customer',
-    definition: 'Process of verifying the identity and assessing the risk of clients',
-    analogy: 'Like checking someone\'s ID and background before letting them into an exclusive club',
-    level: 6,
-    category: 'compliance'
+  material_adverse_change: {
+    term: 'Material Adverse Change',
+    definition: 'A significant negative event that could affect the value or operations of a company',
+    analogy: 'Like discovering your dream house has major foundation problems after signing the contract',
+    level: 5,
+    category: 'ib_process'
   },
-  aml: {
-    term: 'Anti-Money Laundering',
-    definition: 'Regulations and procedures to prevent criminals from disguising illegal funds as legitimate',
-    analogy: 'Like having security guards who check that all money coming in is from legal sources',
-    level: 6,
-    category: 'compliance'
+  escrow_account: {
+    term: 'Escrow Account',
+    definition: 'A neutral third-party account that holds funds until certain conditions are met',
+    analogy: 'Like having a trusted friend hold money until both parties complete their parts of a deal',
+    level: 5,
+    category: 'ib_process'
+  },
+  representations_warranties: {
+    term: 'Representations & Warranties',
+    definition: 'Statements about the company\'s condition that the seller guarantees to be true',
+    analogy: 'Like a seller promising that a used car has no hidden problems and will work as described',
+    level: 5,
+    category: 'ib_process'
   }
 };
 
-// Level 7: Future of Investment Banking - Technology & Innovation
+// Level 6: Industry Specialization & Sector Expertise - Sector Mastery
+const level6Terms: Record<string, IBTerm> = {
+  sector_coverage: {
+    term: 'Sector Coverage',
+    definition: 'Investment banking groups that specialize in specific industries',
+    analogy: 'Like doctors who specialize in different parts of the body - heart, brain, etc.',
+    level: 6,
+    category: 'ib_services'
+  },
+  industry_multiples: {
+    term: 'Industry Multiples',
+    definition: 'Valuation ratios specific to companies in the same industry',
+    analogy: 'Like comparing prices per square foot for houses in the same neighborhood',
+    level: 6,
+    category: 'basics'
+  },
+  regulatory_landscape: {
+    term: 'Regulatory Landscape',
+    definition: 'The complex set of rules and regulations governing a specific industry',
+    analogy: 'Like the different traffic rules for highways, city streets, and school zones',
+    level: 6,
+    category: 'compliance'
+  },
+  sector_cyclicality: {
+    term: 'Sector Cyclicality',
+    definition: 'How much an industry\'s performance varies with economic cycles',
+    analogy: 'Like how ice cream sales go up in summer and down in winter',
+    level: 6,
+    category: 'basics'
+  },
+  technology_valuations: {
+    term: 'Technology Valuations',
+    definition: 'Specialized methods for valuing tech companies that may not have profits yet',
+    analogy: 'Like valuing a promising athlete before they turn professional',
+    level: 6,
+    category: 'basics'
+  },
+  healthcare_regulations: {
+    term: 'Healthcare Regulations',
+    definition: 'Complex rules governing medical devices, drugs, and healthcare services',
+    analogy: 'Like the strict safety rules for amusement park rides',
+    level: 6,
+    category: 'compliance'
+  },
+  energy_commodities: {
+    term: 'Energy Commodities',
+    definition: 'Raw materials like oil, gas, and electricity that drive energy company valuations',
+    analogy: 'Like the ingredients that determine how much a restaurant can charge for meals',
+    level: 6,
+    category: 'basics'
+  },
+  financial_services_metrics: {
+    term: 'Financial Services Metrics',
+    definition: 'Special measures like return on equity and net interest margin used for banks',
+    analogy: 'Like using different scorecards for baseball vs football players',
+    level: 6,
+    category: 'basics'
+  },
+  biotech_risks: {
+    term: 'Biotech Risks',
+    definition: 'Unique uncertainties in drug development including regulatory and clinical trial risks',
+    analogy: 'Like the uncertainty of whether a science experiment will work',
+    level: 6,
+    category: 'basics'
+  }
+};
+
+// Level 7: Advanced Topics & Future of Investment Banking - Innovation & Future
 const level7Terms: Record<string, IBTerm> = {
-  artificial_intelligence: {
-    term: 'Artificial Intelligence',
-    definition: 'Computer systems that can perform tasks typically requiring human intelligence',
-    analogy: 'Like having a super-smart robot assistant that can analyze data and make recommendations',
-    level: 7,
-    category: 'technology'
-  },
-  algorithmic_trading: {
-    term: 'Algorithmic Trading',
-    definition: 'Using computer programs to automatically execute trades based on pre-set instructions',
-    analogy: 'Like setting up a robot to buy and sell stocks for you based on specific rules',
-    level: 7,
-    category: 'technology'
-  },
-  blockchain: {
-    term: 'Blockchain',
-    definition: 'A digital ledger technology that records transactions across multiple computers',
-    analogy: 'Like a notebook that everyone has a copy of, and everyone can see when something is written in it',
-    level: 7,
-    category: 'technology'
-  },
-  robo_advisor: {
-    term: 'Robo-Advisor',
-    definition: 'Automated platforms that provide investment advice with minimal human intervention',
-    analogy: 'Like having a smart app that manages your investments for you',
+  fintech_disruption: {
+    term: 'FinTech Disruption',
+    definition: 'How technology companies are changing traditional financial services',
+    analogy: 'Like how streaming services changed how we watch movies',
     level: 7,
     category: 'technology'
   },
@@ -368,17 +410,52 @@ const level7Terms: Record<string, IBTerm> = {
     level: 7,
     category: 'basics'
   },
-  fintech: {
-    term: 'FinTech',
-    definition: 'Technology companies that provide financial services and innovations',
-    analogy: 'Like apps that make banking and investing as easy as ordering food on your phone',
+  blockchain_finance: {
+    term: 'Blockchain Finance',
+    definition: 'Using distributed ledger technology for financial transactions and record-keeping',
+    analogy: 'Like having a public ledger that everyone can see but no one can cheat',
     level: 7,
     category: 'technology'
   },
-  digital_currency: {
-    term: 'Digital Currency',
-    definition: 'Electronic forms of money that exist only in digital form',
-    analogy: 'Like having money that lives only on computers instead of physical coins and bills',
+  automated_trading: {
+    term: 'Automated Trading',
+    definition: 'Computer programs that execute trades based on algorithms without human intervention',
+    analogy: 'Like having a smart thermostat that adjusts temperature automatically',
+    level: 7,
+    category: 'technology'
+  },
+  digital_assets: {
+    term: 'Digital Assets',
+    definition: 'Cryptocurrencies, NFTs, and other blockchain-based financial instruments',
+    analogy: 'Like digital baseball cards that exist only on computers but have real value',
+    level: 7,
+    category: 'technology'
+  },
+  sustainable_finance: {
+    term: 'Sustainable Finance',
+    definition: 'Financial services that consider environmental and social impact alongside profit',
+    analogy: 'Like investing in companies that make money while also helping the planet',
+    level: 7,
+    category: 'basics'
+  },
+  quantum_computing: {
+    term: 'Quantum Computing',
+    definition: 'Advanced computing technology that could revolutionize financial modeling and risk analysis',
+    analogy: 'Like having a super-computer that can solve puzzles millions of times faster',
+    level: 7,
+    category: 'technology'
+  },
+  regtech: {
+    term: 'RegTech',
+    definition: 'Technology solutions that help financial firms comply with regulations more efficiently',
+    analogy: 'Like having a smart assistant that automatically files your taxes correctly',
+    level: 7,
+    category: 'technology'
+  },
+  cryptoassets: {
+    term: 'Crypto Assets',
+    definition: 'Digital currencies and tokens that use cryptography for security',
+    analogy: 'Like digital money that uses secret codes to make sure it can\'t be counterfeited',
     level: 7,
     category: 'technology'
   }
