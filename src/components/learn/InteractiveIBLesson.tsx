@@ -12,6 +12,7 @@ import LessonHeader from './interactive-ib/LessonHeader';
 import ProgressTracker from './interactive-ib/ProgressTracker';
 import OverviewTab from './interactive-ib/OverviewTab';
 import MiniGamesTab from './interactive-ib/MiniGamesTab';
+import LearnTermsTab from './interactive-ib/LearnTermsTab';
 
 interface InteractiveIBLessonProps {
   lesson: InteractiveLessonContent;
@@ -138,10 +139,14 @@ const InteractiveIBLesson: React.FC<InteractiveIBLessonProps> = ({
       <ProgressTracker progress={lessonProgress} />
 
       <Tabs value={currentTab} onValueChange={setCurrentTab}>
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="overview">
             <BookOpen className="h-4 w-4 mr-2" />
             Overview
+          </TabsTrigger>
+          <TabsTrigger value="terms">
+            <Brain className="h-4 w-4 mr-2" />
+            Learn Terms
           </TabsTrigger>
           <TabsTrigger value="games">
             <Gamepad2 className="h-4 w-4 mr-2" />
@@ -166,6 +171,15 @@ const InteractiveIBLesson: React.FC<InteractiveIBLessonProps> = ({
             lesson={lesson} 
             ibTerms={ibTerms} 
             renderTermWithTooltip={renderTermWithTooltip}
+            onTermMastered={handleTermMastered}
+            masteredTerms={masteredTerms}
+          />
+        </TabsContent>
+
+        <TabsContent value="terms" className="space-y-6">
+          <LearnTermsTab 
+            lesson={lesson} 
+            ibTerms={ibTerms} 
             onTermMastered={handleTermMastered}
             masteredTerms={masteredTerms}
           />
