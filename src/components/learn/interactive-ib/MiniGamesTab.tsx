@@ -14,6 +14,11 @@ import CrisisManagerGame from './games/CrisisManagerGame';
 import SectorSpecialistGame from './games/SectorSpecialistGame';
 import SectorDetectiveGame from './games/SectorDetectiveGame';
 import ESGInvestmentChallenge from './games/ESGInvestmentChallenge';
+import DivisionDetectiveGame from './games/DivisionDetectiveGame';
+import UnderwritingChallengeGame from './games/UnderwritingChallengeGame';
+import MADealArchitectGame from './games/MADealArchitectGame';
+import CompanyValuationMasterGame from './games/CompanyValuationMasterGame';
+import FutureBankerGame from './games/FutureBankerGame';
 import { useProgressTracking } from '@/hooks/useProgressTracking';
 
 interface MiniGamesTabProps {
@@ -72,6 +77,16 @@ const MiniGamesTab: React.FC<MiniGamesTabProps> = ({
         return <SectorDetectiveGame {...commonProps} />;
       case 'esg-investment-challenge':
         return <ESGInvestmentChallenge {...commonProps} />;
+      case 'ib-divisions-match':
+        return <DivisionDetectiveGame onComplete={(score: number) => handleGameComplete('ib-divisions-match', score)} />;
+      case 'underwriting-simulator':
+        return <UnderwritingChallengeGame onComplete={(score: number) => handleGameComplete('underwriting-simulator', score)} />;
+      case 'ma-deal-builder':
+        return <MADealArchitectGame onComplete={(score: number) => handleGameComplete('ma-deal-builder', score)} />;
+      case 'valuation-challenge':
+        return <CompanyValuationMasterGame onComplete={(score: number) => handleGameComplete('valuation-challenge', score)} />;
+      case 'future-banker-game':
+        return <FutureBankerGame onComplete={(score: number) => handleGameComplete('future-banker-game', score)} />;
       default:
         return <div>Game not found</div>;
     }
