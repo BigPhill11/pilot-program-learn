@@ -59,59 +59,6 @@ export type Database = {
         }
         Relationships: []
       }
-      coffee_chats: {
-        Row: {
-          agenda: string | null
-          chat_type: string | null
-          contact_id: string | null
-          created_at: string
-          date_time: string
-          follow_up_actions: string | null
-          id: string
-          location: string | null
-          notes: string | null
-          rating: number | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          agenda?: string | null
-          chat_type?: string | null
-          contact_id?: string | null
-          created_at?: string
-          date_time: string
-          follow_up_actions?: string | null
-          id?: string
-          location?: string | null
-          notes?: string | null
-          rating?: number | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          agenda?: string | null
-          chat_type?: string | null
-          contact_id?: string | null
-          created_at?: string
-          date_time?: string
-          follow_up_actions?: string | null
-          id?: string
-          location?: string | null
-          notes?: string | null
-          rating?: number | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "coffee_chats_contact_id_fkey"
-            columns: ["contact_id"]
-            isOneToOne: false
-            referencedRelation: "contacts"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       comment_votes: {
         Row: {
           comment_id: string
@@ -213,69 +160,6 @@ export type Database = {
         }
         Relationships: []
       }
-      contacts: {
-        Row: {
-          company: string | null
-          contact_frequency_days: number | null
-          created_at: string
-          email: string | null
-          first_name: string
-          id: string
-          job_title: string | null
-          last_contact_date: string | null
-          last_name: string
-          linkedin_url: string | null
-          location: string | null
-          next_follow_up_date: string | null
-          notes: string | null
-          phone: string | null
-          relationship_strength: number | null
-          tags: string[] | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          company?: string | null
-          contact_frequency_days?: number | null
-          created_at?: string
-          email?: string | null
-          first_name: string
-          id?: string
-          job_title?: string | null
-          last_contact_date?: string | null
-          last_name: string
-          linkedin_url?: string | null
-          location?: string | null
-          next_follow_up_date?: string | null
-          notes?: string | null
-          phone?: string | null
-          relationship_strength?: number | null
-          tags?: string[] | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          company?: string | null
-          contact_frequency_days?: number | null
-          created_at?: string
-          email?: string | null
-          first_name?: string
-          id?: string
-          job_title?: string | null
-          last_contact_date?: string | null
-          last_name?: string
-          linkedin_url?: string | null
-          location?: string | null
-          next_follow_up_date?: string | null
-          notes?: string | null
-          phone?: string | null
-          relationship_strength?: number | null
-          tags?: string[] | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       daily_logins: {
         Row: {
           created_at: string
@@ -350,47 +234,6 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
-      }
-      follow_up_reminders: {
-        Row: {
-          contact_id: string | null
-          created_at: string
-          id: string
-          message: string | null
-          reminder_date: string
-          status: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          contact_id?: string | null
-          created_at?: string
-          id?: string
-          message?: string | null
-          reminder_date: string
-          status?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          contact_id?: string | null
-          created_at?: string
-          id?: string
-          message?: string | null
-          reminder_date?: string
-          status?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "follow_up_reminders_contact_id_fkey"
-            columns: ["contact_id"]
-            isOneToOne: false
-            referencedRelation: "contacts"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       initial_assessments: {
         Row: {
@@ -518,51 +361,6 @@ export type Database = {
           updated_at?: string
           user_id?: string
           week_ending?: string
-        }
-        Relationships: []
-      }
-      organizations: {
-        Row: {
-          created_at: string
-          description: string | null
-          id: string
-          industry: string | null
-          interest_level: number | null
-          linkedin_url: string | null
-          location: string | null
-          name: string
-          notes: string | null
-          updated_at: string
-          user_id: string
-          website: string | null
-        }
-        Insert: {
-          created_at?: string
-          description?: string | null
-          id?: string
-          industry?: string | null
-          interest_level?: number | null
-          linkedin_url?: string | null
-          location?: string | null
-          name: string
-          notes?: string | null
-          updated_at?: string
-          user_id: string
-          website?: string | null
-        }
-        Update: {
-          created_at?: string
-          description?: string | null
-          id?: string
-          industry?: string | null
-          interest_level?: number | null
-          linkedin_url?: string | null
-          location?: string | null
-          name?: string
-          notes?: string | null
-          updated_at?: string
-          user_id?: string
-          website?: string | null
         }
         Relationships: []
       }
