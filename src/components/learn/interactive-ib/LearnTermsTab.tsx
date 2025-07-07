@@ -17,15 +17,20 @@ const LearnTermsTab: React.FC<LearnTermsTabProps> = ({
   onTermMastered, 
   masteredTerms 
 }) => {
-  // Get terminology terms as flashcard data
-  const terminologyFlashcards = lesson.terminology.map(termKey => {
+  // Get ALL terminology terms as flashcard data
+  const allTermsFlashcards = lesson.terminology.map(termKey => {
     const termData = ibTerms[termKey];
     return termData ? {
+      key: termKey,
       term: termData.term,
       definition: termData.definition,
       analogy: termData.analogy
     } : null;
   }).filter(Boolean);
+
+  const progressPercentage = allTermsFlashcards.length > 0 
+    ? (masteredTerms.length / allTermsFlashcards.length) * 100 
+    : 0;
 
   return (
     <div className="space-y-6">
@@ -38,15 +43,18 @@ const LearnTermsTab: React.FC<LearnTermsTabProps> = ({
           <div className="flex items-center justify-center gap-2 text-lg font-semibold">
             <span className="text-primary">{masteredTerms.length}</span>
             <span className="text-muted-foreground">/</span>
-            <span className="text-muted-foreground">{terminologyFlashcards.length}</span>
+            <span className="text-muted-foreground">{allTermsFlashcards.length}</span>
             <span className="text-muted-foreground">mastered</span>
           </div>
           <div className="w-full bg-muted rounded-full h-3 mt-2">
             <div 
               className="bg-gradient-to-r from-green-500 to-emerald-600 h-3 rounded-full transition-all duration-500" 
-              style={{ width: `${(masteredTerms.length / terminologyFlashcards.length) * 100}%` }}
+              style={{ width: `${progressPercentage}%` }}
             />
           </div>
+          <p className="text-sm text-muted-foreground mt-2">
+            {progressPercentage.toFixed(0)}% Complete
+          </p>
         </CardHeader>
         <CardContent>
           <div className="text-center mb-6">
@@ -57,19 +65,19 @@ const LearnTermsTab: React.FC<LearnTermsTabProps> = ({
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {terminologyFlashcards.map((term, index) => (
+            {allTermsFlashcards.map((termData, index) => (
               <KeyTermFlashcard
-                key={index}
-                term={term.term}
-                definition={term.definition}
-                analogy={term.analogy}
-                onMastered={onTermMastered}
-                isMastered={masteredTerms.includes(term.term)}
+                key={termData.key}
+                term={termData.term}
+                definition={termData.definition}
+                analogy={termData.analogy}
+                onMastered={() => onTermMastered(termData.key)}
+                isMastered={masteredTerms.includes(termData.key)}
               />
             ))}
           </div>
           
-          {masteredTerms.length === terminologyFlashcards.length && terminologyFlashcards.length > 0 && (
+          {masteredTerms.length === allTermsFlashcards.length && allTermsFlashcards.length > 0 && (
             <div className="mt-8 text-center p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
               <Trophy className="h-12 w-12 mx-auto mb-3 text-yellow-500" />
               <h3 className="text-xl font-bold text-green-800 mb-2">Congratulations!</h3>
