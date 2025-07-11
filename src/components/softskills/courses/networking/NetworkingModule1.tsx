@@ -13,8 +13,10 @@ interface NetworkingModule1Props {
 const NetworkingModule1: React.FC<NetworkingModule1Props> = ({ onBack, onComplete, isCompleted }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [quizAnswers, setQuizAnswers] = useState<Record<number, number>>({});
+  const [showFeedback, setShowFeedback] = useState<Record<number, boolean>>({});
   const [gameScore, setGameScore] = useState(0);
   const [showTerms, setShowTerms] = useState(false);
+  const [gameFeedback, setGameFeedback] = useState<string>('');
 
   const networkingTerms = [
     { term: "Networking", definition: "The practice of building and maintaining professional relationships for mutual benefit" },
@@ -121,41 +123,70 @@ const NetworkingModule1: React.FC<NetworkingModule1Props> = ({ onBack, onComplet
                   {[...networkingTerms]
                     .sort(() => Math.random() - 0.5)
                     .slice(0, 3)
-                    .map((option, index) => (
-                      <Button
-                        key={index}
-                        variant={termGame.selectedDefinition === index ? "default" : "outline"}
-                        className="text-left justify-start p-4 h-auto hover:scale-102 transition-transform"
-                        onClick={() => {
-                          setTermGame(prev => ({ ...prev, selectedDefinition: index }));
-                          const isCorrect = option.definition === networkingTerms[termGame.currentTerm]?.definition;
+                    .map((option, index) => {
+                      const isCorrect = option.definition === networkingTerms[termGame.currentTerm]?.definition;
+                      const isSelected = termGame.selectedDefinition === index;
+                      
+                      return (
+                        <div key={index} className="space-y-2">
+                          <Button
+                            variant={isSelected ? (isCorrect ? "default" : "destructive") : "outline"}
+                            className={`text-left justify-start p-4 h-auto hover:scale-102 transition-transform w-full ${
+                              isSelected ? (isCorrect ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600") : ""
+                            }`}
+                            onClick={() => {
+                              setTermGame(prev => ({ ...prev, selectedDefinition: index }));
+                              
+                              const feedbackText = isCorrect 
+                                ? `✅ Correct! "${option.term}" means "${option.definition}"`
+                                : `❌ Incorrect. This defines "${option.term}", not "${networkingTerms[termGame.currentTerm]?.term}"`;
+                              
+                              setGameFeedback(feedbackText);
+                              
+                              setTimeout(() => {
+                                if (isCorrect) {
+                                  setTermGame(prev => ({ 
+                                    ...prev, 
+                                    score: prev.score + 10,
+                                    currentTerm: prev.currentTerm + 1,
+                                    selectedDefinition: null
+                                  }));
+                                } else {
+                                  setTermGame(prev => ({ 
+                                    ...prev, 
+                                    currentTerm: prev.currentTerm + 1,
+                                    selectedDefinition: null
+                                  }));
+                                }
+                                
+                                if (termGame.currentTerm >= networkingTerms.length - 1) {
+                                  setTermGame(prev => ({ ...prev, completed: true }));
+                                  setGameScore(termGame.score + (isCorrect ? 10 : 0));
+                                }
+                                setGameFeedback('');
+                              }, 2500);
+                            }}
+                          >
+                            {option.definition}
+                          </Button>
                           
-                          setTimeout(() => {
-                            if (isCorrect) {
-                              setTermGame(prev => ({ 
-                                ...prev, 
-                                score: prev.score + 10,
-                                currentTerm: prev.currentTerm + 1,
-                                selectedDefinition: null
-                              }));
-                            } else {
-                              setTermGame(prev => ({ 
-                                ...prev, 
-                                currentTerm: prev.currentTerm + 1,
-                                selectedDefinition: null
-                              }));
-                            }
-                            
-                            if (termGame.currentTerm >= networkingTerms.length - 1) {
-                              setTermGame(prev => ({ ...prev, completed: true }));
-                              setGameScore(termGame.score + (isCorrect ? 10 : 0));
-                            }
-                          }, 1000);
-                        }}
-                      >
-                        {option.definition}
-                      </Button>
-                    ))}
+                          {isSelected && gameFeedback && (
+                            <Card className={`${isCorrect ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"} animate-fade-in`}>
+                              <CardContent className="p-3">
+                                <p className={`text-sm ${isCorrect ? "text-green-700" : "text-red-700"}`}>
+                                  {gameFeedback}
+                                </p>
+                                {!isCorrect && (
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    💡 The correct answer is: "{networkingTerms[termGame.currentTerm]?.definition}"
+                                  </p>
+                                )}
+                              </CardContent>
+                            </Card>
+                          )}
+                        </div>
+                      );
+                    })}
                 </div>
                 
                 <div className="text-center">
@@ -348,16 +379,43 @@ const NetworkingModule1: React.FC<NetworkingModule1Props> = ({ onBack, onComplet
                   "Building genuine, mutually beneficial relationships",
                   "Only connecting with senior executives",
                   "Promoting your services to everyone you meet"
-                ].map((option, index) => (
-                  <Button
-                    key={index}
-                    variant={quizAnswers[0] === index ? "default" : "outline"}
-                    className="w-full text-left justify-start hover:scale-102 transition-transform"
-                    onClick={() => setQuizAnswers(prev => ({ ...prev, 0: index }))}
-                  >
-                    {option}
-                  </Button>
-                ))}
+                ].map((option, index) => {
+                  const isSelected = quizAnswers[0] === index;
+                  const isCorrect = index === 1;
+                  
+                  return (
+                    <div key={index} className="space-y-2">
+                      <Button
+                        variant={isSelected ? (isCorrect ? "default" : "destructive") : "outline"}
+                        className={`w-full text-left justify-start hover:scale-102 transition-transform ${
+                          isSelected ? (isCorrect ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600") : ""
+                        }`}
+                        onClick={() => {
+                          setQuizAnswers(prev => ({ ...prev, 0: index }));
+                          setShowFeedback(prev => ({ ...prev, 0: true }));
+                        }}
+                      >
+                        {option}
+                      </Button>
+                      
+                      {isSelected && showFeedback[0] && (
+                        <Card className={`${isCorrect ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"} animate-fade-in`}>
+                          <CardContent className="p-3">
+                            <p className={`text-sm font-semibold ${isCorrect ? "text-green-700" : "text-red-700"}`}>
+                              {isCorrect ? "✅ Correct!" : "❌ Incorrect"}
+                            </p>
+                            <p className={`text-xs mt-1 ${isCorrect ? "text-green-600" : "text-red-600"}`}>
+                              {index === 0 && "This is a common misconception. Collecting business cards without building relationships is ineffective networking."}
+                              {index === 1 && "Exactly! Effective networking is about creating genuine connections where both parties benefit and support each other."}
+                              {index === 2 && "This approach is too narrow and can come across as opportunistic. Networking works best when you connect with people at all levels."}
+                              {index === 3 && "This is pushy and transactional. Effective networking focuses on relationships first, not immediate sales."}
+                            </p>
+                          </CardContent>
+                        </Card>
+                      )}
+                    </div>
+                  );
+                })}
               </CardContent>
             </Card>
             
@@ -371,16 +429,43 @@ const NetworkingModule1: React.FC<NetworkingModule1Props> = ({ onBack, onComplet
                   "Give value first and help others succeed",
                   "Only network when you need something",
                   "Collect as many contacts as possible"
-                ].map((option, index) => (
-                  <Button
-                    key={index}
-                    variant={quizAnswers[1] === index ? "default" : "outline"}
-                    className="w-full text-left justify-start hover:scale-102 transition-transform"
-                    onClick={() => setQuizAnswers(prev => ({ ...prev, 1: index }))}
-                  >
-                    {option}
-                  </Button>
-                ))}
+                ].map((option, index) => {
+                  const isSelected = quizAnswers[1] === index;
+                  const isCorrect = index === 1;
+                  
+                  return (
+                    <div key={index} className="space-y-2">
+                      <Button
+                        variant={isSelected ? (isCorrect ? "default" : "destructive") : "outline"}
+                        className={`w-full text-left justify-start hover:scale-102 transition-transform ${
+                          isSelected ? (isCorrect ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600") : ""
+                        }`}
+                        onClick={() => {
+                          setQuizAnswers(prev => ({ ...prev, 1: index }));
+                          setShowFeedback(prev => ({ ...prev, 1: true }));
+                        }}
+                      >
+                        {option}
+                      </Button>
+                      
+                      {isSelected && showFeedback[1] && (
+                        <Card className={`${isCorrect ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"} animate-fade-in`}>
+                          <CardContent className="p-3">
+                            <p className={`text-sm font-semibold ${isCorrect ? "text-green-700" : "text-red-700"}`}>
+                              {isCorrect ? "✅ Correct!" : "❌ Incorrect"}
+                            </p>
+                            <p className={`text-xs mt-1 ${isCorrect ? "text-green-600" : "text-red-600"}`}>
+                              {index === 0 && "This transactional approach often backfires. People can sense when you're only interested in what they can do for you, making them less likely to help."}
+                              {index === 1 && "Perfect! When you help others achieve their goals first, they naturally want to reciprocate and support your success too. This builds genuine, lasting relationships."}
+                              {index === 2 && "This reactive approach misses countless opportunities. Networking should be ongoing to build relationships before you need them."}
+                              {index === 3 && "Quantity without quality leads nowhere. Having 1,000 contacts who don't know or trust you is far less valuable than having 50 genuine relationships."}
+                            </p>
+                          </CardContent>
+                        </Card>
+                      )}
+                    </div>
+                  );
+                })}
               </CardContent>
             </Card>
           </div>
