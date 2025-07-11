@@ -377,10 +377,19 @@ const CommunicationModule1: React.FC<CommunicationModule1Props> = ({ onBack, onC
   
   // Check if user can proceed to next step or complete module
   const canProceed = currentStep < steps.length - 1 || 
-    (currentStep === steps.length - 1 && isQuizComplete && isGameComplete);
+    (currentStep === steps.length - 1 && isQuizComplete);
   
   const handleNext = async () => {
     if (currentStep < steps.length - 1) {
+      // Check if we need to complete the game before advancing from step 3
+      if (currentStep === 3 && !isGameComplete) {
+        toast({
+          title: "Complete the Game First!",
+          description: "Please complete the Communication Styles Match game before proceeding.",
+          variant: "destructive"
+        });
+        return;
+      }
       setCurrentStep(currentStep + 1);
       await updateCompletionPercentage(((currentStep + 2) / steps.length) * 100);
     } else if (canProceed) {
@@ -459,7 +468,7 @@ const CommunicationModule1: React.FC<CommunicationModule1Props> = ({ onBack, onC
           
           <Button 
             onClick={handleNext}
-            disabled={!canProceed}
+            disabled={currentStep === 3 && !isGameComplete ? true : (currentStep === steps.length - 1 && !canProceed)}
             className="hover:scale-105 transition-transform"
           >
             {currentStep === steps.length - 1 ? 'Complete Module' : 'Next'}
