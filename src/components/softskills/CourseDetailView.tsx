@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ArrowLeft, BookOpen, Users, Play } from 'lucide-react';
 import PhilsFriendsSection from './PhilsFriendsSection';
 import ProfessionalInterviewingMastery from './courses/ProfessionalInterviewingMastery';
+import NetworkingLikePro from './courses/NetworkingLikePro';
 
 interface Course {
   id: string;
@@ -25,6 +26,11 @@ const CourseDetailView: React.FC<CourseDetailViewProps> = ({ course, onBack }) =
   // Check if this is the Professional Interviewing Mastery course
   if (course.category === 'interviewing' && course.title.toLowerCase().includes('professional interviewing mastery')) {
     return <ProfessionalInterviewingMastery onBack={onBack} />;
+  }
+
+  // Check if this is the Networking Like a Pro course
+  if (course.category === 'networking' && course.title.toLowerCase().includes('networking like a pro')) {
+    return <NetworkingLikePro onBack={onBack} />;
   }
 
   return (
