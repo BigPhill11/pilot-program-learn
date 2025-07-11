@@ -53,10 +53,21 @@ export const useSoftSkillsProgress = (courseId: string, moduleId: string, module
         .eq('user_id', user.id)
         .eq('course_id', courseId)
         .eq('module_id', moduleId)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') { // PGRST116 is "not found"
+      if (error) {
         console.error('Error loading progress:', error);
+        // Initialize new progress on error
+        setProgress({
+          userId: user.id,
+          courseId,
+          moduleId,
+          moduleTitle,
+          responses: [],
+          gameScores: {},
+          completionPercentage: 0,
+          timeSpentMinutes: 0
+        });
       } else if (data) {
         setProgress({
           id: data.id,
@@ -187,22 +198,27 @@ export const useSoftSkillsProgress = (courseId: string, moduleId: string, module
 
         if (error) {
           console.error('Error updating progress:', error);
+          // Try to continue without throwing
         }
       } else {
         const { data, error } = await supabase
           .from('soft_skills_module_progress')
-          .insert(dataToSave)
+          .upsert(dataToSave, {
+            onConflict: 'user_id,course_id,module_id'
+          })
           .select()
-          .single();
+          .maybeSingle();
 
         if (error) {
           console.error('Error inserting progress:', error);
+          // Try to continue without throwing
         } else if (data) {
           setProgress(prev => prev ? { ...prev, id: data.id } : null);
         }
       }
     } catch (error) {
       console.error('Error saving to database:', error);
+      // Don't throw - allow the app to continue
     }
   };
 

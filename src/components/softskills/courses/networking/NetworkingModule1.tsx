@@ -530,29 +530,27 @@ const NetworkingModule1: React.FC<NetworkingModule1Props> = ({ onBack, onComplet
     }
   ];
 
-  const isQuizComplete = steps[currentStep]?.type === 'quiz' && 
-    Object.keys(quizAnswers).length >= 2 &&
-    quizAnswers[0] === 1 && quizAnswers[1] === 1;
-
-  const isGameComplete = steps[currentStep]?.type === 'game' && termGame.completed;
-
-  const canProceed = steps[currentStep]?.type === 'content' || 
-                     steps[currentStep]?.type === 'interactive' ||
-                     isQuizComplete || 
-                     isGameComplete;
-
+  const isQuizComplete = Object.keys(quizAnswers).length >= 2;
+  const isGameComplete = termGame.completed;
+  
+  // Check if user can proceed to next step or complete module
+  const canProceed = currentStep < steps.length - 1 || 
+    (currentStep === steps.length - 1 && isQuizComplete && isGameComplete);
+  
   const handleNext = async () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
       await updateCompletionPercentage(((currentStep + 2) / steps.length) * 100);
     } else if (canProceed) {
       await completeModule();
+      // Show celebration animation for completed module
       setShowCelebration(true);
     }
   };
 
   const handleModuleComplete = async () => {
     setShowCelebration(false);
+    // Mark as completed and trigger parent callback
     onComplete();
   };
 
@@ -633,8 +631,8 @@ const NetworkingModule1: React.FC<NetworkingModule1Props> = ({ onBack, onComplet
           disabled={!canProceed}
           className="hover:scale-105 transition-transform"
         >
-          {currentStep === steps.length - 1 ? 'Complete Module' : 'Next'}
-          <ArrowRight className="h-4 w-4 ml-2" />
+            {currentStep === steps.length - 1 ? 'Complete Module' : 'Next'}
+            <ArrowRight className="h-4 w-4 ml-2" />
         </Button>
       </div>
 
