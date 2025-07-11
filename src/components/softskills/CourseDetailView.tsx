@@ -7,6 +7,7 @@ import { ArrowLeft, BookOpen, Users, Play } from 'lucide-react';
 import PhilsFriendsSection from './PhilsFriendsSection';
 import ProfessionalInterviewingMastery from './courses/ProfessionalInterviewingMastery';
 import NetworkingLikePro from './courses/NetworkingLikePro';
+import BusinessCommunicationExcellence from './courses/BusinessCommunicationExcellence';
 
 interface Course {
   id: string;
@@ -31,6 +32,11 @@ const CourseDetailView: React.FC<CourseDetailViewProps> = ({ course, onBack }) =
   // Check if this is the Networking Like a Pro course
   if (course.category === 'networking' && course.title.toLowerCase().includes('networking like a pro')) {
     return <NetworkingLikePro onBack={onBack} />;
+  }
+
+  // Check if this is the Business Communication Excellence course
+  if (course.category === 'professional_communication' && course.title.toLowerCase().includes('business communication excellence')) {
+    return <BusinessCommunicationExcellence onBack={onBack} />;
   }
 
   return (
