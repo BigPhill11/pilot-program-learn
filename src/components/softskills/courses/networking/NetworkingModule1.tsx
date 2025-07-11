@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, ArrowRight, Users, Brain, Target, CheckCircle, Gamepad2, Star } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Users, Brain, Target, CheckCircle, Gamepad2, Star, History, BookOpen } from 'lucide-react';
+import { useSoftSkillsProgress } from '@/hooks/useSoftSkillsProgress';
+import { PandaCelebration } from '@/components/ui/panda-celebration';
 
 interface NetworkingModule1Props {
   onBack: () => void;
@@ -11,12 +13,55 @@ interface NetworkingModule1Props {
 }
 
 const NetworkingModule1: React.FC<NetworkingModule1Props> = ({ onBack, onComplete, isCompleted }) => {
+  const { progress: moduleProgress, saveResponse, saveGameScore, completeModule, updateCompletionPercentage, getProgressHistory } = 
+    useSoftSkillsProgress('networking-like-pro', 'module-1', 'What is Professional Networking?');
+    
   const [currentStep, setCurrentStep] = useState(0);
   const [quizAnswers, setQuizAnswers] = useState<Record<number, number>>({});
   const [showFeedback, setShowFeedback] = useState<Record<number, boolean>>({});
   const [gameScore, setGameScore] = useState(0);
   const [showTerms, setShowTerms] = useState(false);
   const [gameFeedback, setGameFeedback] = useState<string>('');
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [progressHistory, setProgressHistory] = useState<any[]>([]);
+  
+  const [termGame, setTermGame] = useState({
+    currentTerm: 0,
+    selectedDefinition: null as number | null,
+    score: 0,
+    completed: false
+  });
+
+  // Load progress history on component mount
+  useEffect(() => {
+    const loadHistory = async () => {
+      const history = await getProgressHistory();
+      setProgressHistory(history);
+    };
+    loadHistory();
+  }, [getProgressHistory]);
+
+  // Save quiz responses
+  const handleQuizAnswer = async (questionIndex: number, answerIndex: number, answerText: string, isCorrect: boolean) => {
+    setQuizAnswers(prev => ({ ...prev, [questionIndex]: answerIndex }));
+    setShowFeedback(prev => ({ ...prev, [questionIndex]: true }));
+    
+    await saveResponse(
+      `quiz-${questionIndex}`,
+      questionIndex === 0 ? "What is the primary focus of effective networking?" : "Which mindset is most important for successful networking?",
+      answerIndex,
+      answerText,
+      isCorrect
+    );
+  };
+
+  // Save game completion
+  useEffect(() => {
+    if (termGame.completed && gameScore > 0) {
+      saveGameScore('networking-terms-match', gameScore, 60);
+    }
+  }, [termGame.completed, gameScore, saveGameScore]);
 
   const networkingTerms = [
     { term: "Networking", definition: "The practice of building and maintaining professional relationships for mutual benefit" },
@@ -27,12 +72,6 @@ const NetworkingModule1: React.FC<NetworkingModule1Props> = ({ onBack, onComplet
     { term: "Cold Outreach", definition: "Initiating contact with someone you haven't met before" }
   ];
 
-  const [termGame, setTermGame] = useState({
-    currentTerm: 0,
-    selectedDefinition: null as number | null,
-    score: 0,
-    completed: false
-  });
 
   const steps = [
     {
@@ -390,9 +429,8 @@ const NetworkingModule1: React.FC<NetworkingModule1Props> = ({ onBack, onComplet
                         className={`w-full text-left justify-start hover:scale-102 transition-transform ${
                           isSelected ? (isCorrect ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600") : ""
                         }`}
-                        onClick={() => {
-                          setQuizAnswers(prev => ({ ...prev, 0: index }));
-                          setShowFeedback(prev => ({ ...prev, 0: true }));
+                        onClick={async () => {
+                          await handleQuizAnswer(0, index, option, isCorrect);
                         }}
                       >
                         {option}
@@ -440,9 +478,8 @@ const NetworkingModule1: React.FC<NetworkingModule1Props> = ({ onBack, onComplet
                         className={`w-full text-left justify-start hover:scale-102 transition-transform ${
                           isSelected ? (isCorrect ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600") : ""
                         }`}
-                        onClick={() => {
-                          setQuizAnswers(prev => ({ ...prev, 1: index }));
-                          setShowFeedback(prev => ({ ...prev, 1: true }));
+                        onClick={async () => {
+                          await handleQuizAnswer(1, index, option, isCorrect);
                         }}
                       >
                         {option}
@@ -485,12 +522,25 @@ const NetworkingModule1: React.FC<NetworkingModule1Props> = ({ onBack, onComplet
                      isQuizComplete || 
                      isGameComplete;
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
+      await updateCompletionPercentage(((currentStep + 2) / steps.length) * 100);
     } else if (canProceed) {
-      onComplete();
+      await completeModule();
+      setShowCelebration(true);
     }
+  };
+
+  const handleModuleComplete = async () => {
+    setShowCelebration(false);
+    onComplete();
+  };
+
+  const loadProgressHistory = async () => {
+    const history = await getProgressHistory();
+    setProgressHistory(history);
+    setShowHistory(true);
   };
 
   const handlePrevious = () => {
@@ -509,15 +559,21 @@ const NetworkingModule1: React.FC<NetworkingModule1Props> = ({ onBack, onComplet
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Course
         </Button>
-        <div>
+        <div className="flex-1">
           <h1 className="text-2xl font-bold">Module 1: Networking Fundamentals</h1>
           <p className="text-muted-foreground">Understanding the basics of professional networking</p>
         </div>
-        {isCompleted && (
-          <div className="ml-auto">
-            <CheckCircle className="h-6 w-6 text-green-500" />
-          </div>
-        )}
+        <div className="flex items-center space-x-2">
+          <Button variant="outline" size="sm" onClick={loadProgressHistory} className="hover:scale-105 transition-transform">
+            <History className="h-4 w-4 mr-2" />
+            Review Progress
+          </Button>
+          {isCompleted && (
+            <div>
+              <CheckCircle className="h-6 w-6 text-green-500" />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Progress */}
@@ -588,6 +644,72 @@ const NetworkingModule1: React.FC<NetworkingModule1Props> = ({ onBack, onComplet
           </CardContent>
         </Card>
       )}
+
+      {/* Progress History Modal */}
+      {showHistory && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span className="flex items-center space-x-2">
+                  <BookOpen className="h-5 w-5" />
+                  <span>Your Learning Progress</span>
+                </span>
+                <Button variant="ghost" size="sm" onClick={() => setShowHistory(false)}>×</Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {progressHistory.length === 0 ? (
+                <p className="text-muted-foreground">No previous progress found.</p>
+              ) : (
+                progressHistory.map((item, index) => (
+                  <Card key={index} className="bg-gradient-to-r from-blue-50 to-purple-50">
+                    <CardContent className="p-4 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-semibold">{item.module_title}</h3>
+                        <span className="text-sm text-muted-foreground">
+                          {new Date(item.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>Completion: {item.completion_percentage}%</div>
+                        <div>Time: {item.time_spent_minutes} min</div>
+                      </div>
+                      {item.responses && item.responses.length > 0 && (
+                        <div className="space-y-1">
+                          <h4 className="text-xs font-medium text-muted-foreground">Quiz Responses:</h4>
+                          {item.responses.map((response: any, i: number) => (
+                            <div key={i} className="text-xs bg-white/50 p-2 rounded">
+                              <span className={response.isCorrect ? "text-green-600" : "text-red-600"}>
+                                {response.isCorrect ? "✅" : "❌"} {response.question}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Panda Celebration */}
+      <PandaCelebration
+        isVisible={showCelebration}
+        onClose={handleModuleComplete}
+        moduleTitle="Networking Fundamentals"
+        score={gameScore + (Object.values(quizAnswers).filter((answer, index) => 
+          (index === 0 && answer === 1) || (index === 1 && answer === 1)
+        ).length * 10)}
+        achievements={[
+          ...(gameScore >= 50 ? ["Networking Terms Master"] : []),
+          ...(isQuizComplete ? ["Networking Fundamentals Expert"] : []),
+          "Module 1 Completed"
+        ]}
+      />
     </div>
   );
 };

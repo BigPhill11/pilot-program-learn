@@ -857,6 +857,51 @@ export type Database = {
           },
         ]
       }
+      soft_skills_module_progress: {
+        Row: {
+          completed_at: string | null
+          completion_percentage: number
+          course_id: string
+          created_at: string
+          game_scores: Json
+          id: string
+          module_id: string
+          module_title: string
+          responses: Json
+          time_spent_minutes: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          completion_percentage?: number
+          course_id: string
+          created_at?: string
+          game_scores?: Json
+          id?: string
+          module_id: string
+          module_title: string
+          responses?: Json
+          time_spent_minutes?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          completion_percentage?: number
+          course_id?: string
+          created_at?: string
+          game_scores?: Json
+          id?: string
+          module_id?: string
+          module_title?: string
+          responses?: Json
+          time_spent_minutes?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       trading_videos: {
         Row: {
           created_at: string
