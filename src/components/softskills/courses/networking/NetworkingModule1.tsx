@@ -552,6 +552,10 @@ const NetworkingModule1: React.FC<NetworkingModule1Props> = ({ onBack, onComplet
     setShowCelebration(false);
     // Mark as completed and trigger parent callback
     onComplete();
+    // Also auto-advance to next module after short delay
+    setTimeout(() => {
+      onBack(); // Go back to course overview where next module will be unlocked
+    }, 1000);
   };
 
   const loadProgressHistory = async () => {
