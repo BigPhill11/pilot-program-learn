@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,6 +19,7 @@ const CommunicationModule1: React.FC<CommunicationModule1Props> = ({ onBack, onC
   const [currentStep, setCurrentStep] = useState(0);
   const [quizAnswers, setQuizAnswers] = useState<Record<number, number>>({});
   const [showCelebration, setShowCelebration] = useState(false);
+  const [quizFeedback, setQuizFeedback] = useState<Record<number, { correct: boolean; feedback: string }>>({});
   const { toast } = useToast();
   
   const {
@@ -45,6 +47,33 @@ const CommunicationModule1: React.FC<CommunicationModule1Props> = ({ onBack, onC
     const descriptions = [...communicationStylesData.map(item => item.description)];
     return descriptions.sort(() => Math.random() - 0.5);
   }, [communicationStylesData]);
+
+  // Quiz questions with detailed feedback
+  const quizQuestions = [
+    {
+      question: "Which communication style is characterized by being direct, honest, and respectful?",
+      options: ['Passive', 'Assertive', 'Aggressive', 'Passive-Aggressive'],
+      correctAnswer: 1,
+      feedback: {
+        correct: "Correct! Assertive communication is indeed direct, honest, and respectful. It's the ideal style for professional environments as it allows you to express your needs clearly while maintaining respect for others.",
+        incorrect: "Not quite right. Assertive communication is the style that balances directness with respect. It allows you to express your thoughts and needs clearly without being aggressive or passive."
+      }
+    },
+    {
+      question: "What is the most important element of active listening?",
+      options: [
+        'Preparing your response while the other person speaks',
+        'Fully focusing on understanding the speaker\'s message',
+        'Agreeing with everything the speaker says',
+        'Taking detailed notes during the conversation'
+      ],
+      correctAnswer: 1,
+      feedback: {
+        correct: "Excellent! Active listening is all about fully focusing on understanding the speaker's message. This means putting aside your own thoughts and judgments to truly hear what they're saying.",
+        incorrect: "Not quite. While preparing responses, agreeing, or taking notes might seem helpful, active listening is primarily about giving your full attention to understanding what the speaker is actually trying to communicate."
+      }
+    }
+  ];
 
   const steps = [
     {
@@ -301,78 +330,59 @@ const CommunicationModule1: React.FC<CommunicationModule1Props> = ({ onBack, onC
           </div>
 
           <div className="space-y-6">
-            <Card className="border-purple-200">
-              <CardContent className="pt-6">
-                <h4 className="font-semibold mb-4">
-                  1. Which communication style is characterized by being direct, honest, and respectful?
-                </h4>
-                <div className="space-y-2">
-                  {[
-                    'Passive',
-                    'Assertive',
-                    'Aggressive',
-                    'Passive-Aggressive'
-                  ].map((option, index) => (
-                    <Button
-                      key={index}
-                      variant={quizAnswers[0] === index ? "default" : "outline"}
-                      className="w-full justify-start"
-                      onClick={() => {
-                        setQuizAnswers(prev => ({ ...prev, 0: index }));
-                        saveResponse('0', 'Which communication style is characterized by being direct, honest, and respectful?', index, option, index === 1);
-                        toast({
-                          title: index === 1 ? "Correct!" : "Keep trying!",
-                          description: index === 1 ? "Assertive communication is indeed direct, honest, and respectful." : "Think about which style balances directness with respect.",
-                          variant: index === 1 ? "default" : "destructive"
-                        });
-                      }}
-                    >
-                      {option}
-                    </Button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-purple-200">
-              <CardContent className="pt-6">
-                <h4 className="font-semibold mb-4">
-                  2. What is the most important element of active listening?
-                </h4>
-                <div className="space-y-2">
-                  {[
-                    'Preparing your response while the other person speaks',
-                    'Fully focusing on understanding the speaker\'s message',
-                    'Agreeing with everything the speaker says',
-                    'Taking detailed notes during the conversation'
-                  ].map((option, index) => (
-                    <Button
-                      key={index}
-                      variant={quizAnswers[1] === index ? "default" : "outline"}
-                      className="w-full justify-start text-left h-auto py-3"
-                      onClick={() => {
-                        setQuizAnswers(prev => ({ ...prev, 1: index }));
-                        saveResponse('1', 'What is the most important element of active listening?', index, option, index === 1);
-                        toast({
-                          title: index === 1 ? "Excellent!" : "Not quite!",
-                          description: index === 1 ? "Yes, focusing on understanding is the key to active listening." : "Active listening requires full attention and focus on the speaker.",
-                          variant: index === 1 ? "default" : "destructive"
-                        });
-                      }}
-                    >
-                      {option}
-                    </Button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            {quizQuestions.map((question, questionIndex) => (
+              <Card key={questionIndex} className="border-purple-200">
+                <CardContent className="pt-6">
+                  <h4 className="font-semibold mb-4">
+                    {questionIndex + 1}. {question.question}
+                  </h4>
+                  <div className="space-y-2">
+                    {question.options.map((option, optionIndex) => (
+                      <Button
+                        key={optionIndex}
+                        variant={quizAnswers[questionIndex] === optionIndex ? "default" : "outline"}
+                        className="w-full justify-start text-left h-auto py-3"
+                        onClick={() => {
+                          const isCorrect = optionIndex === question.correctAnswer;
+                          setQuizAnswers(prev => ({ ...prev, [questionIndex]: optionIndex }));
+                          setQuizFeedback(prev => ({
+                            ...prev,
+                            [questionIndex]: {
+                              correct: isCorrect,
+                              feedback: isCorrect ? question.feedback.correct : question.feedback.incorrect
+                            }
+                          }));
+                          saveResponse(questionIndex.toString(), question.question, optionIndex, option, isCorrect);
+                        }}
+                      >
+                        {option}
+                      </Button>
+                    ))}
+                  </div>
+                  
+                  {/* Show feedback if question has been answered */}
+                  {quizFeedback[questionIndex] && (
+                    <Card className={`mt-4 ${quizFeedback[questionIndex].correct ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+                      <CardContent className="pt-4">
+                        <div className="flex items-start space-x-2">
+                          <CheckCircle2 className={`h-5 w-5 mt-0.5 ${quizFeedback[questionIndex].correct ? 'text-green-600' : 'text-red-600'}`} />
+                          <p className={`text-sm ${quizFeedback[questionIndex].correct ? 'text-green-700' : 'text-red-700'}`}>
+                            {quizFeedback[questionIndex].feedback}
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       )
     }
   ];
 
-  const isQuizComplete = Object.keys(quizAnswers).length >= 2;
+  const isQuizComplete = Object.keys(quizAnswers).length >= quizQuestions.length;
   const isGameComplete = stylesGame.completed;
   
   // Check if user can proceed to next step or complete module
