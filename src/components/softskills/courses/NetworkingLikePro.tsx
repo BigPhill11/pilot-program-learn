@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Users, CheckCircle, Clock, Target } from 'lucide-react';
+import { ArrowLeft, Users, CheckCircle, Clock, Target, Lock, Play } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
 import NetworkingModule1 from './networking/NetworkingModule1';
 import NetworkingModule2 from './networking/NetworkingModule2';
 import NetworkingModule3 from './networking/NetworkingModule3';
@@ -20,12 +20,60 @@ const NetworkingLikePro: React.FC<NetworkingLikeProProps> = ({ onBack }) => {
   const [completedModules, setCompletedModules] = useState<Set<number>>(new Set());
 
   const modules = [
-    { id: 1, title: 'Networking Fundamentals', duration: '15 min', component: NetworkingModule1 },
-    { id: 2, title: 'Building Your Personal Brand', duration: '20 min', component: NetworkingModule2 },
-    { id: 3, title: 'Strategic Relationship Building', duration: '25 min', component: NetworkingModule3 },
-    { id: 4, title: 'Digital Networking Mastery', duration: '20 min', component: NetworkingModule4 },
-    { id: 5, title: 'Event Networking Strategies', duration: '25 min', component: NetworkingModule5 },
-    { id: 6, title: 'Long-term Relationship Management', duration: '20 min', component: NetworkingModule6 }
+    { 
+      id: 1, 
+      title: 'Networking Fundamentals', 
+      subtitle: 'Understanding the networking mindset and foundation',
+      duration: '15 min', 
+      component: NetworkingModule1,
+      keyTopics: ['Networking mindset', 'Relationship building', 'Value creation', '+2 more'],
+      description: 'Build foundational confidence and establish the right mindset'
+    },
+    { 
+      id: 2, 
+      title: 'Personal Brand Building', 
+      subtitle: 'Crafting your professional identity and presence',
+      duration: '20 min', 
+      component: NetworkingModule2,
+      keyTopics: ['Brand identity', 'Elevator pitch', 'Value proposition', '+2 more'],
+      description: 'Develop your unique professional brand and compelling story'
+    },
+    { 
+      id: 3, 
+      title: 'Strategic Relationships', 
+      subtitle: 'Building meaningful professional connections',
+      duration: '25 min', 
+      component: NetworkingModule3,
+      keyTopics: ['Rapport building', 'Network mapping', 'Follow-up strategies', '+2 more'],
+      description: 'Master the art of building and nurturing strategic relationships'
+    },
+    { 
+      id: 4, 
+      title: 'Digital Networking', 
+      subtitle: 'Leveraging online platforms for professional growth',
+      duration: '20 min', 
+      component: NetworkingModule4,
+      keyTopics: ['LinkedIn optimization', 'Online presence', 'Digital engagement', '+2 more'],
+      description: 'Excel at digital networking across professional platforms'
+    },
+    { 
+      id: 5, 
+      title: 'Event Mastery', 
+      subtitle: 'Maximizing networking opportunities at events',
+      duration: '25 min', 
+      component: NetworkingModule5,
+      keyTopics: ['Event preparation', 'Working the room', 'Follow-up systems', '+2 more'],
+      description: 'Navigate networking events with confidence and strategy'
+    },
+    { 
+      id: 6, 
+      title: 'Relationship Management', 
+      subtitle: 'Maintaining long-term professional connections',
+      duration: '20 min', 
+      component: NetworkingModule6,
+      keyTopics: ['CRM systems', 'Value delivery', 'Long-term nurturing', '+2 more'],
+      description: 'Build systems for sustainable relationship management'
+    }
   ];
 
   const handleModuleComplete = (moduleId: number) => {
@@ -34,6 +82,11 @@ const NetworkingLikePro: React.FC<NetworkingLikeProProps> = ({ onBack }) => {
 
   const handleBackToOverview = () => {
     setActiveModule(null);
+  };
+
+  const isModuleUnlocked = (moduleId: number) => {
+    if (moduleId === 1) return true;
+    return completedModules.has(moduleId - 1);
   };
 
   const progress = (completedModules.size / modules.length) * 100;
@@ -53,7 +106,7 @@ const NetworkingLikePro: React.FC<NetworkingLikeProProps> = ({ onBack }) => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center space-x-4">
         <Button variant="outline" onClick={onBack}>
@@ -61,137 +114,164 @@ const NetworkingLikePro: React.FC<NetworkingLikeProProps> = ({ onBack }) => {
           Back to Courses
         </Button>
         <div className="flex-1">
-          <h1 className="text-3xl font-bold flex items-center space-x-2">
+          <h1 className="text-3xl font-bold flex items-center space-x-3">
             <Users className="h-8 w-8 text-primary" />
             <span>Networking Like a Pro</span>
           </h1>
-          <p className="text-muted-foreground">
-            Master the art of professional networking and build meaningful relationships
+          <p className="text-muted-foreground mt-1">
+            Master the art of professional networking with interactive modules
           </p>
         </div>
       </div>
 
-      {/* Progress Overview */}
-      <Card>
+      {/* Progress Section */}
+      <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
         <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>Course Progress</span>
-            <span className="text-sm font-normal">{completedModules.size}/{modules.length} modules completed</span>
+          <CardTitle className="flex items-center space-x-2">
+            <Target className="h-5 w-5 text-blue-600" />
+            <span>Your Networking Journey Progress</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Progress value={progress} className="h-3 mb-2" />
-          <p className="text-sm text-muted-foreground">
-            {progress === 100 ? 'Congratulations! Course completed.' : `${progress.toFixed(0)}% complete`}
-          </p>
+          <div className="grid grid-cols-3 gap-6 mb-4">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-blue-600">{completedModules.size}</div>
+              <div className="text-sm text-muted-foreground">Completed</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-green-600">{Math.round(progress)}%</div>
+              <div className="text-sm text-muted-foreground">Progress</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-purple-600">{modules.length - completedModules.size}</div>
+              <div className="text-sm text-muted-foreground">Remaining</div>
+            </div>
+          </div>
+          <div className="text-right text-sm text-muted-foreground mb-2">
+            {completedModules.size}/{modules.length} modules
+          </div>
+          <Progress value={progress} className="h-3" />
         </CardContent>
       </Card>
 
       {/* Course Overview */}
-      <div className="grid md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Target className="h-5 w-5" />
-              <span>Learning Objectives</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <ul className="space-y-2 text-sm">
-              <li className="flex items-start space-x-2">
-                <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span>Understand networking fundamentals and mindset</span>
-              </li>
-              <li className="flex items-start space-x-2">
-                <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span>Build and maintain your personal brand</span>
-              </li>
-              <li className="flex items-start space-x-2">
-                <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span>Develop strategic relationship building skills</span>
-              </li>
-              <li className="flex items-start space-x-2">
-                <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span>Master digital networking platforms</span>
-              </li>
-              <li className="flex items-start space-x-2">
-                <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span>Excel at networking events and conferences</span>
-              </li>
-              <li className="flex items-start space-x-2">
-                <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span>Maintain long-term professional relationships</span>
-              </li>
-            </ul>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Clock className="h-5 w-5" />
-              <span>Course Details</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <p className="text-sm font-medium">Total Duration</p>
-              <p className="text-2xl font-bold text-primary">2 hours</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium">Difficulty Level</p>
-              <p className="text-lg">Intermediate</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium">Course Format</p>
-              <p className="text-sm text-muted-foreground">
-                Interactive modules with practical exercises, quizzes, and real-world scenarios
-              </p>
+      <div>
+        <h2 className="text-2xl font-bold mb-4">Course Overview</h2>
+        <p className="text-muted-foreground mb-6">
+          Welcome to Networking Like a Pro! This comprehensive course will transform you into a confident, 
+          strategic networker ready to build meaningful professional relationships.
+        </p>
+        <p className="text-muted-foreground mb-6">
+          Through 6 interactive modules, you'll master everything from personal branding to long-term relationship 
+          management. Each module includes engaging games, practical exercises, and real-world scenarios to ensure 
+          you're networking-ready.
+        </p>
+        
+        <Card className="bg-blue-50 border-blue-200 border-l-4 border-l-blue-500">
+          <CardContent className="pt-6">
+            <div className="flex items-start space-x-3">
+              <Target className="h-5 w-5 text-blue-600 mt-1" />
+              <div>
+                <h3 className="font-semibold text-blue-800 mb-2">🎯 What You'll Achieve:</h3>
+                <ul className="space-y-1 text-blue-700">
+                  <li>• Develop unshakeable confidence and networking presence</li>
+                  <li>• Master personal branding with a compelling elevator pitch</li>
+                  <li>• Build strategic relationships through proven methodologies</li>
+                  <li>• Excel at digital networking across all major platforms</li>
+                  <li>• Navigate networking events with professional grace</li>
+                  <li>• Create sustainable systems for long-term relationship management</li>
+                </ul>
+              </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Module List */}
-      <div className="space-y-4">
-        <h2 className="text-2xl font-bold">Course Modules</h2>
-        <div className="grid gap-4">
-          {modules.map((module, index) => (
-            <Card key={module.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <div className={`flex items-center justify-center w-8 h-8 rounded-full ${
-                      completedModules.has(module.id) 
+      {/* Module Grid */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {modules.map((module, index) => {
+          const isUnlocked = isModuleUnlocked(module.id);
+          const isCompleted = completedModules.has(module.id);
+          
+          return (
+            <Card 
+              key={module.id} 
+              className={`hover:shadow-lg transition-all duration-200 ${
+                !isUnlocked ? 'opacity-60' : 'hover:scale-105'
+              } ${isCompleted ? 'border-green-200 bg-green-50' : ''}`}
+            >
+              <CardHeader className="pb-3">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className={`flex items-center justify-center w-10 h-10 rounded-full ${
+                      isCompleted 
                         ? 'bg-green-500 text-white' 
-                        : 'bg-muted text-muted-foreground'
+                        : isUnlocked 
+                          ? 'bg-blue-500 text-white' 
+                          : 'bg-gray-300 text-gray-500'
                     }`}>
-                      {completedModules.has(module.id) ? (
-                        <CheckCircle className="h-4 w-4" />
+                      {isCompleted ? (
+                        <CheckCircle className="h-5 w-5" />
+                      ) : !isUnlocked ? (
+                        <Lock className="h-4 w-4" />
                       ) : (
-                        <span className="text-sm font-medium">{index + 1}</span>
+                        <span className="font-semibold">{module.id}</span>
                       )}
                     </div>
                     <div>
-                      <h3 className="font-semibold">{module.title}</h3>
-                      <p className="text-sm text-muted-foreground flex items-center space-x-1">
-                        <Clock className="h-3 w-3" />
-                        <span>{module.duration}</span>
-                      </p>
+                      <CardTitle className="text-lg">{module.title}</CardTitle>
+                      <CardDescription className="text-sm">{module.subtitle}</CardDescription>
                     </div>
                   </div>
+                  {!isUnlocked && <Lock className="h-4 w-4 text-gray-400" />}
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">{module.description}</p>
+                
+                <div>
+                  <h4 className="text-sm font-medium mb-2">Key Topics:</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {module.keyTopics.map((topic, idx) => (
+                      <Badge key={idx} variant="secondary" className="text-xs">
+                        {topic}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between pt-2">
+                  <div className="flex items-center space-x-1 text-sm text-muted-foreground">
+                    <Clock className="h-3 w-3" />
+                    <span>{module.duration}</span>
+                  </div>
+                  
                   <Button 
-                    onClick={() => setActiveModule(module.id)}
-                    variant={completedModules.has(module.id) ? "outline" : "default"}
+                    onClick={() => isUnlocked && setActiveModule(module.id)}
+                    disabled={!isUnlocked}
+                    variant={isCompleted ? "outline" : "default"}
                     size="sm"
+                    className={`${!isUnlocked ? 'cursor-not-allowed' : ''}`}
                   >
-                    {completedModules.has(module.id) ? 'Review' : 'Start'}
+                    {!isUnlocked ? (
+                      <>
+                        <Lock className="h-3 w-3 mr-1" />
+                        Locked
+                      </>
+                    ) : isCompleted ? (
+                      'Review'
+                    ) : (
+                      <>
+                        <Play className="h-3 w-3 mr-1" />
+                        Start Module
+                      </>
+                    )}
                   </Button>
                 </div>
               </CardContent>
             </Card>
-          ))}
-        </div>
+          );
+        })}
       </div>
     </div>
   );
