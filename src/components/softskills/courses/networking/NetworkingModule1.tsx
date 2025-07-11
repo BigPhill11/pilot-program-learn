@@ -33,6 +33,28 @@ const NetworkingModule1: React.FC<NetworkingModule1Props> = ({ onBack, onComplet
     completed: false
   });
 
+  // Create static shuffled options for each term to prevent re-shuffling on renders
+  const [gameOptions, setGameOptions] = useState<any[][]>([]);
+
+  // Initialize static game options when component mounts
+  useEffect(() => {
+    const options = networkingTerms.map((currentTerm) => {
+      // Get the correct answer and 2 random wrong answers
+      const correctAnswer = currentTerm;
+      const wrongAnswers = networkingTerms
+        .filter(term => term.term !== currentTerm.term)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 2);
+      
+      // Combine and shuffle once
+      const allOptions = [correctAnswer, ...wrongAnswers]
+        .sort(() => Math.random() - 0.5);
+      
+      return allOptions;
+    });
+    setGameOptions(options);
+  }, []);
+
   // Load progress history on component mount
   useEffect(() => {
     const loadHistory = async () => {
@@ -159,14 +181,11 @@ const NetworkingModule1: React.FC<NetworkingModule1Props> = ({ onBack, onComplet
                 </p>
                 
                 <div className="grid gap-3">
-                  {[...networkingTerms]
-                    .sort(() => Math.random() - 0.5)
-                    .slice(0, 3)
-                    .map((option, index) => {
-                      const isCorrect = option.definition === networkingTerms[termGame.currentTerm]?.definition;
-                      const isSelected = termGame.selectedDefinition === index;
-                      
-                      return (
+                  {gameOptions[termGame.currentTerm]?.map((option, index) => {
+                    const isCorrect = option.definition === networkingTerms[termGame.currentTerm]?.definition;
+                    const isSelected = termGame.selectedDefinition === index;
+                    
+                    return (
                         <div key={index} className="space-y-2">
                           <Button
                             variant={isSelected ? (isCorrect ? "default" : "destructive") : "outline"}
@@ -223,9 +242,9 @@ const NetworkingModule1: React.FC<NetworkingModule1Props> = ({ onBack, onComplet
                               </CardContent>
                             </Card>
                           )}
-                        </div>
+                         </div>
                       );
-                    })}
+                    }) || []}
                 </div>
                 
                 <div className="text-center">
