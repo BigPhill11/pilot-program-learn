@@ -370,7 +370,7 @@ const NetworkingModule4: React.FC<NetworkingModule4Props> = ({ onBack, onComplet
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm">
                   <p><strong>Quality over Quantity</strong></p>
-                  <p className="text-muted-foreground">5 meaningful offline conversations > 500 online connections</p>
+                  <p className="text-muted-foreground">5 meaningful offline conversations &gt; 500 online connections</p>
                   
                   <p><strong>Response Rate</strong></p>
                   <p className="text-muted-foreground">Aim for 20-30% positive response to meeting requests</p>
