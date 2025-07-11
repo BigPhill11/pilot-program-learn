@@ -6,6 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { useSoftSkillsProgress } from '@/hooks/useSoftSkillsProgress';
 import { PandaCelebration } from '@/components/ui/panda-celebration';
+import { useToast } from '@/hooks/use-toast';
 
 interface CommunicationModule1Props {
   onBack: () => void;
@@ -17,6 +18,7 @@ const CommunicationModule1: React.FC<CommunicationModule1Props> = ({ onBack, onC
   const [currentStep, setCurrentStep] = useState(0);
   const [quizAnswers, setQuizAnswers] = useState<Record<number, number>>({});
   const [showCelebration, setShowCelebration] = useState(false);
+  const { toast } = useToast();
   
   const {
     saveResponse,
@@ -250,6 +252,10 @@ const CommunicationModule1: React.FC<CommunicationModule1Props> = ({ onBack, onC
                             const score = 100;
                             setStylesGame(prev => ({ ...prev, completed: true, score }));
                             saveGameScore('communication_styles_match', score, 100);
+                            toast({
+                              title: "Game Complete!",
+                              description: "Excellent work matching all communication styles!",
+                            });
                           }
                         }
                       }
@@ -314,6 +320,11 @@ const CommunicationModule1: React.FC<CommunicationModule1Props> = ({ onBack, onC
                       onClick={() => {
                         setQuizAnswers(prev => ({ ...prev, 0: index }));
                         saveResponse('0', 'Which communication style is characterized by being direct, honest, and respectful?', index, option, index === 1);
+                        toast({
+                          title: index === 1 ? "Correct!" : "Keep trying!",
+                          description: index === 1 ? "Assertive communication is indeed direct, honest, and respectful." : "Think about which style balances directness with respect.",
+                          variant: index === 1 ? "default" : "destructive"
+                        });
                       }}
                     >
                       {option}
@@ -342,6 +353,11 @@ const CommunicationModule1: React.FC<CommunicationModule1Props> = ({ onBack, onC
                       onClick={() => {
                         setQuizAnswers(prev => ({ ...prev, 1: index }));
                         saveResponse('1', 'What is the most important element of active listening?', index, option, index === 1);
+                        toast({
+                          title: index === 1 ? "Excellent!" : "Not quite!",
+                          description: index === 1 ? "Yes, focusing on understanding is the key to active listening." : "Active listening requires full attention and focus on the speaker.",
+                          variant: index === 1 ? "default" : "destructive"
+                        });
                       }}
                     >
                       {option}
@@ -369,6 +385,10 @@ const CommunicationModule1: React.FC<CommunicationModule1Props> = ({ onBack, onC
       await updateCompletionPercentage(((currentStep + 2) / steps.length) * 100);
     } else if (canProceed) {
       await completeModule();
+      toast({
+        title: "Module Complete!",
+        description: "Congratulations! You've completed Communication Foundations.",
+      });
       // Show celebration animation for completed module
       setShowCelebration(true);
     }

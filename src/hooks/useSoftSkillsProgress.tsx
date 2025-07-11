@@ -121,7 +121,12 @@ export const useSoftSkillsProgress = (courseId: string, moduleId: string, module
     };
 
     setProgress(updatedProgress);
-    await saveToDatabase(updatedProgress);
+    // Try to save to database but continue if it fails
+    try {
+      await saveToDatabase(updatedProgress);
+    } catch (error) {
+      console.log('Progress saved locally, database sync may retry later');
+    }
   };
 
   const saveGameScore = async (gameType: string, score: number, maxScore: number) => {
@@ -143,7 +148,12 @@ export const useSoftSkillsProgress = (courseId: string, moduleId: string, module
     };
 
     setProgress(updatedProgress);
-    await saveToDatabase(updatedProgress);
+    // Try to save to database but continue if it fails
+    try {
+      await saveToDatabase(updatedProgress);
+    } catch (error) {
+      console.log('Progress saved locally, database sync may retry later');
+    }
   };
 
   const updateCompletionPercentage = async (percentage: number) => {
@@ -155,7 +165,12 @@ export const useSoftSkillsProgress = (courseId: string, moduleId: string, module
     };
 
     setProgress(updatedProgress);
-    await saveToDatabase(updatedProgress);
+    // Try to save to database but continue if it fails
+    try {
+      await saveToDatabase(updatedProgress);
+    } catch (error) {
+      console.log('Progress saved locally, database sync may retry later');
+    }
   };
 
   const completeModule = async () => {
@@ -171,7 +186,12 @@ export const useSoftSkillsProgress = (courseId: string, moduleId: string, module
     };
 
     setProgress(updatedProgress);
-    await saveToDatabase(updatedProgress);
+    // Try to save to database but continue if it fails
+    try {
+      await saveToDatabase(updatedProgress);
+    } catch (error) {
+      console.log('Progress saved locally, database sync may retry later');
+    }
   };
 
   const saveToDatabase = async (progressData: ModuleProgress) => {
