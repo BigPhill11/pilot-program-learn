@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,6 +19,7 @@ const CommunicationModule1: React.FC<CommunicationModule1Props> = ({ onBack, onC
   const [quizAnswers, setQuizAnswers] = useState<Record<number, number>>({});
   const [showCelebration, setShowCelebration] = useState(false);
   const [quizFeedback, setQuizFeedback] = useState<Record<number, { correct: boolean; feedback: string }>>({});
+  const [moduleCompleted, setModuleCompleted] = useState(false);
   const { toast } = useToast();
   
   const {
@@ -55,8 +55,8 @@ const CommunicationModule1: React.FC<CommunicationModule1Props> = ({ onBack, onC
       options: ['Passive', 'Assertive', 'Aggressive', 'Passive-Aggressive'],
       correctAnswer: 1,
       feedback: {
-        correct: "Correct! Assertive communication is indeed direct, honest, and respectful. It's the ideal style for professional environments as it allows you to express your needs clearly while maintaining respect for others.",
-        incorrect: "Not quite right. Assertive communication is the style that balances directness with respect. It allows you to express your thoughts and needs clearly without being aggressive or passive."
+        correct: "Excellent! Assertive communication is indeed direct, honest, and respectful. It's the ideal style for professional environments as it allows you to express your needs clearly while maintaining respect for others. This style builds trust and promotes healthy workplace relationships.",
+        incorrect: "Not quite right. Assertive communication is the style that balances directness with respect. Unlike passive communication (avoiding conflict) or aggressive communication (being forceful), assertive communication allows you to express your thoughts and needs clearly while respecting others' perspectives."
       }
     },
     {
@@ -69,8 +69,8 @@ const CommunicationModule1: React.FC<CommunicationModule1Props> = ({ onBack, onC
       ],
       correctAnswer: 1,
       feedback: {
-        correct: "Excellent! Active listening is all about fully focusing on understanding the speaker's message. This means putting aside your own thoughts and judgments to truly hear what they're saying.",
-        incorrect: "Not quite. While preparing responses, agreeing, or taking notes might seem helpful, active listening is primarily about giving your full attention to understanding what the speaker is actually trying to communicate."
+        correct: "Perfect! Active listening is all about fully focusing on understanding the speaker's message. This means putting aside your own thoughts and judgments to truly hear what they're saying. When you practice active listening, you show respect for the speaker and gain better understanding of their perspective.",
+        incorrect: "Not quite. While preparing responses, agreeing, or taking notes might seem helpful, active listening is primarily about giving your full attention to understanding what the speaker is actually trying to communicate. It requires setting aside distractions and truly focusing on their message."
       }
     }
   ];
@@ -243,7 +243,6 @@ const CommunicationModule1: React.FC<CommunicationModule1Props> = ({ onBack, onC
                     }`}
                     onClick={() => {
                       if (!stylesGame.completed) {
-                        // Reset any previous incorrect matches for this style
                         const newMatches = { ...stylesGame.matches };
                         delete newMatches[item.style];
                         setStylesGame(prev => ({ ...prev, matches: newMatches }));
@@ -282,7 +281,7 @@ const CommunicationModule1: React.FC<CommunicationModule1Props> = ({ onBack, onC
                             setStylesGame(prev => ({ ...prev, completed: true, score }));
                             saveGameScore('communication_styles_match', score, 100);
                             toast({
-                              title: "Game Complete!",
+                              title: "Game Complete! 🎉",
                               description: "Excellent work matching all communication styles!",
                             });
                           }
@@ -353,20 +352,26 @@ const CommunicationModule1: React.FC<CommunicationModule1Props> = ({ onBack, onC
                             }
                           }));
                           saveResponse(questionIndex.toString(), question.question, optionIndex, option, isCorrect);
+                          
+                          // Immediate feedback toast
+                          toast({
+                            title: isCorrect ? "Correct! ✅" : "Not quite! ❌",
+                            description: isCorrect ? "Great job!" : "Review the feedback below to learn more.",
+                          });
                         }}
+                        disabled={quizAnswers[questionIndex] !== undefined}
                       >
                         {option}
                       </Button>
                     ))}
                   </div>
                   
-                  {/* Show feedback if question has been answered */}
                   {quizFeedback[questionIndex] && (
-                    <Card className={`mt-4 ${quizFeedback[questionIndex].correct ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+                    <Card className={`mt-4 ${quizFeedback[questionIndex].correct ? 'bg-green-50 border-green-200' : 'bg-orange-50 border-orange-200'}`}>
                       <CardContent className="pt-4">
                         <div className="flex items-start space-x-2">
-                          <CheckCircle2 className={`h-5 w-5 mt-0.5 ${quizFeedback[questionIndex].correct ? 'text-green-600' : 'text-red-600'}`} />
-                          <p className={`text-sm ${quizFeedback[questionIndex].correct ? 'text-green-700' : 'text-red-700'}`}>
+                          <CheckCircle2 className={`h-5 w-5 mt-0.5 ${quizFeedback[questionIndex].correct ? 'text-green-600' : 'text-orange-600'}`} />
+                          <p className={`text-sm ${quizFeedback[questionIndex].correct ? 'text-green-700' : 'text-orange-700'}`}>
                             {quizFeedback[questionIndex].feedback}
                           </p>
                         </div>
@@ -394,7 +399,7 @@ const CommunicationModule1: React.FC<CommunicationModule1Props> = ({ onBack, onC
       // Check if we need to complete the game before advancing from step 3
       if (currentStep === 3 && !isGameComplete) {
         toast({
-          title: "Complete the Game First!",
+          title: "Complete the Game First! 🎮",
           description: "Please complete the Communication Styles Match game before proceeding.",
           variant: "destructive"
         });
@@ -402,25 +407,38 @@ const CommunicationModule1: React.FC<CommunicationModule1Props> = ({ onBack, onC
       }
       setCurrentStep(currentStep + 1);
       await updateCompletionPercentage(((currentStep + 2) / steps.length) * 100);
-    } else if (canProceed) {
+    } else if (canProceed && !moduleCompleted) {
+      // Complete the module
+      await handleModuleCompletion();
+    }
+  };
+
+  const handleModuleCompletion = async () => {
+    try {
       await completeModule();
+      setModuleCompleted(true);
+      
       toast({
-        title: "Module Complete!",
+        title: "Module Complete! 🎉",
         description: "Congratulations! You've completed Communication Foundations.",
       });
-      // Show celebration animation for completed module
+      
+      // Show celebration animation
+      setShowCelebration(true);
+    } catch (error) {
+      console.error('Error completing module:', error);
+      toast({
+        title: "Module Complete! 🎉",
+        description: "Great job! You've finished Communication Foundations.",
+      });
       setShowCelebration(true);
     }
   };
 
-  const handleModuleComplete = async () => {
+  const handleCelebrationClose = () => {
     setShowCelebration(false);
-    // Mark as completed and trigger parent callback
+    // Call the parent's onComplete callback to handle navigation
     onComplete();
-    // Also auto-advance to next module after short delay
-    setTimeout(() => {
-      onBack(); // Go back to course overview where next module will be unlocked
-    }, 1000);
   };
 
   useEffect(() => {
@@ -478,7 +496,11 @@ const CommunicationModule1: React.FC<CommunicationModule1Props> = ({ onBack, onC
           
           <Button 
             onClick={handleNext}
-            disabled={currentStep === 3 && !isGameComplete ? true : (currentStep === steps.length - 1 && !canProceed)}
+            disabled={
+              (currentStep === 3 && !isGameComplete) || 
+              (currentStep === steps.length - 1 && !canProceed) ||
+              moduleCompleted
+            }
             className="hover:scale-105 transition-transform"
           >
             {currentStep === steps.length - 1 ? 'Complete Module' : 'Next'}
@@ -490,7 +512,7 @@ const CommunicationModule1: React.FC<CommunicationModule1Props> = ({ onBack, onC
         {showCelebration && (
           <PandaCelebration
             isVisible={showCelebration}
-            onClose={handleModuleComplete}
+            onClose={handleCelebrationClose}
             moduleTitle="Communication Foundations"
             score={stylesGame.score}
             achievements={['Communication Foundation Master', 'Active Listener']}
