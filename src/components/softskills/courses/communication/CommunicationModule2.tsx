@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Mail, FileText, Send, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Mail, FileText, Send, CheckCircle, Mic, Play, Volume2 } from 'lucide-react';
 import { PandaCelebration } from '@/components/ui/panda-celebration';
 import { useToast } from '@/hooks/use-toast';
 import QuizFeedback from '@/components/quiz/QuizFeedback';
 import QuizActions from '@/components/quiz/QuizActions';
+import { AudioRecorder } from './AudioRecorder';
 
 interface CommunicationModule2Props {
   onBack: () => void;
@@ -20,63 +21,79 @@ const CommunicationModule2: React.FC<CommunicationModule2Props> = ({ onBack, onC
   const [feedback, setFeedback] = useState<{ [key: number]: { type: 'incorrect' | 'completed'; message: string } }>({});
   const [showCelebration, setShowCelebration] = useState(false);
   const [moduleCompleted, setModuleCompleted] = useState(false);
+  const [currentActivity, setCurrentActivity] = useState<'content' | 'practice' | 'quiz'>('content');
   const { toast } = useToast();
 
   const sections = [
     {
-      title: "Email Fundamentals",
+      title: "Active Listening",
+      icon: <Volume2 className="h-5 w-5" />,
+      content: {
+        overview: "Active listening is the foundation of meaningful communication. It's not just hearing words - it's fully engaging with the speaker to understand their message, emotions, and intent.",
+        keyPoints: [
+          "Full attention and presence - eliminating distractions and focusing completely on the speaker",
+          "Non-verbal engagement through appropriate eye contact, nodding, and open body language",
+          "Reflective responses that demonstrate understanding and encourage deeper sharing",
+          "Emotional awareness to pick up on feelings behind the words being spoken"
+        ],
+        practicalTips: [
+          "Practice the 80/20 rule: Listen 80% of the time, speak 20%",
+          "Use phrases like 'What I hear you saying is...' to confirm understanding",
+          "Ask open-ended questions to encourage elaboration and deeper conversation",
+          "Notice tone, pace, and energy changes that signal emotional shifts"
+        ],
+        practicePrompts: [
+          "Practice active listening with a colleague discussing a recent challenge they faced",
+          "Record yourself having a conversation and analyze your listening vs. speaking ratio",
+          "Try the 'mirror technique' - reflect back what you heard before responding"
+        ]
+      }
+    },
+    {
+      title: "Empathetic Communication", 
       icon: <Mail className="h-5 w-5" />,
       content: {
-        overview: "Professional email communication is the backbone of modern business. Every email you send represents you and your organization.",
+        overview: "Empathetic communication creates deep connections by acknowledging and validating others' experiences and emotions, even when you disagree with their perspective.",
         keyPoints: [
-          "Clear and concise subject lines that summarize the email's purpose",
-          "Professional greeting and closing that match the relationship level",
-          "Structured body with logical flow and proper paragraphing",
-          "Appropriate tone that considers cultural and hierarchical contexts"
+          "Perspective-taking ability to see situations through others' eyes and understand their viewpoint",
+          "Emotional validation that acknowledges feelings without necessarily agreeing with actions",
+          "Compassionate language that shows care and concern for the other person's wellbeing",
+          "Cultural sensitivity that recognizes how background shapes communication styles and preferences"
         ],
         practicalTips: [
-          "Use the 'BRIEF' method: Brief, Relevant, Informative, Engaging, Friendly",
-          "Always proofread before sending - typos undermine credibility",
-          "Consider time zones when marking emails as urgent",
-          "Use 'Reply All' sparingly - only when everyone needs the information"
+          "Use 'I can see how that would be frustrating' to validate emotions",
+          "Ask 'Help me understand your perspective' when you disagree",
+          "Share appropriate personal experiences to show you relate to their situation",
+          "Acknowledge the courage it takes to share difficult feelings or experiences"
+        ],
+        practicePrompts: [
+          "Practice responding empathetically to a difficult situation someone shares with you",
+          "Record yourself giving feedback and analyze your tone and word choices",
+          "Practice acknowledging emotions before addressing the practical aspects of a problem"
         ]
       }
     },
     {
-      title: "Report Writing Excellence", 
-      icon: <FileText className="h-5 w-5" />,
-      content: {
-        overview: "Effective reports translate complex information into actionable insights for decision-makers.",
-        keyPoints: [
-          "Executive summary that captures key findings and recommendations",
-          "Clear methodology and data presentation",
-          "Logical structure with headings and subheadings",
-          "Visual elements (charts, graphs) to support key points"
-        ],
-        practicalTips: [
-          "Start with your conclusion, then provide supporting evidence",
-          "Use active voice and concrete language",
-          "Include specific recommendations with implementation steps",
-          "Tailor technical detail to your audience's expertise level"
-        ]
-      }
-    },
-    {
-      title: "Document Formatting",
+      title: "Responsive Communication",
       icon: <Send className="h-5 w-5" />,
       content: {
-        overview: "Professional formatting enhances readability and demonstrates attention to detail.",
+        overview: "Responsive communication involves thoughtful, timely reactions that move conversations forward constructively and build stronger relationships.",
         keyPoints: [
-          "Consistent font choices and sizing throughout documents",
-          "Proper use of white space and margins for easy reading",
-          "Hierarchical headings that guide the reader's eye",
-          "Professional color schemes that enhance rather than distract"
+          "Thoughtful responses that address both content and emotions in the conversation",
+          "Appropriate timing that balances quick acknowledgment with well-considered replies",
+          "Solution-oriented language that focuses on possibilities rather than problems",
+          "Follow-through consistency that builds trust through reliable communication patterns"
         ],
         practicalTips: [
-          "Use templates for consistency across team communications",
-          "Ensure accessibility with high contrast and readable fonts",
-          "Test documents across different devices and software",
-          "Include page numbers and proper headers/footers for longer documents"
+          "Use the 'Yes, and...' technique to build on others' ideas constructively",
+          "Respond to emails within 24 hours, even if just to acknowledge receipt",
+          "Ask clarifying questions before offering solutions or advice",
+          "End conversations with clear next steps and follow-up commitments"
+        ],
+        practicePrompts: [
+          "Practice responding to challenging feedback with grace and openness",
+          "Record yourself in a mock difficult conversation and analyze your responses",
+          "Practice turning complaints into opportunities for improvement"
         ]
       }
     }
@@ -84,37 +101,37 @@ const CommunicationModule2: React.FC<CommunicationModule2Props> = ({ onBack, onC
 
   const quizQuestions = [
     {
-      question: "What is the most important element of a professional email subject line?",
+      question: "What is the foundation of active listening?",
       options: [
-        "Making it as short as possible",
-        "Clearly summarizing the email's purpose and urgency",
-        "Including the recipient's name",
-        "Using all capital letters for emphasis"
+        "Thinking about what you'll say next",
+        "Full attention and presence with the speaker",
+        "Taking detailed notes during conversation",
+        "Asking lots of questions"
       ],
       correct: 1,
-      explanation: "A clear, descriptive subject line helps recipients prioritize emails and understand the content before opening. It should summarize the purpose and indicate urgency level when appropriate."
+      explanation: "Active listening requires your complete attention and presence. When you're mentally preparing your response, you're not truly listening to understand the speaker's perspective."
     },
     {
-      question: "When writing a business report, where should your main conclusion appear?",
+      question: "How should you respond when someone shares difficult emotions?",
       options: [
-        "Only at the very end",
-        "In the executive summary at the beginning",
-        "Scattered throughout the document",
-        "In the appendix"
-      ],
-      correct: 1,
-      explanation: "The executive summary should contain your key findings and recommendations upfront. Busy executives may only read this section, so it must contain your most important conclusions."
-    },
-    {
-      question: "What characterizes effective document formatting?",
-      options: [
-        "Using many different fonts for variety",
-        "Filling every inch of space with text",
-        "Consistent formatting with proper white space",
-        "Bright colors throughout the document"
+        "Immediately offer solutions to fix their problems",
+        "Change the subject to something more positive",
+        "Validate their emotions before addressing practical aspects",
+        "Tell them about a similar experience you had"
       ],
       correct: 2,
-      explanation: "Consistent formatting with appropriate white space enhances readability and demonstrates professionalism. Too much variety in fonts or colors can distract from the content."
+      explanation: "Empathetic communication starts with validating emotions. People need to feel heard and understood before they're ready to consider solutions or advice."
+    },
+    {
+      question: "What characterizes responsive communication?",
+      options: [
+        "Replying to messages as quickly as possible",
+        "Always having the perfect solution ready",
+        "Thoughtful responses that move conversations forward",
+        "Avoiding difficult topics or emotions"
+      ],
+      correct: 2,
+      explanation: "Responsive communication is about quality, not speed. It involves thoughtful replies that acknowledge both content and emotions while moving the conversation in a constructive direction."
     }
   ];
 
@@ -134,20 +151,20 @@ const CommunicationModule2: React.FC<CommunicationModule2Props> = ({ onBack, onC
         }
       });
       toast({
-        title: "Correct Answer!",
-        description: "Great job understanding written communication principles.",
+        title: "Excellent!",
+        description: "You understand interactive communication principles.",
       });
     } else {
       setFeedback({
         ...feedback,
         [questionIndex]: {
           type: 'incorrect',
-          message: `Incorrect. ${question.explanation}`
+          message: `Not quite. ${question.explanation}`
         }
       });
       toast({
         title: "Try Again",
-        description: "Consider the key principles of professional written communication.",
+        description: "Consider the key principles of interactive communication.",
         variant: "destructive",
       });
     }
@@ -174,7 +191,7 @@ const CommunicationModule2: React.FC<CommunicationModule2Props> = ({ onBack, onC
     setModuleCompleted(true);
     toast({
       title: "Module Completed!",
-      description: "Congratulations on mastering written communication!",
+      description: "Congratulations on mastering interactive communication!",
     });
     
     setTimeout(() => {
@@ -188,7 +205,7 @@ const CommunicationModule2: React.FC<CommunicationModule2Props> = ({ onBack, onC
       <PandaCelebration 
         isVisible={showCelebration}
         onClose={() => setShowCelebration(false)}
-        moduleTitle="Written Communication Mastery"
+        moduleTitle="Interactive Communication Mastery"
       />
     );
   }
@@ -207,131 +224,224 @@ const CommunicationModule2: React.FC<CommunicationModule2Props> = ({ onBack, onC
         <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2 text-2xl">
-              <Mail className="h-6 w-6 text-purple-600" />
-              <span>Written Communication Mastery</span>
+              <Volume2 className="h-6 w-6 text-purple-600" />
+              <span>Interactive Communication Mastery</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid md:grid-cols-3 gap-4 mb-8">
-              {sections.map((section, index) => (
+            <div className="flex justify-center mb-6">
+              <div className="flex space-x-2 bg-gray-100 rounded-lg p-1">
                 <Button
-                  key={index}
-                  variant={currentSection === index ? "default" : "outline"}
-                  onClick={() => setCurrentSection(index)}
-                  className="h-auto p-4 justify-start"
+                  variant={currentActivity === 'content' ? 'default' : 'ghost'}
+                  onClick={() => setCurrentActivity('content')}
+                  size="sm"
                 >
-                  <div className="flex items-center space-x-2">
-                    {section.icon}
-                    <span className="text-sm font-medium">{section.title}</span>
-                  </div>
+                  Learn
                 </Button>
-              ))}
-            </div>
-
-            <div className="bg-white rounded-lg p-6 mb-8">
-              <h3 className="text-xl font-semibold mb-4 flex items-center space-x-2">
-                {sections[currentSection].icon}
-                <span>{sections[currentSection].title}</span>
-              </h3>
-              
-              <div className="space-y-6">
-                <div>
-                  <h4 className="font-semibold mb-2 text-purple-700">Overview</h4>
-                  <p className="text-gray-700 leading-relaxed">
-                    {sections[currentSection].content.overview}
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="font-semibold mb-3 text-purple-700">Key Points</h4>
-                  <ul className="space-y-2">
-                    {sections[currentSection].content.keyPoints.map((point, index) => (
-                      <li key={index} className="flex items-start space-x-2">
-                        <CheckCircle className="h-4 w-4 text-green-600 mt-1 flex-shrink-0" />
-                        <span className="text-gray-700">{point}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div>
-                  <h4 className="font-semibold mb-3 text-purple-700">Practical Tips</h4>
-                  <ul className="space-y-2">
-                    {sections[currentSection].content.practicalTips.map((tip, index) => (
-                      <li key={index} className="flex items-start space-x-2">
-                        <div className="h-2 w-2 bg-purple-400 rounded-full mt-2 flex-shrink-0" />
-                        <span className="text-gray-700">{tip}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                <Button
+                  variant={currentActivity === 'practice' ? 'default' : 'ghost'}
+                  onClick={() => setCurrentActivity('practice')}
+                  size="sm"
+                >
+                  <Mic className="h-4 w-4 mr-2" />
+                  Practice
+                </Button>
+                <Button
+                  variant={currentActivity === 'quiz' ? 'default' : 'ghost'}
+                  onClick={() => setCurrentActivity('quiz')}
+                  size="sm"
+                >
+                  Quiz
+                </Button>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg p-6">
-              <h3 className="text-xl font-semibold mb-6">Knowledge Check</h3>
-              <div className="space-y-8">
-                {quizQuestions.map((question, questionIndex) => (
-                  <div key={questionIndex} className="border-l-4 border-purple-400 pl-6">
-                    <h4 className="font-medium mb-4">{question.question}</h4>
-                    <div className="grid gap-3">
-                      {question.options.map((option, optionIndex) => {
-                        const isSelected = quizAnswers[questionIndex] === optionIndex;
-                        const isCorrect = optionIndex === question.correct;
-                        const hasAnswered = quizAnswers[questionIndex] !== undefined;
-                        
-                        let buttonVariant: "default" | "outline" | "destructive" | "secondary" = "outline";
-                        if (hasAnswered) {
-                          if (isSelected && isCorrect) buttonVariant = "default";
-                          else if (isSelected && !isCorrect) buttonVariant = "destructive";
-                          else if (isCorrect) buttonVariant = "secondary";
-                        }
-
-                        return (
-                          <Button
-                            key={optionIndex}
-                            variant={buttonVariant}
-                            onClick={() => handleQuizAnswer(questionIndex, optionIndex)}
-                            disabled={hasAnswered}
-                            className="justify-start text-left h-auto py-3 px-4"
-                          >
-                            {option}
-                          </Button>
-                        );
-                      })}
-                    </div>
-                    
-                    {feedback[questionIndex] && (
-                      <QuizFeedback 
-                        type={feedback[questionIndex].type}
-                        message={feedback[questionIndex].message}
-                      />
-                    )}
-                    
-                    <QuizActions
-                      hasAttempted={quizAnswers[questionIndex] !== undefined}
-                      isCompleted={quizAnswers[questionIndex] === question.correct}
-                      onRetry={() => resetQuiz(questionIndex)}
-                    />
+            {currentActivity === 'content' && (
+              <>
+                <div className="bg-white rounded-lg p-6 mb-8">
+                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 mb-6">
+                    <h3 className="text-xl font-semibold mb-2 text-purple-700">
+                      Why Interactive Communication Matters
+                    </h3>
+                    <p className="text-gray-700 leading-relaxed">
+                      Interactive communication isn't just about talking and listening - it's about creating meaningful connections that drive results. 
+                      Research shows that teams with strong interactive communication are <strong>5x more likely to achieve their goals</strong> and 
+                      experience <strong>25% higher job satisfaction</strong>. In today's hybrid work environment, these skills are more critical than ever.
+                    </p>
                   </div>
-                ))}
-              </div>
+                </div>
 
-              {allQuizQuestionsAnsweredCorrectly() && !moduleCompleted && (
-                <div className="mt-8 pt-6 border-t border-gray-200">
-                  <div className="text-center">
-                    <div className="mb-4">
-                      <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-2" />
-                      <h3 className="text-lg font-semibold text-green-700">Module Complete!</h3>
-                      <p className="text-gray-600">You've mastered written communication principles.</p>
-                    </div>
-                    <Button onClick={handleCompleteModule} size="lg" className="px-8">
-                      Complete Module
+                <div className="grid md:grid-cols-3 gap-4 mb-8">
+                  {sections.map((section, index) => (
+                    <Button
+                      key={index}
+                      variant={currentSection === index ? "default" : "outline"}
+                      onClick={() => setCurrentSection(index)}
+                      className="h-auto p-4 justify-start"
+                    >
+                      <div className="flex items-center space-x-2">
+                        {section.icon}
+                        <span className="text-sm font-medium">{section.title}</span>
+                      </div>
                     </Button>
+                  ))}
+                </div>
+
+                <div className="bg-white rounded-lg p-6">
+                  <h3 className="text-xl font-semibold mb-4 flex items-center space-x-2">
+                    {sections[currentSection].icon}
+                    <span>{sections[currentSection].title}</span>
+                  </h3>
+                  
+                  <div className="space-y-6">
+                    <div>
+                      <h4 className="font-semibold mb-2 text-purple-700">Overview</h4>
+                      <p className="text-gray-700 leading-relaxed">
+                        {sections[currentSection].content.overview}
+                      </p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold mb-3 text-purple-700">Key Points</h4>
+                      <ul className="space-y-2">
+                        {sections[currentSection].content.keyPoints.map((point, index) => (
+                          <li key={index} className="flex items-start space-x-2">
+                            <CheckCircle className="h-4 w-4 text-green-600 mt-1 flex-shrink-0" />
+                            <span className="text-gray-700">{point}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold mb-3 text-purple-700">Practical Tips</h4>
+                      <ul className="space-y-2">
+                        {sections[currentSection].content.practicalTips.map((tip, index) => (
+                          <li key={index} className="flex items-start space-x-2">
+                            <div className="h-2 w-2 bg-purple-400 rounded-full mt-2 flex-shrink-0" />
+                            <span className="text-gray-700">{tip}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
                 </div>
-              )}
-            </div>
+              </>
+            )}
+
+            {currentActivity === 'practice' && (
+              <div className="space-y-6">
+                <div className="bg-white rounded-lg p-6">
+                  <h3 className="text-xl font-semibold mb-4 text-purple-700">
+                    Practice Interactive Communication
+                  </h3>
+                  <p className="text-gray-600 mb-6">
+                    Choose a scenario below and practice your response. Record yourself to review your tone, pace, and clarity.
+                  </p>
+                  
+                  <div className="grid md:grid-cols-2 gap-6 mb-6">
+                    {sections.map((section, index) => (
+                      <Card key={index} className="border-2 border-purple-100">
+                        <CardContent className="p-4">
+                          <h4 className="font-semibold mb-3 flex items-center space-x-2">
+                            {section.icon}
+                            <span>{section.title} Scenarios</span>
+                          </h4>
+                          <div className="space-y-3">
+                            {section.content.practicePrompts?.map((prompt, promptIndex) => (
+                              <div key={promptIndex} className="bg-gray-50 p-3 rounded-lg">
+                                <p className="text-sm text-gray-700 mb-2">{prompt}</p>
+                                <Button size="sm" variant="outline" className="mt-2">
+                                  <Play className="h-3 w-3 mr-2" />
+                                  Practice This
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                  
+                  <AudioRecorder 
+                    onRecordingComplete={(blob) => {
+                      toast({
+                        title: "Great Practice!",
+                        description: "Review your recording and try again to improve your interactive communication skills."
+                      });
+                    }}
+                    maxDuration={180}
+                  />
+                </div>
+              </div>
+            )}
+
+            {currentActivity === 'quiz' && (
+              <div className="bg-white rounded-lg p-6">
+                <h3 className="text-xl font-semibold mb-6">Knowledge Check</h3>
+                <div className="space-y-8">
+                  {quizQuestions.map((question, questionIndex) => (
+                    <div key={questionIndex} className="border-l-4 border-purple-400 pl-6">
+                      <h4 className="font-medium mb-4">{question.question}</h4>
+                      <div className="grid gap-3">
+                        {question.options.map((option, optionIndex) => {
+                          const isSelected = quizAnswers[questionIndex] === optionIndex;
+                          const isCorrect = optionIndex === question.correct;
+                          const hasAnswered = quizAnswers[questionIndex] !== undefined;
+                          
+                          let buttonVariant: "default" | "outline" | "destructive" | "secondary" = "outline";
+                          if (hasAnswered) {
+                            if (isSelected && isCorrect) buttonVariant = "default";
+                            else if (isSelected && !isCorrect) buttonVariant = "destructive";
+                            else if (isCorrect) buttonVariant = "secondary";
+                          }
+
+                          return (
+                            <Button
+                              key={optionIndex}
+                              variant={buttonVariant}
+                              onClick={() => handleQuizAnswer(questionIndex, optionIndex)}
+                              disabled={hasAnswered}
+                              className="justify-start text-left h-auto py-3 px-4"
+                            >
+                              {option}
+                            </Button>
+                          );
+                        })}
+                      </div>
+                      
+                      {feedback[questionIndex] && (
+                        <QuizFeedback 
+                          type={feedback[questionIndex].type}
+                          message={feedback[questionIndex].message}
+                        />
+                      )}
+                      
+                      <QuizActions
+                        hasAttempted={quizAnswers[questionIndex] !== undefined}
+                        isCompleted={quizAnswers[questionIndex] === question.correct}
+                        onRetry={() => resetQuiz(questionIndex)}
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {allQuizQuestionsAnsweredCorrectly() && !moduleCompleted && (
+                  <div className="mt-8 pt-6 border-t border-gray-200">
+                    <div className="text-center">
+                      <div className="mb-4">
+                        <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-2" />
+                        <h3 className="text-lg font-semibold text-green-700">Module Complete!</h3>
+                        <p className="text-gray-600">You've mastered interactive communication skills.</p>
+                      </div>
+                      <Button onClick={handleCompleteModule} size="lg" className="px-8">
+                        Complete Module
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
