@@ -25,7 +25,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Settings, AlertTriangle, User, Linkedin, ExternalLink, Check, X } from 'lucide-react';
+import { Settings, AlertTriangle, User, Linkedin, ExternalLink, Check, X, Smartphone, Tablet, Monitor } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -38,6 +38,8 @@ const ProfileSettings = () => {
   const [updating, setUpdating] = useState(false);
   const [linkedinUrl, setLinkedinUrl] = useState(profile?.linkedin_url || '');
   const [updatingLinkedin, setUpdatingLinkedin] = useState(false);
+  const [devicePreference, setDevicePreference] = useState(profile?.device_preference || 'desktop');
+  const [updatingDevice, setUpdatingDevice] = useState(false);
 
   const versionInfo = {
     beginner: {
@@ -54,6 +56,27 @@ const ProfileSettings = () => {
       label: 'Pro Phil',
       description: 'Advanced features for experienced investors. Complex strategies and detailed market analysis.',
       color: 'bg-red-500 hover:bg-red-600'
+    }
+  };
+
+  const deviceInfo = {
+    mobile: {
+      label: 'Mobile',
+      description: 'Optimized for touch interaction and quick access on phones',
+      icon: <Smartphone className="h-4 w-4" />,
+      color: 'bg-blue-500 hover:bg-blue-600'
+    },
+    tablet: {
+      label: 'Tablet',
+      description: 'Perfect balance of portability and screen space',
+      icon: <Tablet className="h-4 w-4" />,
+      color: 'bg-purple-500 hover:bg-purple-600'
+    },
+    desktop: {
+      label: 'Desktop',
+      description: 'Full-featured experience with detailed analytics',
+      icon: <Monitor className="h-4 w-4" />,
+      color: 'bg-gray-500 hover:bg-gray-600'
     }
   };
 
@@ -144,6 +167,36 @@ const ProfileSettings = () => {
     await handleLinkedinUpdate();
   };
 
+  const handleDeviceUpdate = async () => {
+    if (!user) return;
+
+    setUpdatingDevice(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ 
+          device_preference: devicePreference,
+          mobile_optimized: devicePreference === 'mobile',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      toast.success(`Device preference updated to ${deviceInfo[devicePreference as keyof typeof deviceInfo].label}!`);
+      
+      // Refresh to apply mobile optimizations
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+    } catch (error) {
+      console.error('Error updating device preference:', error);
+      toast.error('Failed to update device preference');
+    } finally {
+      setUpdatingDevice(false);
+    }
+  };
+
   if (!profile) return null;
 
   return (
@@ -209,6 +262,52 @@ const ProfileSettings = () => {
                   className="w-full"
                 >
                   {updating ? 'Updating...' : 'Update Version'}
+                </Button>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Device Preference Section */}
+            <div>
+              <h3 className="text-sm font-semibold mb-3">Device Preference</h3>
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">Current Device</Label>
+                  <div className="flex items-center space-x-2">
+                    {deviceInfo[profile.device_preference as keyof typeof deviceInfo]?.icon}
+                    <Badge className={`${deviceInfo[profile.device_preference as keyof typeof deviceInfo]?.color} text-white px-3 py-1`}>
+                      {deviceInfo[profile.device_preference as keyof typeof deviceInfo]?.label}
+                    </Badge>
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium mb-3 block">Select Device Type</Label>
+                  <RadioGroup value={devicePreference} onValueChange={setDevicePreference}>
+                    {Object.entries(deviceInfo).map(([device, info]) => (
+                      <div key={device} className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-muted/50">
+                        <RadioGroupItem value={device} id={device} className="mt-1" />
+                        <div className="flex-1">
+                          <Label htmlFor={device} className="cursor-pointer">
+                            <div className="flex items-center space-x-2">
+                              {info.icon}
+                              <span className="font-medium">{info.label}</span>
+                            </div>
+                            <div className="text-sm text-muted-foreground mt-1">{info.description}</div>
+                          </Label>
+                        </div>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                </div>
+
+                <Button
+                  onClick={handleDeviceUpdate}
+                  disabled={devicePreference === profile.device_preference || updatingDevice}
+                  className="w-full"
+                >
+                  {updatingDevice ? 'Updating...' : 'Update Device Preference'}
                 </Button>
               </div>
             </div>

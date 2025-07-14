@@ -732,6 +732,7 @@ export type Database = {
           created_at: string | null
           current_level: number | null
           current_streak: number | null
+          device_preference: string | null
           email: string | null
           id: string
           last_login_date: string | null
@@ -739,6 +740,7 @@ export type Database = {
           linkedin_url: string | null
           linkedin_verified: boolean | null
           longest_streak: number | null
+          mobile_optimized: boolean | null
           onboarding_completed: boolean | null
           points_to_next_level: number | null
           updated_at: string | null
@@ -749,6 +751,7 @@ export type Database = {
           created_at?: string | null
           current_level?: number | null
           current_streak?: number | null
+          device_preference?: string | null
           email?: string | null
           id: string
           last_login_date?: string | null
@@ -756,6 +759,7 @@ export type Database = {
           linkedin_url?: string | null
           linkedin_verified?: boolean | null
           longest_streak?: number | null
+          mobile_optimized?: boolean | null
           onboarding_completed?: boolean | null
           points_to_next_level?: number | null
           updated_at?: string | null
@@ -766,6 +770,7 @@ export type Database = {
           created_at?: string | null
           current_level?: number | null
           current_streak?: number | null
+          device_preference?: string | null
           email?: string | null
           id?: string
           last_login_date?: string | null
@@ -773,6 +778,7 @@ export type Database = {
           linkedin_url?: string | null
           linkedin_verified?: boolean | null
           longest_streak?: number | null
+          mobile_optimized?: boolean | null
           onboarding_completed?: boolean | null
           points_to_next_level?: number | null
           updated_at?: string | null

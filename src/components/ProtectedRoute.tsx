@@ -72,6 +72,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
               .update({
                 onboarding_completed: true,
                 app_version: assignedLevel,
+                device_preference: onboardingData.devicePreference,
+                mobile_optimized: onboardingData.devicePreference === 'mobile',
                 updated_at: new Date().toISOString()
               })
               .eq('id', user.id);

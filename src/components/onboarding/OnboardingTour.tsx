@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle2, Smartphone, Tablet, Monitor } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface OnboardingTourProps {
@@ -15,6 +15,7 @@ interface UserProfile {
   interests: string[];
   goals: string[];
   timeCommitment: string;
+  devicePreference: string;
 }
 
 const OnboardingTour: React.FC<OnboardingTourProps> = ({ onComplete }) => {
@@ -23,10 +24,21 @@ const OnboardingTour: React.FC<OnboardingTourProps> = ({ onComplete }) => {
     experienceLevel: '',
     interests: [],
     goals: [],
-    timeCommitment: ''
+    timeCommitment: '',
+    devicePreference: ''
   });
 
   const questions = [
+    {
+      id: 'devicePreference',
+      title: 'What device will you primarily use Phil\'s Financials on?',
+      type: 'single',
+      options: [
+        { value: 'mobile', label: 'Mobile Phone', icon: <Smartphone className="h-5 w-5" />, description: 'Optimized for touch interaction and quick access' },
+        { value: 'tablet', label: 'Tablet', icon: <Tablet className="h-5 w-5" />, description: 'Perfect balance of portability and screen space' },
+        { value: 'desktop', label: 'Desktop/Laptop', icon: <Monitor className="h-5 w-5" />, description: 'Full-featured experience with detailed analytics' }
+      ]
+    },
     {
       id: 'experienceLevel',
       title: 'What\'s your experience with personal finance?',
@@ -160,7 +172,13 @@ const OnboardingTour: React.FC<OnboardingTourProps> = ({ onComplete }) => {
                   >
                     <div className="flex items-center">
                       {isSelected && <CheckCircle2 className="h-5 w-5 mr-3" />}
-                      <span>{option.label}</span>
+                      {option.icon && <div className="mr-3">{option.icon}</div>}
+                      <div className="flex-1">
+                        <div className="font-medium">{option.label}</div>
+                        {option.description && (
+                          <div className="text-sm text-muted-foreground mt-1">{option.description}</div>
+                        )}
+                      </div>
                     </div>
                   </Button>
                 );
