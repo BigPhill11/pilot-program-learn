@@ -15,7 +15,7 @@ interface StoryReaderProps {
 const StoryReader: React.FC<StoryReaderProps> = ({ adventure, onBack }) => {
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
   const [completedQuizzes, setCompletedQuizzes] = useState<Set<number>>(new Set());
-  const { updateQuizScore } = useProgressTracking();
+  const { updateQuizScore, updateActivityComplete } = useProgressTracking();
   const isMobile = useIsMobile();
 
   const storyData = {
@@ -206,10 +206,201 @@ const StoryReader: React.FC<StoryReaderProps> = ({ adventure, onBack }) => {
           ]
         }
       ]
+    },
+    'phil-risk-management': {
+      chapters: [
+        {
+          title: "Phil's First Storm",
+          content: [
+            "🌩️ One dark day, Phil watched storm clouds gather over his favorite bamboo grove. 'Oh no!' he thought, 'What if the storm destroys all my bamboo?' This is when Phil learned about RISK - the chance that bad things could happen to his investments.",
+            "Smart pandas like Phil know that investing always has some risk, just like storms can always threaten bamboo groves. But there are ways to protect yourself! Just like Phil learned to prepare for different types of weather.",
+            "Today, Phil will teach you the panda way of keeping your investments safe while still growing your bamboo fortune!"
+          ]
+        },
+        {
+          title: "The Three Types of Storms",
+          content: [
+            "🌪️ Phil discovered there are three main types of storms that can affect his bamboo investments:",
+            "Market Storms: When ALL bamboo prices go down because pandas get scared. It's like a valley-wide panic where everyone tries to sell their bamboo at once!",
+            "Company Storms: When just ONE bamboo grove has problems - maybe the soil got bad or the owner made poor decisions. Other groves stay healthy.",
+            "Personal Storms: When Phil himself needs bamboo urgently for an emergency. Sometimes you have to sell even when prices are low!"
+          ]
+        },
+        {
+          title: "Phil's Safety Toolkit",
+          content: [
+            "🛡️ Phil learned to build a safety toolkit to protect his bamboo investments:",
+            "Diversification: Instead of putting all his bamboo in one grove, Phil spreads it across many different groves. If one gets damaged, the others keep growing!",
+            "Emergency Bamboo Stash: Phil always keeps some bamboo in a safe, easily accessible place for emergencies - just like humans keep emergency savings in a bank account.",
+            "Insurance Thinking: For his most important groves, Phil thinks about what could go wrong and makes backup plans. Smart investors do this too!"
+          ]
+        },
+        {
+          title: "The Stop-Loss Lesson",
+          content: [
+            "⚠️ Phil learned about 'stop-loss' - a smart panda rule for when to walk away from a bad investment:",
+            "If a bamboo grove starts performing really badly, Phil doesn't wait for it to get worse. He sets a limit: 'If this grove loses 20% of its value, I'll sell and protect the rest of my bamboo.'",
+            "This is like having a fire alarm in your house - you don't wait for the whole house to burn down before you leave! Sometimes it's better to take a small loss to prevent a big disaster.",
+            "The hardest part is sticking to your plan when emotions run high. Phil practices staying calm and following his safety rules."
+          ]
+        },
+        {
+          title: "Growing Safely",
+          content: [
+            "🌱 Phil discovered the secret to growing wealth safely: it's about balance! Take smart risks, but always protect yourself.",
+            "Young pandas can take more risks because they have time to recover from storms. Older pandas should be more careful and focus on protecting what they've already grown.",
+            "Remember: The goal isn't to avoid ALL risk (that's impossible!), but to take only the risks that give you good rewards. Phil learned to ask: 'Is this risk worth the potential bamboo reward?'",
+            "By following these safety rules, Phil could sleep peacefully even during market storms, knowing his bamboo investments were well-protected!"
+          ]
+        }
+      ]
+    },
+    'phil-portfolio-building': {
+      chapters: [
+        {
+          title: "Phil's Collection Begins",
+          content: [
+            "🎯 Phil looked at his single bamboo grove and had a brilliant idea: 'What if I collected different TYPES of bamboo from different places?' This is when Phil discovered the power of building a portfolio!",
+            "A portfolio is like Phil's collection of different bamboo investments. Instead of owning just one type, he learned to mix sweet bamboo, strong bamboo, fast-growing bamboo, and steady bamboo.",
+            "Just like a panda needs different types of food to stay healthy, investors need different types of investments to build wealth safely and steadily!"
+          ]
+        },
+        {
+          title: "The Magic Mix",
+          content: [
+            "✨ Phil learned the magical formula for a balanced bamboo collection:",
+            "Growth Bamboo (40%): Fast-growing bamboo that might become very valuable, like technology companies. Higher risk, higher reward!",
+            "Steady Bamboo (40%): Reliable bamboo that grows slowly but surely, like big established companies that pay dividends.",
+            "Safety Bamboo (20%): Super-safe bamboo that protects against storms, like government bonds or savings accounts.",
+            "By mixing these three types, Phil's collection could grow in good times and stay protected during tough times!"
+          ]
+        },
+        {
+          title: "Geographic Diversity",
+          content: [
+            "🗺️ Phil realized he needed bamboo from different valleys and mountains, not just his local forest:",
+            "Local Valley Bamboo: Companies from Phil's home country - familiar but all affected by the same weather (economic conditions).",
+            "Foreign Bamboo: Companies from other countries that might do well when Phil's local bamboo struggles.",
+            "Different Industry Bamboo: Some bamboo for food, some for construction, some for medicine - different industries do well at different times!",
+            "This way, if one area has problems, Phil's other bamboo investments can keep growing."
+          ]
+        },
+        {
+          title: "Rebalancing the Collection",
+          content: [
+            "⚖️ Phil discovered that his bamboo collection needed regular maintenance, just like a garden:",
+            "Sometimes his fast-growing bamboo became TOO big a part of his collection (maybe growing from 40% to 60%). This made his collection too risky!",
+            "Other times, his steady bamboo grew more slowly, becoming a smaller part of his collection than planned.",
+            "Every few months, Phil would 'rebalance' - selling some of what grew too much and buying more of what shrank. This kept his magic mix working properly."
+          ]
+        },
+        {
+          title: "The Time Factor",
+          content: [
+            "📅 Phil learned that time was his secret weapon for portfolio building:",
+            "Dollar-Cost Averaging: Instead of buying all his bamboo at once, Phil bought a little bit every month. This way, he got good prices over time instead of worrying about perfect timing.",
+            "Compound Growth: Phil's bamboo collection grew not just from new bamboo, but from his existing bamboo making MORE bamboo! Like a bamboo forest that keeps expanding.",
+            "Patience Pays: The longer Phil kept his balanced collection, the stronger it became. Time smoothed out the bumps and storms."
+          ]
+        },
+        {
+          title: "Phil's Portfolio Rules",
+          content: [
+            "📋 Phil created simple rules for his bamboo portfolio that any panda could follow:",
+            "Start Early: The sooner you start collecting, the more time your bamboo has to grow into a mighty forest!",
+            "Stay Consistent: Add a little bamboo to your collection regularly, even if it's just a small amount.",
+            "Keep it Simple: Don't make your collection too complicated. A few good types of bamboo are better than trying to collect everything!",
+            "Review Regularly: Check your collection every few months, but don't panic during short storms. Think like a patient gardener, not a worried weather-watcher!"
+          ]
+        }
+      ]
+    },
+    'phil-wealth-building': {
+      chapters: [
+        {
+          title: "Phil's Grand Vision",
+          content: [
+            "🏔️ Phil climbed to the highest peak in Panda Valley and looked out over all the bamboo forests below. 'Someday,' he dreamed, 'I want to build enough wealth so my family never has to worry about having enough bamboo again!'",
+            "This is when Phil learned about WEALTH BUILDING - not just making money, but creating lasting financial security that grows over many, many bamboo seasons.",
+            "Wealth building isn't about getting rich quick. It's about making smart choices consistently over time, just like how the mightiest bamboo forests grow slowly but become incredibly strong!"
+          ]
+        },
+        {
+          title: "The Compound Magic Forest",
+          content: [
+            "🌳 Phil discovered the most powerful force in wealth building: compound growth! It's like planting a magical bamboo seed that doesn't just grow - it plants MORE seeds that grow into MORE bamboo!",
+            "Year 1: Phil's 100 bamboo shoots grow by 10%, giving him 110 shoots.",
+            "Year 2: Those 110 shoots grow by 10%, giving him 121 shoots (not just 120!).",
+            "Year 10: Phil's original 100 shoots have become 259 shoots!",
+            "Year 20: Those same 100 shoots are now 673 shoots! The magic happens because Phil earns growth on his growth. It starts slow but becomes incredibly powerful over time."
+          ]
+        },
+        {
+          title: "Phil's Wealth Pyramid",
+          content: [
+            "🔺 Phil learned to build wealth like constructing a strong pyramid, one layer at a time:",
+            "Foundation Layer: Emergency bamboo stash (3-6 months of living expenses) in a safe, easy-to-reach place.",
+            "Security Layer: Steady investments like index funds that grow reliably over time.",
+            "Growth Layer: More aggressive investments that could grow faster but have more risk.",
+            "Legacy Layer: Investments for the far future - maybe bamboo groves for Phil's great-great-grandpandas!",
+            "Each layer must be solid before building the next one. You can't build lasting wealth on a shaky foundation!"
+          ]
+        },
+        {
+          title: "The Three Wealth Engines",
+          content: [
+            "⚙️ Phil discovered three powerful engines that build wealth:",
+            "Earned Bamboo: Money from working - Phil's job harvesting bamboo. This is where wealth building starts, but it's limited by time and energy.",
+            "Investment Bamboo: Money that makes more money - Phil's bamboo investments growing and paying dividends. This can work 24/7 without Phil doing anything!",
+            "Business Bamboo: Money from owning a piece of a business that serves other pandas. This can grow without limits if the business succeeds.",
+            "The wealthy pandas Phil studied used ALL three engines, not just one!"
+          ]
+        },
+        {
+          title: "Avoiding Wealth Destroyers",
+          content: [
+            "🚫 Phil learned that building wealth isn't just about making money - it's also about NOT losing it to common traps:",
+            "Lifestyle Inflation: As Phil earned more bamboo, he wanted fancier caves and premium bamboo meals. But he learned to live below his means, not spend everything he earned.",
+            "Bad Debt: Phil avoided borrowing bamboo to buy things that don't grow in value (like fancy gadgets). Good debt helps buy assets; bad debt just costs money.",
+            "FOMO Investing: When other pandas got excited about 'hot' bamboo investments, Phil stuck to his long-term plan instead of chasing trends.",
+            "Impatience: Phil's biggest challenge was waiting. Wealth building is like watching bamboo grow - it happens slowly, then suddenly!"
+          ]
+        },
+        {
+          title: "Phil's 20-Year Plan",
+          content: [
+            "📊 Phil created a long-term wealth building plan that any young panda could follow:",
+            "Years 1-5: Build the foundation. Save emergency fund, start investing in simple index funds, learn the basics.",
+            "Years 6-10: Accelerate growth. Increase investments, maybe add real estate, focus on career advancement.",
+            "Years 11-15: Optimize and diversify. Fine-tune the portfolio, consider business opportunities, plan for major goals.",
+            "Years 16-20: Prepare for bamboo season retirement. Shift towards more conservative investments while maintaining growth.",
+            "The magic happens around year 15-20 when compound growth really kicks in. Phil's wealth starts growing faster than he can spend it!"
+          ]
+        },
+        {
+          title: "The Wealthy Panda Mindset",
+          content: [
+            "🧠 Finally, Phil learned that wealth building is as much about mindset as it is about money:",
+            "Think Long-Term: Every decision Phil makes, he asks 'How will this affect my wealth in 10 years?' Wealthy pandas think in decades, not days.",
+            "Value Learning: Phil invests in his own education because smart pandas make better financial decisions. Knowledge pays the best interest!",
+            "Stay Grateful: Phil appreciates what he has while working toward more. Gratitude keeps him from making emotional money mistakes.",
+            "Help Others: Wealthy pandas share knowledge and opportunities. Phil teaches young pandas because wealth shared is wealth multiplied!",
+            "Remember: Wealth isn't just about having lots of bamboo - it's about having the freedom to live the life you want!"
+          ]
+        }
+      ]
     }
   };
 
   const currentStory = storyData[adventure.id as keyof typeof storyData];
+  if (!currentStory) {
+    return (
+      <div className="text-center p-8">
+        <h2 className="text-xl font-bold text-muted-foreground">Story Coming Soon!</h2>
+        <p className="text-muted-foreground">Phil is still writing this adventure. Check back soon!</p>
+      </div>
+    );
+  }
   const currentChapter = currentStory.chapters[currentChapterIndex];
   const canProceed = completedQuizzes.has(currentChapterIndex);
 
@@ -217,12 +408,24 @@ const StoryReader: React.FC<StoryReaderProps> = ({ adventure, onBack }) => {
     updateQuizScore(topicId, isCorrect);
     if (isCorrect) {
       setCompletedQuizzes(prev => new Set([...prev, currentChapterIndex]));
+      
+      // Check if this completes the adventure
+      const newCompletedQuizzes = new Set([...completedQuizzes, currentChapterIndex]);
+      if (newCompletedQuizzes.size === currentStory.chapters.length) {
+        // Adventure completed!
+        updateActivityComplete(`adventure-${adventure.id}`, 50); // 50 points for completing an adventure
+      }
     }
   };
 
   const handleNext = () => {
     if (canProceed && currentChapterIndex < currentStory.chapters.length - 1) {
       setCurrentChapterIndex(prev => prev + 1);
+    } else if (canProceed && currentChapterIndex === currentStory.chapters.length - 1) {
+      // Reached the end, check if adventure is complete
+      if (completedQuizzes.size === currentStory.chapters.length) {
+        updateActivityComplete(`adventure-${adventure.id}`, 50);
+      }
     }
   };
 
@@ -389,6 +592,126 @@ const getChapterQuiz = (adventureId: string, chapterIndex: number) => {
         options: ["Spend everything immediately", "Save more to prepare for tough times", "Stop investing", "Ignore the economy"],
         correctAnswerIndex: 1,
         feedback: "Smart pandas save during good times to prepare for inevitable downturns - like storing bamboo for winter!"
+      }
+    ],
+    'phil-risk-management': [
+      {
+        question: "What is RISK in Phil's investing world?",
+        options: ["Free bamboo", "The chance that bad things could happen to investments", "Always making money", "Having too much bamboo"],
+        correctAnswerIndex: 1,
+        feedback: "Risk is the chance that bad things could happen to your investments - just like storms threatening bamboo groves!"
+      },
+      {
+        question: "What are the three types of storms that can affect investments?",
+        options: ["Market, Company, and Personal storms", "Rain, snow, and wind", "Big, medium, and small storms", "Past, present, and future storms"],
+        correctAnswerIndex: 0,
+        feedback: "Phil learned about Market storms (affecting everything), Company storms (affecting one business), and Personal storms (when you need money urgently)!"
+      },
+      {
+        question: "What is diversification in Phil's safety toolkit?",
+        options: ["Putting all bamboo in one grove", "Spreading bamboo across many different groves", "Only buying expensive bamboo", "Never investing"],
+        correctAnswerIndex: 1,
+        feedback: "Diversification means spreading your investments across different places so if one has problems, others can keep growing!"
+      },
+      {
+        question: "What is a 'stop-loss' rule?",
+        options: ["Never selling anything", "Setting a limit for when to sell to prevent bigger losses", "Only buying when prices are high", "Ignoring bad investments"],
+        correctAnswerIndex: 1,
+        feedback: "A stop-loss is like a fire alarm - you set a limit and sell before small losses become big disasters!"
+      },
+      {
+        question: "What's the secret to growing wealth safely?",
+        options: ["Avoid all risks", "Take smart risks but always protect yourself", "Only invest in one thing", "Never save money"],
+        correctAnswerIndex: 1,
+        feedback: "Phil learned it's about balance - take smart risks that offer good rewards while protecting yourself from disaster!"
+      }
+    ],
+    'phil-portfolio-building': [
+      {
+        question: "What is a portfolio like for Phil?",
+        options: ["One type of bamboo", "A collection of different types of bamboo investments", "Only money in a bank", "Expensive bamboo only"],
+        correctAnswerIndex: 1,
+        feedback: "A portfolio is like Phil's collection of different bamboo investments - mixing different types for safety and growth!"
+      },
+      {
+        question: "What is Phil's magic mix for a balanced collection?",
+        options: ["100% growth bamboo", "40% growth, 40% steady, 20% safety bamboo", "Only safety bamboo", "Whatever is cheapest"],
+        correctAnswerIndex: 1,
+        feedback: "Phil's magic mix balances growth (40%), steady income (40%), and safety (20%) for the best results!"
+      },
+      {
+        question: "Why does Phil need bamboo from different valleys?",
+        options: ["It tastes better", "Different areas might do well when others struggle", "It's more expensive", "Phil likes to travel"],
+        correctAnswerIndex: 1,
+        feedback: "Geographic diversity helps because when one area has problems, other areas might still do well!"
+      },
+      {
+        question: "What is rebalancing Phil's collection?",
+        options: ["Never changing anything", "Selling some of what grew too much and buying more of what shrank", "Only buying new bamboo", "Selling everything"],
+        correctAnswerIndex: 1,
+        feedback: "Rebalancing keeps Phil's magic mix working by adjusting when some investments grow faster than others!"
+      },
+      {
+        question: "What is dollar-cost averaging?",
+        options: ["Buying all at once", "Buying a little bit regularly over time", "Only buying when prices are low", "Never buying anything"],
+        correctAnswerIndex: 1,
+        feedback: "Dollar-cost averaging means buying a little bit regularly, which helps get good average prices over time!"
+      },
+      {
+        question: "What's Phil's most important portfolio rule?",
+        options: ["Start early and stay consistent", "Only invest when you're rich", "Wait for the perfect time", "Copy what others do"],
+        correctAnswerIndex: 0,
+        feedback: "Starting early gives your investments more time to grow, and staying consistent builds wealth steadily!"
+      }
+    ],
+    'phil-wealth-building': [
+      {
+        question: "What is wealth building according to Phil?",
+        options: ["Getting rich quick", "Creating lasting financial security over time", "Spending all your money", "Only saving money in a bank"],
+        correctAnswerIndex: 1,
+        feedback: "Wealth building is about creating lasting financial security through smart choices over many years!"
+      },
+      {
+        question: "What makes compound growth so powerful?",
+        options: ["It only works for rich pandas", "You earn growth on your growth over time", "It's guaranteed to work", "It happens overnight"],
+        correctAnswerIndex: 1,
+        feedback: "Compound growth is magical because you earn returns on your returns - growth builds on growth over time!"
+      },
+      {
+        question: "What's the foundation layer of Phil's wealth pyramid?",
+        options: ["Risky investments", "Emergency bamboo stash (3-6 months expenses)", "Expensive purchases", "Borrowed money"],
+        correctAnswerIndex: 1,
+        feedback: "The foundation must be solid - an emergency fund that covers 3-6 months of expenses in case of trouble!"
+      },
+      {
+        question: "What are Phil's three wealth engines?",
+        options: ["Earned, Investment, and Business bamboo", "Saving, spending, and borrowing", "Past, present, and future", "Small, medium, and large investments"],
+        correctAnswerIndex: 0,
+        feedback: "The three engines are Earned bamboo (working), Investment bamboo (money making money), and Business bamboo (owning part of businesses)!"
+      },
+      {
+        question: "What is lifestyle inflation?",
+        options: ["Good financial planning", "Spending more as you earn more instead of saving", "Investing in expensive things", "Borrowing money wisely"],
+        correctAnswerIndex: 1,
+        feedback: "Lifestyle inflation is when you spend more as you earn more, instead of saving the extra money to build wealth!"
+      },
+      {
+        question: "What happens around years 15-20 in Phil's wealth plan?",
+        options: ["You start losing money", "Compound growth really kicks in and wealth grows fast", "You stop investing", "Nothing special"],
+        correctAnswerIndex: 1,
+        feedback: "Around years 15-20, compound growth becomes very powerful and your wealth starts growing faster than you can spend!"
+      },
+      {
+        question: "What's the most important part of the wealthy panda mindset?",
+        options: ["Think short-term", "Think long-term and make decisions for 10+ years ahead", "Follow what everyone else does", "Never learn anything new"],
+        correctAnswerIndex: 1,
+        feedback: "Wealthy pandas think long-term - they make decisions based on how it will affect their wealth in 10+ years!"
+      },
+      {
+        question: "What does Phil say wealth really gives you?",
+        options: ["Lots of expensive things", "The freedom to live the life you want", "Power over others", "Nothing important"],
+        correctAnswerIndex: 1,
+        feedback: "True wealth isn't just about having lots of money - it's about having the freedom to live the life you want!"
       }
     ]
   };

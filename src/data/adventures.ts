@@ -3,7 +3,10 @@ import {
   Building, 
   Brain, 
   TrendingUp, 
-  Globe
+  Globe,
+  Target,
+  Shield,
+  Gem
 } from 'lucide-react';
 import { Adventure } from '@/types/adventure';
 
@@ -59,5 +62,44 @@ export const adventures: Adventure[] = [
     isCompleted: false,
     progress: 0,
     category: 'economics'
+  },
+  {
+    id: 'phil-risk-management',
+    title: 'Phil\'s Safety-First Adventure',
+    description: 'Learn how Phil protects his bamboo investments from storms, droughts, and other dangers. Discover risk management strategies that keep your money safe!',
+    icon: Shield,
+    difficulty: 'intermediate',
+    estimatedTime: '20-25 min',
+    chapters: 5,
+    isUnlocked: false,
+    isCompleted: false,
+    progress: 0,
+    category: 'risk-management'
+  },
+  {
+    id: 'phil-portfolio-building',
+    title: 'Phil\'s Balanced Bamboo Collection',
+    description: 'Join Phil as he learns to build a diverse collection of bamboo investments. Discover how mixing different types creates a stronger, more resilient portfolio!',
+    icon: Target,
+    difficulty: 'intermediate',
+    estimatedTime: '22-28 min',
+    chapters: 6,
+    isUnlocked: false,
+    isCompleted: false,
+    progress: 0,
+    category: 'portfolio-management'
+  },
+  {
+    id: 'phil-wealth-building',
+    title: 'Phil\'s Long-Term Treasure Hunt',
+    description: 'Follow Phil on his ultimate journey to build lasting wealth through patient investing, compound growth, and smart financial planning over many bamboo seasons.',
+    icon: Gem,
+    difficulty: 'advanced',
+    estimatedTime: '30-35 min',
+    chapters: 8,
+    isUnlocked: false,
+    isCompleted: false,
+    progress: 0,
+    category: 'wealth-building'
   }
 ];

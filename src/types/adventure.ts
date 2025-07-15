@@ -10,5 +10,5 @@ export interface Adventure {
   isUnlocked: boolean;
   isCompleted: boolean;
   progress: number;
-  category: 'company-analysis' | 'market-psychology' | 'forecasting' | 'economics';
+  category: 'company-analysis' | 'market-psychology' | 'forecasting' | 'economics' | 'risk-management' | 'portfolio-management' | 'wealth-building';
 }
