@@ -124,24 +124,55 @@ function getUserLevelTLDR(userLevel: string, topic: string, baseTLDR: string): s
 }
 
 function generateMarketRecap(userLevel: string = 'beginner'): MarketRecap {
-  const topics = ['tech', 'finance', 'energy', 'healthcare', 'ai', 'space', 'biotech', 'clean energy'];
-  const sentiments = ['positive', 'mixed', 'optimistic', 'cautious'];
+  const sectors = ['technology', 'healthcare', 'energy', 'financial services', 'consumer goods', 'industrials', 'real estate'];
+  const sentiments = ['positive', 'mixed', 'optimistic', 'volatile'];
   const sentiment = sentiments[Math.floor(Math.random() * sentiments.length)];
-  const dominantSector = topics[Math.floor(Math.random() * topics.length)];
+  const dominantSector = sectors[Math.floor(Math.random() * sectors.length)];
   
-  // Generate more dynamic content with current market themes
-  const marketThemes = [
-    'AI revolution in financial services',
-    'sustainable investing trends',
-    'digital transformation acceleration',
-    'supply chain resilience improvements',
-    'cybersecurity infrastructure growth',
-    'electric vehicle market expansion',
-    'renewable energy adoption',
-    'biotechnology breakthroughs'
+  // Generate specific market data
+  const marketMoves = ['+2.3%', '+1.8%', '-0.7%', '+3.1%', '-1.2%', '+2.7%', '+0.9%'];
+  const volumeData = ['157M', '234M', '189M', '278M', '312M', '145M', '203M'];
+  const marketMove = marketMoves[Math.floor(Math.random() * marketMoves.length)];
+  const volume = volumeData[Math.floor(Math.random() * volumeData.length)];
+  
+  const companies = {
+    technology: ['Microsoft', 'Apple', 'NVIDIA', 'Google', 'Amazon', 'Meta', 'Tesla'],
+    healthcare: ['Johnson & Johnson', 'Pfizer', 'UnitedHealth', 'Merck', 'AbbVie', 'Moderna'],
+    energy: ['ExxonMobil', 'Chevron', 'ConocoPhillips', 'EOG Resources', 'Schlumberger'],
+    'financial services': ['JPMorgan Chase', 'Bank of America', 'Goldman Sachs', 'Morgan Stanley', 'Wells Fargo'],
+    'consumer goods': ['Procter & Gamble', 'Coca-Cola', 'Nike', 'Walmart', 'Target'],
+    industrials: ['Boeing', 'Caterpillar', 'General Electric', '3M', 'Honeywell'],
+    'real estate': ['American Tower', 'Prologis', 'Crown Castle', 'Realty Income', 'Digital Realty']
+  };
+  
+  const sectorCompanies = companies[dominantSector] || companies.technology;
+  const leadingCompany = sectorCompanies[Math.floor(Math.random() * sectorCompanies.length)];
+  const secondaryCompany = sectorCompanies[Math.floor(Math.random() * sectorCompanies.length)];
+  
+  const specificEvents = [
+    'quarterly earnings beats',
+    'FDA approval announcements',
+    'merger and acquisition activity',
+    'upgraded analyst ratings',
+    'strong guidance revisions',
+    'breakthrough technology patents',
+    'major contract wins',
+    'regulatory approval breakthroughs'
   ];
   
-  const currentTheme = marketThemes[Math.floor(Math.random() * marketThemes.length)];
+  const currentEvent = specificEvents[Math.floor(Math.random() * specificEvents.length)];
+  
+  const economicIndicators = [
+    'Consumer Price Index showing 2.1% annual inflation',
+    'unemployment rate holding steady at 3.7%',
+    'GDP growth revised upward to 2.8%',
+    'retail sales increasing 1.3% month-over-month',
+    'housing starts up 4.2% from previous month',
+    'manufacturing PMI reaching 52.8',
+    'initial jobless claims declining to 245,000'
+  ];
+  
+  const indicator = economicIndicators[Math.floor(Math.random() * economicIndicators.length)];
 
   let paragraph1 = '';
   let paragraph2 = '';
@@ -149,24 +180,24 @@ function generateMarketRecap(userLevel: string = 'beginner'): MarketRecap {
 
   switch (userLevel) {
     case 'beginner':
-      paragraph1 = `Today's stock market showed ${sentiment} momentum as investors focused on ${currentTheme}. The ${dominantSector} sector attracted significant attention from both individual and institutional investors, driving notable price movements across multiple companies.`;
-      paragraph2 = `This market activity reflects broader economic trends that directly impact everyday Americans through their retirement accounts, college savings plans, and investment portfolios. The current environment suggests continued opportunities for long-term wealth building through diversified investing strategies.`;
-      tldr = `Markets had a ${sentiment} day with ${dominantSector} companies leading investor interest due to ${currentTheme}.`;
+      paragraph1 = `Today's stock market closed ${sentiment === 'positive' ? 'up' : sentiment === 'mixed' ? 'mixed' : 'down'} ${marketMove} with ${volume} shares traded as investors reacted to ${currentEvent} in the ${dominantSector} sector. ${leadingCompany} led the gains after announcing strong results, while ${secondaryCompany} also saw significant investor interest.`;
+      paragraph2 = `With ${indicator}, everyday investors are seeing direct impacts on their 401(k) retirement accounts and college savings plans. The current market movement suggests ${sentiment === 'positive' ? 'good opportunities' : 'careful consideration needed'} for long-term investment strategies, especially in diversified index funds and target-date funds.`;
+      tldr = `Markets ended ${sentiment} with ${dominantSector} stocks like ${leadingCompany} leading after ${currentEvent}.`;
       break;
     case 'intermediate':
-      paragraph1 = `Market sentiment reflected ${sentiment} bias across sectors, with ${dominantSector} exposure driving institutional capital allocation decisions. The focus on ${currentTheme} created meaningful sector rotation opportunities and volatility clustering in related securities.`;
-      paragraph2 = `Portfolio managers are actively repositioning for the evolving landscape around ${currentTheme}, with factor tilts favoring growth-oriented strategies. The current market structure supports active management approaches over passive indexing given the dispersion in sector performance and emerging thematic opportunities.`;
-      tldr = `Markets showed ${sentiment} momentum with ${dominantSector} sector leadership driven by ${currentTheme} investment themes.`;
+      paragraph1 = `Market indices reflected ${sentiment} sentiment with ${marketMove} movement on ${volume} volume, driven by ${currentEvent} across ${dominantSector} names. ${leadingCompany} and ${secondaryCompany} outperformed benchmarks with institutional accumulation evident in options flow and block trades.`;
+      paragraph2 = `Portfolio rebalancing favors ${dominantSector} exposure given ${indicator} and sector rotation dynamics. Active managers are positioning for continued outperformance through tactical allocation shifts, while factor-based strategies are showing preference for quality and momentum tilts in current market conditions.`;
+      tldr = `${sentiment.charAt(0).toUpperCase() + sentiment.slice(1)} session ${marketMove} led by ${dominantSector} strength in ${leadingCompany} and peers on ${currentEvent}.`;
       break;
     case 'advanced':
-      paragraph1 = `Cross-asset momentum indicators suggest ${sentiment} systematic factors with ${dominantSector} beta exposure generating alpha through exposure to ${currentTheme} disruption. Factor loadings indicate systematic risk premiums are incorporating structural shifts in the investment landscape.`;
-      paragraph2 = `Quantitative models are incorporating regime changes around ${currentTheme} into correlation matrices and volatility surfaces. Institutional overlays are maintaining convexity exposure while implementing structured hedging strategies to capture thematic alpha while managing tail risks.`;
-      tldr = `Factor models indicate ${sentiment} alpha opportunities in ${dominantSector} systematic exposure driven by ${currentTheme} structural trends.`;
+      paragraph1 = `Cross-asset volatility surfaces indicated ${sentiment} regime with ${marketMove} equity beta expansion and ${volume} notional turnover concentrated in ${dominantSector} names. ${leadingCompany}'s implied volatility term structure steepened following ${currentEvent}, creating gamma opportunities for systematic strategies.`;
+      paragraph2 = `Factor decomposition shows ${dominantSector} alpha generation through ${indicator} correlation breakdown. Systematic overlays are maintaining long convexity while implementing dynamic hedging strategies through variance swaps and structured products to capture sector-specific risk premiums.`;
+      tldr = `${sentiment.charAt(0).toUpperCase() + sentiment.slice(1)} factor exposure ${marketMove} with ${dominantSector} systematic alpha via ${leadingCompany} volatility mispricing.`;
       break;
     default:
-      paragraph1 = `Today's stock market showed ${sentiment} momentum as investors reacted to developments in ${currentTheme}.`;
-      paragraph2 = `The market continues to adapt to emerging trends and technological innovations that are reshaping various industries.`;
-      tldr = `Markets had a ${sentiment} day with focus on ${currentTheme}.`;
+      paragraph1 = `Today's market showed ${sentiment} performance with ${marketMove} movement driven by ${currentEvent} in ${dominantSector} companies like ${leadingCompany}.`;
+      paragraph2 = `Market participants are closely monitoring ${indicator} for continued investment opportunities and portfolio adjustments.`;
+      tldr = `${sentiment.charAt(0).toUpperCase() + sentiment.slice(1)} market day with ${dominantSector} focus on ${leadingCompany}.`;
   }
 
   return {
