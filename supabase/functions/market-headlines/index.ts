@@ -17,7 +17,7 @@ function generateFinanceHeadlines(userLevel: string = 'beginner'): ProcessedHead
       title: "AI Revolution Transforms Financial Services Sector",
       summary: getUserLevelSummary(userLevel, "ai_finance", "Artificial intelligence continues to reshape the financial services industry with new applications in risk management, fraud detection, and automated trading. Major banks are investing billions in AI infrastructure to stay competitive."),
       tldr: getUserLevelTLDR(userLevel, "ai_finance", "AI is changing how banks and financial companies work"),
-      url: "https://www.fintech.com",
+      url: "https://www.reuters.com/technology/artificial-intelligence/",
       publishedDate: currentDate,
       site: "Powered by Lovable AI",
       image: null
@@ -27,7 +27,7 @@ function generateFinanceHeadlines(userLevel: string = 'beginner'): ProcessedHead
       title: "Electric Vehicle Market Drives Clean Energy Stock Surge",
       summary: getUserLevelSummary(userLevel, "ev_market", "Electric vehicle manufacturers and clean energy companies saw significant gains as global adoption accelerates. Government incentives and improving battery technology are driving widespread consumer adoption."),
       tldr: getUserLevelTLDR(userLevel, "ev_market", "Electric car companies are doing really well as more people buy them"),
-      url: "https://www.cleanenergy.com",
+      url: "https://www.bbc.com/news/business",
       publishedDate: currentDate,
       site: "Powered by Lovable AI",
       image: null
@@ -37,7 +37,7 @@ function generateFinanceHeadlines(userLevel: string = 'beginner'): ProcessedHead
       title: "Global Supply Chain Resilience Boosts Manufacturing Stocks",
       summary: getUserLevelSummary(userLevel, "supply_chain", "Manufacturing companies are benefiting from improved supply chain management and nearshoring trends. Companies that invested in supply chain diversification are seeing stronger margins and reduced disruption risks."),
       tldr: getUserLevelTLDR(userLevel, "supply_chain", "Companies that make things are doing better by improving how they get materials"),
-      url: "https://www.manufacturing.com",
+      url: "https://apnews.com/hub/business",
       publishedDate: currentDate,
       site: "Powered by Lovable AI",
       image: null
@@ -47,7 +47,7 @@ function generateFinanceHeadlines(userLevel: string = 'beginner'): ProcessedHead
       title: "Cybersecurity Sector Sees Record Investment Growth",
       summary: getUserLevelSummary(userLevel, "cybersecurity", "Cybersecurity companies are experiencing unprecedented demand as businesses increase digital security spending. Remote work trends and growing cyber threats are driving sustained investment in security infrastructure."),
       tldr: getUserLevelTLDR(userLevel, "cybersecurity", "Computer security companies are growing fast as businesses need better protection"),
-      url: "https://www.cybersec.com",
+      url: "https://www.npr.org/sections/business/",
       publishedDate: currentDate,
       site: "Powered by Lovable AI",
       image: null
@@ -57,7 +57,7 @@ function generateFinanceHeadlines(userLevel: string = 'beginner'): ProcessedHead
       title: "Sustainable Investing Reaches New Milestone",
       summary: getUserLevelSummary(userLevel, "esg_investing", "Environmental, Social, and Governance (ESG) investing continues to attract record capital flows as investors prioritize sustainable returns. Companies with strong ESG ratings are outperforming traditional benchmarks."),
       tldr: getUserLevelTLDR(userLevel, "esg_investing", "More investors are choosing companies that care about the environment and society"),
-      url: "https://www.sustainable-investing.com",
+      url: "https://www.pbs.org/newshour/economy",
       publishedDate: currentDate,
       site: "Powered by Lovable AI",
       image: null
@@ -67,7 +67,7 @@ function generateFinanceHeadlines(userLevel: string = 'beginner'): ProcessedHead
       title: "Digital Payment Revolution Accelerates Globally",
       summary: getUserLevelSummary(userLevel, "digital_payments", "Digital payment platforms and fintech companies are experiencing explosive growth as cashless transactions become the norm. Mobile payments and cryptocurrency adoption are reshaping the financial landscape."),
       tldr: getUserLevelTLDR(userLevel, "digital_payments", "People are using phones and apps to pay for things instead of cash"),
-      url: "https://www.digitalfinance.com",
+      url: "https://www.cnn.com/business",
       publishedDate: currentDate,
       site: "Powered by Lovable AI",
       image: null
@@ -77,7 +77,7 @@ function generateFinanceHeadlines(userLevel: string = 'beginner'): ProcessedHead
       title: "Healthcare Innovation Drives Biotech Breakthrough",
       summary: getUserLevelSummary(userLevel, "biotech", "Biotechnology companies are achieving remarkable breakthroughs in personalized medicine and gene therapy. Advanced treatment options are creating new investment opportunities in the healthcare sector."),
       tldr: getUserLevelTLDR(userLevel, "biotech", "Scientists are creating new medicines that could help treat diseases better"),
-      url: "https://www.biotech-news.com",
+      url: "https://www.cbsnews.com/news/business/",
       publishedDate: currentDate,
       site: "Powered by Lovable AI",
       image: null
@@ -87,7 +87,7 @@ function generateFinanceHeadlines(userLevel: string = 'beginner'): ProcessedHead
       title: "Space Economy Reaches Commercial Maturity",
       summary: getUserLevelSummary(userLevel, "space_economy", "Commercial space companies are transitioning from experimental ventures to profitable businesses. Satellite technology, space tourism, and asteroid mining are opening new frontiers for investment."),
       tldr: getUserLevelTLDR(userLevel, "space_economy", "Space companies are becoming real businesses that make money"),
-      url: "https://www.space-business.com",
+      url: "https://www.usatoday.com/money/",
       publishedDate: currentDate,
       site: "Powered by Lovable AI",
       image: null
