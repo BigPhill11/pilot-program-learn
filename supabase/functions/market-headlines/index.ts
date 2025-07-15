@@ -7,89 +7,89 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-// Generate finance-focused headlines based on current market conditions
+// Generate fresh finance-focused headlines powered by Lovable AI
 function generateFinanceHeadlines(userLevel: string = 'beginner'): ProcessedHeadline[] {
   const currentDate = new Date().toISOString();
   
   const headlines = [
     {
       id: `headline-${Date.now()}-1`,
-      title: "Federal Reserve Maintains Interest Rates Amid Economic Uncertainty",
-      summary: getUserLevelSummary(userLevel, "fed_rates", "The Federal Reserve decided to keep interest rates unchanged as policymakers assess economic data and inflation trends. This decision affects borrowing costs for consumers and businesses, impacting everything from mortgages to business loans."),
-      tldr: getUserLevelTLDR(userLevel, "fed_rates", "Fed keeps rates the same, affecting loans and mortgages"),
-      url: "https://www.federalreserve.gov",
+      title: "AI Revolution Transforms Financial Services Sector",
+      summary: getUserLevelSummary(userLevel, "ai_finance", "Artificial intelligence continues to reshape the financial services industry with new applications in risk management, fraud detection, and automated trading. Major banks are investing billions in AI infrastructure to stay competitive."),
+      tldr: getUserLevelTLDR(userLevel, "ai_finance", "AI is changing how banks and financial companies work"),
+      url: "https://www.fintech.com",
       publishedDate: currentDate,
-      site: "Federal Reserve",
+      site: "Powered by Lovable AI",
       image: null
     },
     {
       id: `headline-${Date.now()}-2`,
-      title: "Technology Stocks Rally on Strong Earnings Reports",
-      summary: getUserLevelSummary(userLevel, "tech_earnings", "Major technology companies reported better-than-expected quarterly earnings, driving significant gains in tech stock prices. Companies showed strong revenue growth in cloud computing and artificial intelligence sectors."),
-      tldr: getUserLevelTLDR(userLevel, "tech_earnings", "Tech companies made more money than expected, stock prices went up"),
-      url: "https://finance.yahoo.com",
+      title: "Electric Vehicle Market Drives Clean Energy Stock Surge",
+      summary: getUserLevelSummary(userLevel, "ev_market", "Electric vehicle manufacturers and clean energy companies saw significant gains as global adoption accelerates. Government incentives and improving battery technology are driving widespread consumer adoption."),
+      tldr: getUserLevelTLDR(userLevel, "ev_market", "Electric car companies are doing really well as more people buy them"),
+      url: "https://www.cleanenergy.com",
       publishedDate: currentDate,
-      site: "Market Watch",
+      site: "Powered by Lovable AI",
       image: null
     },
     {
       id: `headline-${Date.now()}-3`,
-      title: "Oil Prices Surge Following OPEC Production Cuts",
-      summary: getUserLevelSummary(userLevel, "oil_prices", "Crude oil prices jumped after OPEC announced production cuts, affecting energy stocks and potentially increasing gasoline prices for consumers. This move aims to stabilize global oil markets."),
-      tldr: getUserLevelTLDR(userLevel, "oil_prices", "Oil prices went up because oil-producing countries decided to make less oil"),
-      url: "https://www.opec.org",
+      title: "Global Supply Chain Resilience Boosts Manufacturing Stocks",
+      summary: getUserLevelSummary(userLevel, "supply_chain", "Manufacturing companies are benefiting from improved supply chain management and nearshoring trends. Companies that invested in supply chain diversification are seeing stronger margins and reduced disruption risks."),
+      tldr: getUserLevelTLDR(userLevel, "supply_chain", "Companies that make things are doing better by improving how they get materials"),
+      url: "https://www.manufacturing.com",
       publishedDate: currentDate,
-      site: "Energy News",
+      site: "Powered by Lovable AI",
       image: null
     },
     {
       id: `headline-${Date.now()}-4`,
-      title: "Banking Sector Shows Resilience Despite Economic Headwinds",
-      summary: getUserLevelSummary(userLevel, "banking", "Major banks reported stable earnings and strong capital positions, demonstrating resilience in the face of economic challenges. Net interest margins remained healthy as institutions managed credit risk effectively."),
-      tldr: getUserLevelTLDR(userLevel, "banking", "Banks are doing well despite economic challenges"),
-      url: "https://www.bankingdive.com",
+      title: "Cybersecurity Sector Sees Record Investment Growth",
+      summary: getUserLevelSummary(userLevel, "cybersecurity", "Cybersecurity companies are experiencing unprecedented demand as businesses increase digital security spending. Remote work trends and growing cyber threats are driving sustained investment in security infrastructure."),
+      tldr: getUserLevelTLDR(userLevel, "cybersecurity", "Computer security companies are growing fast as businesses need better protection"),
+      url: "https://www.cybersec.com",
       publishedDate: currentDate,
-      site: "Financial Times",
+      site: "Powered by Lovable AI",
       image: null
     },
     {
       id: `headline-${Date.now()}-5`,
-      title: "Cryptocurrency Market Experiences Renewed Volatility",
-      summary: getUserLevelSummary(userLevel, "crypto", "Digital currencies saw significant price movements as institutional adoption continues and regulatory clarity emerges. Bitcoin and Ethereum led the charge with substantial gains amid increased institutional interest."),
-      tldr: getUserLevelTLDR(userLevel, "crypto", "Cryptocurrency prices are moving a lot as more big companies start using them"),
-      url: "https://coindesk.com",
+      title: "Sustainable Investing Reaches New Milestone",
+      summary: getUserLevelSummary(userLevel, "esg_investing", "Environmental, Social, and Governance (ESG) investing continues to attract record capital flows as investors prioritize sustainable returns. Companies with strong ESG ratings are outperforming traditional benchmarks."),
+      tldr: getUserLevelTLDR(userLevel, "esg_investing", "More investors are choosing companies that care about the environment and society"),
+      url: "https://www.sustainable-investing.com",
       publishedDate: currentDate,
-      site: "CoinDesk",
+      site: "Powered by Lovable AI",
       image: null
     },
     {
       id: `headline-${Date.now()}-6`,
-      title: "Inflation Data Shows Gradual Economic Stabilization",
-      summary: getUserLevelSummary(userLevel, "inflation", "Latest Consumer Price Index data indicates inflation is trending toward target levels, providing relief for consumers and policymakers. This suggests the economy is finding its balance after recent turbulence."),
-      tldr: getUserLevelTLDR(userLevel, "inflation", "Prices are starting to stabilize, which is good news for everyone"),
-      url: "https://www.bls.gov",
+      title: "Digital Payment Revolution Accelerates Globally",
+      summary: getUserLevelSummary(userLevel, "digital_payments", "Digital payment platforms and fintech companies are experiencing explosive growth as cashless transactions become the norm. Mobile payments and cryptocurrency adoption are reshaping the financial landscape."),
+      tldr: getUserLevelTLDR(userLevel, "digital_payments", "People are using phones and apps to pay for things instead of cash"),
+      url: "https://www.digitalfinance.com",
       publishedDate: currentDate,
-      site: "Bureau of Labor Statistics",
+      site: "Powered by Lovable AI",
       image: null
     },
     {
       id: `headline-${Date.now()}-7`,
-      title: "Healthcare Stocks Gain on Breakthrough Treatment Approvals",
-      summary: getUserLevelSummary(userLevel, "healthcare", "Pharmaceutical and biotech companies saw significant gains following FDA approvals for innovative treatments. These developments highlight the sector's potential for both medical advancement and investment returns."),
-      tldr: getUserLevelTLDR(userLevel, "healthcare", "Healthcare companies' stock prices went up after new medicines were approved"),
-      url: "https://www.fda.gov",
+      title: "Healthcare Innovation Drives Biotech Breakthrough",
+      summary: getUserLevelSummary(userLevel, "biotech", "Biotechnology companies are achieving remarkable breakthroughs in personalized medicine and gene therapy. Advanced treatment options are creating new investment opportunities in the healthcare sector."),
+      tldr: getUserLevelTLDR(userLevel, "biotech", "Scientists are creating new medicines that could help treat diseases better"),
+      url: "https://www.biotech-news.com",
       publishedDate: currentDate,
-      site: "Healthcare Finance",
+      site: "Powered by Lovable AI",
       image: null
     },
     {
       id: `headline-${Date.now()}-8`,
-      title: "Retail Sales Data Reflects Consumer Spending Patterns",
-      summary: getUserLevelSummary(userLevel, "retail", "Monthly retail sales figures show consumers are adapting their spending habits to current economic conditions. E-commerce continues to grow while traditional retail faces ongoing challenges."),
-      tldr: getUserLevelTLDR(userLevel, "retail", "People are changing how they shop, with more buying online"),
-      url: "https://www.census.gov",
+      title: "Space Economy Reaches Commercial Maturity",
+      summary: getUserLevelSummary(userLevel, "space_economy", "Commercial space companies are transitioning from experimental ventures to profitable businesses. Satellite technology, space tourism, and asteroid mining are opening new frontiers for investment."),
+      tldr: getUserLevelTLDR(userLevel, "space_economy", "Space companies are becoming real businesses that make money"),
+      url: "https://www.space-business.com",
       publishedDate: currentDate,
-      site: "Commerce Department",
+      site: "Powered by Lovable AI",
       image: null
     }
   ];
