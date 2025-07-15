@@ -7,6 +7,35 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+// Cache for storing generated content
+let cachedContent: HeadlinesResponse | null = null;
+let lastUpdateTime: Date | null = null;
+
+const shouldUpdateContent = (): boolean => {
+  if (!lastUpdateTime || !cachedContent) return true;
+  
+  const now = new Date();
+  const currentHour = now.getHours();
+  const lastUpdateHour = lastUpdateTime.getHours();
+  const lastUpdateDate = lastUpdateTime.toDateString();
+  const currentDate = now.toDateString();
+  
+  // If it's a new day, update
+  if (lastUpdateDate !== currentDate) return true;
+  
+  // Update at 9 AM and 5 PM (17:00)
+  const updateHours = [9, 17];
+  
+  // Check if we've crossed an update hour since last update
+  for (const hour of updateHours) {
+    if (currentHour >= hour && lastUpdateHour < hour) {
+      return true;
+    }
+  }
+  
+  return false;
+};
+
 // Generate fresh finance-focused headlines powered by Lovable AI
 function generateFinanceHeadlines(userLevel: string = 'beginner'): ProcessedHeadline[] {
   const currentDate = new Date().toISOString();
@@ -100,7 +129,18 @@ function generateFinanceHeadlines(userLevel: string = 'beginner'): ProcessedHead
 function getUserLevelSummary(userLevel: string, topic: string, baseSummary: string): string {
   switch (userLevel) {
     case 'beginner':
-      return baseSummary + " This development is important for everyday consumers as it can affect prices, job opportunities, and investment returns in retirement accounts.";
+      // Simplified explanation without jargon
+      const beginnerExplanations = {
+        ai_finance: "Banks are using computer programs to help them work better and keep money safe.",
+        ev_market: "Electric cars are becoming more popular, which is good for companies that make them.",
+        supply_chain: "Companies that make products are getting better at getting the materials they need.",
+        cybersecurity: "Businesses need better computer protection, so security companies are growing.",
+        esg_investing: "People want to invest in companies that are good for the environment and society.",
+        digital_payments: "More people are paying with their phones instead of cash.",
+        biotech: "Scientists are making new medicines to help people feel better.",
+        space_economy: "Space companies are starting to make money from satellite services and space travel."
+      };
+      return beginnerExplanations[topic] || baseSummary;
     case 'intermediate':
       return baseSummary + " Market analysts are closely monitoring these developments for their impact on sector rotation strategies and portfolio allocation decisions.";
     case 'advanced':
@@ -180,9 +220,9 @@ function generateMarketRecap(userLevel: string = 'beginner'): MarketRecap {
 
   switch (userLevel) {
     case 'beginner':
-      paragraph1 = `Today's stock market closed ${sentiment === 'positive' ? 'up' : sentiment === 'mixed' ? 'mixed' : 'down'} ${marketMove} with ${volume} shares traded as investors reacted to ${currentEvent} in the ${dominantSector} sector. ${leadingCompany} led the gains after announcing strong results, while ${secondaryCompany} also saw significant investor interest.`;
-      paragraph2 = `With ${indicator}, everyday investors are seeing direct impacts on their 401(k) retirement accounts and college savings plans. The current market movement suggests ${sentiment === 'positive' ? 'good opportunities' : 'careful consideration needed'} for long-term investment strategies, especially in diversified index funds and target-date funds.`;
-      tldr = `Markets ended ${sentiment} with ${dominantSector} stocks like ${leadingCompany} leading after ${currentEvent}.`;
+      paragraph1 = `Today the stock market ${sentiment === 'positive' ? 'went up' : sentiment === 'mixed' ? 'was mixed' : 'went down'}. Companies in the ${dominantSector} sector did well, especially ${leadingCompany}. This means people who own stocks in these companies saw their investments gain value.`;
+      paragraph2 = `When the market does well, it's good news for people's retirement savings and investment accounts. These market changes affect everyone's long-term savings, so it's important to stay invested in a variety of different stocks and funds.`;
+      tldr = `The market was ${sentiment} today, with ${dominantSector} companies like ${leadingCompany} doing well.`;
       break;
     case 'intermediate':
       paragraph1 = `Market indices reflected ${sentiment} sentiment with ${marketMove} movement on ${volume} volume, driven by ${currentEvent} across ${dominantSector} names. ${leadingCompany} and ${secondaryCompany} outperformed benchmarks with institutional accumulation evident in options flow and block trades.`;
@@ -214,8 +254,6 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Generating finance headlines and market recap...');
-    
     // Get user level from request
     let userLevel = 'beginner';
     try {
@@ -225,6 +263,22 @@ serve(async (req) => {
       userLevel = 'beginner';
     }
 
+    // Check if we should use cached content
+    if (!shouldUpdateContent() && cachedContent) {
+      console.log('Using cached content - no update needed');
+      return new Response(
+        JSON.stringify(cachedContent),
+        { 
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'application/json' 
+          } 
+        }
+      );
+    }
+
+    console.log('Generating fresh finance headlines and market recap...');
+    
     // Generate headlines and market recap
     const processedHeadlines = generateFinanceHeadlines(userLevel);
     const marketRecap = generateMarketRecap(userLevel);
@@ -236,6 +290,10 @@ serve(async (req) => {
       marketRecap: marketRecap,
       lastUpdated: new Date().toISOString()
     };
+
+    // Cache the new content
+    cachedContent = response;
+    lastUpdateTime = new Date();
 
     return new Response(
       JSON.stringify(response),
