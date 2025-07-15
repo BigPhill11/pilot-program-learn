@@ -28,12 +28,13 @@ const PhilAdventures = () => {
       const completedActivities = progress.completed_activities || [];
       const isCompleted = completedActivities.includes(`adventure-${adventure.id}`);
       
-      // Calculate progress based on completed quizzes
+      // Calculate progress based on completed quizzes or completion status
       const totalQuizzes = adventure.chapters;
       const completedQuizzes = Object.keys(progress.quiz_scores || {}).filter(key => 
         key.startsWith(`${adventure.id}-chapter-`) && progress.quiz_scores[key]
       ).length;
-      const progressPercentage = totalQuizzes > 0 ? Math.round((completedQuizzes / totalQuizzes) * 100) : 0;
+      // If adventure is completed, show 100%, otherwise show quiz progress
+      const progressPercentage = isCompleted ? 100 : (totalQuizzes > 0 ? Math.round((completedQuizzes / totalQuizzes) * 100) : 0);
 
       // Check if adventure should be unlocked
       const requirements = unlockRequirements[adventure.id as keyof typeof unlockRequirements];
