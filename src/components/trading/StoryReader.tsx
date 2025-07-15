@@ -604,6 +604,18 @@ const getChapterQuiz = (adventureId: string, chapterIndex: number) => {
         options: ["Spend everything immediately", "Save more to prepare for tough times", "Stop investing", "Ignore the economy"],
         correctAnswerIndex: 1,
         feedback: "Smart pandas save during good times to prepare for inevitable downturns - like storing bamboo for winter!"
+      },
+      {
+        question: "What affects Panda Valley's currency exchange rate?",
+        options: ["Only local weather", "Economic strength compared to other valleys", "The number of pandas", "Bamboo color"],
+        correctAnswerIndex: 1,
+        feedback: "A strong Panda Dollar means our economy is doing well compared to other valleys, affecting trade!"
+      },
+      {
+        question: "What helps pandas make better financial decisions?",
+        options: ["Ignoring economics", "Understanding how economic cycles and connections affect their lives", "Only thinking about today", "Following every trend"],
+        correctAnswerIndex: 1,
+        feedback: "Understanding economics helps pandas make smarter decisions about saving, spending, and investing throughout their lives!"
       }
     ],
     'phil-risk-management': [
