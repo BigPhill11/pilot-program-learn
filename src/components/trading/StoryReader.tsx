@@ -435,6 +435,17 @@ const StoryReader: React.FC<StoryReaderProps> = ({ adventure, onBack }) => {
     }
   };
 
+  const handleComplete = async () => {
+    try {
+      // Complete the adventure and award points
+      await updateActivityComplete(`adventure-${adventure.id}`, 100);
+      // Go back to the adventures list
+      onBack();
+    } catch (error) {
+      console.error('Error completing adventure:', error);
+    }
+  };
+
   return (
     <div className={`space-y-6 ${isMobile ? 'px-2' : ''}`}>
       <StoryProgress 
@@ -465,6 +476,7 @@ const StoryReader: React.FC<StoryReaderProps> = ({ adventure, onBack }) => {
         onPrevious={handlePrevious}
         onNext={handleNext}
         onBack={onBack}
+        onComplete={handleComplete}
       />
     </div>
   );

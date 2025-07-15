@@ -11,6 +11,7 @@ interface StoryNavigationProps {
   onPrevious: () => void;
   onNext: () => void;
   onBack: () => void;
+  onComplete?: () => void;
 }
 
 const StoryNavigation: React.FC<StoryNavigationProps> = ({
@@ -19,7 +20,8 @@ const StoryNavigation: React.FC<StoryNavigationProps> = ({
   canProceed,
   onPrevious,
   onNext,
-  onBack
+  onBack,
+  onComplete
 }) => {
   const isMobile = useIsMobile();
 
@@ -44,15 +46,25 @@ const StoryNavigation: React.FC<StoryNavigationProps> = ({
           Previous
         </Button>
         
-        <Button 
-          onClick={onNext}
-          disabled={!canProceed || currentChapterIndex >= totalChapters - 1}
-          className="bg-emerald-600 hover:bg-emerald-700"
-          size={isMobile ? 'sm' : 'default'}
-        >
-          Next
-          <ChevronRight className="ml-2 h-4 w-4" />
-        </Button>
+        {currentChapterIndex >= totalChapters - 1 && canProceed && onComplete ? (
+          <Button 
+            onClick={onComplete}
+            className="bg-orange-600 hover:bg-orange-700"
+            size={isMobile ? 'sm' : 'default'}
+          >
+            Complete Adventure
+          </Button>
+        ) : (
+          <Button 
+            onClick={onNext}
+            disabled={!canProceed || currentChapterIndex >= totalChapters - 1}
+            className="bg-emerald-600 hover:bg-emerald-700"
+            size={isMobile ? 'sm' : 'default'}
+          >
+            Next
+            <ChevronRight className="ml-2 h-4 w-4" />
+          </Button>
+        )}
       </div>
     </div>
   );

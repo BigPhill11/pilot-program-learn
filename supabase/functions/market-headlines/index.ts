@@ -129,22 +129,22 @@ function generateFinanceHeadlines(userLevel: string = 'beginner'): ProcessedHead
 function getUserLevelSummary(userLevel: string, topic: string, baseSummary: string): string {
   switch (userLevel) {
     case 'beginner':
-      // Simplified explanation without jargon
+      // Simplified explanation without jargon - always 3 sentences
       const beginnerExplanations = {
-        ai_finance: "Banks are using computer programs to help them work better and keep money safe.",
-        ev_market: "Electric cars are becoming more popular, which is good for companies that make them.",
-        supply_chain: "Companies that make products are getting better at getting the materials they need.",
-        cybersecurity: "Businesses need better computer protection, so security companies are growing.",
-        esg_investing: "People want to invest in companies that are good for the environment and society.",
-        digital_payments: "More people are paying with their phones instead of cash.",
-        biotech: "Scientists are making new medicines to help people feel better.",
-        space_economy: "Space companies are starting to make money from satellite services and space travel."
+        ai_finance: "Banks are using computer programs to help them work better and keep money safe. These smart computer systems can spot fraud and help banks make better decisions. This makes banking safer and easier for everyone.",
+        ev_market: "Electric cars are becoming more popular, which is good for companies that make them. More people want cars that don't use gas because they're better for the environment. This means electric car companies are selling more cars and making more money.",
+        supply_chain: "Companies that make products are getting better at getting the materials they need. They're finding new ways to get supplies closer to home so they don't have to wait as long. This helps them make products faster and cheaper.",
+        cybersecurity: "Businesses need better computer protection, so security companies are growing. More people work from home now, which means companies need stronger computer safety. Security companies help protect important information from bad people online.",
+        esg_investing: "People want to invest in companies that are good for the environment and society. They care about how companies treat workers and whether they help or hurt the planet. Companies that do good things often make good investments too.",
+        digital_payments: "More people are paying with their phones instead of cash. Apps like Venmo and Apple Pay make it easy to send money without needing paper bills. This is changing how banks and payment companies do business.",
+        biotech: "Scientists are making new medicines to help people feel better. They're using new technology to create treatments for diseases that were hard to cure before. These discoveries help people live longer, healthier lives.",
+        space_economy: "Space companies are starting to make money from satellite services and space travel. They're launching satellites that help with internet and GPS services. Some companies are even planning to take regular people to space for vacation."
       };
       return beginnerExplanations[topic] || baseSummary;
     case 'intermediate':
-      return baseSummary + " Market analysts are closely monitoring these developments for their impact on sector rotation strategies and portfolio allocation decisions.";
+      return baseSummary + " Market analysts are closely monitoring these developments for their impact on sector rotation strategies and portfolio allocation decisions. Institutional demand continues to drive price discovery in these emerging growth narratives.";
     case 'advanced':
-      return baseSummary + " Institutional investors are adjusting their risk models and factor exposures in response to these systematic market developments.";
+      return baseSummary + " Institutional investors are adjusting their risk models and factor exposures in response to these systematic market developments. Cross-asset correlations suggest regime change implications for alternative risk premiums and factor timing strategies.";
     default:
       return baseSummary;
   }
