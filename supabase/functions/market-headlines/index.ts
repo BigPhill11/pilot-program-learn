@@ -124,9 +124,24 @@ function getUserLevelTLDR(userLevel: string, topic: string, baseTLDR: string): s
 }
 
 function generateMarketRecap(userLevel: string = 'beginner'): MarketRecap {
-  const topics = ['tech', 'finance', 'energy', 'healthcare'];
-  const sentiment = Math.random() > 0.5 ? 'positive' : 'mixed';
+  const topics = ['tech', 'finance', 'energy', 'healthcare', 'ai', 'space', 'biotech', 'clean energy'];
+  const sentiments = ['positive', 'mixed', 'optimistic', 'cautious'];
+  const sentiment = sentiments[Math.floor(Math.random() * sentiments.length)];
   const dominantSector = topics[Math.floor(Math.random() * topics.length)];
+  
+  // Generate more dynamic content with current market themes
+  const marketThemes = [
+    'AI revolution in financial services',
+    'sustainable investing trends',
+    'digital transformation acceleration',
+    'supply chain resilience improvements',
+    'cybersecurity infrastructure growth',
+    'electric vehicle market expansion',
+    'renewable energy adoption',
+    'biotechnology breakthroughs'
+  ];
+  
+  const currentTheme = marketThemes[Math.floor(Math.random() * marketThemes.length)];
 
   let paragraph1 = '';
   let paragraph2 = '';
@@ -134,24 +149,24 @@ function generateMarketRecap(userLevel: string = 'beginner'): MarketRecap {
 
   switch (userLevel) {
     case 'beginner':
-      paragraph1 = `Today's stock market showed ${sentiment} momentum as investors reacted to earnings reports and economic data. The ${dominantSector} sector led market activity, with several companies posting strong quarterly results that exceeded analyst expectations.`;
-      paragraph2 = `With major economic indicators pointing toward stability, investors are feeling cautiously optimistic about the market's direction. This affects retirement accounts, college savings plans, and other long-term investments that many families depend on.`;
-      tldr = `Markets had a ${sentiment} day with ${dominantSector} companies getting the most attention from investors.`;
+      paragraph1 = `Today's stock market showed ${sentiment} momentum as investors focused on ${currentTheme}. The ${dominantSector} sector attracted significant attention from both individual and institutional investors, driving notable price movements across multiple companies.`;
+      paragraph2 = `This market activity reflects broader economic trends that directly impact everyday Americans through their retirement accounts, college savings plans, and investment portfolios. The current environment suggests continued opportunities for long-term wealth building through diversified investing strategies.`;
+      tldr = `Markets had a ${sentiment} day with ${dominantSector} companies leading investor interest due to ${currentTheme}.`;
       break;
     case 'intermediate':
-      paragraph1 = `Market sentiment reflected ${sentiment} bias across multiple sectors, with the ${dominantSector} sector driving primary institutional flow. Equity valuations responded to fundamental catalysts including earnings beats and forward guidance revisions.`;
-      paragraph2 = `Portfolio managers are positioning for continued sector rotation as macroeconomic data supports risk-on sentiment. The current environment favors active management strategies over passive indexing given the dispersion in sector performance.`;
-      tldr = `Markets showed ${sentiment} momentum with ${dominantSector} sector leadership driving institutional positioning strategies.`;
+      paragraph1 = `Market sentiment reflected ${sentiment} bias across sectors, with ${dominantSector} exposure driving institutional capital allocation decisions. The focus on ${currentTheme} created meaningful sector rotation opportunities and volatility clustering in related securities.`;
+      paragraph2 = `Portfolio managers are actively repositioning for the evolving landscape around ${currentTheme}, with factor tilts favoring growth-oriented strategies. The current market structure supports active management approaches over passive indexing given the dispersion in sector performance and emerging thematic opportunities.`;
+      tldr = `Markets showed ${sentiment} momentum with ${dominantSector} sector leadership driven by ${currentTheme} investment themes.`;
       break;
     case 'advanced':
-      paragraph1 = `Cross-sectional momentum indicators suggest ${sentiment} systematic factors with ${dominantSector} sector exposure driving alpha generation. Factor loadings indicate systematic risk premiums are pricing in continued fundamental strength.`;
-      paragraph2 = `Quantitative models are incorporating updated correlation matrices and volatility surfaces as options flow suggests institutional overlays are maintaining long gamma exposure while hedging tail risks through structured products.`;
-      tldr = `Factor models indicate ${sentiment} alpha opportunities with ${dominantSector} systematic exposure driving derivative positioning.`;
+      paragraph1 = `Cross-asset momentum indicators suggest ${sentiment} systematic factors with ${dominantSector} beta exposure generating alpha through exposure to ${currentTheme} disruption. Factor loadings indicate systematic risk premiums are incorporating structural shifts in the investment landscape.`;
+      paragraph2 = `Quantitative models are incorporating regime changes around ${currentTheme} into correlation matrices and volatility surfaces. Institutional overlays are maintaining convexity exposure while implementing structured hedging strategies to capture thematic alpha while managing tail risks.`;
+      tldr = `Factor models indicate ${sentiment} alpha opportunities in ${dominantSector} systematic exposure driven by ${currentTheme} structural trends.`;
       break;
     default:
-      paragraph1 = `Today's stock market showed ${sentiment} momentum as investors reacted to earnings reports and economic data.`;
-      paragraph2 = `Investors are watching key economic indicators for signs of continued market stability.`;
-      tldr = `Markets had a ${sentiment} day overall.`;
+      paragraph1 = `Today's stock market showed ${sentiment} momentum as investors reacted to developments in ${currentTheme}.`;
+      paragraph2 = `The market continues to adapt to emerging trends and technological innovations that are reshaping various industries.`;
+      tldr = `Markets had a ${sentiment} day with focus on ${currentTheme}.`;
   }
 
   return {
