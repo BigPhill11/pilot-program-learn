@@ -247,15 +247,10 @@ const StoryReader: React.FC<StoryReaderProps> = ({ adventure, onBack }) => {
 
       <InteractiveQuiz
         topicId={`${adventure.id}-chapter-${currentChapterIndex}`}
-        question="What did you learn from this chapter?"
-        options={[
-          "I understand the main concept explained",
-          "I need to review this chapter again",
-          "I'm ready to move on to the next topic",
-          "I found this very helpful"
-        ]}
-        correctAnswerIndex={0}
-        feedbackForIncorrect="Take your time to review the chapter content. Phil's lessons are designed to help you understand step by step!"
+        question={getChapterQuiz(adventure.id, currentChapterIndex).question}
+        options={getChapterQuiz(adventure.id, currentChapterIndex).options}
+        correctAnswerIndex={getChapterQuiz(adventure.id, currentChapterIndex).correctAnswerIndex}
+        feedbackForIncorrect={getChapterQuiz(adventure.id, currentChapterIndex).feedback}
         onQuizComplete={handleQuizComplete}
         isCompleted={completedQuizzes.has(currentChapterIndex)}
       />
@@ -270,6 +265,140 @@ const StoryReader: React.FC<StoryReaderProps> = ({ adventure, onBack }) => {
       />
     </div>
   );
+};
+
+const getChapterQuiz = (adventureId: string, chapterIndex: number) => {
+  const quizzes = {
+    'bamboo-business': [
+      {
+        question: "What does Phil compare a company's assets to?",
+        options: ["Water sources", "Rich, healthy soil", "Bamboo thickness", "Sunlight"],
+        correctAnswerIndex: 1,
+        feedback: "Phil compares a company's assets to rich, healthy soil - the foundation that supports growth!"
+      },
+      {
+        question: "What should a healthy company have more of?",
+        options: ["Liabilities than assets", "Assets than liabilities", "Equal assets and liabilities", "Neither assets nor liabilities"],
+        correctAnswerIndex: 1,
+        feedback: "Just like bamboo needs more nutrients than toxins, companies need more assets than liabilities!"
+      },
+      {
+        question: "What does Phil compare cash flow to?",
+        options: ["Soil quality", "Water flowing to bamboo", "Sunlight", "Bamboo height"],
+        correctAnswerIndex: 1,
+        feedback: "Cash flow is like water - money flowing in and out of the company, essential for growth!"
+      },
+      {
+        question: "What indicates a company's growth potential?",
+        options: ["Old, established products only", "Young shoots with room to expand", "Declining sales", "High expenses"],
+        correctAnswerIndex: 1,
+        feedback: "Like young bamboo shoots, companies with innovative products and expanding markets show growth potential!"
+      },
+      {
+        question: "What makes a good investment according to Phil?",
+        options: ["High price only", "Strong balance sheet, positive cash flow, growth potential, reasonable price", "Quick profits", "Following the crowd"],
+        correctAnswerIndex: 1,
+        feedback: "Phil teaches that good investments combine strong fundamentals with reasonable pricing - just like choosing the best bamboo groves!"
+      }
+    ],
+    'forest-sentiment': [
+      {
+        question: "What are Bull Pandas like?",
+        options: ["Always selling stocks", "Optimistic and expect prices to rise", "Worried about everything", "Never invest"],
+        correctAnswerIndex: 1,
+        feedback: "Bull Pandas are optimistic investors who believe prices will go UP! They're always ready to buy more."
+      },
+      {
+        question: "What happens when Bear Pandas dominate the market?",
+        options: ["Prices usually rise", "Prices usually fall", "Nothing changes", "Volume increases"],
+        correctAnswerIndex: 1,
+        feedback: "When Bear Pandas (cautious investors) dominate, prices typically fall as they sell their holdings."
+      },
+      {
+        question: "What creates a 'Bear Market'?",
+        options: ["Everyone wants to buy", "Fear spreads and pandas panic-sell", "Good news", "High profits"],
+        correctAnswerIndex: 1,
+        feedback: "Fear creates Bear Markets - when scared pandas sell rapidly, prices drop like a bamboo clearance sale!"
+      },
+      {
+        question: "What should smart pandas look for to read market emotions?",
+        options: ["Only stock prices", "News, trading volume, and social media sentiment", "Just rumors", "Only charts"],
+        correctAnswerIndex: 1,
+        feedback: "Smart pandas like Phil watch multiple clues: news reactions, trading activity, and what other pandas are saying!"
+      }
+    ],
+    'weather-forecasting': [
+      {
+        question: "What are economic indicators like?",
+        options: ["Weather instruments", "Bamboo seeds", "Panda emotions", "Tree branches"],
+        correctAnswerIndex: 0,
+        feedback: "Economic indicators are like weather instruments - they help us predict economic conditions ahead!"
+      },
+      {
+        question: "What does technical analysis focus on?",
+        options: ["Company fundamentals", "Price patterns and charts", "Economic news only", "Panda emotions"],
+        correctAnswerIndex: 1,
+        feedback: "Technical analysis is like being a detective - studying price patterns and charts to predict future movements!"
+      },
+      {
+        question: "What helps Phil see the big picture in price movements?",
+        options: ["Daily prices only", "Moving averages", "Single data points", "Rumors"],
+        correctAnswerIndex: 1,
+        feedback: "Moving averages smooth out daily ups and downs, like looking at average bamboo growth over time!"
+      },
+      {
+        question: "What does fundamental forecasting examine?",
+        options: ["Only price charts", "The actual business - growth, profits, new products", "Market sentiment only", "Technical patterns"],
+        correctAnswerIndex: 1,
+        feedback: "Fundamental forecasting looks at the business itself - like examining the roots and soil of bamboo groves!"
+      },
+      {
+        question: "How should Phil think about forecasting accuracy?",
+        options: ["Always 100% certain", "Probabilities and being prepared for different scenarios", "Never making predictions", "Only following others"],
+        correctAnswerIndex: 1,
+        feedback: "Smart forecasting is about probabilities, not certainties - always have a plan for different outcomes!"
+      }
+    ],
+    'panda-economics': [
+      {
+        question: "What happens when bamboo is abundant and cheap?",
+        options: ["Pandas spend more on food", "Pandas have more money for other things", "The economy slows down", "Nothing changes"],
+        correctAnswerIndex: 1,
+        feedback: "When bamboo is cheap, pandas can spend their money on other things, boosting the whole economy!"
+      },
+      {
+        question: "What creates a 'happy cycle' in employment?",
+        options: ["High unemployment", "Businesses doing well and hiring more pandas", "Pandas spending less", "Companies closing"],
+        correctAnswerIndex: 1,
+        feedback: "When businesses thrive and hire more pandas, those pandas spend money, helping other businesses succeed too!"
+      },
+      {
+        question: "What happens when the Central Bank raises interest rates?",
+        options: ["Borrowing becomes cheaper", "It encourages more spending", "It cools down an overheating economy", "Nothing changes"],
+        correctAnswerIndex: 2,
+        feedback: "Higher interest rates make borrowing expensive, cooling down an economy with too much spending and inflation!"
+      },
+      {
+        question: "How does global trade affect Panda Valley?",
+        options: ["It has no effect", "Strong foreign economies buy more bamboo exports", "Only imports matter", "Trade always hurts"],
+        correctAnswerIndex: 1,
+        feedback: "When other valleys prosper, they buy more of our premium bamboo, bringing money into our economy!"
+      },
+      {
+        question: "What should pandas do during economic expansions?",
+        options: ["Spend everything immediately", "Save more to prepare for tough times", "Stop investing", "Ignore the economy"],
+        correctAnswerIndex: 1,
+        feedback: "Smart pandas save during good times to prepare for inevitable downturns - like storing bamboo for winter!"
+      }
+    ]
+  };
+
+  return quizzes[adventureId as keyof typeof quizzes]?.[chapterIndex] || {
+    question: "What did you learn from this chapter?",
+    options: ["Important investing concepts", "Market understanding", "Strategic thinking", "All of the above"],
+    correctAnswerIndex: 3,
+    feedback: "Great! Each chapter teaches valuable lessons about investing and market understanding."
+  };
 };
 
 export default StoryReader;
