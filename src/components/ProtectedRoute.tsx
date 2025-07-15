@@ -57,7 +57,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
             
             // Calculate level based on experience and other factors
             if (onboardingData.experienceLevel === 'advanced') {
-              assignedLevel = 'pro';
+              assignedLevel = 'advanced';
             } else if (onboardingData.experienceLevel === 'intermediate') {
               assignedLevel = 'intermediate';
             } else if (onboardingData.experienceLevel === 'some' && 
