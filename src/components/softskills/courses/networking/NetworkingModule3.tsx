@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 interface NetworkingModule3Props {
   onComplete: () => void;
   onBack: () => void;
+  isCompleted?: boolean;
 }
 
 const NetworkingModule3: React.FC<NetworkingModule3Props> = ({ onComplete, onBack }) => {
