@@ -1,5 +1,19 @@
 import React from 'react';
-import { Landmark, Briefcase, CreditCard, Handshake, Users, Home, TrendingUp, Building2, DollarSign } from 'lucide-react';
+import { 
+  Landmark, 
+  Briefcase, 
+  CreditCard, 
+  Handshake, 
+  Users, 
+  Home, 
+  TrendingUp, 
+  Building2, 
+  DollarSign,
+  Rocket,
+  BarChart3,
+  Shield,
+  PieChart
+} from 'lucide-react';
 
 export interface CareerLevel {
   id: number;
@@ -252,6 +266,878 @@ export const financeCareerData: FinanceCareerData[] = [
         title: 'The Evolution of Private Equity',
         description: 'Academic perspective on how the industry has changed and future trends',
         duration: '18:45'
+      }
+    ]
+  },
+  {
+    id: 'management-consulting',
+    name: 'Management Consulting',
+    description: 'Advise executives on strategy, operations, and organizational transformation',
+    icon: Users,
+    color: 'from-purple-500 to-violet-600',
+    levels: [
+      {
+        id: 1,
+        title: 'Introduction to Management Consulting',
+        description: 'Understanding the consulting industry and its role in business',
+        points: [
+          'What management consultants do and client types',
+          'Top-tier firms: McKinsey, BCG, Bain and others',
+          'Service lines: strategy, operations, technology',
+          'Career progression from analyst to partner'
+        ]
+      },
+      {
+        id: 2,
+        title: 'Case Study Fundamentals',
+        description: 'Master the structured problem-solving approach',
+        points: [
+          'MECE principle and issue trees',
+          'Business case frameworks and applications',
+          'Data gathering and hypothesis testing',
+          'Recommendation development and storytelling'
+        ]
+      },
+      {
+        id: 3,
+        title: 'Strategy Consulting',
+        description: 'Corporate and business strategy development',
+        points: [
+          'Market entry and expansion strategies',
+          'Competitive positioning and differentiation',
+          'M&A strategy and due diligence',
+          'Digital transformation and innovation'
+        ]
+      },
+      {
+        id: 4,
+        title: 'Operations Consulting',
+        description: 'Operational excellence and process improvement',
+        points: [
+          'Supply chain optimization and logistics',
+          'Cost reduction and productivity improvement',
+          'Organizational design and change management',
+          'Performance management systems'
+        ]
+      },
+      {
+        id: 5,
+        title: 'Client Management & Communication',
+        description: 'Building relationships and delivering impact',
+        points: [
+          'Stakeholder management and influence',
+          'Executive presentation skills',
+          'Workshop facilitation and team dynamics',
+          'Project management and timeline delivery'
+        ]
+      },
+      {
+        id: 6,
+        title: 'Industry Specialization',
+        description: 'Developing sector expertise and thought leadership',
+        points: [
+          'Healthcare, financial services, technology',
+          'Energy, retail, manufacturing sectors',
+          'Public sector and social impact consulting',
+          'Global markets and cultural considerations'
+        ]
+      },
+      {
+        id: 7,
+        title: 'Advanced Consulting Skills',
+        description: 'Leadership and business development',
+        points: [
+          'Thought leadership and content creation',
+          'Business development and proposal writing',
+          'Team leadership and talent development',
+          'Innovation methodologies and future trends'
+        ]
+      }
+    ],
+    videos: [
+      {
+        id: 'mc-intern-overview',
+        speaker: 'intern',
+        title: 'Summer at McKinsey: An Intern\'s Journey',
+        description: 'Real experience of a summer intern at a top consulting firm',
+        duration: '9:15'
+      },
+      {
+        id: 'mc-consultant-cases',
+        speaker: 'professional',
+        title: 'Leading Complex Client Engagements',
+        description: 'Senior consultant shares insights on managing large projects',
+        duration: '13:30'
+      },
+      {
+        id: 'mc-partner-strategy',
+        speaker: 'professional',
+        title: 'Building a Consulting Practice',
+        description: 'Partner discusses client development and firm leadership',
+        duration: '16:45'
+      }
+    ]
+  },
+  {
+    id: 'hedge-funds',
+    name: 'Hedge Funds',
+    description: 'Generate absolute returns through sophisticated investment strategies',
+    icon: TrendingUp,
+    color: 'from-red-500 to-rose-600',
+    levels: [
+      {
+        id: 1,
+        title: 'Hedge Fund Fundamentals',
+        description: 'Understanding hedge fund structure and objectives',
+        points: [
+          'Fund structure and fee arrangements (2 and 20)',
+          'Absolute vs relative return strategies',
+          'Investor types and capital requirements',
+          'Regulatory environment and compliance'
+        ]
+      },
+      {
+        id: 2,
+        title: 'Investment Strategies',
+        description: 'Core hedge fund investment approaches',
+        points: [
+          'Long/short equity and market neutral',
+          'Event-driven and merger arbitrage',
+          'Macro and currency trading strategies',
+          'Quantitative and algorithmic trading'
+        ]
+      },
+      {
+        id: 3,
+        title: 'Research & Analysis',
+        description: 'Investment research and idea generation',
+        points: [
+          'Fundamental analysis and financial modeling',
+          'Technical analysis and market timing',
+          'Alternative data sources and insights',
+          'Thesis development and conviction building'
+        ]
+      },
+      {
+        id: 4,
+        title: 'Risk Management',
+        description: 'Portfolio risk control and management',
+        points: [
+          'Position sizing and concentration limits',
+          'Hedging strategies and correlation analysis',
+          'Stress testing and scenario analysis',
+          'Real-time risk monitoring systems'
+        ]
+      },
+      {
+        id: 5,
+        title: 'Trading & Execution',
+        description: 'Trade execution and market operations',
+        points: [
+          'Order management and execution algorithms',
+          'Prime brokerage relationships',
+          'Market microstructure and liquidity',
+          'Cost analysis and transaction optimization'
+        ]
+      },
+      {
+        id: 6,
+        title: 'Performance & Operations',
+        description: 'Fund operations and performance measurement',
+        points: [
+          'NAV calculation and fund accounting',
+          'Performance attribution and analytics',
+          'Investor reporting and transparency',
+          'Operational due diligence requirements'
+        ]
+      },
+      {
+        id: 7,
+        title: 'Advanced Topics',
+        description: 'Emerging trends and sophisticated strategies',
+        points: [
+          'Machine learning and AI in trading',
+          'ESG integration and impact investing',
+          'Cryptocurrency and digital assets',
+          'Regulatory changes and market evolution'
+        ]
+      }
+    ],
+    videos: [
+      {
+        id: 'hf-analyst-research',
+        speaker: 'professional',
+        title: 'Equity Research at a Long/Short Fund',
+        description: 'Analyst explains the research process and idea generation',
+        duration: '11:20'
+      },
+      {
+        id: 'hf-pm-strategy',
+        speaker: 'professional',
+        title: 'Portfolio Management Insights',
+        description: 'Portfolio manager discusses strategy and risk management',
+        duration: '14:15'
+      },
+      {
+        id: 'hf-founder-journey',
+        speaker: 'professional',
+        title: 'Starting a Hedge Fund',
+        description: 'Fund founder shares the entrepreneurial journey',
+        duration: '18:30'
+      }
+    ]
+  },
+  {
+    id: 'venture-capital',
+    name: 'Venture Capital',
+    description: 'Fund and guide early-stage companies with high growth potential',
+    icon: Rocket,
+    color: 'from-green-500 to-teal-600',
+    levels: [
+      {
+        id: 1,
+        title: 'Venture Capital Ecosystem',
+        description: 'Understanding the startup funding landscape',
+        points: [
+          'VC fund structure and investment timeline',
+          'Startup lifecycle: seed to exit',
+          'Angel investors, accelerators, and corporate VC',
+          'Geographic hubs and sector focus areas'
+        ]
+      },
+      {
+        id: 2,
+        title: 'Deal Sourcing & Evaluation',
+        description: 'Finding and assessing investment opportunities',
+        points: [
+          'Network building and relationship development',
+          'Pitch deck evaluation and initial screening',
+          'Market sizing and competitive analysis',
+          'Technology and business model assessment'
+        ]
+      },
+      {
+        id: 3,
+        title: 'Due Diligence Process',
+        description: 'Comprehensive startup evaluation methodology',
+        points: [
+          'Management team assessment and references',
+          'Financial analysis and unit economics',
+          'Technical and product due diligence',
+          'Legal structure and intellectual property'
+        ]
+      },
+      {
+        id: 4,
+        title: 'Investment Decision Making',
+        description: 'Structuring deals and investment terms',
+        points: [
+          'Valuation methods for early-stage companies',
+          'Term sheet negotiation and key provisions',
+          'Board composition and governance rights',
+          'Anti-dilution and liquidation preferences'
+        ]
+      },
+      {
+        id: 5,
+        title: 'Portfolio Support & Value Add',
+        description: 'Supporting portfolio companies post-investment',
+        points: [
+          'Strategic guidance and mentorship',
+          'Talent recruitment and team building',
+          'Customer and partnership introductions',
+          'Operational support and best practices'
+        ]
+      },
+      {
+        id: 6,
+        title: 'Exit Strategies & Returns',
+        description: 'Achieving successful portfolio company exits',
+        points: [
+          'IPO readiness and public market preparation',
+          'Strategic acquisition processes',
+          'Secondary sales and liquidity events',
+          'Portfolio construction and return optimization'
+        ]
+      },
+      {
+        id: 7,
+        title: 'Industry Trends & Future',
+        description: 'Emerging sectors and investment themes',
+        points: [
+          'Deep tech, biotech, and frontier technologies',
+          'Fintech, healthtech, and vertical SaaS',
+          'Climate tech and sustainability investing',
+          'Global expansion and emerging markets'
+        ]
+      }
+    ],
+    videos: [
+      {
+        id: 'vc-associate-sourcing',
+        speaker: 'professional',
+        title: 'Deal Sourcing and Evaluation',
+        description: 'Associate explains how VCs find and assess startups',
+        duration: '10:45'
+      },
+      {
+        id: 'vc-principal-diligence',
+        speaker: 'professional',
+        title: 'Deep Dive: Due Diligence Process',
+        description: 'Principal walks through a real investment decision',
+        duration: '15:20'
+      },
+      {
+        id: 'vc-partner-portfolio',
+        speaker: 'professional',
+        title: 'Building Billion-Dollar Companies',
+        description: 'Partner shares insights on portfolio company growth',
+        duration: '17:10'
+      }
+    ]
+  },
+  {
+    id: 'commercial-banking',
+    name: 'Commercial Banking',
+    description: 'Provide financial services to businesses and institutional clients',
+    icon: Landmark,
+    color: 'from-blue-500 to-cyan-600',
+    levels: [
+      {
+        id: 1,
+        title: 'Commercial Banking Overview',
+        description: 'Understanding commercial banking services and clients',
+        points: [
+          'Commercial vs retail banking differences',
+          'Client segments: SME, mid-market, large corporate',
+          'Core products: lending, deposits, treasury services',
+          'Regulatory environment and compliance requirements'
+        ]
+      },
+      {
+        id: 2,
+        title: 'Credit Analysis & Underwriting',
+        description: 'Evaluating creditworthiness and loan structures',
+        points: [
+          'Financial statement analysis and ratios',
+          'Cash flow modeling and debt capacity',
+          'Collateral evaluation and security structures',
+          'Industry and business risk assessment'
+        ]
+      },
+      {
+        id: 3,
+        title: 'Relationship Management',
+        description: 'Building and maintaining client relationships',
+        points: [
+          'Client needs assessment and solution development',
+          'Cross-selling and revenue optimization',
+          'Regular client reviews and covenant monitoring',
+          'Problem loan workout and restructuring'
+        ]
+      },
+      {
+        id: 4,
+        title: 'Treasury & Cash Management',
+        description: 'Corporate treasury and payment solutions',
+        points: [
+          'Working capital and liquidity management',
+          'International trade and foreign exchange',
+          'Payment systems and digital banking',
+          'Interest rate and currency risk hedging'
+        ]
+      },
+      {
+        id: 5,
+        title: 'Specialized Lending',
+        description: 'Asset-based and specialized credit products',
+        points: [
+          'Asset-based lending and inventory financing',
+          'Equipment financing and leasing',
+          'Real estate and construction lending',
+          'SBA and government-backed programs'
+        ]
+      },
+      {
+        id: 6,
+        title: 'Risk Management & Compliance',
+        description: 'Managing credit and operational risks',
+        points: [
+          'Portfolio risk monitoring and reporting',
+          'Regulatory compliance (Basel III, Dodd-Frank)',
+          'Anti-money laundering and KYC requirements',
+          'Stress testing and capital allocation'
+        ]
+      },
+      {
+        id: 7,
+        title: 'Digital Innovation & Future',
+        description: 'Technology transformation in commercial banking',
+        points: [
+          'Digital banking platforms and APIs',
+          'Fintech partnerships and competition',
+          'Data analytics and AI applications',
+          'Open banking and embedded finance'
+        ]
+      }
+    ],
+    videos: [
+      {
+        id: 'cb-rm-overview',
+        speaker: 'professional',
+        title: 'Life as a Relationship Manager',
+        description: 'Day-to-day responsibilities of managing commercial clients',
+        duration: '9:30'
+      },
+      {
+        id: 'cb-credit-analysis',
+        speaker: 'professional',
+        title: 'Credit Decision Process',
+        description: 'Credit officer explains loan evaluation and approval',
+        duration: '12:45'
+      },
+      {
+        id: 'cb-director-strategy',
+        speaker: 'professional',
+        title: 'Commercial Banking Strategy',
+        description: 'Senior director discusses market trends and competition',
+        duration: '14:20'
+      }
+    ]
+  },
+  {
+    id: 'corporate-finance',
+    name: 'Corporate Finance',
+    description: 'Manage company finances, investments, and strategic financial decisions',
+    icon: Building2,
+    color: 'from-indigo-500 to-purple-600',
+    levels: [
+      {
+        id: 1,
+        title: 'Corporate Finance Fundamentals',
+        description: 'Core principles of corporate financial management',
+        points: [
+          'Financial planning and budgeting processes',
+          'Capital structure and cost of capital',
+          'Working capital and cash flow management',
+          'Financial reporting and analysis'
+        ]
+      },
+      {
+        id: 2,
+        title: 'Financial Planning & Analysis',
+        description: 'Strategic financial planning and performance analysis',
+        points: [
+          'Annual budgeting and long-range planning',
+          'Variance analysis and performance reporting',
+          'Financial modeling and scenario planning',
+          'Business unit support and decision analysis'
+        ]
+      },
+      {
+        id: 3,
+        title: 'Capital Allocation & Investment',
+        description: 'Investment decision making and capital deployment',
+        points: [
+          'Capital expenditure evaluation and approval',
+          'NPV, IRR, and other investment metrics',
+          'Portfolio optimization and resource allocation',
+          'Investment committee and governance processes'
+        ]
+      },
+      {
+        id: 4,
+        title: 'Treasury Management',
+        description: 'Managing corporate liquidity and financial risks',
+        points: [
+          'Cash management and banking relationships',
+          'Debt financing and capital markets access',
+          'Foreign exchange and interest rate hedging',
+          'Credit facilities and debt covenant management'
+        ]
+      },
+      {
+        id: 5,
+        title: 'M&A and Strategic Finance',
+        description: 'Corporate development and strategic transactions',
+        points: [
+          'Merger and acquisition analysis',
+          'Due diligence and integration planning',
+          'Joint ventures and strategic partnerships',
+          'Divestitures and portfolio optimization'
+        ]
+      },
+      {
+        id: 6,
+        title: 'Risk Management & Controls',
+        description: 'Financial risk identification and mitigation',
+        points: [
+          'Financial risk assessment and monitoring',
+          'Internal controls and SOX compliance',
+          'Insurance and risk transfer strategies',
+          'Business continuity and contingency planning'
+        ]
+      },
+      {
+        id: 7,
+        title: 'Advanced Topics & Leadership',
+        description: 'Strategic finance leadership and innovation',
+        points: [
+          'ESG reporting and sustainable finance',
+          'Digital transformation and automation',
+          'Stakeholder communication and investor relations',
+          'Finance organization design and talent development'
+        ]
+      }
+    ],
+    videos: [
+      {
+        id: 'cf-analyst-fp&a',
+        speaker: 'professional',
+        title: 'FP&A Career Path',
+        description: 'Financial analyst explains planning and analysis role',
+        duration: '8:45'
+      },
+      {
+        id: 'cf-manager-treasury',
+        speaker: 'professional',
+        title: 'Corporate Treasury Operations',
+        description: 'Treasury manager discusses cash and risk management',
+        duration: '11:30'
+      },
+      {
+        id: 'cf-cfo-strategy',
+        speaker: 'professional',
+        title: 'Strategic Finance Leadership',
+        description: 'CFO shares insights on finance strategy and decision making',
+        duration: '16:15'
+      }
+    ]
+  },
+  {
+    id: 'sales-trading',
+    name: 'Sales & Trading',
+    description: 'Execute trades and provide market insights to institutional clients',
+    icon: BarChart3,
+    color: 'from-orange-500 to-red-600',
+    levels: [
+      {
+        id: 1,
+        title: 'Sales & Trading Overview',
+        description: 'Understanding the sales and trading division',
+        points: [
+          'Role of sales and trading in investment banks',
+          'Client types: hedge funds, asset managers, corporates',
+          'Product coverage: equities, fixed income, commodities',
+          'Market making vs agency trading models'
+        ]
+      },
+      {
+        id: 2,
+        title: 'Market Structure & Operations',
+        description: 'How financial markets operate and function',
+        points: [
+          'Exchange vs OTC trading mechanisms',
+          'Order types and execution algorithms',
+          'Market microstructure and liquidity provision',
+          'Regulatory environment and compliance'
+        ]
+      },
+      {
+        id: 3,
+        title: 'Trading Strategies & Risk',
+        description: 'Core trading approaches and risk management',
+        points: [
+          'Directional vs relative value trading',
+          'Statistical arbitrage and pairs trading',
+          'Volatility trading and options strategies',
+          'Real-time risk monitoring and limits'
+        ]
+      },
+      {
+        id: 4,
+        title: 'Client Sales & Coverage',
+        description: 'Building relationships and serving institutional clients',
+        points: [
+          'Client relationship development and management',
+          'Trade ideas generation and market insights',
+          'Prime brokerage and financing services',
+          'Electronic trading and algorithmic solutions'
+        ]
+      },
+      {
+        id: 5,
+        title: 'Derivatives & Structured Products',
+        description: 'Complex financial instruments and structuring',
+        points: [
+          'Options, futures, and swaps trading',
+          'Exotic derivatives and structured notes',
+          'Pricing models and Greeks management',
+          'Credit derivatives and fixed income trading'
+        ]
+      },
+      {
+        id: 6,
+        title: 'Technology & Analytics',
+        description: 'Trading technology and quantitative analysis',
+        points: [
+          'Electronic trading platforms and APIs',
+          'High-frequency trading and latency optimization',
+          'Data analytics and alternative data sources',
+          'Machine learning applications in trading'
+        ]
+      },
+      {
+        id: 7,
+        title: 'Career Development & Future',
+        description: 'Building a career in sales and trading',
+        points: [
+          'Skill development and specialization paths',
+          'Compensation structures and performance metrics',
+          'Industry evolution and fintech disruption',
+          'Transition opportunities to buy-side and fintech'
+        ]
+      }
+    ],
+    videos: [
+      {
+        id: 'st-trader-day',
+        speaker: 'professional',
+        title: 'A Day in the Life of an Equity Trader',
+        description: 'Trader explains daily responsibilities and market dynamics',
+        duration: '10:20'
+      },
+      {
+        id: 'st-sales-client',
+        speaker: 'professional',
+        title: 'Institutional Sales and Client Coverage',
+        description: 'Sales professional discusses client relationships',
+        duration: '12:10'
+      },
+      {
+        id: 'st-md-division',
+        speaker: 'professional',
+        title: 'Leading a Trading Desk',
+        description: 'Managing director shares leadership insights',
+        duration: '15:30'
+      }
+    ]
+  },
+  {
+    id: 'wealth-management',
+    name: 'Wealth Management',
+    description: 'Provide comprehensive financial planning and investment services to high-net-worth clients',
+    icon: Shield,
+    color: 'from-emerald-500 to-green-600',
+    levels: [
+      {
+        id: 1,
+        title: 'Wealth Management Fundamentals',
+        description: 'Understanding wealth management services and clients',
+        points: [
+          'High-net-worth and ultra-high-net-worth clients',
+          'Comprehensive wealth planning approach',
+          'Fee structures and service models',
+          'Regulatory environment and fiduciary responsibility'
+        ]
+      },
+      {
+        id: 2,
+        title: 'Financial Planning Process',
+        description: 'Holistic financial planning and goal setting',
+        points: [
+          'Client discovery and needs assessment',
+          'Goal setting and priority establishment',
+          'Asset allocation and investment policy',
+          'Regular planning reviews and adjustments'
+        ]
+      },
+      {
+        id: 3,
+        title: 'Investment Management',
+        description: 'Portfolio construction and investment strategy',
+        points: [
+          'Modern portfolio theory and diversification',
+          'Asset class selection and allocation',
+          'Active vs passive investment strategies',
+          'Alternative investments and private markets'
+        ]
+      },
+      {
+        id: 4,
+        title: 'Tax & Estate Planning',
+        description: 'Tax optimization and wealth transfer strategies',
+        points: [
+          'Tax-efficient investment strategies',
+          'Estate planning and wealth transfer',
+          'Trust structures and generation-skipping',
+          'Charitable giving and philanthropic planning'
+        ]
+      },
+      {
+        id: 5,
+        title: 'Risk Management & Protection',
+        description: 'Insurance and risk mitigation strategies',
+        points: [
+          'Life and disability insurance planning',
+          'Property and liability protection',
+          'Business succession and key person insurance',
+          'Long-term care and health planning'
+        ]
+      },
+      {
+        id: 6,
+        title: 'Family Dynamics & Governance',
+        description: 'Multi-generational wealth management',
+        points: [
+          'Family governance and communication',
+          'Next generation education and preparation',
+          'Family office structures and services',
+          'Conflict resolution and decision making'
+        ]
+      },
+      {
+        id: 7,
+        title: 'Advanced Strategies & Trends',
+        description: 'Sophisticated planning and emerging trends',
+        points: [
+          'ESG and impact investing integration',
+          'Digital wealth management and robo-advisors',
+          'Cryptocurrency and digital assets',
+          'Global wealth management and cross-border planning'
+        ]
+      }
+    ],
+    videos: [
+      {
+        id: 'wm-advisor-planning',
+        speaker: 'professional',
+        title: 'Comprehensive Financial Planning',
+        description: 'Wealth advisor explains the planning process',
+        duration: '11:45'
+      },
+      {
+        id: 'wm-pm-investment',
+        speaker: 'professional',
+        title: 'Investment Management for HNW Clients',
+        description: 'Portfolio manager discusses investment strategies',
+        duration: '13:20'
+      },
+      {
+        id: 'wm-director-practice',
+        speaker: 'professional',
+        title: 'Building a Wealth Management Practice',
+        description: 'Practice director shares business development insights',
+        duration: '16:00'
+      }
+    ]
+  },
+  {
+    id: 'asset-management',
+    name: 'Asset Management',
+    description: 'Manage investment portfolios and funds for institutional and retail investors',
+    icon: PieChart,
+    color: 'from-cyan-500 to-blue-600',
+    levels: [
+      {
+        id: 1,
+        title: 'Asset Management Industry',
+        description: 'Understanding the asset management landscape',
+        points: [
+          'Industry structure and key players',
+          'Client types: institutional vs retail investors',
+          'Product types: mutual funds, ETFs, separate accounts',
+          'Fee structures and business economics'
+        ]
+      },
+      {
+        id: 2,
+        title: 'Investment Research & Analysis',
+        description: 'Fundamental research and investment decision making',
+        points: [
+          'Equity research and company analysis',
+          'Fixed income and credit research',
+          'Quantitative analysis and factor models',
+          'ESG integration and sustainable investing'
+        ]
+      },
+      {
+        id: 3,
+        title: 'Portfolio Management',
+        description: 'Portfolio construction and optimization',
+        points: [
+          'Strategic and tactical asset allocation',
+          'Risk budgeting and portfolio optimization',
+          'Performance attribution and analysis',
+          'Benchmark selection and active management'
+        ]
+      },
+      {
+        id: 4,
+        title: 'Fund Operations & Administration',
+        description: 'Operational aspects of fund management',
+        points: [
+          'Fund accounting and NAV calculation',
+          'Compliance and regulatory reporting',
+          'Trade settlement and custody operations',
+          'Shareholder servicing and distribution'
+        ]
+      },
+      {
+        id: 5,
+        title: 'Client Relations & Distribution',
+        description: 'Institutional client management and sales',
+        points: [
+          'Institutional consultant relationships',
+          'RFP responses and manager searches',
+          'Client reporting and communication',
+          'Retail distribution and intermediary channels'
+        ]
+      },
+      {
+        id: 6,
+        title: 'Risk Management & Performance',
+        description: 'Investment risk control and performance measurement',
+        points: [
+          'Investment risk monitoring and reporting',
+          'Performance measurement and benchmarking',
+          'Style analysis and factor attribution',
+          'Liquidity management and stress testing'
+        ]
+      },
+      {
+        id: 7,
+        title: 'Innovation & Future Trends',
+        description: 'Industry evolution and emerging opportunities',
+        points: [
+          'Passive investing and smart beta strategies',
+          'Alternative investments and private markets',
+          'Technology and data analytics applications',
+          'Regulatory changes and fee compression'
+        ]
+      }
+    ],
+    videos: [
+      {
+        id: 'am-analyst-research',
+        speaker: 'professional',
+        title: 'Investment Research Process',
+        description: 'Research analyst explains idea generation and analysis',
+        duration: '10:30'
+      },
+      {
+        id: 'am-pm-portfolio',
+        speaker: 'professional',
+        title: 'Portfolio Management Insights',
+        description: 'Portfolio manager discusses construction and risk management',
+        duration: '14:25'
+      },
+      {
+        id: 'am-cio-strategy',
+        speaker: 'professional',
+        title: 'Investment Strategy and Leadership',
+        description: 'CIO shares market outlook and investment philosophy',
+        duration: '17:15'
       }
     ]
   }
