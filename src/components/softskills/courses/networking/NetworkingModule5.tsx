@@ -1,449 +1,220 @@
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, ArrowRight, Calendar, Users, Coffee, CheckCircle, MapPin } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { ArrowLeft, CheckCircle, Calendar, Users, MessageSquare, Target } from 'lucide-react';
+import { useToast } from "@/hooks/use-toast";
 
 interface NetworkingModule5Props {
-  onBack: () => void;
   onComplete: () => void;
-  isCompleted: boolean;
+  onBack: () => void;
+  isCompleted?: boolean;
 }
 
-const NetworkingModule5: React.FC<NetworkingModule5Props> = ({ onBack, onComplete, isCompleted }) => {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [eventPlan, setEventPlan] = useState({
-    objectives: '',
-    targetContacts: '',
-    followUpPlan: ''
-  });
+const NetworkingModule5: React.FC<NetworkingModule5Props> = ({ onComplete, onBack }) => {
+  const [quizAnswers, setQuizAnswers] = useState<{[key: string]: number}>({});
+  const { toast } = useToast();
 
-  const steps = [
-    {
-      title: "Types of Networking Events",
-      type: "content",
-      content: (
-        <div className="space-y-6">
-          <div className="text-center">
-            <Calendar className="h-16 w-16 text-primary mx-auto mb-4" />
-            <h2 className="text-2xl font-bold mb-4">Networking Event Landscape</h2>
-          </div>
-          
-          <div className="space-y-4">
-            <p className="text-lg">
-              Different types of networking events require different strategies. Understanding 
-              the format and purpose helps you prepare effectively.
-            </p>
-            
-            <div className="grid md:grid-cols-2 gap-6">
-              <Card className="bg-blue-50 border-blue-200">
-                <CardHeader>
-                  <CardTitle className="text-blue-800">🏢 Corporate Events</CardTitle>
-                </CardHeader>
-                <CardContent className="text-blue-700 space-y-2">
-                  <p><strong>Types:</strong> Company mixers, product launches, open houses</p>
-                  <p><strong>Atmosphere:</strong> Professional, structured</p>
-                  <p><strong>Best for:</strong> Learning about specific companies, meeting employees</p>
-                  <p><strong>Strategy:</strong> Research the company beforehand, prepare thoughtful questions</p>
-                </CardContent>
-              </Card>
-              
-              <Card className="bg-green-50 border-green-200">
-                <CardHeader>
-                  <CardTitle className="text-green-800">🎯 Industry Conferences</CardTitle>
-                </CardHeader>
-                <CardContent className="text-green-700 space-y-2">
-                  <p><strong>Types:</strong> Trade shows, summits, professional conventions</p>
-                  <p><strong>Atmosphere:</strong> Educational, high-energy</p>
-                  <p><strong>Best for:</strong> Learning trends, meeting industry leaders</p>
-                  <p><strong>Strategy:</strong> Attend sessions, participate in Q&A, use event apps</p>
-                </CardContent>
-              </Card>
-              
-              <Card className="bg-purple-50 border-purple-200">
-                <CardHeader>
-                  <CardTitle className="text-purple-800">🍷 Social Mixers</CardTitle>
-                </CardHeader>
-                <CardContent className="text-purple-700 space-y-2">
-                  <p><strong>Types:</strong> Happy hours, cocktail parties, social clubs</p>
-                  <p><strong>Atmosphere:</strong> Casual, relaxed</p>
-                  <p><strong>Best for:</strong> Building personal connections, follow-up meetings</p>
-                  <p><strong>Strategy:</strong> Focus on conversation, find common interests</p>
-                </CardContent>
-              </Card>
-              
-              <Card className="bg-orange-50 border-orange-200">
-                <CardHeader>
-                  <CardTitle className="text-orange-800">🎓 Educational Events</CardTitle>
-                </CardHeader>
-                <CardContent className="text-orange-700 space-y-2">
-                  <p><strong>Types:</strong> Workshops, seminars, lunch-and-learns</p>
-                  <p><strong>Atmosphere:</strong> Learning-focused, interactive</p>
-                  <p><strong>Best for:</strong> Meeting like-minded professionals, skill development</p>
-                  <p><strong>Strategy:</strong> Engage in discussions, share experiences</p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </div>
-      )
-    },
-    {
-      title: "Pre-Event Preparation",
-      type: "interactive",
-      content: (
-        <div className="space-y-6">
-          <div className="text-center">
-            <MapPin className="h-16 w-16 text-primary mx-auto mb-4" />
-            <h2 className="text-2xl font-bold mb-4">Strategic Event Planning</h2>
-            <p className="text-muted-foreground">Proper preparation is the key to networking success</p>
-          </div>
-          
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Event Objectives</CardTitle>
-                <CardDescription>What do you want to achieve at this event?</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <textarea
-                  className="w-full p-3 border rounded-lg"
-                  rows={3}
-                  placeholder="e.g., Meet 5 new people in my target industry, learn about current market trends, find potential mentors..."
-                  value={eventPlan.objectives}
-                  onChange={(e) => setEventPlan(prev => ({ ...prev, objectives: e.target.value }))}
-                />
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Target Contacts</CardTitle>
-                <CardDescription>Who do you most want to meet? (Research speakers, attendees, sponsors)</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <textarea
-                  className="w-full p-3 border rounded-lg"
-                  rows={3}
-                  placeholder="e.g., Sarah Johnson (keynote speaker from XYZ Corp), representatives from ABC Consulting, other analysts in financial services..."
-                  value={eventPlan.targetContacts}
-                  onChange={(e) => setEventPlan(prev => ({ ...prev, targetContacts: e.target.value }))}
-                />
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Follow-Up Plan</CardTitle>
-                <CardDescription>How will you follow up with new connections?</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <textarea
-                  className="w-full p-3 border rounded-lg"
-                  rows={3}
-                  placeholder="e.g., Send LinkedIn invites within 24 hours, share relevant articles discussed, suggest coffee meetings for top 3 connections..."
-                  value={eventPlan.followUpPlan}
-                  onChange={(e) => setEventPlan(prev => ({ ...prev, followUpPlan: e.target.value }))}
-                />
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-yellow-50 border-yellow-200">
-              <CardHeader>
-                <CardTitle className="text-yellow-800">📋 Pre-Event Checklist</CardTitle>
-              </CardHeader>
-              <CardContent className="text-yellow-700 space-y-2">
-                <p>✓ Research the event, speakers, and attendees</p>
-                <p>✓ Update your elevator pitch for the audience</p>
-                <p>✓ Prepare business cards or digital contact sharing</p>
-                <p>✓ Plan your outfit (professional and comfortable)</p>
-                <p>✓ Set networking goals (quality over quantity)</p>
-                <p>✓ Download event app or review agenda</p>
-                <p>✓ Eat beforehand (don't network on an empty stomach)</p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      )
-    },
-    {
-      title: "Working the Room",
-      type: "content",
-      content: (
-        <div className="space-y-6">
-          <div className="text-center">
-            <Users className="h-16 w-16 text-primary mx-auto mb-4" />
-            <h2 className="text-2xl font-bold mb-4">Event Navigation Strategies</h2>
-          </div>
-          
-          <div className="space-y-4">
-            <p className="text-lg">
-              Effective event networking is about strategic movement and meaningful conversations, 
-              not collecting as many business cards as possible.
-            </p>
-            
-            <Card className="bg-blue-50 border-blue-200">
-              <CardHeader>
-                <CardTitle className="text-blue-800">🎯 The Strategic Approach</CardTitle>
-              </CardHeader>
-              <CardContent className="text-blue-700 space-y-3">
-                <div>
-                  <h4 className="font-semibold">1. Arrive Early</h4>
-                  <p className="text-sm">When there are fewer people, it's easier to approach others and get noticed</p>
-                </div>
-                <div>
-                  <h4 className="font-semibold">2. Position Yourself Strategically</h4>
-                  <p className="text-sm">Near registration, refreshments, or main pathways - natural conversation starters</p>
-                </div>
-                <div>
-                  <h4 className="font-semibold">3. Use the "Host Mindset"</h4>
-                  <p className="text-sm">Act like you're hosting the event - introduce people to each other</p>
-                </div>
-                <div>
-                  <h4 className="font-semibold">4. The 10-Minute Rule</h4>
-                  <p className="text-sm">Spend 10 minutes max with each person before moving on</p>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <div className="grid md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-green-600">✅ Do This</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2 text-sm">
-                  <p>• Approach groups of 3+ people (easier to join)</p>
-                  <p>• Listen to the conversation before jumping in</p>
-                  <p>• Ask open-ended questions about their work</p>
-                  <p>• Share interesting insights, not just your resume</p>
-                  <p>• Introduce people who should know each other</p>
-                  <p>• Take notes on business cards immediately</p>
-                  <p>• Have an exit strategy for conversations</p>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-red-600">❌ Avoid This</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2 text-sm">
-                  <p>• Approaching closed groups of 2 people</p>
-                  <p>• Dominating conversations</p>
-                  <p>• Leading with what you need</p>
-                  <p>• Staying in one spot all night</p>
-                  <p>• Checking your phone constantly</p>
-                  <p>• Eating messy foods while networking</p>
-                  <p>• Overstaying your welcome in conversations</p>
-                </CardContent>
-              </Card>
-            </div>
-            
-            <Card className="bg-purple-50 border-purple-200">
-              <CardHeader>
-                <CardTitle className="text-purple-800">💬 Conversation Starters for Events</CardTitle>
-              </CardHeader>
-              <CardContent className="text-purple-700 space-y-2">
-                <p>• "How are you connected to [event/organization]?"</p>
-                <p>• "What's been the highlight of the event for you so far?"</p>
-                <p>• "What brought you to this event?"</p>
-                <p>• "Have you heard [speaker's name] present before?"</p>
-                <p>• "What's your take on [relevant industry topic]?"</p>
-                <p>• "Are you familiar with [event sponsor/organizer]?"</p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      )
-    },
-    {
-      title: "Post-Event Follow-Up",
-      type: "content",
-      content: (
-        <div className="space-y-6">
-          <div className="text-center">
-            <Coffee className="h-16 w-16 text-primary mx-auto mb-4" />
-            <h2 className="text-2xl font-bold mb-4">Turning Contacts into Connections</h2>
-          </div>
-          
-          <div className="space-y-4">
-            <p className="text-lg">
-              The real networking happens after the event. Your follow-up strategy determines 
-              whether a brief conversation becomes a valuable professional relationship.
-            </p>
-            
-            <Card className="bg-green-50 border-green-200">
-              <CardHeader>
-                <CardTitle className="text-green-800">⏰ The 24-48 Hour Rule</CardTitle>
-              </CardHeader>
-              <CardContent className="text-green-700">
-                <p>Follow up within 24-48 hours while the conversation is still fresh in their memory. This shows professionalism and genuine interest.</p>
-              </CardContent>
-            </Card>
-            
-            <div className="grid md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>📧 Follow-Up Message Template</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2 text-sm">
-                  <div className="bg-muted p-3 rounded text-xs">
-                    <p><strong>Subject:</strong> Great meeting you at [Event Name]</p>
-                    <p className="mt-2">"Hi [Name],</p>
-                    <p>It was great meeting you at [Event] yesterday. I really enjoyed our conversation about [specific topic you discussed].</p>
-                    <p>As promised, I'm attaching that [article/resource] we talked about. I thought you might find it interesting given your work on [their project/interest].</p>
-                    <p>I'd love to continue our conversation over coffee sometime. Are you free for a 30-minute chat next week?</p>
-                    <p>Best regards,<br/>[Your name]"</p>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader>
-                  <CardTitle>📊 Follow-Up Strategy</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div>
-                    <h4 className="font-semibold text-sm">Tier 1: High Priority (Same day)</h4>
-                    <p className="text-xs text-muted-foreground">VIP contacts, potential mentors, exciting opportunities</p>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-sm">Tier 2: Medium Priority (24-48 hours)</h4>
-                    <p className="text-xs text-muted-foreground">Interesting conversations, potential collaborations</p>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-sm">Tier 3: Lower Priority (Within a week)</h4>
-                    <p className="text-xs text-muted-foreground">General contacts, brief interactions</p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-            
-            <Card className="bg-blue-50 border-blue-200">
-              <CardHeader>
-                <CardTitle className="text-blue-800">🎯 Post-Event Action Plan</CardTitle>
-              </CardHeader>
-              <CardContent className="text-blue-700 space-y-2">
-                <p><strong>Day of Event:</strong> Review and organize all contacts, add context notes</p>
-                <p><strong>Next Day:</strong> Send follow-up messages to Tier 1 contacts</p>
-                <p><strong>Day 2-3:</strong> Follow up with Tier 2 contacts</p>
-                <p><strong>Week 1:</strong> Connect with all contacts on LinkedIn</p>
-                <p><strong>Week 2:</strong> Schedule coffee meetings with interested parties</p>
-                <p><strong>Month 1:</strong> Check in with all new connections</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-yellow-50 border-yellow-200">
-              <CardHeader>
-                <CardTitle className="text-yellow-800">💡 Value-Add Follow-Up Ideas</CardTitle>
-              </CardHeader>
-              <CardContent className="text-yellow-700 space-y-2">
-                <p>• Share a relevant article or resource</p>
-                <p>• Make an introduction to someone in your network</p>
-                <p>• Invite them to another relevant event</p>
-                <p>• Share insights from a session they missed</p>
-                <p>• Offer to be a resource for their current challenges</p>
-                <p>• Send a personalized LinkedIn article mention</p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      )
-    }
-  ];
+  const renderQuizQuestion = (question: string, options: string[], correctAnswer: number, questionKey: string) => {
+    const selectedAnswer = quizAnswers[questionKey];
+    const isAnswered = selectedAnswer !== undefined;
+    const isCorrect = selectedAnswer === correctAnswer;
 
-  const canProceed = () => {
-    if (steps[currentStep]?.type === 'interactive') {
-      return eventPlan.objectives.length > 20 && eventPlan.targetContacts.length > 20 && eventPlan.followUpPlan.length > 20;
-    }
-    return true;
+    return (
+      <Card key={questionKey} className="mb-4">
+        <CardHeader>
+          <CardTitle className="text-lg">{question}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            {options.map((option, index) => (
+              <Button
+                key={index}
+                variant={
+                  isAnswered
+                    ? index === correctAnswer
+                      ? "default"
+                      : index === selectedAnswer
+                      ? "destructive"
+                      : "outline"
+                    : "outline"
+                }
+                className="w-full text-left justify-start"
+                onClick={() => setQuizAnswers(prev => ({ ...prev, [questionKey]: index }))}
+                disabled={isAnswered}
+              >
+                {option}
+              </Button>
+            ))}
+          </div>
+          {isAnswered && (
+            <div className={`mt-3 p-3 rounded-lg ${isCorrect ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+              {isCorrect ? '✅ Correct!' : '❌ Incorrect.'} 
+              {questionKey === 'q1' && ' Great networking events require preparation and clear goals.'}
+              {questionKey === 'q2' && ' The best networkers focus on helping others and building genuine relationships.'}
+              {questionKey === 'q3' && ' Following up within 24-48 hours shows professionalism and genuine interest.'}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
   };
 
-  const handleNext = () => {
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
-    } else {
-      onComplete();
-    }
-  };
+  const answeredQuestions = Object.keys(quizAnswers).length;
+  const totalQuestions = 3;
 
-  const handlePrevious = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
+  const handleComplete = () => {
+    toast({
+      title: "Module 5 Completed!",
+      description: "You're ready to master any networking event.",
+    });
+    onComplete();
   };
-
-  const progress = ((currentStep + 1) / steps.length) * 100;
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center space-x-4">
-        <Button variant="outline" onClick={onBack}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
+      <div className="flex items-center justify-between">
+        <Button variant="ghost" onClick={onBack} className="flex items-center gap-2">
+          <ArrowLeft className="w-4 h-4" />
           Back to Course
         </Button>
-        <div>
-          <h1 className="text-2xl font-bold">Module 5: Event Networking Strategies</h1>
-          <p className="text-muted-foreground">Master the art of networking at professional events</p>
-        </div>
-        {isCompleted && (
-          <div className="ml-auto">
-            <CheckCircle className="h-6 w-6 text-green-500" />
-          </div>
-        )}
+        <Badge variant="secondary">Module 5</Badge>
       </div>
 
-      {/* Progress */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium">Progress</span>
-            <span className="text-sm text-muted-foreground">{currentStep + 1} of {steps.length}</span>
-          </div>
-          <Progress value={progress} className="h-2" />
-        </CardContent>
-      </Card>
-
-      {/* Content */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{steps[currentStep].title}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {steps[currentStep].content}
-        </CardContent>
-      </Card>
-
-      {/* Navigation */}
-      <div className="flex justify-between">
-        <Button 
-          variant="outline" 
-          onClick={handlePrevious}
-          disabled={currentStep === 0}
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Previous
-        </Button>
+      <div className="space-y-4">
+        <h2 className="text-2xl font-bold">Event Networking Mastery</h2>
+        <Progress value={100} className="flex-1" />
         
-        <Button 
-          onClick={handleNext}
-          disabled={!canProceed()}
-        >
-          {currentStep === steps.length - 1 ? 'Complete Module' : 'Next'}
-          <ArrowRight className="h-4 w-4 ml-2" />
-        </Button>
-      </div>
-
-      {/* Planning Progress */}
-      {steps[currentStep]?.type === 'interactive' && (
-        <Card className="bg-blue-50 border-blue-200">
-          <CardContent className="pt-6">
-            <p className="text-blue-700 text-sm">
-              💡 Complete your event planning strategy above to continue. Good preparation is key to networking success!
-            </p>
+        <Card className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Target className="h-5 w-5 text-purple-600" />
+              Event Networking Strategy
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid md:grid-cols-3 gap-4">
+              <div className="text-center">
+                <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-2">
+                  <Calendar className="h-6 w-6 text-purple-600" />
+                </div>
+                <h4 className="font-medium">Pre-Event</h4>
+                <p className="text-sm text-muted-foreground">Research, set goals, prepare materials</p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-2">
+                  <Users className="h-6 w-6 text-blue-600" />
+                </div>
+                <h4 className="font-medium">During Event</h4>
+                <p className="text-sm text-muted-foreground">Work the room, quality conversations</p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-2">
+                  <MessageSquare className="h-6 w-6 text-green-600" />
+                </div>
+                <h4 className="font-medium">Post-Event</h4>
+                <p className="text-sm text-muted-foreground">Follow up, nurture connections</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
-      )}
+
+        <div className="grid md:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Working the Room</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div>
+                <h4 className="font-medium">The 3-Question Framework</h4>
+                <ul className="text-sm text-muted-foreground space-y-1 mt-1">
+                  <li>1. What brings you to this event?</li>
+                  <li>2. What's exciting in your industry right now?</li>
+                  <li>3. How can I help you with your goals?</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-medium">Body Language Tips</h4>
+                <ul className="text-sm text-muted-foreground space-y-1 mt-1">
+                  <li>• Open posture and genuine smile</li>
+                  <li>• Active listening and eye contact</li>
+                  <li>• Confident handshake</li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Follow-Up Excellence</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div>
+                <h4 className="font-medium">24-Hour Rule</h4>
+                <p className="text-sm text-muted-foreground">Send personalized messages within 24 hours</p>
+              </div>
+              <div>
+                <h4 className="font-medium">Value-First Approach</h4>
+                <ul className="text-sm text-muted-foreground space-y-1 mt-1">
+                  <li>• Share relevant resources</li>
+                  <li>• Make strategic introductions</li>
+                  <li>• Offer genuine assistance</li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="space-y-4">
+          <h3 className="text-xl font-semibold">Knowledge Check</h3>
+          
+          {renderQuizQuestion(
+            "What's the most important thing to do before attending a networking event?",
+            [
+              "Bring plenty of business cards",
+              "Research attendees and set specific goals",
+              "Prepare a sales pitch",
+              "Dress professionally"
+            ],
+            1,
+            "q1"
+          )}
+
+          {renderQuizQuestion(
+            "What's the best mindset for effective networking?",
+            [
+              "Focus on what others can do for you",
+              "Promote your company and services",
+              "Help others and build genuine relationships",
+              "Collect as many contacts as possible"
+            ],
+            2,
+            "q2"
+          )}
+
+          {renderQuizQuestion(
+            "When should you follow up after meeting someone at an event?",
+            [
+              "Within 1 week",
+              "Wait for them to contact you first",
+              "Within 24-48 hours",
+              "After 1 month"
+            ],
+            2,
+            "q3"
+          )}
+        </div>
+
+        <Button 
+          onClick={handleComplete}
+          disabled={answeredQuestions < totalQuestions}
+          className="bg-green-600 hover:bg-green-700"
+        >
+          <CheckCircle className="w-4 h-4 mr-2" />
+          Complete Module
+        </Button>
+      </div>
     </div>
   );
 };
