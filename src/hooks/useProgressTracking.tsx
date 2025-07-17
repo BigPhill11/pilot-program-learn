@@ -79,12 +79,14 @@ export const useProgressTracking = () => {
     try {
       const { error } = await supabase
         .from('user_progress')
-        .update({
+        .upsert({
+          user_id: user.id,
           achievements: newCompletedActivities,
           total_points: newTotalPoints,
           updated_at: new Date().toISOString()
-        })
-        .eq('user_id', user.id);
+        }, {
+          onConflict: 'user_id'
+        });
 
       if (error) throw error;
 
@@ -120,13 +122,15 @@ export const useProgressTracking = () => {
     try {
       const { error } = await supabase
         .from('user_progress')
-        .update({
+        .upsert({
+          user_id: user.id,
           quiz_scores: newQuizScores,
           total_points: newTotalPoints,
           engagement_score: newEngagementScore,
           updated_at: new Date().toISOString()
-        })
-        .eq('user_id', user.id);
+        }, {
+          onConflict: 'user_id'
+        });
 
       if (error) throw error;
 
@@ -158,11 +162,13 @@ export const useProgressTracking = () => {
     try {
       const { error } = await supabase
         .from('user_progress')
-        .update({
+        .upsert({
+          user_id: user.id,
           total_points: newTotalPoints,
           updated_at: new Date().toISOString()
-        })
-        .eq('user_id', user.id);
+        }, {
+          onConflict: 'user_id'
+        });
 
       if (error) throw error;
 
@@ -215,11 +221,13 @@ export const useProgressTracking = () => {
     try {
       const { error } = await supabase
         .from('user_progress')
-        .update({
+        .upsert({
+          user_id: user.id,
           learning_progress: newLearningProgress,
           updated_at: new Date().toISOString()
-        })
-        .eq('user_id', user.id);
+        }, {
+          onConflict: 'user_id'
+        });
 
       if (error) throw error;
 
