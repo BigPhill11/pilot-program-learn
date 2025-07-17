@@ -227,14 +227,43 @@ const VideoModal: React.FC<VideoModalProps> = ({ video, isOpen, onClose }) => {
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Video Embed Placeholder */}
-          <div className="aspect-video bg-black rounded-lg flex items-center justify-center">
-            <div className="text-white text-center">
-              <p className={`${isMobile ? 'text-sm' : ''} mb-2`}>Video Player</p>
-              <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-300`}>
-                URL: {video.video_url}
-              </p>
-            </div>
+          {/* Video Embed */}
+          <div className="aspect-video bg-black rounded-lg overflow-hidden">
+            {video.video_url.includes('youtube.com') || video.video_url.includes('youtu.be') ? (
+              <iframe
+                src={video.video_url.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')}
+                className="w-full h-full"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                title={video.title}
+              />
+            ) : video.video_url.includes('vimeo.com') ? (
+              <iframe
+                src={video.video_url.replace('vimeo.com/', 'player.vimeo.com/video/')}
+                className="w-full h-full"
+                frameBorder="0"
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+                title={video.title}
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full text-white text-center">
+                <div>
+                  <p className={`${isMobile ? 'text-sm' : ''} mb-2`}>Video Player</p>
+                  <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-300 mb-4`}>
+                    {video.video_url}
+                  </p>
+                  <Button 
+                    onClick={() => window.open(video.video_url, '_blank')}
+                    variant="secondary"
+                    size="sm"
+                  >
+                    Open Video
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Video Info */}
