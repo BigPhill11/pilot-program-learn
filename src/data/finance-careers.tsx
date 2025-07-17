@@ -1003,39 +1003,39 @@ export const financeCareerData: FinanceCareerData[] = [
         points: [
           'ESG and impact investing integration',
           'Digital wealth management and robo-advisors',
-          'Cryptocurrency and digital assets',
-          'Global wealth management and cross-border planning'
+          'Cryptocurrency and alternative assets',
+          'Regulatory changes and industry evolution'
         ]
       }
     ],
     videos: [
       {
-        id: 'wm-advisor-planning',
+        id: 'wm-advisor-client',
         speaker: 'professional',
-        title: 'Comprehensive Financial Planning',
-        description: 'Wealth advisor explains the planning process',
-        duration: '11:45'
+        title: 'Building Client Relationships',
+        description: 'Wealth advisor discusses client service and planning',
+        duration: '10:15'
       },
       {
-        id: 'wm-pm-investment',
+        id: 'wm-pm-portfolio',
         speaker: 'professional',
-        title: 'Investment Management for HNW Clients',
-        description: 'Portfolio manager discusses investment strategies',
-        duration: '13:20'
+        title: 'Portfolio Management for HNW Clients',
+        description: 'Portfolio manager explains investment approach',
+        duration: '13:40'
       },
       {
         id: 'wm-director-practice',
         speaker: 'professional',
         title: 'Building a Wealth Management Practice',
         description: 'Practice director shares business development insights',
-        duration: '16:00'
+        duration: '16:25'
       }
     ]
   },
   {
     id: 'asset-management',
     name: 'Asset Management',
-    description: 'Manage investment portfolios and funds for institutional and retail investors',
+    description: 'Manage investment portfolios and funds for institutional and retail clients',
     icon: PieChart,
     color: 'from-cyan-500 to-blue-600',
     levels: [
@@ -1044,76 +1044,76 @@ export const financeCareerData: FinanceCareerData[] = [
         title: 'Asset Management Industry',
         description: 'Understanding the asset management landscape',
         points: [
-          'Industry structure and key players',
-          'Client types: institutional vs retail investors',
-          'Product types: mutual funds, ETFs, separate accounts',
-          'Fee structures and business economics'
+          'Active vs passive management strategies',
+          'Institutional vs retail client segments',
+          'Fee structures and business models',
+          'Regulatory environment and fiduciary duty'
         ]
       },
       {
         id: 2,
         title: 'Investment Research & Analysis',
-        description: 'Fundamental research and investment decision making',
+        description: 'Fundamental research and security selection',
         points: [
           'Equity research and company analysis',
-          'Fixed income and credit research',
-          'Quantitative analysis and factor models',
+          'Fixed income and credit analysis',
+          'Quantitative research and factor modeling',
           'ESG integration and sustainable investing'
         ]
       },
       {
         id: 3,
-        title: 'Portfolio Management',
-        description: 'Portfolio construction and optimization',
+        title: 'Portfolio Construction',
+        description: 'Building and managing investment portfolios',
         points: [
-          'Strategic and tactical asset allocation',
+          'Asset allocation and strategic positioning',
           'Risk budgeting and portfolio optimization',
-          'Performance attribution and analysis',
-          'Benchmark selection and active management'
+          'Benchmark selection and tracking error',
+          'Performance attribution and analysis'
         ]
       },
       {
         id: 4,
-        title: 'Fund Operations & Administration',
-        description: 'Operational aspects of fund management',
+        title: 'Risk Management',
+        description: 'Investment risk monitoring and control',
         points: [
-          'Fund accounting and NAV calculation',
-          'Compliance and regulatory reporting',
-          'Trade settlement and custody operations',
-          'Shareholder servicing and distribution'
+          'Market, credit, and liquidity risk assessment',
+          'Stress testing and scenario analysis',
+          'Derivatives and hedging strategies',
+          'Compliance and investment guidelines'
         ]
       },
       {
         id: 5,
-        title: 'Client Relations & Distribution',
-        description: 'Institutional client management and sales',
+        title: 'Client Relations & Sales',
+        description: 'Managing relationships with institutional clients',
         points: [
-          'Institutional consultant relationships',
-          'RFP responses and manager searches',
-          'Client reporting and communication',
-          'Retail distribution and intermediary channels'
+          'Institutional consultant and client management',
+          'Investment presentations and due diligence',
+          'Performance reporting and transparency',
+          'Business development and asset gathering'
         ]
       },
       {
         id: 6,
-        title: 'Risk Management & Performance',
-        description: 'Investment risk control and performance measurement',
+        title: 'Operations & Technology',
+        description: 'Fund operations and technology systems',
         points: [
-          'Investment risk monitoring and reporting',
-          'Performance measurement and benchmarking',
-          'Style analysis and factor attribution',
-          'Liquidity management and stress testing'
+          'Trade execution and settlement processes',
+          'Fund accounting and NAV calculation',
+          'Compliance monitoring and reporting',
+          'Technology platforms and data management'
         ]
       },
       {
         id: 7,
-        title: 'Innovation & Future Trends',
-        description: 'Industry evolution and emerging opportunities',
+        title: 'Industry Evolution & Trends',
+        description: 'Future of asset management',
         points: [
-          'Passive investing and smart beta strategies',
+          'Passive investing and fee compression',
           'Alternative investments and private markets',
-          'Technology and data analytics applications',
-          'Regulatory changes and fee compression'
+          'Technology disruption and robo-advisors',
+          'Regulatory changes and market structure'
         ]
       }
     ],
@@ -1121,23 +1121,23 @@ export const financeCareerData: FinanceCareerData[] = [
       {
         id: 'am-analyst-research',
         speaker: 'professional',
-        title: 'Investment Research Process',
-        description: 'Research analyst explains idea generation and analysis',
-        duration: '10:30'
+        title: 'Equity Research and Analysis',
+        description: 'Research analyst explains the investment process',
+        duration: '11:10'
       },
       {
-        id: 'am-pm-portfolio',
+        id: 'am-pm-strategy',
         speaker: 'professional',
         title: 'Portfolio Management Insights',
-        description: 'Portfolio manager discusses construction and risk management',
-        duration: '14:25'
+        description: 'Portfolio manager discusses strategy and decision making',
+        duration: '14:30'
       },
       {
-        id: 'am-cio-strategy',
+        id: 'am-cio-outlook',
         speaker: 'professional',
-        title: 'Investment Strategy and Leadership',
-        description: 'CIO shares market outlook and investment philosophy',
-        duration: '17:15'
+        title: 'Investment Outlook and Strategy',
+        description: 'CIO shares market views and investment themes',
+        duration: '17:45'
       }
     ]
   }
