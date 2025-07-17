@@ -8,6 +8,7 @@ import { TrendingUp, TrendingDown, DollarSign, Target, BarChart3 } from 'lucide-
 import MarketSimulation from '@/components/trading/MarketSimulation';
 import MarketPredictionGame from '@/components/trading/MarketPredictionGame';
 import PortfolioCharts from '@/components/trading/PortfolioCharts';
+import EnhancedPortfolioAnalysis from '@/components/trading/EnhancedPortfolioAnalysis';
 import TradingAcademy from '@/components/trading/TradingAcademy';
 import { usePaperTrading } from '@/hooks/usePaperTrading';
 
@@ -28,7 +29,8 @@ const PaperTradingPage = () => {
     ...position,
     current_price: mockPrices[position.symbol as keyof typeof mockPrices] || position.avg_price,
     current_value: (mockPrices[position.symbol as keyof typeof mockPrices] || position.avg_price) * position.shares,
-    profit_loss: ((mockPrices[position.symbol as keyof typeof mockPrices] || position.avg_price) - position.avg_price) * position.shares
+    profit_loss: ((mockPrices[position.symbol as keyof typeof mockPrices] || position.avg_price) - position.avg_price) * position.shares,
+    profit_loss_percent: ((mockPrices[position.symbol as keyof typeof mockPrices] || position.avg_price) - position.avg_price) / position.avg_price * 100
   }));
 
   const totalStockValue = positionsWithCurrentValue.reduce((total, position) => total + position.current_value, 0);
@@ -115,8 +117,8 @@ const PaperTradingPage = () => {
         </TabsContent>
 
         <TabsContent value="portfolio" className="space-y-6">
-          {/* Portfolio Charts */}
-          <PortfolioCharts 
+          {/* Enhanced Portfolio Analysis */}
+          <EnhancedPortfolioAnalysis 
             cash={portfolio?.cash || 0}
             positions={positionsWithCurrentValue}
             totalValue={totalPortfolioValue}
