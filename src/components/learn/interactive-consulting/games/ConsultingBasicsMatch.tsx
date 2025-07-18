@@ -11,6 +11,8 @@ interface ConsultingBasicsMatchProps {
 
 const ConsultingBasicsMatch: React.FC<ConsultingBasicsMatchProps> = ({ onComplete }) => {
   const [matches, setMatches] = useState<{ [key: string]: string }>({});
+  const [selectedTerm, setSelectedTerm] = useState<string>('');
+  const [selectedDefinition, setSelectedDefinition] = useState<string>('');
   const [score, setScore] = useState(0);
   const [attempts, setAttempts] = useState(0);
   const [gameComplete, setGameComplete] = useState(false);
@@ -36,10 +38,28 @@ const ConsultingBasicsMatch: React.FC<ConsultingBasicsMatchProps> = ({ onComplet
     setShuffledTerms([...terms].sort(() => Math.random() - 0.5));
     setShuffledDefinitions([...terms].sort(() => Math.random() - 0.5));
     setMatches({});
+    setSelectedTerm('');
+    setSelectedDefinition('');
     setScore(0);
     setAttempts(0);
     setGameComplete(false);
     setFeedback('');
+  };
+
+  const handleTermClick = (term: string) => {
+    if (matches[term]) return; // Already matched
+    setSelectedTerm(selectedTerm === term ? '' : term);
+    setFeedback('');
+  };
+
+  const handleDefinitionClick = (definition: string) => {
+    if (!selectedTerm) {
+      setFeedback('Please select a term first!');
+      return;
+    }
+    
+    handleMatch(selectedTerm, definition);
+    setSelectedTerm('');
   };
 
   const handleMatch = (term: string, definition: string) => {
@@ -94,12 +114,10 @@ const ConsultingBasicsMatch: React.FC<ConsultingBasicsMatchProps> = ({ onComplet
                 {shuffledTerms.map((item) => (
                   <Button
                     key={item.term}
-                    variant={matches[item.term] ? "default" : "outline"}
+                    variant={matches[item.term] ? "default" : selectedTerm === item.term ? "secondary" : "outline"}
                     className="w-full justify-start"
                     disabled={gameComplete}
-                    onClick={() => {
-                      // Implementation for term selection
-                    }}
+                    onClick={() => handleTermClick(item.term)}
                   >
                     <span className="flex items-center gap-2">
                       {matches[item.term] && 
@@ -123,10 +141,7 @@ const ConsultingBasicsMatch: React.FC<ConsultingBasicsMatchProps> = ({ onComplet
                     variant="ghost"
                     className="w-full justify-start text-left h-auto py-3 px-3"
                     disabled={gameComplete}
-                    onClick={() => {
-                      const selectedTerm = Object.keys(matches).find(term => !matches[term]) || shuffledTerms[0].term;
-                      handleMatch(selectedTerm, item.definition);
-                    }}
+                    onClick={() => handleDefinitionClick(item.definition)}
                   >
                     {item.definition}
                   </Button>
