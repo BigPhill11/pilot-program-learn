@@ -4,6 +4,7 @@ import { Target } from 'lucide-react';
 import { ConsultingLessonContent } from '@/data/management-consulting-lessons';
 import PandaLogo from '@/components/icons/PandaLogo';
 import HighlightableTerm from '@/components/HighlightableTerm';
+import { useConsultingProgress } from '@/hooks/useConsultingProgress';
 
 interface OverviewTabProps {
   lesson: ConsultingLessonContent;
@@ -16,13 +17,16 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
   consultingTerms, 
   onActivityComplete 
 }) => {
+  const { markOverviewComplete } = useConsultingProgress();
+
   useEffect(() => {
     const timer = setTimeout(() => {
+      markOverviewComplete(lesson.level);
       onActivityComplete();
     }, 3000);
 
     return () => clearTimeout(timer);
-  }, [onActivityComplete]);
+  }, [onActivityComplete, lesson.level, markOverviewComplete]);
 
   const renderTextWithTermHighlights = (text: string) => {
     let processedText = text;

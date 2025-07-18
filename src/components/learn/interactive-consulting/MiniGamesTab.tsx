@@ -1,11 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Gamepad2, Star, Trophy, Play, ArrowLeft } from 'lucide-react';
 import { ConsultingLessonContent } from '@/data/management-consulting-lessons';
 import ConsultingGameRenderer from './games/ConsultingGameRenderer';
+import { useConsultingProgress } from '@/hooks/useConsultingProgress';
 
 interface MiniGamesTabProps {
   lesson: ConsultingLessonContent;
@@ -20,9 +21,25 @@ const MiniGamesTab: React.FC<MiniGamesTabProps> = ({
 }) => {
   const [selectedGame, setSelectedGame] = useState<string | null>(null);
   const [completedGames, setCompletedGames] = useState<Set<string>>(new Set());
+  const { saveMiniGameProgress, getLevelProgress } = useConsultingProgress();
 
-  const handleGameComplete = (gameId: string, score?: number) => {
+  // Load existing progress on mount
+  useEffect(() => {
+    const levelProgress = getLevelProgress(lesson.level);
+    const existingCompletedGames = new Set(
+      Object.keys(levelProgress.miniGamesProgress).filter(
+        gameId => levelProgress.miniGamesProgress[gameId].completed
+      )
+    );
+    setCompletedGames(existingCompletedGames);
+  }, [lesson.level, getLevelProgress]);
+
+  const handleGameComplete = (gameId: string, score: number = 0) => {
     console.log(`Consulting game ${gameId} completed with score:`, score);
+    
+    // Save to progress tracking
+    saveMiniGameProgress(lesson.level, gameId, score, true);
+    
     setCompletedGames(prev => new Set([...prev, gameId]));
     setSelectedGame(null);
     

@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { BookOpen, Gamepad2, Star, Brain, Users, Trophy } from 'lucide-react';
+import { BookOpen, Gamepad2, Star, Brain, Users, Trophy, CheckCircle } from 'lucide-react';
 import { ConsultingLessonContent } from '@/data/management-consulting-lessons';
 import HighlightableTerm from '@/components/HighlightableTerm';
 import { consultingTerms } from '@/data/management-consulting-terms';
-import { useLessonProgress } from '@/hooks/useLessonProgress';
 import { useAuth } from '@/hooks/useAuth';
+import { useConsultingProgress } from '@/hooks/useConsultingProgress';
 import LessonHeader from './interactive-ib/LessonHeader';
 import ProgressTracker from './interactive-ib/ProgressTracker';
 import OverviewTab from './interactive-consulting/OverviewTab';
@@ -28,18 +28,27 @@ const InteractiveConsultingLesson: React.FC<InteractiveConsultingLessonProps> = 
 }) => {
   const { profile } = useAuth();
   const { 
-    progress,
-    markActivityCompleted, 
-    saveQuizScore 
-  } = useLessonProgress(`management-consulting-${lesson.level}`);
-
+    getLevelProgress,
+    saveMiniGameProgress 
+  } = useConsultingProgress();
+  
   const [activeTab, setActiveTab] = useState('overview');
+  const [completedActivities, setCompletedActivities] = useState<string[]>([]);
+
+  const levelProgress = getLevelProgress(lesson.level);
+
+  useEffect(() => {
+    // Check if lesson is complete and trigger onComplete if 100%
+    if (levelProgress.totalProgress >= 100) {
+      onComplete();
+    }
+  }, [levelProgress.totalProgress, onComplete]);
 
   const generateQuizQuestions = () => {
     const userLevel = profile?.app_version || 'beginner';
     const difficultyMap: Record<string, string> = {
       'beginner': 'beginner',
-      'intermediate': 'intermediate',
+      'intermediate': 'intermediate', 
       'advanced': 'advanced'
     };
     const targetDifficulty = difficultyMap[userLevel] || 'beginner';
@@ -50,22 +59,21 @@ const InteractiveConsultingLesson: React.FC<InteractiveConsultingLessonProps> = 
   };
 
   const handleQuizComplete = (score: number, totalQuestions: number) => {
-    saveQuizScore('main_quiz', score);
-    markActivityCompleted('quiz');
+    saveMiniGameProgress(lesson.level, 'main_quiz', score, true);
     
-    // Check if lesson is complete
-    const requiredActivities = ['overview', 'terms', 'mini_games', 'quiz', 'practice'];
-    const completedCount = requiredActivities.filter(activity => 
-      progress.completedActivities.includes(activity)
-    ).length;
-    
-    if (completedCount >= requiredActivities.length - 1) {
-      onComplete();
+    if (!completedActivities.includes('quiz')) {
+      setCompletedActivities(prev => [...prev, 'quiz']);
     }
   };
 
   const handleQuizRetry = () => {
     // Handle quiz retry logic
+  };
+
+  const markActivityCompleted = (activity: string) => {
+    if (!completedActivities.includes(activity)) {
+      setCompletedActivities(prev => [...prev, activity]);
+    }
   };
 
   const renderTermWithTooltip = (term: string) => {
@@ -91,7 +99,7 @@ const InteractiveConsultingLesson: React.FC<InteractiveConsultingLessonProps> = 
       <LessonHeader lesson={lesson} onBack={onBack} />
       
       <ProgressTracker 
-        progress={progress.completedActivities.length * 20}
+        progress={levelProgress.totalProgress}
       />
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -141,7 +149,7 @@ const InteractiveConsultingLesson: React.FC<InteractiveConsultingLessonProps> = 
         <TabsContent value="mini-games" className="mt-6">
           <MiniGamesTab 
             lesson={lesson}
-            completedActivities={progress.completedActivities}
+            completedActivities={completedActivities}
             onActivityComplete={() => markActivityCompleted('mini_games')}
           />
         </TabsContent>

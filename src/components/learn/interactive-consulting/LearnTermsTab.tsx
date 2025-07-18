@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Trophy, BookOpen, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ConsultingLessonContent } from '@/data/management-consulting-lessons';
 import KeyTermFlashcard from '../interactive-ib/KeyTermFlashcard';
+import { useConsultingProgress } from '@/hooks/useConsultingProgress';
 
 interface LearnTermsTabProps {
   lesson: ConsultingLessonContent;
@@ -18,6 +19,7 @@ const LearnTermsTab: React.FC<LearnTermsTabProps> = ({
 }) => {
   const [currentTermIndex, setCurrentTermIndex] = useState(0);
   const [viewedTerms, setViewedTerms] = useState<Set<number>>(new Set());
+  const { updateTermsProgress } = useConsultingProgress();
 
   const keyTerms = lesson.keyTerms.map(termKey => consultingTerms[termKey]).filter(Boolean);
 
@@ -27,9 +29,12 @@ const LearnTermsTab: React.FC<LearnTermsTabProps> = ({
 
   useEffect(() => {
     if (viewedTerms.size >= keyTerms.length && keyTerms.length > 0) {
+      // Save terms progress
+      const masteredTerms = Array.from(viewedTerms).map(index => keyTerms[index].term);
+      updateTermsProgress(lesson.level, masteredTerms, keyTerms.length);
       onActivityComplete();
     }
-  }, [viewedTerms, keyTerms.length, onActivityComplete]);
+  }, [viewedTerms, keyTerms.length, onActivityComplete, lesson.level, updateTermsProgress, keyTerms]);
 
   const nextTerm = () => {
     setCurrentTermIndex((prev) => (prev + 1) % keyTerms.length);
