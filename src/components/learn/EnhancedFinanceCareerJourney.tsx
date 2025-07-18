@@ -7,9 +7,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PandaLogo from '@/components/icons/PandaLogo';
 import InteractiveIBLesson from './InteractiveIBLesson';
 import InteractivePELesson from './InteractivePELesson';
+import InteractiveConsultingLesson from './InteractiveConsultingLesson';
 import type { FinanceCareerData } from '@/data/finance-careers';
 import { investmentBankingLessons } from '@/data/investment-banking-lessons';
 import { privateEquityLessons } from '@/data/private-equity-lessons';
+import { managementConsultingLessons } from '@/data/management-consulting-lessons';
 import { useAuth } from '@/hooks/useAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useLessonCompletions } from '@/hooks/useLessonCompletions';
@@ -60,6 +62,17 @@ const EnhancedFinanceCareerJourney: React.FC<EnhancedFinanceCareerJourneyProps> 
       if (lesson) {
         return (
           <InteractivePELesson
+            lesson={lesson}
+            onBack={() => setCurrentLesson(null)}
+            onComplete={() => handleLessonComplete(currentLesson)}
+          />
+        );
+      }
+    } else if (career.id === 'management-consulting') {
+      const lesson = managementConsultingLessons.find(l => l.level === currentLesson);
+      if (lesson) {
+        return (
+          <InteractiveConsultingLesson
             lesson={lesson}
             onBack={() => setCurrentLesson(null)}
             onComplete={() => handleLessonComplete(currentLesson)}
@@ -131,6 +144,7 @@ const EnhancedFinanceCareerJourney: React.FC<EnhancedFinanceCareerJourneyProps> 
             <div className="space-y-6">
               {(career.id === 'investment-banking' ? investmentBankingLessons : 
                 career.id === 'private-equity' ? privateEquityLessons : 
+                career.id === 'management-consulting' ? managementConsultingLessons :
                 investmentBankingLessons).map((lesson, index) => {
                 const isCompleted = isLevelComplete(lesson.level);
                 const isCurrent = lesson.level === currentLevel;

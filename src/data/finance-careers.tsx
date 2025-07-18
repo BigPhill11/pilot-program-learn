@@ -12,7 +12,8 @@ import {
   Rocket,
   BarChart3,
   Shield,
-  PieChart
+  PieChart,
+  Target
 } from 'lucide-react';
 
 export interface CareerLevel {
@@ -278,8 +279,8 @@ export const financeCareerData: FinanceCareerData[] = [
     levels: [
       {
         id: 1,
-        title: 'Introduction to Management Consulting',
-        description: 'Understanding the consulting industry and its role in business',
+        title: 'Consulting Foundations',
+        description: 'Discover the world of management consulting and learn how consultants help businesses solve their biggest challenges',
         points: [
           'What management consultants do and client types',
           'Top-tier firms: McKinsey, BCG, Bain and others',
@@ -289,8 +290,8 @@ export const financeCareerData: FinanceCareerData[] = [
       },
       {
         id: 2,
-        title: 'Case Study Fundamentals',
-        description: 'Master the structured problem-solving approach',
+        title: 'Problem-Solving Fundamentals',
+        description: 'Master the structured thinking and problem-solving frameworks that form the backbone of effective consulting',
         points: [
           'MECE principle and issue trees',
           'Business case frameworks and applications',
@@ -300,57 +301,57 @@ export const financeCareerData: FinanceCareerData[] = [
       },
       {
         id: 3,
-        title: 'Strategy Consulting',
-        description: 'Corporate and business strategy development',
+        title: 'Strategic Analysis',
+        description: 'Learn powerful strategic frameworks used by top consulting firms to analyze competitive environments and develop winning strategies',
         points: [
-          'Market entry and expansion strategies',
-          'Competitive positioning and differentiation',
-          'M&A strategy and due diligence',
-          'Digital transformation and innovation'
+          'Porter\'s Five Forces and industry analysis',
+          'BCG Matrix for portfolio management',
+          'Value chain analysis for competitive advantage',
+          'SWOT analysis and market sizing'
         ]
       },
       {
         id: 4,
-        title: 'Operations Consulting',
-        description: 'Operational excellence and process improvement',
+        title: 'Operations Excellence',
+        description: 'Learn how to optimize business processes, reduce costs, and improve operational efficiency using proven consulting methodologies',
         points: [
-          'Supply chain optimization and logistics',
-          'Cost reduction and productivity improvement',
-          'Organizational design and change management',
-          'Performance management systems'
+          'Process optimization and lean methodology',
+          'KPI design and performance management',
+          'Cost reduction strategies that maintain quality',
+          'Benchmarking techniques for improvement'
         ]
       },
       {
         id: 5,
-        title: 'Client Management & Communication',
-        description: 'Building relationships and delivering impact',
+        title: 'Digital Transformation',
+        description: 'Navigate the complexities of digital transformation and help organizations adapt to the digital age through technology and cultural change',
         points: [
-          'Stakeholder management and influence',
-          'Executive presentation skills',
-          'Workshop facilitation and team dynamics',
-          'Project management and timeline delivery'
+          'Digital transformation strategy and implementation',
+          'Agile methodology principles for change',
+          'Automation opportunities and approaches',
+          'Data analytics for business insights'
         ]
       },
       {
         id: 6,
-        title: 'Industry Specialization',
-        description: 'Developing sector expertise and thought leadership',
+        title: 'Change Management',
+        description: 'Master the art of organizational change and learn how to successfully guide companies through complex transformations',
         points: [
-          'Healthcare, financial services, technology',
-          'Energy, retail, manufacturing sectors',
-          'Public sector and social impact consulting',
-          'Global markets and cultural considerations'
+          'Change management strategies and implementation',
+          'Stakeholder analysis and engagement',
+          'Organizational design principles',
+          'Culture transformation initiatives'
         ]
       },
       {
         id: 7,
-        title: 'Advanced Consulting Skills',
-        description: 'Leadership and business development',
+        title: 'Strategic Leadership',
+        description: 'Develop senior-level consulting skills to advise executives and boards on transformational strategy and leadership challenges',
         points: [
-          'Thought leadership and content creation',
-          'Business development and proposal writing',
-          'Team leadership and talent development',
-          'Innovation methodologies and future trends'
+          'Strategic planning for competitive advantage',
+          'Scenario planning for uncertain futures',
+          'Executive presence and thought leadership',
+          'Board-level advisory and governance'
         ]
       }
     ],
