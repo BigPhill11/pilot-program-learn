@@ -8,17 +8,19 @@ import GameRenderer from '../interactive-ib/games/GameRenderer';
 
 interface MiniGamesTabProps {
   lesson: ConsultingLessonContent;
+  completedActivities: string[];
   onActivityComplete: () => void;
 }
 
 const MiniGamesTab: React.FC<MiniGamesTabProps> = ({ 
   lesson, 
+  completedActivities,
   onActivityComplete 
 }) => {
   const [selectedGame, setSelectedGame] = useState<string | null>(null);
   const [completedGames, setCompletedGames] = useState<Set<string>>(new Set());
 
-  const handleGameComplete = (gameId: string, score: number) => {
+  const handleGameComplete = (gameId: string, score?: number) => {
     setCompletedGames(prev => new Set([...prev, gameId]));
     setSelectedGame(null);
     
@@ -40,8 +42,8 @@ const MiniGamesTab: React.FC<MiniGamesTabProps> = ({
     return (
       <GameRenderer
         gameId={selectedGame}
-        onComplete={(score) => handleGameComplete(selectedGame, score)}
-        onBack={handleBackToGames}
+        completedActivities={completedActivities}
+        onComplete={(gameId, score) => handleGameComplete(gameId, score)}
       />
     );
   }

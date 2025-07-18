@@ -77,9 +77,11 @@ const LearnTermsTab: React.FC<LearnTermsTabProps> = ({
       <div className="flex justify-center">
         <div className="w-full max-w-2xl">
           <KeyTermFlashcard
-            term={keyTerms[currentTermIndex]}
-            termKey={lesson.keyTerms[currentTermIndex]}
-            isRevealed={true}
+            term={keyTerms[currentTermIndex].term}
+            definition={keyTerms[currentTermIndex].definition}
+            analogy={keyTerms[currentTermIndex].analogy}
+            onMastered={() => {}}
+            isMastered={false}
           />
         </div>
       </div>

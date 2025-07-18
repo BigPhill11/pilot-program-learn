@@ -28,10 +28,10 @@ const InteractiveConsultingLesson: React.FC<InteractiveConsultingLessonProps> = 
 }) => {
   const { profile } = useAuth();
   const { 
-    completedActivities, 
+    progress,
     markActivityCompleted, 
-    updateQuizScore 
-  } = useLessonProgress('management-consulting', lesson.level);
+    saveQuizScore 
+  } = useLessonProgress(`management-consulting-${lesson.level}`);
 
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -50,13 +50,13 @@ const InteractiveConsultingLesson: React.FC<InteractiveConsultingLessonProps> = 
   };
 
   const handleQuizComplete = (score: number, totalQuestions: number) => {
-    updateQuizScore(score, totalQuestions);
+    saveQuizScore('main_quiz', score);
     markActivityCompleted('quiz');
     
     // Check if lesson is complete
     const requiredActivities = ['overview', 'terms', 'mini_games', 'quiz', 'practice'];
     const completedCount = requiredActivities.filter(activity => 
-      completedActivities.includes(activity)
+      progress.completedActivities.includes(activity)
     ).length;
     
     if (completedCount >= requiredActivities.length - 1) {
@@ -91,9 +91,7 @@ const InteractiveConsultingLesson: React.FC<InteractiveConsultingLessonProps> = 
       <LessonHeader lesson={lesson} onBack={onBack} />
       
       <ProgressTracker 
-        completedActivities={completedActivities}
-        lesson={lesson}
-        onActivityClick={setActiveTab}
+        progress={progress.completedActivities.length * 20}
       />
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -143,6 +141,7 @@ const InteractiveConsultingLesson: React.FC<InteractiveConsultingLessonProps> = 
         <TabsContent value="mini-games" className="mt-6">
           <MiniGamesTab 
             lesson={lesson}
+            completedActivities={progress.completedActivities}
             onActivityComplete={() => markActivityCompleted('mini_games')}
           />
         </TabsContent>
@@ -183,8 +182,6 @@ const InteractiveConsultingLesson: React.FC<InteractiveConsultingLessonProps> = 
             questions={generateQuizQuestions()}
             onComplete={handleQuizComplete}
             onRetry={handleQuizRetry}
-            isCompleted={completedActivities.includes('quiz')}
-            lessonTitle={lesson.title}
           />
         </TabsContent>
 
