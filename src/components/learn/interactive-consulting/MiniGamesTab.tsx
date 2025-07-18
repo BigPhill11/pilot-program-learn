@@ -1,10 +1,11 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Gamepad2, Star, Trophy, Play } from 'lucide-react';
+import { Gamepad2, Star, Trophy, Play, ArrowLeft } from 'lucide-react';
 import { ConsultingLessonContent } from '@/data/management-consulting-lessons';
-import GameRenderer from '../interactive-ib/games/GameRenderer';
+import ConsultingGameRenderer from './games/ConsultingGameRenderer';
 
 interface MiniGamesTabProps {
   lesson: ConsultingLessonContent;
@@ -21,6 +22,7 @@ const MiniGamesTab: React.FC<MiniGamesTabProps> = ({
   const [completedGames, setCompletedGames] = useState<Set<string>>(new Set());
 
   const handleGameComplete = (gameId: string, score?: number) => {
+    console.log(`Consulting game ${gameId} completed with score:`, score);
     setCompletedGames(prev => new Set([...prev, gameId]));
     setSelectedGame(null);
     
@@ -40,11 +42,17 @@ const MiniGamesTab: React.FC<MiniGamesTabProps> = ({
 
   if (selectedGame) {
     return (
-      <GameRenderer
-        gameId={selectedGame}
-        completedActivities={completedActivities}
-        onComplete={(gameId, score) => handleGameComplete(gameId, score)}
-      />
+      <div className="space-y-4">
+        <Button variant="ghost" onClick={handleBackToGames} className="mb-4">
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Games
+        </Button>
+        <ConsultingGameRenderer
+          gameId={selectedGame}
+          completedActivities={completedActivities}
+          onComplete={handleGameComplete}
+        />
+      </div>
     );
   }
 
