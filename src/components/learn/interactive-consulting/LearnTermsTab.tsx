@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Trophy, BookOpen, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Trophy, BookOpen, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
 import { ConsultingLessonContent } from '@/data/management-consulting-lessons';
 import KeyTermFlashcard from '../interactive-ib/KeyTermFlashcard';
 import { useConsultingProgress } from '@/hooks/useConsultingProgress';
@@ -19,22 +19,26 @@ const LearnTermsTab: React.FC<LearnTermsTabProps> = ({
 }) => {
   const [currentTermIndex, setCurrentTermIndex] = useState(0);
   const [viewedTerms, setViewedTerms] = useState<Set<number>>(new Set());
-  const { updateTermsProgress } = useConsultingProgress();
+  const [masteredTerms, setMasteredTerms] = useState<Set<number>>(new Set());
+  const { updateTermsProgress, getLevelProgress } = useConsultingProgress();
 
   const keyTerms = lesson.keyTerms.map(termKey => consultingTerms[termKey]).filter(Boolean);
+  const levelProgress = getLevelProgress(lesson.level);
+  const alreadyMastered = levelProgress.termsProgress.completionPercentage === 100;
 
   useEffect(() => {
     setViewedTerms(prev => new Set([...prev, currentTermIndex]));
   }, [currentTermIndex]);
 
-  useEffect(() => {
-    if (viewedTerms.size >= keyTerms.length && keyTerms.length > 0) {
-      // Save terms progress
-      const masteredTerms = Array.from(viewedTerms).map(index => keyTerms[index].term);
-      updateTermsProgress(lesson.level, masteredTerms, keyTerms.length);
-      onActivityComplete();
-    }
-  }, [viewedTerms, keyTerms.length, onActivityComplete, lesson.level, updateTermsProgress, keyTerms]);
+  const handleMasterTerm = () => {
+    setMasteredTerms(prev => new Set([...prev, currentTermIndex]));
+  };
+
+  const handleCompleteTerms = () => {
+    const allMasteredTerms = Array.from(new Set([...viewedTerms, ...masteredTerms])).map(index => keyTerms[index].term);
+    updateTermsProgress(lesson.level, allMasteredTerms, keyTerms.length);
+    onActivityComplete();
+  };
 
   const nextTerm = () => {
     setCurrentTermIndex((prev) => (prev + 1) % keyTerms.length);
@@ -55,6 +59,7 @@ const LearnTermsTab: React.FC<LearnTermsTabProps> = ({
   }
 
   const progress = (viewedTerms.size / keyTerms.length) * 100;
+  const allTermsViewed = viewedTerms.size >= keyTerms.length;
 
   return (
     <div className="space-y-6">
@@ -85,8 +90,8 @@ const LearnTermsTab: React.FC<LearnTermsTabProps> = ({
             term={keyTerms[currentTermIndex].term}
             definition={keyTerms[currentTermIndex].definition}
             analogy={keyTerms[currentTermIndex].analogy}
-            onMastered={() => {}}
-            isMastered={false}
+            onMastered={handleMasterTerm}
+            isMastered={masteredTerms.has(currentTermIndex)}
           />
         </div>
       </div>
@@ -117,16 +122,39 @@ const LearnTermsTab: React.FC<LearnTermsTabProps> = ({
         </Button>
       </div>
 
-      {viewedTerms.size >= keyTerms.length && (
+      {allTermsViewed && !alreadyMastered && (
+        <Card className="bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <BookOpen className="h-12 w-12 text-yellow-600 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-yellow-900 mb-2">
+                Ready to Master These Terms?
+              </h3>
+              <p className="text-yellow-700 mb-4">
+                You've reviewed all {keyTerms.length} terms! Click below to mark them as mastered and unlock the next activity.
+              </p>
+              <Button 
+                onClick={handleCompleteTerms}
+                className="bg-yellow-600 hover:bg-yellow-700 text-white"
+              >
+                <CheckCircle className="h-4 w-4 mr-2" />
+                Master All Terms
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {alreadyMastered && (
         <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
           <CardContent className="pt-6">
             <div className="text-center">
               <Trophy className="h-12 w-12 text-green-600 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-green-900 mb-2">
-                Excellent Work!
+                Terms Mastered!
               </h3>
               <p className="text-green-700">
-                You've reviewed all key terms for this lesson. You're ready to tackle the mini-games and quiz!
+                You've mastered all key terms for this lesson. You're ready to tackle the mini-games and quiz!
               </p>
             </div>
           </CardContent>

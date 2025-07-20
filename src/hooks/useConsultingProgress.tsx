@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useLessonCompletions } from '@/hooks/useLessonCompletions';
@@ -35,23 +35,48 @@ export const useConsultingProgress = () => {
     }
   }, [user]);
 
-  const loadAllProgress = async () => {
+  const loadAllProgress = useCallback(async () => {
     if (!user) return;
 
     try {
       setLoading(true);
       
+      // First, try to load from Supabase
+      const { data: supabaseData, error } = await supabase
+        .from('consulting_module_progress')
+        .select('*')
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error loading from Supabase:', error);
+      }
+
       // Load progress for all levels (1-7)
       const allProgress: Record<number, ConsultingModuleProgress> = {};
       
       for (let level = 1; level <= 7; level++) {
-        const storageKey = `consulting_progress_${user.id}_level_${level}`;
-        const saved = localStorage.getItem(storageKey);
+        // Check Supabase data first
+        const supabaseRecord = supabaseData?.find(record => record.level === level);
         
-        if (saved) {
-          allProgress[level] = JSON.parse(saved);
+        if (supabaseRecord) {
+          allProgress[level] = {
+            level,
+            overviewCompleted: supabaseRecord.overview_completed,
+            termsProgress: supabaseRecord.terms_progress as any,
+            miniGamesProgress: supabaseRecord.mini_games_progress as any,
+            totalProgress: supabaseRecord.total_progress,
+            lastAccessed: supabaseRecord.last_accessed
+          };
         } else {
-          allProgress[level] = createEmptyProgress(level);
+          // Fallback to localStorage
+          const storageKey = `consulting_progress_${user.id}_level_${level}`;
+          const saved = localStorage.getItem(storageKey);
+          
+          if (saved) {
+            allProgress[level] = JSON.parse(saved);
+          } else {
+            allProgress[level] = createEmptyProgress(level);
+          }
         }
       }
       
@@ -61,7 +86,7 @@ export const useConsultingProgress = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   const createEmptyProgress = (level: number): ConsultingModuleProgress => ({
     level,
@@ -76,7 +101,7 @@ export const useConsultingProgress = () => {
     lastAccessed: new Date().toISOString()
   });
 
-  const saveModuleProgress = async (level: number, updates: Partial<ConsultingModuleProgress>) => {
+  const saveModuleProgress = useCallback(async (level: number, updates: Partial<ConsultingModuleProgress>) => {
     if (!user) return;
 
     const currentProgress = moduleProgress[level] || createEmptyProgress(level);
@@ -105,22 +130,41 @@ export const useConsultingProgress = () => {
       (miniGamesProgress * miniGamesWeight / 100)
     );
 
-    // Save to state
+    // Save to state first
     setModuleProgress(prev => ({
       ...prev,
       [level]: updatedProgress
     }));
 
-    // Save to localStorage
-    const storageKey = `consulting_progress_${user.id}_level_${level}`;
-    localStorage.setItem(storageKey, JSON.stringify(updatedProgress));
+    try {
+      // Save to Supabase
+      const { error: supabaseError } = await supabase
+        .from('consulting_module_progress')
+        .upsert({
+          user_id: user.id,
+          level,
+          overview_completed: updatedProgress.overviewCompleted,
+          terms_progress: updatedProgress.termsProgress,
+          mini_games_progress: updatedProgress.miniGamesProgress,
+          total_progress: updatedProgress.totalProgress,
+          last_accessed: updatedProgress.lastAccessed
+        }, {
+          onConflict: 'user_id,level'
+        });
 
-    // Check if module is 100% complete
-    if (updatedProgress.totalProgress >= 100) {
-      await markLessonComplete(level);
-      
-      // Save completion to user progress
-      try {
+      if (supabaseError) {
+        console.error('Error saving to Supabase:', supabaseError);
+      }
+
+      // Save to localStorage as backup
+      const storageKey = `consulting_progress_${user.id}_level_${level}`;
+      localStorage.setItem(storageKey, JSON.stringify(updatedProgress));
+
+      // Check if module is 100% complete
+      if (updatedProgress.totalProgress >= 100) {
+        await markLessonComplete(level);
+        
+        // Save completion to user progress
         const { error } = await supabase
           .from('user_progress')
           .upsert({
@@ -132,18 +176,20 @@ export const useConsultingProgress = () => {
             onConflict: 'user_id'
           });
 
-        if (error) throw error;
-      } catch (error) {
-        console.error('Error updating user progress:', error);
+        if (error) {
+          console.error('Error updating user progress:', error);
+        }
       }
+    } catch (error) {
+      console.error('Error saving module progress:', error);
     }
-  };
+  }, [user, moduleProgress, markLessonComplete]);
 
-  const markOverviewComplete = (level: number) => {
+  const markOverviewComplete = useCallback((level: number) => {
     saveModuleProgress(level, { overviewCompleted: true });
-  };
+  }, [saveModuleProgress]);
 
-  const updateTermsProgress = (level: number, masteredTerms: string[], totalTerms: number) => {
+  const updateTermsProgress = useCallback((level: number, masteredTerms: string[], totalTerms: number) => {
     const completionPercentage = totalTerms > 0 ? Math.round((masteredTerms.length / totalTerms) * 100) : 0;
     
     saveModuleProgress(level, {
@@ -153,9 +199,9 @@ export const useConsultingProgress = () => {
         completionPercentage
       }
     });
-  };
+  }, [saveModuleProgress]);
 
-  const saveMiniGameProgress = (level: number, gameId: string, score: number, completed: boolean = true) => {
+  const saveMiniGameProgress = useCallback((level: number, gameId: string, score: number, completed: boolean = true) => {
     const currentProgress = moduleProgress[level] || createEmptyProgress(level);
     const currentGameProgress = currentProgress.miniGamesProgress[gameId];
     
@@ -172,11 +218,11 @@ export const useConsultingProgress = () => {
     saveModuleProgress(level, {
       miniGamesProgress: updatedMiniGamesProgress
     });
-  };
+  }, [moduleProgress, saveModuleProgress]);
 
-  const getLevelProgress = (level: number): ConsultingModuleProgress => {
+  const getLevelProgress = useCallback((level: number): ConsultingModuleProgress => {
     return moduleProgress[level] || createEmptyProgress(level);
-  };
+  }, [moduleProgress]);
 
   const isGameCompleted = (level: number, gameId: string): boolean => {
     const progress = getLevelProgress(level);

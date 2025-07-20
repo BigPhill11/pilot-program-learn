@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Target } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Target, CheckCircle } from 'lucide-react';
 import { ConsultingLessonContent } from '@/data/management-consulting-lessons';
 import PandaLogo from '@/components/icons/PandaLogo';
 import HighlightableTerm from '@/components/HighlightableTerm';
@@ -17,16 +18,17 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
   consultingTerms, 
   onActivityComplete 
 }) => {
-  const { markOverviewComplete } = useConsultingProgress();
+  const { markOverviewComplete, getLevelProgress } = useConsultingProgress();
+  const [isCompleted, setIsCompleted] = useState(false);
+  
+  const levelProgress = getLevelProgress(lesson.level);
+  const alreadyCompleted = levelProgress.overviewCompleted;
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      markOverviewComplete(lesson.level);
-      onActivityComplete();
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, [onActivityComplete, lesson.level, markOverviewComplete]);
+  const handleCompleteOverview = () => {
+    markOverviewComplete(lesson.level);
+    setIsCompleted(true);
+    onActivityComplete();
+  };
 
   const renderTextWithTermHighlights = (text: string) => {
     let processedText = text;
@@ -127,21 +129,52 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
+      <Card className={`bg-gradient-to-r border-2 ${
+        alreadyCompleted || isCompleted 
+          ? 'from-green-50 to-emerald-50 border-green-200' 
+          : 'from-blue-50 to-purple-50 border-blue-200'
+      }`}>
         <CardContent className="pt-6">
           <div className="text-center">
             <div className="flex justify-center mb-4">
-              <div className="h-12 w-12 bg-green-100 rounded-full flex items-center justify-center">
-                <PandaLogo className="h-8 w-8 text-green-600" />
+              <div className={`h-12 w-12 rounded-full flex items-center justify-center ${
+                alreadyCompleted || isCompleted 
+                  ? 'bg-green-100' 
+                  : 'bg-blue-100'
+              }`}>
+                {alreadyCompleted || isCompleted ? (
+                  <CheckCircle className="h-8 w-8 text-green-600" />
+                ) : (
+                  <PandaLogo className="h-8 w-8 text-blue-600" />
+                )}
               </div>
             </div>
-            <h3 className="text-lg font-semibold text-green-900 mb-2">
-              Ready to Begin Your Consulting Journey?
-            </h3>
-            <p className="text-green-700 text-sm">
-              This lesson combines interactive learning with real-world applications. 
-              You'll practice with the same frameworks and approaches used by top consulting firms!
-            </p>
+            {alreadyCompleted || isCompleted ? (
+              <>
+                <h3 className="text-lg font-semibold text-green-900 mb-2">
+                  Overview Complete!
+                </h3>
+                <p className="text-green-700 text-sm mb-4">
+                  You've successfully reviewed the lesson overview. You can now proceed to master the key terms and play mini-games!
+                </p>
+              </>
+            ) : (
+              <>
+                <h3 className="text-lg font-semibold text-blue-900 mb-2">
+                  Ready to Begin Your Consulting Journey?
+                </h3>
+                <p className="text-blue-700 text-sm mb-4">
+                  This lesson combines interactive learning with real-world applications. 
+                  You'll practice with the same frameworks and approaches used by top consulting firms!
+                </p>
+                <Button 
+                  onClick={handleCompleteOverview}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  Mark Overview as Complete
+                </Button>
+              </>
+            )}
           </div>
         </CardContent>
       </Card>

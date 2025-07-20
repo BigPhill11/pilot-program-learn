@@ -23,7 +23,7 @@ const MiniGamesTab: React.FC<MiniGamesTabProps> = ({
   const [completedGames, setCompletedGames] = useState<Set<string>>(new Set());
   const { saveMiniGameProgress, getLevelProgress } = useConsultingProgress();
 
-  // Load existing progress on mount
+  // Load existing progress on mount and when progress changes
   useEffect(() => {
     const levelProgress = getLevelProgress(lesson.level);
     const existingCompletedGames = new Set(
@@ -32,7 +32,7 @@ const MiniGamesTab: React.FC<MiniGamesTabProps> = ({
       )
     );
     setCompletedGames(existingCompletedGames);
-  }, [lesson.level, getLevelProgress]);
+  }, [lesson.level]);
 
   const handleGameComplete = (gameId: string, score: number = 0) => {
     console.log(`Consulting game ${gameId} completed with score:`, score);
