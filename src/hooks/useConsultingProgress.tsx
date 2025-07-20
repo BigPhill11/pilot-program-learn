@@ -163,22 +163,7 @@ export const useConsultingProgress = () => {
       // Check if module is 100% complete
       if (updatedProgress.totalProgress >= 100) {
         await markLessonComplete(level);
-        
-        // Save completion to user progress
-        const { error } = await supabase
-          .from('user_progress')
-          .upsert({
-            user_id: user.id,
-            daily_activities: {
-              [`consulting_level_${level}_completed`]: new Date().toISOString()
-            }
-          }, {
-            onConflict: 'user_id'
-          });
-
-        if (error) {
-          console.error('Error updating user progress:', error);
-        }
+        console.log(`Consulting level ${level} completed with ${updatedProgress.totalProgress}% progress`);
       }
     } catch (error) {
       console.error('Error saving module progress:', error);

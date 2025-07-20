@@ -45,6 +45,12 @@ const InteractiveConsultingLesson: React.FC<InteractiveConsultingLessonProps> = 
   }, [levelProgress.totalProgress, onComplete]);
 
   const generateQuizQuestions = () => {
+    // Ensure lesson and interactiveQuiz exist
+    if (!lesson?.interactiveQuiz?.questions) {
+      console.warn('No quiz questions available for lesson:', lesson?.title);
+      return [];
+    }
+
     const userLevel = profile?.app_version || 'beginner';
     const difficultyMap: Record<string, string> = {
       'beginner': 'beginner',
@@ -53,9 +59,12 @@ const InteractiveConsultingLesson: React.FC<InteractiveConsultingLessonProps> = 
     };
     const targetDifficulty = difficultyMap[userLevel] || 'beginner';
 
-    return lesson.interactiveQuiz.questions.filter(
-      q => q.difficulty === targetDifficulty || q.difficulty === 'beginner'
+    const filteredQuestions = lesson.interactiveQuiz.questions.filter(
+      q => q?.difficulty === targetDifficulty || q?.difficulty === 'beginner'
     ).slice(0, 5);
+
+    console.log('Generated quiz questions:', filteredQuestions.length, 'for difficulty:', targetDifficulty);
+    return filteredQuestions;
   };
 
   const handleQuizComplete = (score: number, totalQuestions: number) => {

@@ -27,6 +27,24 @@ const EnhancedQuiz: React.FC<EnhancedQuizProps> = ({ questions, onComplete, onRe
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
 
+  // Handle empty questions array
+  if (!questions || questions.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>No Questions Available</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">No quiz questions are available for this lesson.</p>
+          <Button onClick={onRetry} className="mt-4">
+            <RotateCcw className="h-4 w-4 mr-2" />
+            Retry
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
   const currentQuestion = questions[currentQuestionIndex];
   const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
@@ -102,7 +120,7 @@ const EnhancedQuiz: React.FC<EnhancedQuizProps> = ({ questions, onComplete, onRe
       <CardHeader>
         <div className="flex justify-between items-center">
           <CardTitle>Question {currentQuestionIndex + 1} of {questions.length}</CardTitle>
-          <Badge variant="outline">{currentQuestion.difficulty}</Badge>
+          <Badge variant="outline">{currentQuestion?.difficulty || 'Unknown'}</Badge>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
