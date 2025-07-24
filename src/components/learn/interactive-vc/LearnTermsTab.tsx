@@ -101,9 +101,7 @@ const LearnTermsTab: React.FC<LearnTermsTabProps> = ({
           term={currentTerm.term}
           definition={currentTerm.definition}
           analogy={currentTerm.analogy || ""}
-          example={currentTerm.example || ""}
-          category={currentTerm.category}
-          onMaster={handleMasterTerm}
+          onMastered={handleMasterTerm}
           isMastered={masteredTerms.has(currentTermIndex)}
         />
         

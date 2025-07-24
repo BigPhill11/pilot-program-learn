@@ -5,6 +5,10 @@ import { Badge } from '@/components/ui/badge';
 import { financeCareerData, FinanceCareerData } from '@/data/finance-careers';
 import EnhancedFinanceCareerJourney from './EnhancedFinanceCareerJourney';
 import FinanceCareerJourney from './FinanceCareerJourney';
+import InteractiveConsultingLesson from "./InteractiveConsultingLesson";
+import InteractiveVCLesson from "./InteractiveVCLesson";
+import { managementConsultingLessons } from "@/data/management-consulting-lessons";
+import { vcLessons } from "@/data/venture-capital-lessons";
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const CareersInFinanceTab = () => {
@@ -12,12 +16,29 @@ const CareersInFinanceTab = () => {
     const isMobile = useIsMobile();
 
     if (selectedCareer) {
-        // Use enhanced journey for Investment Banking, Private Equity, and Management Consulting
-        if (selectedCareer.id === 'investment-banking' || selectedCareer.id === 'private-equity' || selectedCareer.id === 'management-consulting') {
-            return <EnhancedFinanceCareerJourney career={selectedCareer} onBack={() => setSelectedCareer(null)} />;
-        } else {
-            return <FinanceCareerJourney career={selectedCareer} onBack={() => setSelectedCareer(null)} />;
-        }
+      // Interactive lessons for specific careers
+      if (selectedCareer.id === 'management-consulting') {
+        return <InteractiveConsultingLesson
+          lesson={managementConsultingLessons[0]}
+          onBack={() => setSelectedCareer(null)}
+          onComplete={() => setSelectedCareer(null)}
+        />;
+      }
+      
+      if (selectedCareer.id === 'venture-capital') {
+        return <InteractiveVCLesson
+          lesson={vcLessons[0]}
+          onBack={() => setSelectedCareer(null)}
+          onComplete={() => setSelectedCareer(null)}
+        />;
+      }
+      
+      // Use enhanced journey for Investment Banking and Private Equity  
+      if (selectedCareer.id === 'investment-banking' || selectedCareer.id === 'private-equity') {
+        return <EnhancedFinanceCareerJourney career={selectedCareer} onBack={() => setSelectedCareer(null)} />;
+      } else {
+        return <FinanceCareerJourney career={selectedCareer} onBack={() => setSelectedCareer(null)} />;
+      }
     }
 
     return (
@@ -37,7 +58,7 @@ const CareersInFinanceTab = () => {
                         className="flex flex-col hover:shadow-lg hover:border-primary transition-all cursor-pointer group h-full relative"
                         onClick={() => setSelectedCareer(career)}
                     >
-                        {(career.id === 'investment-banking' || career.id === 'private-equity' || career.id === 'management-consulting') && (
+                        {(['investment-banking', 'management-consulting', 'private-equity', 'venture-capital'].includes(career.id)) && (
                             <div className="absolute top-2 right-2">
                                 <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white">
                                     ✨ Interactive
@@ -54,14 +75,14 @@ const CareersInFinanceTab = () => {
                                 {career.name}
                             </CardTitle>
                             <Badge variant="outline" className="mx-auto block w-fit mb-4">
-                                {(career.id === 'investment-banking' || career.id === 'private-equity' || career.id === 'management-consulting') ? 'Interactive Journey' : '7-Level Journey'}
+                                {(['investment-banking', 'management-consulting', 'private-equity', 'venture-capital'].includes(career.id)) ? 'Interactive Journey' : '7-Level Journey'}
                             </Badge>
                             
                             <CardDescription className={`${isMobile ? 'text-xs' : 'text-sm'} leading-relaxed`}>
                                 {career.description}
                             </CardDescription>
                             
-                            {(career.id === 'investment-banking' || career.id === 'private-equity' || career.id === 'management-consulting') && (
+                            {(['investment-banking', 'management-consulting', 'private-equity', 'venture-capital'].includes(career.id)) && (
                                 <div className="mt-3 p-2 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border border-orange-200">
                                     <p className="text-xs text-orange-700 font-medium">
                                         🎮 Now with interactive games, quizzes, and real-world examples!

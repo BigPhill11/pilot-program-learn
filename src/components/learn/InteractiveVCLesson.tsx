@@ -9,9 +9,9 @@ import { vcTerms } from "@/data/venture-capital-terms";
 import OverviewTab from "./interactive-vc/OverviewTab";
 import LearnTermsTab from "./interactive-vc/LearnTermsTab";
 import MiniGamesTab from "./interactive-vc/MiniGamesTab";
-import { EnhancedQuiz } from "./interactive-ib/EnhancedQuiz";
-import { LessonHeader } from "./interactive-ib/LessonHeader";
-import { ProgressTracker } from "./interactive-ib/ProgressTracker";
+import EnhancedQuiz from "./interactive-ib/EnhancedQuiz";
+import VCLessonHeader from "./interactive-vc/VCLessonHeader";
+import ProgressTracker from "./interactive-ib/ProgressTracker";
 import HighlightableTerm from "@/components/HighlightableTerm";
 import { useAuth } from "@/hooks/useAuth";
 import { useVCProgress } from "@/hooks/useVCProgress";
@@ -143,17 +143,13 @@ const InteractiveVCLesson: React.FC<InteractiveVCLessonProps> = ({
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-      <LessonHeader
-        title={lesson.title}
-        description={lesson.description}
-        level={lesson.level}
+      <VCLessonHeader
+        lesson={lesson}
         onBack={onBack}
       />
       
       <ProgressTracker 
-        completedActivities={completedActivities}
-        totalActivities={6}
-        currentProgress={levelProgress.totalProgress}
+        progress={levelProgress.totalProgress}
       />
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

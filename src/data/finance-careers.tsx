@@ -1143,3 +1143,47 @@ export const financeCareerData: FinanceCareerData[] = [
     ]
   }
 ];
+
+export interface InteractiveCareerData {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ComponentType<{ className?: string }>;
+  levels: number;
+  isInteractive: boolean;
+}
+
+export const interactiveFinanceCareers: InteractiveCareerData[] = [
+  {
+    id: "investment-banking",
+    title: "Investment Banking",
+    description: "Learn about investment banking through hands-on deal analysis, financial modeling, and client advisory simulations.",
+    icon: Building2,
+    levels: 7,
+    isInteractive: true
+  },
+  {
+    id: "management-consulting",
+    title: "Management Consulting",
+    description: "Master consulting frameworks, problem-solving methodologies, and strategic thinking through interactive case studies.",
+    icon: Users,
+    levels: 7,
+    isInteractive: true
+  },
+  {
+    id: "private-equity",
+    title: "Private Equity",
+    description: "Learn about private equity investing, including leveraged buyouts, growth capital, and portfolio company management through hands-on learning modules.",
+    icon: TrendingUp,
+    levels: 7,
+    isInteractive: true
+  },
+  {
+    id: "venture-capital",
+    title: "Venture Capital",
+    description: "Master venture capital fundamentals, from deal sourcing and due diligence to portfolio management and fund operations through interactive lessons and real-world case studies.",
+    icon: Rocket,
+    levels: 7,
+    isInteractive: true
+  }
+];
