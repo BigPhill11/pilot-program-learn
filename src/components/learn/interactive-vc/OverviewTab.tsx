@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle, Target, HelpCircle } from "lucide-react";
 import { VCLessonContent } from "@/data/venture-capital-lessons";
 import { vcTerms } from "@/data/venture-capital-terms";
-import { HighlightableTerm } from "@/components/HighlightableTerm";
+import HighlightableTerm from "@/components/HighlightableTerm";
 import { useVCProgress } from "@/hooks/useVCProgress";
 
 interface OverviewTabProps {

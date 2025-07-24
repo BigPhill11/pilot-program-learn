@@ -1150,6 +1150,45 @@ export type Database = {
           },
         ]
       }
+      vc_module_progress: {
+        Row: {
+          created_at: string
+          id: string
+          last_accessed: string
+          level: number
+          mini_games_progress: Json
+          overview_completed: boolean
+          terms_progress: Json
+          total_progress: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_accessed?: string
+          level: number
+          mini_games_progress?: Json
+          overview_completed?: boolean
+          terms_progress?: Json
+          total_progress?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_accessed?: string
+          level?: number
+          mini_games_progress?: Json
+          overview_completed?: boolean
+          terms_progress?: Json
+          total_progress?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       video_comments: {
         Row: {
           content: string

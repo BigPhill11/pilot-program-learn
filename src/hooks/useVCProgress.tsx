@@ -20,7 +20,7 @@ export const useVCProgress = () => {
   const [moduleProgress, setModuleProgress] = useState<{ [level: number]: VCModuleProgress }>({});
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
-  const { markLessonComplete } = useLessonCompletions();
+  const { markLessonComplete } = useLessonCompletions('venture-capital');
 
   const loadAllProgress = useCallback(async () => {
     if (!user) {
@@ -34,7 +34,8 @@ export const useVCProgress = () => {
     }
 
     try {
-      const { data, error } = await supabase
+      // Note: Using any to bypass TypeScript issues until types are regenerated
+      const { data, error } = await (supabase as any)
         .from('vc_module_progress')
         .select('*')
         .eq('user_id', user.id);
@@ -42,7 +43,7 @@ export const useVCProgress = () => {
       if (error) throw error;
 
       const progressMap: { [level: number]: VCModuleProgress } = {};
-      data?.forEach(item => {
+      data?.forEach((item: any) => {
         progressMap[item.level] = {
           level: item.level,
           overviewCompleted: item.overview_completed,
@@ -120,7 +121,8 @@ export const useVCProgress = () => {
     if (!user) return;
 
     try {
-      const { error } = await supabase
+      // Note: Using any to bypass TypeScript issues until types are regenerated
+      const { error } = await (supabase as any)
         .from('vc_module_progress')
         .upsert({
           user_id: user.id,

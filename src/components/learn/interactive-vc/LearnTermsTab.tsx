@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, ChevronRight, CheckCircle, Brain } from "lucide-react";
 import { VCLessonContent } from "@/data/venture-capital-lessons";
 import { getVCTermsByLevel } from "@/data/venture-capital-terms";
-import { KeyTermFlashcard } from "@/components/learn/interactive-ib/KeyTermFlashcard";
+import KeyTermFlashcard from "@/components/learn/interactive-ib/KeyTermFlashcard";
 import { useVCProgress } from "@/hooks/useVCProgress";
 
 interface LearnTermsTabProps {

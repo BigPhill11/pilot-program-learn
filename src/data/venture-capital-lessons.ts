@@ -169,7 +169,7 @@ export const vcLessons: VCLessonContent[] = [
       }
     ],
     realWorldExamples: [
-      {
+        {
         title: "Benchmark's Uber Discovery",
         description: "Benchmark discovered Uber through their network and cold outreach, leading to a $11M Series A investment.",
         company: "Uber",
@@ -179,101 +179,6 @@ export const vcLessons: VCLessonContent[] = [
           "Sometimes the best deals require proactive outreach",
           "Understanding market timing is crucial for big wins"
         ]
-      },
-      {
-        id: "vc-fundamentals",
-        title: "Venture Capital Fundamentals",
-        description: "Master the core concepts of venture capital, understanding how VCs identify, evaluate, and invest in high-growth startups.",
-        level: 1,
-        learningObjectives: [
-          "Understand what venture capital is and how it differs from other forms of financing",
-          "Learn the startup ecosystem and where VC fits in the funding lifecycle",
-          "Grasp the basic risk-reward profile of venture investing",
-          "Identify the key players in the VC ecosystem"
-        ],
-        keyQuestions: [
-          "What makes a company suitable for venture capital investment?",
-          "How do VCs make money and what are their return expectations?",
-          "What is the typical investment process from initial contact to funding?",
-          "How does venture capital impact startup growth and strategy?"
-        ],
-        keyTerms: ["Venture Capital", "Portfolio Company", "Term Sheet", "Due Diligence", "Equity"],
-        miniGames: [
-          {
-            id: "vc-fundamentals-match",
-            title: "VC Fundamentals Match",
-            description: "Match venture capital terms with their correct definitions",
-            difficulty: "Beginner",
-            estimatedTime: "5 minutes"
-          },
-          {
-            id: "startup-vs-traditional-business",
-            title: "Startup vs Traditional Business",
-            description: "Identify which businesses are suitable for VC investment",
-            difficulty: "Beginner",
-            estimatedTime: "7 minutes"
-          }
-        ],
-        realWorldExamples: [
-          {
-            title: "Sequoia's Early Google Investment",
-            description: "In 1999, Sequoia Capital invested $12.5M in Google for 12.5% equity when the company was just a search engine idea from Stanford students.",
-            company: "Google",
-            outcome: "Google went public in 2004, making Sequoia's investment worth over $4 billion - a 300x return.",
-            lessonsLearned: [
-              "Great founders with deep technical expertise can build massive companies",
-              "Large addressable markets create opportunity for exceptional returns",
-              "Sometimes the biggest opportunities look small at first"
-            ]
-          },
-          {
-            title: "The Power of Platform Thinking",
-            description: "Amazon started as an online bookstore but Jeff Bezos had a vision for a broader e-commerce platform.",
-            company: "Amazon",
-            outcome: "Became one of the world's largest companies with a $1+ trillion market cap.",
-            lessonsLearned: [
-              "Platform businesses can scale beyond their initial market",
-              "Long-term vision matters more than short-term profitability",
-              "Customer obsession drives sustainable competitive advantage"
-            ]
-          }
-        ],
-        practiceActivity: {
-          title: "Startup Investment Evaluation",
-          description: "Evaluate three different startup pitches and determine which would be most suitable for VC investment.",
-          deliverable: "Investment recommendation memo with reasoning",
-          timeEstimate: "30 minutes"
-        },
-        interactiveQuiz: {
-          questions: [
-            {
-              id: "vc-definition",
-              question: "What is the primary way venture capitalists make money?",
-              options: [
-                "Annual management fees from their funds",
-                "Capital gains from successful portfolio company exits",
-                "Interest payments from portfolio companies",
-                "Consulting fees for advisory services"
-              ],
-              correctAnswer: 1,
-              explanation: "VCs primarily make money through capital gains when their portfolio companies are sold or go public, typically earning 20% of the profits (carried interest).",
-              difficulty: "beginner"
-            },
-            {
-              id: "vc-stage",
-              question: "At what stage do venture capitalists typically invest?",
-              options: [
-                "After companies go public",
-                "In established, profitable companies",
-                "In early to growth-stage companies with high potential",
-                "Only in companies that are already generating revenue"
-              ],
-              correctAnswer: 2,
-              explanation: "VCs focus on early to growth-stage companies that show high growth potential, often before they're profitable but with clear paths to significant revenue growth.",
-              difficulty: "beginner"
-            }
-          ]
-        }
       }
     ],
     practiceActivity: {
