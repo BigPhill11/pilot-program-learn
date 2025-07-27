@@ -8,6 +8,8 @@ import PhilsFriendsSection from './PhilsFriendsSection';
 import ProfessionalInterviewingMastery from './courses/ProfessionalInterviewingMastery';
 import NetworkingLikePro from './courses/NetworkingLikePro';
 import BusinessCommunicationExcellence from './courses/BusinessCommunicationExcellence';
+import BlackInBusinessExcellence from './courses/BlackInBusinessExcellence';
+import WorkingWomenExcellence from './courses/WorkingWomenExcellence';
 
 interface Course {
   id: string;
@@ -37,6 +39,16 @@ const CourseDetailView: React.FC<CourseDetailViewProps> = ({ course, onBack }) =
   // Check if this is the Business Communication Excellence course
   if (course.category === 'professional_communication' && course.title.toLowerCase().includes('business communication excellence')) {
     return <BusinessCommunicationExcellence onBack={onBack} />;
+  }
+
+  // Check if this is the Black in Business Excellence course
+  if (course.category === 'diversity_inclusion' && course.title.toLowerCase().includes('black in business excellence')) {
+    return <BlackInBusinessExcellence onBack={onBack} />;
+  }
+
+  // Check if this is the Working Women Excellence course
+  if (course.category === 'diversity_inclusion' && course.title.toLowerCase().includes('working women excellence')) {
+    return <WorkingWomenExcellence onBack={onBack} />;
   }
 
   return (

@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Clock, Users, MessageSquare, Shirt, Handshake, Star, Play, BookOpen } from 'lucide-react';
+import { Clock, Users, MessageSquare, Shirt, Handshake, Star, Play, BookOpen, Lightbulb } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -61,7 +61,8 @@ const SoftSkillsPage = () => {
     networking: Users,
     professional_communication: MessageSquare,
     business_attire: Shirt,
-    workplace_etiquette: Handshake
+    workplace_etiquette: Handshake,
+    diversity_inclusion: Lightbulb
   };
 
   const categoryColors = {
@@ -69,7 +70,8 @@ const SoftSkillsPage = () => {
     networking: 'bg-green-500',
     professional_communication: 'bg-purple-500',
     business_attire: 'bg-orange-500',
-    workplace_etiquette: 'bg-pink-500'
+    workplace_etiquette: 'bg-pink-500',
+    diversity_inclusion: 'bg-indigo-500'
   };
 
   const getDifficultyColor = (difficulty: string) => {
@@ -163,13 +165,14 @@ const SoftSkillsPage = () => {
       </div>
 
       <Tabs defaultValue="all" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="all">All Courses</TabsTrigger>
           <TabsTrigger value="interviewing">Interviewing</TabsTrigger>
           <TabsTrigger value="networking">Networking</TabsTrigger>
           <TabsTrigger value="professional_communication">Communication</TabsTrigger>
           <TabsTrigger value="business_attire">Business Attire</TabsTrigger>
           <TabsTrigger value="workplace_etiquette">Etiquette</TabsTrigger>
+          <TabsTrigger value="diversity_inclusion">Diversity & Inclusion</TabsTrigger>
         </TabsList>
 
         <TabsContent value="all" className="space-y-6">
