@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, BookOpen, CheckCircle2, Lock, Users, Crown } from 'lucide-react';
+import { ArrowLeft, BookOpen, CheckCircle2, Lock, Users, Crown, PlayCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { useSoftSkillsProgress } from '@/hooks/useSoftSkillsProgress';
+import { useUnifiedProgress } from '@/hooks/useUnifiedProgress';
 import WorkingWomenModule1 from './working-women/WorkingWomenModule1';
 import WorkingWomenModule2 from './working-women/WorkingWomenModule2';
 import WorkingWomenModule3 from './working-women/WorkingWomenModule3';
@@ -20,34 +20,70 @@ const WorkingWomenExcellence: React.FC<WorkingWomenExcellenceProps> = ({ onBack 
   const [selectedModule, setSelectedModule] = useState<number | null>(null);
   const [completedModules, setCompletedModules] = useState<Set<number>>(new Set());
 
-  // Use progress tracking for each module
-  const module1Progress = useSoftSkillsProgress('working_women', 'module_1', 'Executive Presence & Assertive Communication');
-  const module2Progress = useSoftSkillsProgress('working_women', 'module_2', 'Work-Life Integration Strategies');
-  const module3Progress = useSoftSkillsProgress('working_women', 'module_3', 'Salary Negotiation & Self-Advocacy');
-  const module4Progress = useSoftSkillsProgress('working_women', 'module_4', 'Navigating Gender Dynamics');
-  const module5Progress = useSoftSkillsProgress('working_women', 'module_5', 'Building Strategic Networks & Mentorship');
-  const module6Progress = useSoftSkillsProgress('working_women', 'module_6', 'Leadership Authenticity & Breaking Barriers');
+  // Use unified progress tracking for each module
+  const module1Progress = useUnifiedProgress({ 
+    moduleId: 'module_1', 
+    moduleType: 'soft_skills', 
+    courseId: 'working_women' 
+  });
+  const module2Progress = useUnifiedProgress({ 
+    moduleId: 'module_2', 
+    moduleType: 'soft_skills', 
+    courseId: 'working_women' 
+  });
+  const module3Progress = useUnifiedProgress({ 
+    moduleId: 'module_3', 
+    moduleType: 'soft_skills', 
+    courseId: 'working_women' 
+  });
+  const module4Progress = useUnifiedProgress({ 
+    moduleId: 'module_4', 
+    moduleType: 'soft_skills', 
+    courseId: 'working_women' 
+  });
+  const module5Progress = useUnifiedProgress({ 
+    moduleId: 'module_5', 
+    moduleType: 'soft_skills', 
+    courseId: 'working_women' 
+  });
+  const module6Progress = useUnifiedProgress({ 
+    moduleId: 'module_6', 
+    moduleType: 'soft_skills', 
+    courseId: 'working_women' 
+  });
 
   // Check completion status for all modules
   useEffect(() => {
     const completed = new Set<number>();
     
-    if (module1Progress.progress?.completedAt) completed.add(1);
-    if (module2Progress.progress?.completedAt) completed.add(2);
-    if (module3Progress.progress?.completedAt) completed.add(3);
-    if (module4Progress.progress?.completedAt) completed.add(4);
-    if (module5Progress.progress?.completedAt) completed.add(5);
-    if (module6Progress.progress?.completedAt) completed.add(6);
+    if (module1Progress.isCompleted) completed.add(1);
+    if (module2Progress.isCompleted) completed.add(2);
+    if (module3Progress.isCompleted) completed.add(3);
+    if (module4Progress.isCompleted) completed.add(4);
+    if (module5Progress.isCompleted) completed.add(5);
+    if (module6Progress.isCompleted) completed.add(6);
     
     setCompletedModules(completed);
   }, [
-    module1Progress.progress?.completedAt,
-    module2Progress.progress?.completedAt,
-    module3Progress.progress?.completedAt,
-    module4Progress.progress?.completedAt,
-    module5Progress.progress?.completedAt,
-    module6Progress.progress?.completedAt
+    module1Progress.isCompleted,
+    module2Progress.isCompleted,
+    module3Progress.isCompleted,
+    module4Progress.isCompleted,
+    module5Progress.isCompleted,
+    module6Progress.isCompleted
   ]);
+
+  const getModuleProgress = (moduleId: number) => {
+    switch (moduleId) {
+      case 1: return module1Progress;
+      case 2: return module2Progress;
+      case 3: return module3Progress;
+      case 4: return module4Progress;
+      case 5: return module5Progress;
+      case 6: return module6Progress;
+      default: return null;
+    }
+  };
 
   const modules = [
     {
@@ -56,7 +92,8 @@ const WorkingWomenExcellence: React.FC<WorkingWomenExcellenceProps> = ({ onBack 
       description: 'Develop commanding presence and assertive communication skills that ensure your voice is heard and respected',
       duration: '45 mins',
       topics: ['Executive Presence', 'Assertive Communication', 'Double Bind'],
-      isUnlocked: true
+      isUnlocked: true,
+      progressData: module1Progress
     },
     {
       id: 2,
@@ -64,7 +101,8 @@ const WorkingWomenExcellence: React.FC<WorkingWomenExcellenceProps> = ({ onBack 
       description: 'Master strategies for integrating professional ambitions with personal responsibilities and well-being',
       duration: '40 mins',
       topics: ['Work-Life Integration', 'Boundary Setting', 'Energy Management'],
-      isUnlocked: completedModules.has(1)
+      isUnlocked: completedModules.has(1),
+      progressData: module2Progress
     },
     {
       id: 3,
@@ -72,7 +110,8 @@ const WorkingWomenExcellence: React.FC<WorkingWomenExcellenceProps> = ({ onBack 
       description: 'Master the art of negotiating for what you\'re worth and advocating effectively for your career advancement',
       duration: '50 mins',
       topics: ['Market Value Research', 'Anchoring', 'Professional Advocacy'],
-      isUnlocked: completedModules.has(2)
+      isUnlocked: completedModules.has(2),
+      progressData: module3Progress
     },
     {
       id: 4,
@@ -80,7 +119,8 @@ const WorkingWomenExcellence: React.FC<WorkingWomenExcellenceProps> = ({ onBack 
       description: 'Develop strategies for effectively navigating gender-based challenges and biases in professional environments',
       duration: '45 mins',
       topics: ['Unconscious Bias', 'Glass Ceiling', 'Allyship'],
-      isUnlocked: completedModules.has(3)
+      isUnlocked: completedModules.has(3),
+      progressData: module4Progress
     },
     {
       id: 5,
@@ -88,7 +128,8 @@ const WorkingWomenExcellence: React.FC<WorkingWomenExcellenceProps> = ({ onBack 
       description: 'Create powerful professional networks and mentoring relationships that accelerate your career advancement',
       duration: '45 mins',
       topics: ['Strategic Networking', 'Sponsor vs. Mentor', 'Reciprocal Networking'],
-      isUnlocked: completedModules.has(4)
+      isUnlocked: completedModules.has(4),
+      progressData: module5Progress
     },
     {
       id: 6,
@@ -96,7 +137,8 @@ const WorkingWomenExcellence: React.FC<WorkingWomenExcellenceProps> = ({ onBack 
       description: 'Develop your authentic leadership style while breaking through barriers and creating opportunities for other women',
       duration: '50 mins',
       topics: ['Authentic Leadership', 'Glass Cliff', 'Barrier Breaking'],
-      isUnlocked: completedModules.has(5)
+      isUnlocked: completedModules.has(5),
+      progressData: module6Progress
     }
   ];
 
@@ -110,10 +152,12 @@ const WorkingWomenExcellence: React.FC<WorkingWomenExcellenceProps> = ({ onBack 
   };
 
   if (selectedModule) {
+    const progressData = getModuleProgress(selectedModule);
     const moduleProps = {
       onBack: () => setSelectedModule(null),
       onComplete: () => handleModuleComplete(selectedModule),
-      isCompleted: completedModules.has(selectedModule)
+      isCompleted: completedModules.has(selectedModule),
+      progressData
     };
 
     switch (selectedModule) {
@@ -178,6 +222,8 @@ const WorkingWomenExcellence: React.FC<WorkingWomenExcellenceProps> = ({ onBack 
           {modules.map((module) => {
             const isCompleted = completedModules.has(module.id);
             const isLocked = !module.isUnlocked;
+            const hasStarted = module.progressData?.progress && module.progressData.progress.progressPercentage > 0;
+            const progressPercentage = module.progressData?.progress?.progressPercentage || 0;
 
             return (
               <Card 
@@ -187,7 +233,9 @@ const WorkingWomenExcellence: React.FC<WorkingWomenExcellenceProps> = ({ onBack 
                     ? 'opacity-60 cursor-not-allowed' 
                     : isCompleted 
                       ? 'border-green-200 bg-green-50' 
-                      : 'hover:shadow-lg cursor-pointer'
+                      : hasStarted
+                        ? 'border-blue-200 bg-blue-50'
+                        : 'hover:shadow-lg cursor-pointer'
                 }`}
               >
                 <CardHeader>
@@ -198,12 +246,16 @@ const WorkingWomenExcellence: React.FC<WorkingWomenExcellenceProps> = ({ onBack 
                           ? 'bg-green-500 text-white' 
                           : isLocked 
                             ? 'bg-gray-300 text-gray-500'
-                            : 'bg-purple-500 text-white'
+                            : hasStarted
+                              ? 'bg-blue-500 text-white'
+                              : 'bg-purple-500 text-white'
                       }`}>
                         {isCompleted ? (
                           <CheckCircle2 className="h-5 w-5" />
                         ) : isLocked ? (
                           <Lock className="h-5 w-5" />
+                        ) : hasStarted ? (
+                          <PlayCircle className="h-5 w-5" />
                         ) : (
                           <BookOpen className="h-5 w-5" />
                         )}
@@ -212,11 +264,15 @@ const WorkingWomenExcellence: React.FC<WorkingWomenExcellenceProps> = ({ onBack 
                         Module {module.id}
                       </Badge>
                     </div>
-                    {isCompleted && (
+                    {isCompleted ? (
                       <Badge className="bg-green-100 text-green-800">
                         Completed
                       </Badge>
-                    )}
+                    ) : hasStarted ? (
+                      <Badge className="bg-blue-100 text-blue-800">
+                        In Progress
+                      </Badge>
+                    ) : null}
                   </div>
                   <CardTitle className="text-lg">{module.title}</CardTitle>
                   <CardDescription>{module.description}</CardDescription>
@@ -228,6 +284,16 @@ const WorkingWomenExcellence: React.FC<WorkingWomenExcellenceProps> = ({ onBack 
                       <span>{module.duration}</span>
                     </div>
                   </div>
+
+                  {hasStarted && !isCompleted && (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="font-medium">Progress</span>
+                        <span className="text-muted-foreground">{Math.round(progressPercentage)}%</span>
+                      </div>
+                      <Progress value={progressPercentage} className="h-2" />
+                    </div>
+                  )}
 
                   <div className="space-y-2">
                     <h4 className="font-medium text-sm">Key Topics:</h4>
@@ -242,7 +308,7 @@ const WorkingWomenExcellence: React.FC<WorkingWomenExcellenceProps> = ({ onBack 
 
                   <Button 
                     className="w-full" 
-                    variant={isCompleted ? "outline" : "default"}
+                    variant={isCompleted ? "outline" : hasStarted ? "default" : "default"}
                     disabled={isLocked}
                     onClick={() => !isLocked && setSelectedModule(module.id)}
                   >
@@ -255,6 +321,11 @@ const WorkingWomenExcellence: React.FC<WorkingWomenExcellenceProps> = ({ onBack 
                       <>
                         <CheckCircle2 className="h-4 w-4 mr-2" />
                         Review Module
+                      </>
+                    ) : hasStarted ? (
+                      <>
+                        <PlayCircle className="h-4 w-4 mr-2" />
+                        Continue Module
                       </>
                     ) : (
                       <>
