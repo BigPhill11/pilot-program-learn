@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { ProgressProvider } from "@/contexts/ProgressContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -22,6 +23,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
+          <ProgressProvider>
           <TooltipProvider>
             <Toaster />
             <BrowserRouter>
@@ -43,6 +45,7 @@ function App() {
               </div>
             </BrowserRouter>
           </TooltipProvider>
+          </ProgressProvider>
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>

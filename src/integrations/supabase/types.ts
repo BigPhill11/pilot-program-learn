@@ -14,6 +14,90 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          category: string
+          created_at: string
+          criteria: Json
+          description: string
+          icon: string
+          id: string
+          name: string
+          points: number
+          rarity: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          criteria: Json
+          description: string
+          icon: string
+          id?: string
+          name: string
+          points?: number
+          rarity?: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          criteria?: Json
+          description?: string
+          icon?: string
+          id?: string
+          name?: string
+          points?: number
+          rarity?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ai_recommendations: {
+        Row: {
+          confidence_score: number
+          created_at: string
+          description: string
+          expires_at: string | null
+          id: string
+          is_dismissed: boolean | null
+          is_read: boolean | null
+          reasoning: string | null
+          recommendation_type: string
+          recommended_item_id: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          confidence_score?: number
+          created_at?: string
+          description: string
+          expires_at?: string | null
+          id?: string
+          is_dismissed?: boolean | null
+          is_read?: boolean | null
+          reasoning?: string | null
+          recommendation_type: string
+          recommended_item_id?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          confidence_score?: number
+          created_at?: string
+          description?: string
+          expires_at?: string | null
+          id?: string
+          is_dismissed?: boolean | null
+          is_read?: boolean | null
+          reasoning?: string | null
+          recommendation_type?: string
+          recommended_item_id?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       career_videos: {
         Row: {
           career_id: string
@@ -315,6 +399,30 @@ export type Database = {
         }
         Relationships: []
       }
+      conversations: {
+        Row: {
+          created_at: string
+          id: string
+          participant_1: string
+          participant_2: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          participant_1: string
+          participant_2: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          participant_1?: string
+          participant_2?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       daily_logins: {
         Row: {
           created_at: string
@@ -332,6 +440,27 @@ export type Database = {
           created_at?: string
           id?: string
           login_date?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      favorites: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
           user_id?: string
         }
         Relationships: []
@@ -431,6 +560,71 @@ export type Database = {
           },
         ]
       }
+      group_memberships: {
+        Row: {
+          group_id: string
+          id: string
+          joined_at: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          group_id: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          group_id?: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_memberships_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "industry_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      industry_groups: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string | null
+          icon: string | null
+          id: string
+          member_count: number | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          member_count?: number | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          member_count?: number | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       initial_assessments: {
         Row: {
           assigned_version: string | null
@@ -455,6 +649,60 @@ export type Database = {
           id?: string
           responses?: Json
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      learning_modules: {
+        Row: {
+          category: string
+          content_type: string
+          content_url: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          difficulty_level: string
+          estimated_duration: number
+          id: string
+          is_featured: boolean | null
+          learning_objectives: Json | null
+          prerequisites: Json | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          content_type?: string
+          content_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          difficulty_level?: string
+          estimated_duration?: number
+          id?: string
+          is_featured?: boolean | null
+          learning_objectives?: Json | null
+          prerequisites?: Json | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          content_type?: string
+          content_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          difficulty_level?: string
+          estimated_duration?: number
+          id?: string
+          is_featured?: boolean | null
+          learning_objectives?: Json | null
+          prerequisites?: Json | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -521,6 +769,62 @@ export type Database = {
         }
         Relationships: []
       }
+      market_notes: {
+        Row: {
+          audio_url: string | null
+          content: string | null
+          created_at: string
+          format_type: string | null
+          id: string
+          note_date: string
+          podcast_episode_id: string | null
+          structured_content: Json | null
+          tags: string[] | null
+          timestamps: Json | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          audio_url?: string | null
+          content?: string | null
+          created_at?: string
+          format_type?: string | null
+          id?: string
+          note_date: string
+          podcast_episode_id?: string | null
+          structured_content?: Json | null
+          tags?: string[] | null
+          timestamps?: Json | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          audio_url?: string | null
+          content?: string | null
+          created_at?: string
+          format_type?: string | null
+          id?: string
+          note_date?: string
+          podcast_episode_id?: string | null
+          structured_content?: Json | null
+          tags?: string[] | null
+          timestamps?: Json | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "market_notes_podcast_episode_id_fkey"
+            columns: ["podcast_episode_id"]
+            isOneToOne: false
+            referencedRelation: "podcast_episodes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       market_predictions: {
         Row: {
           actual_price: number | null
@@ -557,6 +861,152 @@ export type Database = {
           updated_at?: string
           user_id?: string
           week_ending?: string
+        }
+        Relationships: []
+      }
+      mentor_connections: {
+        Row: {
+          created_at: string
+          expertise_area: string | null
+          id: string
+          mentee_id: string
+          mentor_id: string
+          message: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          expertise_area?: string | null
+          id?: string
+          mentee_id: string
+          mentor_id: string
+          message?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          expertise_area?: string | null
+          id?: string
+          mentee_id?: string
+          mentor_id?: string
+          message?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          read_at: string | null
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      module_progress: {
+        Row: {
+          completed_at: string | null
+          course_id: string | null
+          created_at: string
+          detailed_progress: Json
+          id: string
+          last_accessed: string
+          module_id: string
+          module_type: string
+          progress_percentage: number
+          time_spent_minutes: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          course_id?: string | null
+          created_at?: string
+          detailed_progress?: Json
+          id?: string
+          last_accessed?: string
+          module_id: string
+          module_type: string
+          progress_percentage?: number
+          time_spent_minutes?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          course_id?: string | null
+          created_at?: string
+          detailed_progress?: Json
+          id?: string
+          last_accessed?: string
+          module_id?: string
+          module_type?: string
+          progress_percentage?: number
+          time_spent_minutes?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      note_templates: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          format_type: string
+          id: string
+          is_system: boolean | null
+          name: string
+          structure: Json
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          format_type: string
+          id?: string
+          is_system?: boolean | null
+          name: string
+          structure?: Json
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          format_type?: string
+          id?: string
+          is_system?: boolean | null
+          name?: string
+          structure?: Json
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -762,6 +1212,167 @@ export type Database = {
           title?: string
           updated_at?: string
           video_url?: string
+        }
+        Relationships: []
+      }
+      podcast_episodes: {
+        Row: {
+          audio_url: string | null
+          created_at: string | null
+          description: string | null
+          duration: number | null
+          id: string
+          podcast_id: string | null
+          published_at: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          audio_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          duration?: number | null
+          id?: string
+          podcast_id?: string | null
+          published_at?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          audio_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          duration?: number | null
+          id?: string
+          podcast_id?: string | null
+          published_at?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "podcast_episodes_podcast_id_fkey"
+            columns: ["podcast_id"]
+            isOneToOne: false
+            referencedRelation: "podcasts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      podcasts: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          rss_url: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          rss_url?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          rss_url?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      posts: {
+        Row: {
+          chart_data: Json | null
+          comments_count: number | null
+          content: string
+          created_at: string
+          id: string
+          image_url: string | null
+          industry: string | null
+          likes_count: number | null
+          sentiment: string | null
+          shares_count: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          chart_data?: Json | null
+          comments_count?: number | null
+          content: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          industry?: string | null
+          likes_count?: number | null
+          sentiment?: string | null
+          shares_count?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          chart_data?: Json | null
+          comments_count?: number | null
+          content?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          industry?: string | null
+          likes_count?: number | null
+          sentiment?: string | null
+          shares_count?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      prediction_streaks: {
+        Row: {
+          accuracy_percentage: number
+          correct_predictions: number
+          created_at: string
+          current_streak: number
+          id: string
+          last_prediction_date: string | null
+          longest_streak: number
+          total_predictions: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          accuracy_percentage?: number
+          correct_predictions?: number
+          created_at?: string
+          current_streak?: number
+          id?: string
+          last_prediction_date?: string | null
+          longest_streak?: number
+          total_predictions?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          accuracy_percentage?: number
+          correct_predictions?: number
+          created_at?: string
+          current_streak?: number
+          id?: string
+          last_prediction_date?: string | null
+          longest_streak?: number
+          total_predictions?: number
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -1004,6 +1615,104 @@ export type Database = {
         }
         Relationships: []
       }
+      user_achievements: {
+        Row: {
+          achievement_id: string
+          id: string
+          progress: Json | null
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          id?: string
+          progress?: Json | null
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          id?: string
+          progress?: Json | null
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_analytics: {
+        Row: {
+          created_at: string
+          date_recorded: string
+          id: string
+          metadata: Json | null
+          metric_type: string
+          metric_value: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date_recorded?: string
+          id?: string
+          metadata?: Json | null
+          metric_type: string
+          metric_value: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date_recorded?: string
+          id?: string
+          metadata?: Json | null
+          metric_type?: string
+          metric_value?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_charts: {
+        Row: {
+          chart_config: Json | null
+          chart_data: Json
+          chart_name: string
+          chart_type: string
+          created_at: string
+          id: string
+          is_public: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          chart_config?: Json | null
+          chart_data: Json
+          chart_name: string
+          chart_type: string
+          created_at?: string
+          id?: string
+          is_public?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          chart_config?: Json | null
+          chart_data?: Json
+          chart_name?: string
+          chart_type?: string
+          created_at?: string
+          id?: string
+          is_public?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_company_interactions: {
         Row: {
           company_id: string
@@ -1032,6 +1741,77 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_follows: {
+        Row: {
+          created_at: string
+          follower_id: string
+          following_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          follower_id: string
+          following_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          follower_id?: string
+          following_id?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      user_learning_progress: {
+        Row: {
+          completion_date: string | null
+          created_at: string
+          id: string
+          module_id: string
+          notes: string | null
+          progress_percentage: number
+          quiz_scores: Json | null
+          status: string
+          time_spent_minutes: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completion_date?: string | null
+          created_at?: string
+          id?: string
+          module_id: string
+          notes?: string | null
+          progress_percentage?: number
+          quiz_scores?: Json | null
+          status?: string
+          time_spent_minutes?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completion_date?: string | null
+          created_at?: string
+          id?: string
+          module_id?: string
+          notes?: string | null
+          progress_percentage?: number
+          quiz_scores?: Json | null
+          status?: string
+          time_spent_minutes?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_learning_progress_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "learning_modules"
             referencedColumns: ["id"]
           },
         ]
@@ -1098,6 +1878,51 @@ export type Database = {
           created_at?: string | null
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_social_stats: {
+        Row: {
+          bio: string | null
+          expertise_areas: string[] | null
+          followers_count: number | null
+          following_count: number | null
+          id: string
+          is_mentor: boolean | null
+          location: string | null
+          mentor_rating: number | null
+          posts_count: number | null
+          total_likes_received: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bio?: string | null
+          expertise_areas?: string[] | null
+          followers_count?: number | null
+          following_count?: number | null
+          id?: string
+          is_mentor?: boolean | null
+          location?: string | null
+          mentor_rating?: number | null
+          posts_count?: number | null
+          total_likes_received?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bio?: string | null
+          expertise_areas?: string[] | null
+          followers_count?: number | null
+          following_count?: number | null
+          id?: string
+          is_mentor?: boolean | null
+          location?: string | null
+          mentor_rating?: number | null
+          posts_count?: number | null
+          total_likes_received?: number | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -1301,6 +2126,10 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: number
       }
+      generate_user_recommendations: {
+        Args: { p_user_id: string }
+        Returns: Json
+      }
       get_video_average_ratings: {
         Args: { video_id_param: string }
         Returns: {
@@ -1322,6 +2151,15 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
         }
         Returns: boolean
+      }
+      update_learning_progress: {
+        Args: {
+          p_user_id: string
+          p_module_id: string
+          p_progress_percentage: number
+          p_time_spent?: number
+        }
+        Returns: Json
       }
     }
     Enums: {

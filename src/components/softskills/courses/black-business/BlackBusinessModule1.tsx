@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, CheckCircle2, Play, BookOpen, Target, Lightbulb } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
+import { useUnifiedProgress } from '@/hooks/useUnifiedProgress';
 
 interface BlackBusinessModule1Props {
   onBack: () => void;
@@ -16,6 +17,18 @@ const BlackBusinessModule1: React.FC<BlackBusinessModule1Props> = ({ onBack, onC
   const [currentSection, setCurrentSection] = useState(0);
   const [quizScore, setQuizScore] = useState<number | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  
+  const { 
+    progress, 
+    updateProgress, 
+    updateDetailedProgress, 
+    completeModule, 
+    isCompleted: moduleCompleted 
+  } = useUnifiedProgress({
+    moduleId: 'module-1',
+    moduleType: 'soft_skills',
+    courseId: 'black-business-excellence'
+  });
 
   const sections = [
     {
@@ -48,9 +61,50 @@ const BlackBusinessModule1: React.FC<BlackBusinessModule1Props> = ({ onBack, onC
     setSelectedAnswer(answerIndex);
     const score = answerIndex === quizQuestion.correct ? 100 : 0;
     setQuizScore(score);
+    
+    // Save quiz progress
+    updateDetailedProgress('quiz_completed', true);
+    updateDetailedProgress('quiz_score', score);
+    updateDetailedProgress('quiz_answer', answerIndex);
   };
 
-  const progressPercentage = ((currentSection + 1) / sections.length) * 100;
+  // Update progress when sections are viewed or completed
+  const handleSectionComplete = (sectionIndex: number) => {
+    updateDetailedProgress(`section_${sectionIndex}_completed`, true);
+    const completedSections = Object.keys(progress?.detailedProgress || {})
+      .filter(key => key.includes('section_') && key.includes('_completed'))
+      .length;
+    
+    const newProgress = Math.round((completedSections / sections.length) * 70); // 70% for content
+    updateProgress(newProgress);
+  };
+
+  // Load saved progress on component mount
+  useEffect(() => {
+    if (progress?.detailedProgress) {
+      // Restore quiz state
+      if (progress.detailedProgress.quiz_completed) {
+        setQuizScore(progress.detailedProgress.quiz_score || 0);
+        setSelectedAnswer(progress.detailedProgress.quiz_answer || null);
+      }
+      
+      // Restore current section based on progress
+      const completedSections = Object.keys(progress.detailedProgress)
+        .filter(key => key.includes('section_') && key.includes('_completed'))
+        .length;
+      
+      if (completedSections > 0) {
+        setCurrentSection(Math.min(completedSections, sections.length - 1));
+      }
+    }
+  }, [progress]);
+
+  const handleModuleComplete = async () => {
+    await completeModule();
+    onComplete();
+  };
+
+  
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -75,9 +129,9 @@ const BlackBusinessModule1: React.FC<BlackBusinessModule1Props> = ({ onBack, onC
                   <Target className="h-5 w-5 text-blue-600" />
                   <span>Module Progress</span>
                 </CardTitle>
-                <Badge variant="secondary">{Math.round(progressPercentage)}% Complete</Badge>
+                <Badge variant="secondary">{progress?.progressPercentage || 0}% Complete</Badge>
               </div>
-              <Progress value={progressPercentage} className="h-2" />
+              <Progress value={progress?.progressPercentage || 0} className="h-2" />
             </CardHeader>
           </Card>
 
@@ -109,6 +163,7 @@ const BlackBusinessModule1: React.FC<BlackBusinessModule1Props> = ({ onBack, onC
                     <Button 
                       variant={currentSection === sections.length - 1 ? "default" : "outline"}
                       onClick={() => {
+                        handleSectionComplete(currentSection);
                         if (currentSection < sections.length - 1) {
                           setCurrentSection(currentSection + 1);
                         }
@@ -229,10 +284,10 @@ const BlackBusinessModule1: React.FC<BlackBusinessModule1Props> = ({ onBack, onC
             </TabsContent>
           </Tabs>
 
-          {!isCompleted && (
+          {!moduleCompleted && (
             <Card>
               <CardContent className="pt-6">
-                <Button onClick={onComplete} className="w-full" size="lg">
+                <Button onClick={handleModuleComplete} className="w-full" size="lg">
                   <CheckCircle2 className="h-5 w-5 mr-2" />
                   Complete Module 1
                 </Button>
