@@ -5,7 +5,7 @@ import { CheckCircle, Target, HelpCircle } from "lucide-react";
 import { VCLessonContent } from "@/data/venture-capital-lessons";
 import { vcTerms } from "@/data/venture-capital-terms";
 import HighlightableTerm from "@/components/HighlightableTerm";
-import { useVCProgress } from "@/hooks/useVCProgress";
+import { useVCProgressAdapter } from "@/hooks/useProgressAdapter";
 
 interface OverviewTabProps {
   lesson: VCLessonContent;
@@ -19,7 +19,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
   onActivityComplete 
 }) => {
   const [isCompleted, setIsCompleted] = useState(false);
-  const { markOverviewComplete } = useVCProgress();
+  const { markOverviewComplete } = useVCProgressAdapter();
 
   const handleCompleteOverview = async () => {
     try {

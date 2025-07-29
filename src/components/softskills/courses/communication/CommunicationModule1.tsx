@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, ArrowRight, MessageSquare, CheckCircle2, Volume2, Users, BookOpen } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { useSoftSkillsProgress } from '@/hooks/useSoftSkillsProgress';
+import { useSoftSkillsProgressAdapter } from '@/hooks/useProgressAdapter';
 import { PandaCelebration } from '@/components/ui/panda-celebration';
 import { useToast } from '@/hooks/use-toast';
 
@@ -27,7 +27,7 @@ const CommunicationModule1: React.FC<CommunicationModule1Props> = ({ onBack, onC
     saveGameScore,
     updateCompletionPercentage,
     completeModule
-  } = useSoftSkillsProgress('business_communication', 'module_1', 'Communication Foundations');
+  } = useSoftSkillsProgressAdapter('business_communication', 'module_1', 'Communication Foundations');
 
   // Communication Styles Match Game
   const [stylesGame, setStylesGame] = useState({

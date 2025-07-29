@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight, CheckCircle, Brain } from "lucide-react";
 import { VCLessonContent } from "@/data/venture-capital-lessons";
 import { getVCTermsByLevel } from "@/data/venture-capital-terms";
 import KeyTermFlashcard from "@/components/learn/interactive-ib/KeyTermFlashcard";
-import { useVCProgress } from "@/hooks/useVCProgress";
+import { useVCProgressAdapter } from "@/hooks/useProgressAdapter";
 
 interface LearnTermsTabProps {
   lesson: VCLessonContent;
@@ -22,7 +22,7 @@ const LearnTermsTab: React.FC<LearnTermsTabProps> = ({
   const [currentTermIndex, setCurrentTermIndex] = useState(0);
   const [viewedTerms, setViewedTerms] = useState<Set<number>>(new Set());
   const [masteredTerms, setMasteredTerms] = useState<Set<number>>(new Set());
-  const { updateTermsProgress } = useVCProgress();
+  const { updateTermsProgress } = useVCProgressAdapter();
 
   const levelTerms = getVCTermsByLevel(lesson.level);
   const currentTerm = levelTerms[currentTermIndex];

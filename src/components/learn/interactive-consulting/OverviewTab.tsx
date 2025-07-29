@@ -5,7 +5,7 @@ import { Target, CheckCircle } from 'lucide-react';
 import { ConsultingLessonContent } from '@/data/management-consulting-lessons';
 import PandaLogo from '@/components/icons/PandaLogo';
 import HighlightableTerm from '@/components/HighlightableTerm';
-import { useConsultingProgress } from '@/hooks/useConsultingProgress';
+import { useConsultingProgressAdapter } from '@/hooks/useProgressAdapter';
 
 interface OverviewTabProps {
   lesson: ConsultingLessonContent;
@@ -18,7 +18,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
   consultingTerms, 
   onActivityComplete 
 }) => {
-  const { markOverviewComplete, getLevelProgress } = useConsultingProgress();
+  const { markOverviewComplete, getLevelProgress } = useConsultingProgressAdapter();
   const [isCompleted, setIsCompleted] = useState(false);
   
   const levelProgress = getLevelProgress(lesson.level);

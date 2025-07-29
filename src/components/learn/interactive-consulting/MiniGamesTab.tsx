@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Gamepad2, Star, Trophy, Play, ArrowLeft } from 'lucide-react';
 import { ConsultingLessonContent } from '@/data/management-consulting-lessons';
 import ConsultingGameRenderer from './games/ConsultingGameRenderer';
-import { useConsultingProgress } from '@/hooks/useConsultingProgress';
+import { useConsultingProgressAdapter } from '@/hooks/useProgressAdapter';
 
 interface MiniGamesTabProps {
   lesson: ConsultingLessonContent;
@@ -21,7 +21,7 @@ const MiniGamesTab: React.FC<MiniGamesTabProps> = ({
 }) => {
   const [selectedGame, setSelectedGame] = useState<string | null>(null);
   const [completedGames, setCompletedGames] = useState<Set<string>>(new Set());
-  const { saveMiniGameProgress, getLevelProgress } = useConsultingProgress();
+  const { saveMiniGameProgress, getLevelProgress } = useConsultingProgressAdapter();
 
   // Load existing progress on mount and when progress changes
   useEffect(() => {

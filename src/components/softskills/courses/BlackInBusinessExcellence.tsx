@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ArrowLeft, BookOpen, CheckCircle2, Lock, Users, Target } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { useSoftSkillsProgress } from '@/hooks/useSoftSkillsProgress';
+import { useSoftSkillsProgressAdapter } from '@/hooks/useProgressAdapter';
 import BlackBusinessModule1 from './black-business/BlackBusinessModule1';
 import BlackBusinessModule2 from './black-business/BlackBusinessModule2';
 import BlackBusinessModule3 from './black-business/BlackBusinessModule3';
@@ -21,12 +21,12 @@ const BlackInBusinessExcellence: React.FC<BlackInBusinessExcellenceProps> = ({ o
   const [completedModules, setCompletedModules] = useState<Set<number>>(new Set());
 
   // Use progress tracking for each module
-  const module1Progress = useSoftSkillsProgress('black_business', 'module_1', 'Authentic Leadership & Identity');
-  const module2Progress = useSoftSkillsProgress('black_business', 'module_2', 'Strategic Communication & Code-Switching');
-  const module3Progress = useSoftSkillsProgress('black_business', 'module_3', 'Building Strategic Networks');
-  const module4Progress = useSoftSkillsProgress('black_business', 'module_4', 'Navigating Workplace Politics & Bias');
-  const module5Progress = useSoftSkillsProgress('black_business', 'module_5', 'Leveraging Your Unique Perspective');
-  const module6Progress = useSoftSkillsProgress('black_business', 'module_6', 'Creating Inclusive Environments & Advocacy');
+  const module1Progress = useSoftSkillsProgressAdapter('black_business', 'module_1', 'Authentic Leadership & Identity');
+  const module2Progress = useSoftSkillsProgressAdapter('black_business', 'module_2', 'Strategic Communication & Code-Switching');
+  const module3Progress = useSoftSkillsProgressAdapter('black_business', 'module_3', 'Building Strategic Networks');
+  const module4Progress = useSoftSkillsProgressAdapter('black_business', 'module_4', 'Navigating Workplace Politics & Bias');
+  const module5Progress = useSoftSkillsProgressAdapter('black_business', 'module_5', 'Leveraging Your Unique Perspective');
+  const module6Progress = useSoftSkillsProgressAdapter('black_business', 'module_6', 'Creating Inclusive Environments & Advocacy');
 
   // Check completion status for all modules
   useEffect(() => {

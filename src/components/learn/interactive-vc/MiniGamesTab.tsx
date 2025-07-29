@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Play, CheckCircle, Clock, Star } from "lucide-react";
 import { VCLessonContent } from "@/data/venture-capital-lessons";
 import VCGameRenderer from "./games/VCGameRenderer";
-import { useVCProgress } from "@/hooks/useVCProgress";
+import { useVCProgressAdapter } from "@/hooks/useProgressAdapter";
 
 interface MiniGamesTabProps {
   lesson: VCLessonContent;
@@ -22,7 +22,7 @@ const MiniGamesTab: React.FC<MiniGamesTabProps> = ({
   const [completedGames, setCompletedGames] = useState<Set<string>>(
     new Set(completedActivities.filter(activity => activity.includes('game')))
   );
-  const { saveMiniGameProgress } = useVCProgress();
+  const { saveMiniGameProgress } = useVCProgressAdapter();
 
   const handleGameComplete = async (gameId: string, score: number = 0) => {
     try {

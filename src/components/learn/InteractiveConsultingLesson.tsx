@@ -7,7 +7,7 @@ import { ConsultingLessonContent } from '@/data/management-consulting-lessons';
 import HighlightableTerm from '@/components/HighlightableTerm';
 import { consultingTerms } from '@/data/management-consulting-terms';
 import { useAuth } from '@/hooks/useAuth';
-import { useConsultingProgress } from '@/hooks/useConsultingProgress';
+import { useConsultingProgressAdapter } from '@/hooks/useProgressAdapter';
 import LessonHeader from './interactive-ib/LessonHeader';
 import ProgressTracker from './interactive-ib/ProgressTracker';
 import OverviewTab from './interactive-consulting/OverviewTab';
@@ -30,7 +30,7 @@ const InteractiveConsultingLesson: React.FC<InteractiveConsultingLessonProps> = 
   const { 
     getLevelProgress,
     saveMiniGameProgress 
-  } = useConsultingProgress();
+  } = useConsultingProgressAdapter();
   
   const [activeTab, setActiveTab] = useState('overview');
   const [completedActivities, setCompletedActivities] = useState<string[]>([]);

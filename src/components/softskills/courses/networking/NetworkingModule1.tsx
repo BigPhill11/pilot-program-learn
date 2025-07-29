@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, ArrowRight, Users, Brain, Target, CheckCircle, Gamepad2, Star, History, BookOpen } from 'lucide-react';
-import { useSoftSkillsProgress } from '@/hooks/useSoftSkillsProgress';
+import { useSoftSkillsProgressAdapter } from '@/hooks/useProgressAdapter';
 import { PandaCelebration } from '@/components/ui/panda-celebration';
 
 interface NetworkingModule1Props {
@@ -14,7 +14,7 @@ interface NetworkingModule1Props {
 
 const NetworkingModule1: React.FC<NetworkingModule1Props> = ({ onBack, onComplete, isCompleted }) => {
   const { progress: moduleProgress, saveResponse, saveGameScore, completeModule, updateCompletionPercentage, getProgressHistory } = 
-    useSoftSkillsProgress('networking-like-pro', 'module-1', 'What is Professional Networking?');
+    useSoftSkillsProgressAdapter('networking-like-pro', 'module-1', 'What is Professional Networking?');
     
   const [currentStep, setCurrentStep] = useState(0);
   const [quizAnswers, setQuizAnswers] = useState<Record<number, number>>({});

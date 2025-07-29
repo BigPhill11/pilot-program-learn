@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ArrowLeft, BookOpen, CheckCircle2, Lock, Users, MessageSquare } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { useSoftSkillsProgress } from '@/hooks/useSoftSkillsProgress';
+import { useSoftSkillsProgressAdapter } from '@/hooks/useProgressAdapter';
 import CommunicationModule1 from './communication/CommunicationModule1';
 import CommunicationModule2 from './communication/CommunicationModule2';
 import CommunicationModule3 from './communication/CommunicationModule3';
@@ -22,12 +22,12 @@ const BusinessCommunicationExcellence: React.FC<BusinessCommunicationExcellenceP
   const [completedModules, setCompletedModules] = useState<Set<number>>(new Set());
 
   // Use progress tracking for each module
-  const module1Progress = useSoftSkillsProgress('business_communication', 'module_1', 'Communication Foundations');
-  const module2Progress = useSoftSkillsProgress('business_communication', 'module_2', 'Verbal Communication');
-  const module3Progress = useSoftSkillsProgress('business_communication', 'module_3', 'Written Communication');
-  const module4Progress = useSoftSkillsProgress('business_communication', 'module_4', 'Presentation Skills');
-  const module5Progress = useSoftSkillsProgress('business_communication', 'module_5', 'Digital Communication');
-  const module6Progress = useSoftSkillsProgress('business_communication', 'module_6', 'Advanced Communication');
+  const module1Progress = useSoftSkillsProgressAdapter('business_communication', 'module_1', 'Communication Foundations');
+  const module2Progress = useSoftSkillsProgressAdapter('business_communication', 'module_2', 'Verbal Communication');
+  const module3Progress = useSoftSkillsProgressAdapter('business_communication', 'module_3', 'Written Communication');
+  const module4Progress = useSoftSkillsProgressAdapter('business_communication', 'module_4', 'Presentation Skills');
+  const module5Progress = useSoftSkillsProgressAdapter('business_communication', 'module_5', 'Digital Communication');
+  const module6Progress = useSoftSkillsProgressAdapter('business_communication', 'module_6', 'Advanced Communication');
 
   // Check completion status for all modules
   useEffect(() => {

@@ -14,7 +14,7 @@ import VCLessonHeader from "./interactive-vc/VCLessonHeader";
 import ProgressTracker from "./interactive-ib/ProgressTracker";
 import HighlightableTerm from "@/components/HighlightableTerm";
 import { useAuth } from "@/hooks/useAuth";
-import { useVCProgress } from "@/hooks/useVCProgress";
+import { useVCProgressAdapter } from "@/hooks/useProgressAdapter";
 
 interface InteractiveVCLessonProps {
   lesson: VCLessonContent;
@@ -30,7 +30,7 @@ const InteractiveVCLesson: React.FC<InteractiveVCLessonProps> = ({
   const [activeTab, setActiveTab] = useState("overview");
   const [completedActivities, setCompletedActivities] = useState<string[]>([]);
   const { user, profile } = useAuth();
-  const { getLevelProgress } = useVCProgress();
+  const { getLevelProgress } = useVCProgressAdapter();
 
   const levelProgress = getLevelProgress(lesson.level);
 

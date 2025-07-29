@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Trophy, BookOpen, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
 import { ConsultingLessonContent } from '@/data/management-consulting-lessons';
 import KeyTermFlashcard from '../interactive-ib/KeyTermFlashcard';
-import { useConsultingProgress } from '@/hooks/useConsultingProgress';
+import { useConsultingProgressAdapter } from '@/hooks/useProgressAdapter';
 
 interface LearnTermsTabProps {
   lesson: ConsultingLessonContent;
@@ -20,7 +20,7 @@ const LearnTermsTab: React.FC<LearnTermsTabProps> = ({
   const [currentTermIndex, setCurrentTermIndex] = useState(0);
   const [viewedTerms, setViewedTerms] = useState<Set<number>>(new Set());
   const [masteredTerms, setMasteredTerms] = useState<Set<number>>(new Set());
-  const { updateTermsProgress, getLevelProgress } = useConsultingProgress();
+  const { updateTermsProgress, getLevelProgress } = useConsultingProgressAdapter();
 
   const keyTerms = lesson.keyTerms.map(termKey => consultingTerms[termKey]).filter(Boolean);
   const levelProgress = getLevelProgress(lesson.level);
