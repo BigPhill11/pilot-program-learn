@@ -84,38 +84,27 @@ const SoftSkillsPage = () => {
     }
   };
 
-  const getCourseProgress = (courseId: string) => {
+  const getCourseProgress = (courseId: string, courseTitle: string) => {
     if (!moduleProgress) return { progress: 0, hasStarted: false };
     
-    // Map course IDs to their modules
-    const courseModuleMap: Record<string, string[]> = {
-      'working_women': ['module_1', 'module_2', 'module_3', 'module_4', 'module_5', 'module_6'],
-      'professional_interviewing': ['module_1', 'module_2', 'module_3', 'module_4', 'module_5', 'module_6'],
-      'networking': ['module_1', 'module_2', 'module_3', 'module_4', 'module_5', 'module_6'],
-      'business_communication': ['module_1', 'module_2', 'module_3', 'module_4', 'module_5', 'module_6'],
-      'black_business': ['module_1', 'module_2', 'module_3', 'module_4', 'module_5', 'module_6'],
-    };
-    
-    // Get the course key from the course title
+    // Map course titles to their course keys
     let courseKey = '';
-    if (courseId.includes('working-women') || courseId.includes('Working Women')) courseKey = 'working_women';
-    else if (courseId.includes('interviewing') || courseId.includes('Professional Interviewing')) courseKey = 'professional_interviewing';
-    else if (courseId.includes('networking') || courseId.includes('Networking')) courseKey = 'networking';
-    else if (courseId.includes('communication') || courseId.includes('Business Communication')) courseKey = 'business_communication';
-    else if (courseId.includes('black') || courseId.includes('Black in Business')) courseKey = 'black_business';
+    if (courseTitle.toLowerCase().includes('working women')) courseKey = 'working_women';
+    else if (courseTitle.toLowerCase().includes('professional interviewing')) courseKey = 'professional_interviewing';
+    else if (courseTitle.toLowerCase().includes('networking')) courseKey = 'networking';
+    else if (courseTitle.toLowerCase().includes('business communication')) courseKey = 'business_communication';
+    else if (courseTitle.toLowerCase().includes('black in business')) courseKey = 'black_business';
     
-    const modules = courseModuleMap[courseKey] || [];
-    if (modules.length === 0) return { progress: 0, hasStarted: false };
+    if (!courseKey) return { progress: 0, hasStarted: false };
     
-    const courseProgress = moduleProgress.filter(p => 
-      p.course_id === courseKey && modules.includes(p.module_id)
-    );
+    // Get all progress for this course
+    const courseProgress = moduleProgress.filter(p => p.course_id === courseKey);
     
     if (courseProgress.length === 0) return { progress: 0, hasStarted: false };
     
     const hasStarted = courseProgress.some(p => p.progress_percentage > 0);
     const totalProgress = courseProgress.reduce((sum, p) => sum + p.progress_percentage, 0);
-    const averageProgress = totalProgress / modules.length;
+    const averageProgress = courseProgress.length > 0 ? totalProgress / courseProgress.length : 0;
     
     return { progress: averageProgress, hasStarted };
   };
@@ -138,7 +127,7 @@ const SoftSkillsPage = () => {
 
   const CourseCard = ({ course }: { course: any }) => {
     const IconComponent = categoryIcons[course.category as keyof typeof categoryIcons];
-    const { progress, hasStarted } = getCourseProgress(course.id);
+    const { progress, hasStarted } = getCourseProgress(course.id, course.title);
     const isCompleted = progress >= 100;
     
     return (
@@ -198,7 +187,7 @@ const SoftSkillsPage = () => {
           )}
           
           <Button 
-            className="w-full" 
+            className={`w-full ${hasStarted && !isCompleted ? 'bg-green-600 hover:bg-green-700 text-white' : ''}`}
             variant={isCompleted ? "outline" : hasStarted ? "default" : "default"}
             onClick={() => setSelectedCourse(course)}
           >
