@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, Target, Lightbulb, CheckCircle, Play, Trophy, Star } from 'lucide-react';
 import { toast } from 'sonner';
+import { useUnifiedProgress } from '@/hooks/useUnifiedProgress';
 import AudioRecorder from './AudioRecorder';
 
 interface InterviewModule1Props {
@@ -15,6 +16,13 @@ interface InterviewModule1Props {
 }
 
 const InterviewModule1: React.FC<InterviewModule1Props> = ({ onComplete, onBack }) => {
+  // Use unified progress tracking
+  const moduleProgress = useUnifiedProgress({
+    moduleId: 'interview-module-1',
+    moduleType: 'soft_skills',
+    courseId: 'interviewing'
+  });
+
   const [currentSection, setCurrentSection] = useState(0);
   const [elevatorPitch, setElevatorPitch] = useState('');
   const [whyFinance, setWhyFinance] = useState('');
@@ -27,6 +35,34 @@ const InterviewModule1: React.FC<InterviewModule1Props> = ({ onComplete, onBack 
   const [quizAnswers, setQuizAnswers] = useState<{[key: string]: number}>({});
   const [completedSections, setCompletedSections] = useState<number[]>([]);
 
+  // Load saved progress on component mount
+  useEffect(() => {
+    if (moduleProgress.progress?.detailedProgress) {
+      const saved = moduleProgress.progress.detailedProgress;
+      if (saved.currentSection !== undefined) setCurrentSection(saved.currentSection);
+      if (saved.elevatorPitch) setElevatorPitch(saved.elevatorPitch);
+      if (saved.whyFinance) setWhyFinance(saved.whyFinance);
+      if (saved.starStory) setStarStory(saved.starStory);
+      if (saved.quizAnswers) setQuizAnswers(saved.quizAnswers);
+      if (saved.completedSections) setCompletedSections(saved.completedSections);
+    }
+  }, [moduleProgress.progress]);
+
+  // Auto-save progress when state changes
+  useEffect(() => {
+    if (moduleProgress.progress) {
+      const progressData = {
+        currentSection,
+        elevatorPitch,
+        whyFinance,
+        starStory,
+        quizAnswers,
+        completedSections
+      };
+      moduleProgress.updateDetailedProgress('moduleState', progressData);
+    }
+  }, [currentSection, elevatorPitch, whyFinance, starStory, quizAnswers, completedSections]);
+
   const sections = [
     { title: "Introduction & Mindset", icon: Target },
     { title: "Your 'Why Finance' Story", icon: Lightbulb },
@@ -36,15 +72,22 @@ const InterviewModule1: React.FC<InterviewModule1Props> = ({ onComplete, onBack 
     { title: "Module Quiz", icon: CheckCircle }
   ];
 
-  const handleSectionComplete = (sectionIndex: number) => {
-    if (!completedSections.includes(sectionIndex)) {
-      setCompletedSections([...completedSections, sectionIndex]);
-    }
+  const handleSectionComplete = async (sectionIndex: number) => {
+    const newCompletedSections = !completedSections.includes(sectionIndex) 
+      ? [...completedSections, sectionIndex]
+      : completedSections;
+    
+    setCompletedSections(newCompletedSections);
+    
+    // Update progress percentage
+    const progressPercentage = ((newCompletedSections.length) / sections.length) * 100;
+    await moduleProgress.updateProgress(progressPercentage);
     
     if (sectionIndex < sections.length - 1) {
       setCurrentSection(sectionIndex + 1);
     } else {
       toast.success("Module 1 completed! 🎉");
+      await moduleProgress.completeModule();
       onComplete();
     }
   };

@@ -1,11 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, CheckCircle, Lock, Play, Trophy, Users, Target, MessageSquare, Briefcase, Mail, Calendar } from 'lucide-react';
+import { useUnifiedProgress } from '@/hooks/useUnifiedProgress';
 import InterviewModule1 from './interviewing/InterviewModule1';
 import InterviewModule2 from './interviewing/InterviewModule2';
 import InterviewModule3 from './interviewing/InterviewModule3';
@@ -19,7 +20,64 @@ interface ProfessionalInterviewingMasteryProps {
 
 const ProfessionalInterviewingMastery: React.FC<ProfessionalInterviewingMasteryProps> = ({ onBack }) => {
   const [currentModule, setCurrentModule] = useState<number | null>(null);
-  const [completedModules, setCompletedModules] = useState<number[]>([]);
+  
+  // Use unified progress tracking for the course
+  const courseProgress = useUnifiedProgress({
+    moduleId: 'professional-interviewing-mastery',
+    moduleType: 'soft_skills',
+    courseId: 'interviewing'
+  });
+
+  // Individual module progress hooks
+  const module1Progress = useUnifiedProgress({
+    moduleId: 'interview-module-1',
+    moduleType: 'soft_skills',
+    courseId: 'interviewing'
+  });
+
+  const module2Progress = useUnifiedProgress({
+    moduleId: 'interview-module-2',
+    moduleType: 'soft_skills',
+    courseId: 'interviewing'
+  });
+
+  const module3Progress = useUnifiedProgress({
+    moduleId: 'interview-module-3',
+    moduleType: 'soft_skills',
+    courseId: 'interviewing'
+  });
+
+  const module4Progress = useUnifiedProgress({
+    moduleId: 'interview-module-4',
+    moduleType: 'soft_skills',
+    courseId: 'interviewing'
+  });
+
+  const module5Progress = useUnifiedProgress({
+    moduleId: 'interview-module-5',
+    moduleType: 'soft_skills',
+    courseId: 'interviewing'
+  });
+
+  const module6Progress = useUnifiedProgress({
+    moduleId: 'interview-module-6',
+    moduleType: 'soft_skills',
+    courseId: 'interviewing'
+  });
+
+  const moduleProgressHooks = [
+    module1Progress,
+    module2Progress,
+    module3Progress,
+    module4Progress,
+    module5Progress,
+    module6Progress
+  ];
+
+  // Calculate completed modules based on progress
+  const completedModules = moduleProgressHooks
+    .map((hook, index) => hook.isCompleted ? index + 1 : null)
+    .filter(Boolean) as number[];
 
   const modules = [
     {
@@ -66,9 +124,15 @@ const ProfessionalInterviewingMastery: React.FC<ProfessionalInterviewingMasteryP
     }
   ];
 
-  const handleCompleteModule = (moduleId: number) => {
-    if (!completedModules.includes(moduleId)) {
-      setCompletedModules([...completedModules, moduleId]);
+  const handleCompleteModule = async (moduleId: number) => {
+    const moduleProgress = moduleProgressHooks[moduleId - 1];
+    if (moduleProgress && !moduleProgress.isCompleted) {
+      await moduleProgress.completeModule();
+      
+      // Update course overall progress
+      const newCompletedCount = moduleProgressHooks.filter(hook => hook.isCompleted).length + 1;
+      const overallProgress = (newCompletedCount / modules.length) * 100;
+      await courseProgress.updateProgress(overallProgress);
     }
     setCurrentModule(null);
   };
@@ -87,7 +151,7 @@ const ProfessionalInterviewingMastery: React.FC<ProfessionalInterviewingMasteryP
     }
   };
 
-  const overallProgress = (completedModules.length / modules.length) * 100;
+  const overallProgress = courseProgress.progress?.progressPercentage || 0;
 
   if (currentModule !== null) {
     return getModuleComponent(currentModule);
