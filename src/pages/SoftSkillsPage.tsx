@@ -34,10 +34,9 @@ const SoftSkillsPage = () => {
       if (!user) return [];
       
       const { data, error } = await supabase
-        .from('module_progress')
+        .from('soft_skills_module_progress')
         .select('*')
-        .eq('user_id', user.id)
-        .eq('module_type', 'soft_skills');
+        .eq('user_id', user.id);
       
       if (error) throw error;
       return data;
@@ -102,8 +101,8 @@ const SoftSkillsPage = () => {
     
     if (courseProgress.length === 0) return { progress: 0, hasStarted: false };
     
-    const hasStarted = courseProgress.some(p => p.progress_percentage > 0);
-    const totalProgress = courseProgress.reduce((sum, p) => sum + p.progress_percentage, 0);
+    const hasStarted = courseProgress.some(p => p.completion_percentage > 0);
+    const totalProgress = courseProgress.reduce((sum, p) => sum + p.completion_percentage, 0);
     const averageProgress = courseProgress.length > 0 ? totalProgress / courseProgress.length : 0;
     
     return { progress: averageProgress, hasStarted };
