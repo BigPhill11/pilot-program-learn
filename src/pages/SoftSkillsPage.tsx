@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Clock, Users, MessageSquare, Shirt, Handshake, Star, Play, BookOpen, Lightbulb } from 'lucide-react';
+import { Clock, Users, MessageSquare, Shirt, Handshake, Star, Play, BookOpen, Lightbulb, PlayCircle } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -28,15 +28,16 @@ const SoftSkillsPage = () => {
     }
   });
 
-  const { data: userProgress } = useQuery({
-    queryKey: ['user-soft-skills-progress', user?.id],
+  const { data: moduleProgress } = useQuery({
+    queryKey: ['module-progress', user?.id],
     queryFn: async () => {
       if (!user) return [];
       
       const { data, error } = await supabase
-        .from('user_soft_skills_progress')
+        .from('module_progress')
         .select('*')
-        .eq('user_id', user.id);
+        .eq('user_id', user.id)
+        .eq('module_type', 'soft_skills');
       
       if (error) throw error;
       return data;
@@ -84,9 +85,39 @@ const SoftSkillsPage = () => {
   };
 
   const getCourseProgress = (courseId: string) => {
-    if (!userProgress) return 0;
-    const courseProgress = userProgress.filter(p => p.course_id === courseId);
-    return courseProgress.length > 0 ? (courseProgress.filter(p => p.completed).length / courseProgress.length) * 100 : 0;
+    if (!moduleProgress) return { progress: 0, hasStarted: false };
+    
+    // Map course IDs to their modules
+    const courseModuleMap: Record<string, string[]> = {
+      'working_women': ['module_1', 'module_2', 'module_3', 'module_4', 'module_5', 'module_6'],
+      'professional_interviewing': ['module_1', 'module_2', 'module_3', 'module_4', 'module_5', 'module_6'],
+      'networking': ['module_1', 'module_2', 'module_3', 'module_4', 'module_5', 'module_6'],
+      'business_communication': ['module_1', 'module_2', 'module_3', 'module_4', 'module_5', 'module_6'],
+      'black_business': ['module_1', 'module_2', 'module_3', 'module_4', 'module_5', 'module_6'],
+    };
+    
+    // Get the course key from the course title
+    let courseKey = '';
+    if (courseId.includes('working-women') || courseId.includes('Working Women')) courseKey = 'working_women';
+    else if (courseId.includes('interviewing') || courseId.includes('Professional Interviewing')) courseKey = 'professional_interviewing';
+    else if (courseId.includes('networking') || courseId.includes('Networking')) courseKey = 'networking';
+    else if (courseId.includes('communication') || courseId.includes('Business Communication')) courseKey = 'business_communication';
+    else if (courseId.includes('black') || courseId.includes('Black in Business')) courseKey = 'black_business';
+    
+    const modules = courseModuleMap[courseKey] || [];
+    if (modules.length === 0) return { progress: 0, hasStarted: false };
+    
+    const courseProgress = moduleProgress.filter(p => 
+      p.course_id === courseKey && modules.includes(p.module_id)
+    );
+    
+    if (courseProgress.length === 0) return { progress: 0, hasStarted: false };
+    
+    const hasStarted = courseProgress.some(p => p.progress_percentage > 0);
+    const totalProgress = courseProgress.reduce((sum, p) => sum + p.progress_percentage, 0);
+    const averageProgress = totalProgress / modules.length;
+    
+    return { progress: averageProgress, hasStarted };
   };
 
   const groupedCourses = courses?.reduce((acc, course) => {
@@ -107,18 +138,39 @@ const SoftSkillsPage = () => {
 
   const CourseCard = ({ course }: { course: any }) => {
     const IconComponent = categoryIcons[course.category as keyof typeof categoryIcons];
-    const progress = getCourseProgress(course.id);
+    const { progress, hasStarted } = getCourseProgress(course.id);
+    const isCompleted = progress >= 100;
     
     return (
-      <Card key={course.id} className="hover:shadow-lg transition-shadow">
+      <Card key={course.id} className={`hover:shadow-lg transition-shadow ${
+        isCompleted ? 'border-green-200 bg-green-50' : hasStarted ? 'border-blue-200 bg-blue-50' : ''
+      }`}>
         <CardHeader>
           <div className="flex items-start justify-between">
-            <div className={`p-2 rounded-lg ${categoryColors[course.category as keyof typeof categoryColors]} text-white`}>
+            <div className={`p-2 rounded-lg ${
+              isCompleted 
+                ? 'bg-green-500 text-white' 
+                : hasStarted 
+                  ? 'bg-blue-500 text-white'
+                  : `${categoryColors[course.category as keyof typeof categoryColors]} text-white`
+            }`}>
               <IconComponent className="h-5 w-5" />
             </div>
-            <Badge className={getDifficultyColor(course.difficulty_level)}>
-              {course.difficulty_level}
-            </Badge>
+            <div className="flex flex-col items-end space-y-1">
+              <Badge className={getDifficultyColor(course.difficulty_level)}>
+                {course.difficulty_level}
+              </Badge>
+              {isCompleted && (
+                <Badge className="bg-green-100 text-green-800">
+                  Completed
+                </Badge>
+              )}
+              {hasStarted && !isCompleted && (
+                <Badge className="bg-blue-100 text-blue-800">
+                  In Progress
+                </Badge>
+              )}
+            </div>
           </div>
           <CardTitle className="text-lg">{course.title}</CardTitle>
           <CardDescription>{course.description}</CardDescription>
@@ -131,22 +183,36 @@ const SoftSkillsPage = () => {
             </div>
             <div className="flex items-center space-x-1">
               <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-              <span>{progress > 0 ? `${progress.toFixed(0)}%` : 'Not started'}</span>
+              <span>{hasStarted ? `${Math.round(progress)}%` : 'Not started'}</span>
             </div>
           </div>
           
-          {progress > 0 && (
-            <Progress value={progress} className="h-2" />
+          {hasStarted && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="font-medium">Course Progress</span>
+                <span className="text-muted-foreground">{Math.round(progress)}%</span>
+              </div>
+              <Progress value={progress} className="h-2" />
+            </div>
           )}
           
           <Button 
             className="w-full" 
-            variant={progress > 0 ? "outline" : "default"}
+            variant={isCompleted ? "outline" : hasStarted ? "default" : "default"}
             onClick={() => setSelectedCourse(course)}
           >
             <div className="flex items-center space-x-2">
-              {progress > 0 ? <BookOpen className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-              <span>{progress > 0 ? 'Continue Course' : 'Explore Course'}</span>
+              {isCompleted ? (
+                <BookOpen className="h-4 w-4" />
+              ) : hasStarted ? (
+                <PlayCircle className="h-4 w-4" />
+              ) : (
+                <Play className="h-4 w-4" />
+              )}
+              <span>
+                {isCompleted ? 'Review Course' : hasStarted ? 'Resume Course' : 'Explore Course'}
+              </span>
             </div>
           </Button>
         </CardContent>
