@@ -92,7 +92,7 @@ export const restructuringDivisionTerms: Record<string, RestructuringDivisionTer
   },
 
   // Level 3 - Advanced Restructuring & Complex Situations
-  363_sale: {
+  '363_sale': {
     term: '363 Sale',
     definition: 'A bankruptcy court-approved sale of assets free and clear of most liens and claims',
     analogy: 'Like a court-supervised garage sale where items are sold without any strings attached',

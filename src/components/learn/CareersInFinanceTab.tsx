@@ -7,13 +7,21 @@ import EnhancedFinanceCareerJourney from './EnhancedFinanceCareerJourney';
 import FinanceCareerJourney from './FinanceCareerJourney';
 import InteractiveConsultingLesson from "./InteractiveConsultingLesson";
 import InteractiveVCLesson from "./InteractiveVCLesson";
+import IBDivisionsHub from "./IBDivisionsHub";
 import { managementConsultingLessons } from "@/data/management-consulting-lessons";
 import { vcLessons } from "@/data/venture-capital-lessons";
+import { ibDivisions } from "@/data/ib-divisions";
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const CareersInFinanceTab = () => {
     const [selectedCareer, setSelectedCareer] = useState<FinanceCareerData | null>(null);
+    const [showIBDivisions, setShowIBDivisions] = useState(false);
     const isMobile = useIsMobile();
+
+    // Show IB Divisions Hub
+    if (showIBDivisions) {
+      return <IBDivisionsHub divisions={ibDivisions} onBack={() => setShowIBDivisions(false)} />;
+    }
 
     if (selectedCareer) {
       // Interactive lessons for specific careers
@@ -33,8 +41,15 @@ const CareersInFinanceTab = () => {
         />;
       }
       
-      // Use enhanced journey for Investment Banking and Private Equity  
-      if (selectedCareer.id === 'investment-banking' || selectedCareer.id === 'private-equity') {
+      // Investment Banking - show divisions selection
+      if (selectedCareer.id === 'investment-banking') {
+        setSelectedCareer(null);
+        setShowIBDivisions(true);
+        return null;
+      }
+      
+      // Use enhanced journey for Private Equity  
+      if (selectedCareer.id === 'private-equity') {
         return <EnhancedFinanceCareerJourney career={selectedCareer} onBack={() => setSelectedCareer(null)} />;
       } else {
         return <FinanceCareerJourney career={selectedCareer} onBack={() => setSelectedCareer(null)} />;
@@ -75,14 +90,23 @@ const CareersInFinanceTab = () => {
                                 {career.name}
                             </CardTitle>
                             <Badge variant="outline" className="mx-auto block w-fit mb-4">
-                                {(['investment-banking', 'management-consulting', 'private-equity', 'venture-capital'].includes(career.id)) ? 'Interactive Journey' : '7-Level Journey'}
+                                {career.id === 'investment-banking' ? 'IB Divisions Available' : 
+                                 (['management-consulting', 'private-equity', 'venture-capital'].includes(career.id)) ? 'Interactive Journey' : '7-Level Journey'}
                             </Badge>
                             
                             <CardDescription className={`${isMobile ? 'text-xs' : 'text-sm'} leading-relaxed`}>
                                 {career.description}
                             </CardDescription>
                             
-                            {(['investment-banking', 'management-consulting', 'private-equity', 'venture-capital'].includes(career.id)) && (
+                            {career.id === 'investment-banking' && (
+                                <div className="mt-3 p-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+                                    <p className="text-xs text-blue-700 font-medium">
+                                        🏦 Access 6 specialized IB divisions: M&A, DCM, ECM, Leveraged Finance, Sales & Trading, and Restructuring!
+                                    </p>
+                                </div>
+                            )}
+                            
+                            {(['management-consulting', 'private-equity', 'venture-capital'].includes(career.id)) && (
                                 <div className="mt-3 p-2 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border border-orange-200">
                                     <p className="text-xs text-orange-700 font-medium">
                                         🎮 Now with interactive games, quizzes, and real-world examples!
