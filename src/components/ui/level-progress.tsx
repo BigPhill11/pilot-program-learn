@@ -2,6 +2,7 @@
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
 import { Trophy } from 'lucide-react';
+import { getProgressPercent } from '@/lib/progression';
 
 interface LevelProgressProps {
   currentLevel: number;
@@ -14,8 +15,7 @@ const LevelProgress: React.FC<LevelProgressProps> = ({
   totalPoints,
   pointsToNextLevel
 }) => {
-  const pointsInCurrentLevel = totalPoints - ((currentLevel - 1) * 200);
-  const progressPercentage = (pointsInCurrentLevel / 200) * 100;
+  const progressPercentage = getProgressPercent(totalPoints);
   
   return (
     <div className="flex items-center space-x-2">

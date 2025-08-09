@@ -2,16 +2,16 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { useProgressTracking } from '@/hooks/useProgressTracking';
+import { getLevelFromTotalXp, getXpToNextLevel, getProgressPercent } from '@/lib/progression';
 
-const XP_PER_LEVEL = 200;
+// dynamic XP per level via progression lib
 
 const XpProgress: React.FC = () => {
   const { progress } = useProgressTracking();
   const total = progress.total_points || 0;
-  const currentLevel = Math.floor(total / XP_PER_LEVEL) + 1;
-  const inLevel = total % XP_PER_LEVEL;
-  const toNext = XP_PER_LEVEL - inLevel;
-  const percent = (inLevel / XP_PER_LEVEL) * 100;
+  const currentLevel = getLevelFromTotalXp(total);
+  const toNext = getXpToNextLevel(total);
+  const percent = getProgressPercent(total);
 
   return (
     <Card>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useProgressTracking } from '@/hooks/useProgressTracking';
+import { getLevelFromTotalXp } from '@/lib/progression';
 
 const RANKS = [
   { name: 'Bamboo Sprout', emoji: '🌱' },
@@ -20,15 +21,15 @@ const RANKS = [
   { name: 'Grandmaster Panda', emoji: '🏆' },
 ];
 
-const XP_PER_LEVEL = 200;
+// dynamic XP per level via progression lib
 
 const RankBadge: React.FC = () => {
   const { progress } = useProgressTracking();
   const total = progress.total_points || 0;
-  const rankIndex = Math.min(Math.floor(total / XP_PER_LEVEL), RANKS.length - 1);
+  const currentLevel = getLevelFromTotalXp(total);
+  const rankIndex = Math.min(currentLevel - 1, RANKS.length - 1);
   const rank = RANKS[rankIndex];
-  const nextIndex = Math.min(rankIndex + 1, RANKS.length - 1);
-  const next = RANKS[nextIndex];
+  const next = RANKS[Math.min(rankIndex + 1, RANKS.length - 1)];
 
   return (
     <Card>

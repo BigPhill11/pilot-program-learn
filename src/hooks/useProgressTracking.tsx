@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { getLevelFromTotalXp, getXpToNextLevel } from '@/lib/progression';
 
 interface ProgressData {
   quiz_scores: Record<string, boolean>;
@@ -115,7 +116,7 @@ export const useProgressTracking = () => {
         }
       }
 
-      await checkLevelUp(newTotalPoints);
+      await checkLevelUp(newTotalPoints, earnedPoints);
     } catch (error) {
       console.error('Error updating activity completion:', error);
       toast.error('Failed to save progress');
@@ -166,7 +167,7 @@ export const useProgressTracking = () => {
         }
       }
 
-      await checkLevelUp(newTotalPoints);
+      await checkLevelUp(newTotalPoints, earnedPoints);
     } catch (error) {
       console.error('Error updating quiz score:', error);
       toast.error('Failed to save progress');
@@ -206,23 +207,24 @@ export const useProgressTracking = () => {
       }
       
       // Check for level up
-      await checkLevelUp(newTotalPoints);
+      await checkLevelUp(newTotalPoints, earnedPoints);
     } catch (error) {
       console.error('Error updating market prediction points:', error);
     }
   };
 
-  const checkLevelUp = async (totalPoints: number) => {
+  const checkLevelUp = async (totalPoints: number, lastAwardPoints: number) => {
     if (!user) return;
 
-    const currentLevel = Math.floor(totalPoints / 200) + 1;
+    const currentLevel = getLevelFromTotalXp(totalPoints);
+    const toNext = getXpToNextLevel(totalPoints);
     
     try {
       const { error } = await supabase
         .from('profiles')
         .update({
           current_level: currentLevel,
-          points_to_next_level: 200 - (totalPoints % 200),
+          points_to_next_level: toNext,
           updated_at: new Date().toISOString()
         })
         .eq('id', user.id);
@@ -230,7 +232,7 @@ export const useProgressTracking = () => {
       if (error) throw error;
 
       // Check if user leveled up
-      const previousLevel = Math.floor((totalPoints - 5) / 200) + 1; // Assuming last action was worth 5 points
+      const previousLevel = getLevelFromTotalXp(Math.max(0, totalPoints - lastAwardPoints));
       if (currentLevel > previousLevel) {
         toast.success(`🎉 Level Up! You're now Level ${currentLevel}! 🎉`);
       }
@@ -238,6 +240,7 @@ export const useProgressTracking = () => {
       console.error('Error checking level up:', error);
     }
   };
+
 
   const updateLearningProgress = async (increment: number = 1) => {
     if (!user) return;
