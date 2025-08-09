@@ -14,7 +14,7 @@ interface ProgressData {
 }
 
 export const useProgressTracking = () => {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [progress, setProgress] = useState<ProgressData>({
     quiz_scores: {},
     learning_progress: 0,
@@ -25,12 +25,19 @@ export const useProgressTracking = () => {
     completed_activities: []
   });
   const [loading, setLoading] = useState(true);
-
+ 
   useEffect(() => {
     if (user) {
       fetchProgress();
     }
   }, [user]);
+
+  // Apply streak multiplier: +5% per day, capped at +50%
+  const applyStreakMultiplier = (basePoints: number) => {
+    const streak = profile?.current_streak || 0;
+    const multiplier = Math.min(streak * 0.05, 0.5);
+    return Math.round(basePoints * (1 + multiplier));
+  };
 
   const fetchProgress = async () => {
     if (!user) return;
@@ -68,13 +75,17 @@ export const useProgressTracking = () => {
   const updateActivityComplete = async (activityId: string, pointsEarned: number = 10) => {
     if (!user) return;
 
+    const basePoints = pointsEarned;
+    const earnedPoints = applyStreakMultiplier(basePoints);
+    const streakPercent = Math.min((profile?.current_streak || 0) * 5, 50);
+
     const newCompletedActivities = progress.completed_activities.includes(activityId) 
       ? progress.completed_activities 
       : [...progress.completed_activities, activityId];
     
     const newTotalPoints = progress.completed_activities.includes(activityId) 
       ? progress.total_points 
-      : progress.total_points + pointsEarned;
+      : progress.total_points + earnedPoints;
 
     try {
       const { error } = await supabase
@@ -97,7 +108,11 @@ export const useProgressTracking = () => {
       }));
 
       if (!progress.completed_activities.includes(activityId)) {
-        toast.success(`+${pointsEarned} points! Activity completed! 🎉`);
+        if (streakPercent > 0) {
+          toast.success(`+${earnedPoints} points! (+${streakPercent}% streak bonus) 🎉`);
+        } else {
+          toast.success(`+${earnedPoints} points! Activity completed! 🎉`);
+        }
       }
 
       await checkLevelUp(newTotalPoints);
@@ -115,8 +130,10 @@ export const useProgressTracking = () => {
       [topicId]: isCorrect
     };
 
-    const pointsEarned = isCorrect ? 5 : 0;
-    const newTotalPoints = progress.total_points + pointsEarned;
+    const basePoints = isCorrect ? 5 : 0;
+    const earnedPoints = applyStreakMultiplier(basePoints);
+    const streakPercent = Math.min((profile?.current_streak || 0) * 5, 50);
+    const newTotalPoints = progress.total_points + earnedPoints;
     const newEngagementScore = progress.engagement_score + 2;
 
     try {
@@ -142,7 +159,11 @@ export const useProgressTracking = () => {
       }));
 
       if (isCorrect) {
-        toast.success(`+${pointsEarned} points! Great job! 🎉`);
+        if (streakPercent > 0) {
+          toast.success(`+${earnedPoints} points! Correct! (+${streakPercent}% streak bonus) 🎉`);
+        } else {
+          toast.success(`+${earnedPoints} points! Great job! 🎉`);
+        }
       }
 
       await checkLevelUp(newTotalPoints);
@@ -155,9 +176,10 @@ export const useProgressTracking = () => {
   const updateMarketPrediction = async () => {
     if (!user) return;
 
-    // 15 points for market predictions
-    const pointsEarned = 15;
-    const newTotalPoints = progress.total_points + pointsEarned;
+    const basePoints = 15; // 15 points for market predictions
+    const earnedPoints = applyStreakMultiplier(basePoints);
+    const streakPercent = Math.min((profile?.current_streak || 0) * 5, 50);
+    const newTotalPoints = progress.total_points + earnedPoints;
 
     try {
       const { error } = await supabase
@@ -177,7 +199,11 @@ export const useProgressTracking = () => {
         total_points: newTotalPoints
       }));
 
-      toast.success(`+${pointsEarned} points for market prediction! 📈`);
+      if (streakPercent > 0) {
+        toast.success(`+${earnedPoints} points for market prediction! (+${streakPercent}% streak bonus) 📈`);
+      } else {
+        toast.success(`+${earnedPoints} points for market prediction! 📈`);
+      }
       
       // Check for level up
       await checkLevelUp(newTotalPoints);
