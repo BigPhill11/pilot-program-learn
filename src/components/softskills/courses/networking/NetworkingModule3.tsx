@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, CheckCircle, Users, Coffee } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { useSoftSkillsProgressAdapter } from '@/hooks/useProgressAdapter';
 
 interface NetworkingModule3Props {
   onComplete: () => void;
@@ -12,10 +13,14 @@ interface NetworkingModule3Props {
   isCompleted?: boolean;
 }
 
-const NetworkingModule3: React.FC<NetworkingModule3Props> = ({ onComplete, onBack }) => {
+const NetworkingModule3: React.FC<NetworkingModule3Props> = ({ onComplete, onBack, isCompleted }) => {
   const { toast } = useToast();
+  const { progress: moduleProgress, completeModule } = 
+    useSoftSkillsProgressAdapter('networking-like-pro', 'module-3', 'Strategic Relationships');
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
+    await completeModule();
+    
     toast({
       title: "Module 3 Completed!",
       description: "You're ready to network effectively at any event.",

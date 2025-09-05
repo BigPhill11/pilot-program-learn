@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, CheckCircle, Database, Heart, Calendar, TrendingUp } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { useSoftSkillsProgressAdapter } from '@/hooks/useProgressAdapter';
 
 interface NetworkingModule6Props {
   onComplete: () => void;
@@ -13,12 +14,18 @@ interface NetworkingModule6Props {
   isCompleted?: boolean;
 }
 
-const NetworkingModule6: React.FC<NetworkingModule6Props> = ({ onComplete, onBack }) => {
+const NetworkingModule6: React.FC<NetworkingModule6Props> = ({ onComplete, onBack, isCompleted }) => {
   const [relationshipPlan, setRelationshipPlan] = useState('');
   const [valueStrategy, setValueStrategy] = useState('');
   const { toast } = useToast();
+  const { progress: moduleProgress, saveTextResponse, completeModule } = 
+    useSoftSkillsProgressAdapter('networking-like-pro', 'module-6', 'Relationship Management');
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
+    await saveTextResponse('relationship-plan', relationshipPlan);
+    await saveTextResponse('value-strategy', valueStrategy);
+    await completeModule();
+    
     toast({
       title: "Course Completed! 🎉",
       description: "You've mastered all aspects of professional networking.",

@@ -28,6 +28,19 @@ export const useSoftSkillsProgressAdapter = (courseId: string, moduleId: string,
     await unifiedProgress.updateDetailedProgress('responses', updatedResponses);
   };
 
+  const saveTextResponse = async (key: string, value: string) => {
+    if (!unifiedProgress.progress) return;
+    
+    const textResponses = unifiedProgress.progress.detailedProgress.text_responses || {};
+    await unifiedProgress.updateDetailedProgress('text_responses', {
+      ...textResponses,
+      [key]: {
+        value,
+        timestamp: new Date().toISOString()
+      }
+    });
+  };
+
   const saveGameScore = async (gameType: string, score: number, maxScore: number) => {
     if (!unifiedProgress.progress) return;
     
@@ -71,6 +84,7 @@ export const useSoftSkillsProgressAdapter = (courseId: string, moduleId: string,
     progress: transformedProgress,
     loading: unifiedProgress.loading,
     saveResponse,
+    saveTextResponse,
     saveGameScore,
     updateCompletionPercentage,
     completeModule,

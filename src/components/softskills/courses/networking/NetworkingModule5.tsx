@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, CheckCircle, Calendar, Users, MessageSquare, Target } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { useSoftSkillsProgressAdapter } from '@/hooks/useProgressAdapter';
 
 interface NetworkingModule5Props {
   onComplete: () => void;
@@ -12,9 +13,11 @@ interface NetworkingModule5Props {
   isCompleted?: boolean;
 }
 
-const NetworkingModule5: React.FC<NetworkingModule5Props> = ({ onComplete, onBack }) => {
+const NetworkingModule5: React.FC<NetworkingModule5Props> = ({ onComplete, onBack, isCompleted }) => {
   const [quizAnswers, setQuizAnswers] = useState<{[key: string]: number}>({});
   const { toast } = useToast();
+  const { progress: moduleProgress, saveTextResponse, completeModule } = 
+    useSoftSkillsProgressAdapter('networking-like-pro', 'module-5', 'Event Mastery');
 
   const renderQuizQuestion = (question: string, options: string[], correctAnswer: number, questionKey: string) => {
     const selectedAnswer = quizAnswers[questionKey];
@@ -64,7 +67,10 @@ const NetworkingModule5: React.FC<NetworkingModule5Props> = ({ onComplete, onBac
   const answeredQuestions = Object.keys(quizAnswers).length;
   const totalQuestions = 3;
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
+    await saveTextResponse('quiz-answers', JSON.stringify(quizAnswers));
+    await completeModule();
+    
     toast({
       title: "Module 5 Completed!",
       description: "You're ready to master any networking event.",

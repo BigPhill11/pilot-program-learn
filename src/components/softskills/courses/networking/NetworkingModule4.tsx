@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, CheckCircle, Linkedin, Globe, MessageSquare, Users } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { useSoftSkillsProgressAdapter } from '@/hooks/useProgressAdapter';
 
 interface NetworkingModule4Props {
   onComplete: () => void;
@@ -12,9 +13,11 @@ interface NetworkingModule4Props {
   isCompleted?: boolean;
 }
 
-const NetworkingModule4: React.FC<NetworkingModule4Props> = ({ onComplete, onBack }) => {
+const NetworkingModule4: React.FC<NetworkingModule4Props> = ({ onComplete, onBack, isCompleted }) => {
   const [checkedItems, setCheckedItems] = useState<{[key: string]: boolean}>({});
   const { toast } = useToast();
+  const { progress: moduleProgress, saveTextResponse, completeModule } = 
+    useSoftSkillsProgressAdapter('networking-like-pro', 'module-4', 'Digital Networking');
 
   const handleItemCheck = (key: string) => {
     setCheckedItems(prev => ({ ...prev, [key]: !prev[key] }));
@@ -23,7 +26,10 @@ const NetworkingModule4: React.FC<NetworkingModule4Props> = ({ onComplete, onBac
   const checkedCount = Object.values(checkedItems).filter(Boolean).length;
   const totalItems = 6;
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
+    await saveTextResponse('digital-networking-checklist', JSON.stringify(checkedItems));
+    await completeModule();
+    
     toast({
       title: "Module 4 Completed!",
       description: "You're now equipped for digital networking success.",

@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, CheckCircle, Users, MessageCircle, Target } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { useSoftSkillsProgressAdapter } from '@/hooks/useProgressAdapter';
 
 interface NetworkingModule2Props {
   onComplete: () => void;
@@ -13,11 +14,25 @@ interface NetworkingModule2Props {
   isCompleted?: boolean;
 }
 
-const NetworkingModule2: React.FC<NetworkingModule2Props> = ({ onComplete, onBack }) => {
+const NetworkingModule2: React.FC<NetworkingModule2Props> = ({ onComplete, onBack, isCompleted }) => {
   const [elevatorPitch, setElevatorPitch] = useState('');
   const { toast } = useToast();
+  const { progress: moduleProgress, saveTextResponse, completeModule } = 
+    useSoftSkillsProgressAdapter('networking-like-pro', 'module-2', 'Personal Brand Building');
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
+    if (elevatorPitch.length < 50) {
+      toast({
+        title: "Please complete your elevator pitch",
+        description: "Your pitch should be at least 50 characters long",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    await saveTextResponse('elevator-pitch', elevatorPitch);
+    await completeModule();
+    
     toast({
       title: "Module 2 Completed!",
       description: "You've mastered personal branding and elevator pitches.",
