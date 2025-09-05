@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -652,6 +652,42 @@ export type Database = {
         }
         Relationships: []
       }
+      intro_templates: {
+        Row: {
+          created_at: string
+          id: string
+          success_rate: number | null
+          template_content: string
+          template_name: string
+          template_type: string
+          updated_at: string
+          use_count: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          success_rate?: number | null
+          template_content: string
+          template_name: string
+          template_type?: string
+          updated_at?: string
+          use_count?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          success_rate?: number | null
+          template_content?: string
+          template_name?: string
+          template_type?: string
+          updated_at?: string
+          use_count?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       learning_modules: {
         Row: {
           category: string
@@ -1292,6 +1328,99 @@ export type Database = {
         }
         Relationships: []
       }
+      post_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          post_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          post_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_likes: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_shares: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_shares_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       posts: {
         Row: {
           chart_data: Json | null
@@ -1379,60 +1508,93 @@ export type Database = {
       profiles: {
         Row: {
           app_version: string | null
+          company: string | null
           created_at: string | null
           current_level: number | null
           current_streak: number | null
           device_preference: string | null
           email: string | null
           id: string
+          industry: string | null
+          interests: string[] | null
           last_login_date: string | null
           linkedin_connected_at: string | null
           linkedin_url: string | null
           linkedin_verified: boolean | null
           longest_streak: number | null
           mobile_optimized: boolean | null
+          networking_goals: string[] | null
+          networking_pitch: string | null
           onboarding_completed: boolean | null
           points_to_next_level: number | null
+          preferred_intro_style: string | null
+          professional_summary: string | null
+          professional_title: string | null
+          resume_url: string | null
+          skills: string[] | null
           updated_at: string | null
           username: string | null
+          years_experience: number | null
         }
         Insert: {
           app_version?: string | null
+          company?: string | null
           created_at?: string | null
           current_level?: number | null
           current_streak?: number | null
           device_preference?: string | null
           email?: string | null
           id: string
+          industry?: string | null
+          interests?: string[] | null
           last_login_date?: string | null
           linkedin_connected_at?: string | null
           linkedin_url?: string | null
           linkedin_verified?: boolean | null
           longest_streak?: number | null
           mobile_optimized?: boolean | null
+          networking_goals?: string[] | null
+          networking_pitch?: string | null
           onboarding_completed?: boolean | null
           points_to_next_level?: number | null
+          preferred_intro_style?: string | null
+          professional_summary?: string | null
+          professional_title?: string | null
+          resume_url?: string | null
+          skills?: string[] | null
           updated_at?: string | null
           username?: string | null
+          years_experience?: number | null
         }
         Update: {
           app_version?: string | null
+          company?: string | null
           created_at?: string | null
           current_level?: number | null
           current_streak?: number | null
           device_preference?: string | null
           email?: string | null
           id?: string
+          industry?: string | null
+          interests?: string[] | null
           last_login_date?: string | null
           linkedin_connected_at?: string | null
           linkedin_url?: string | null
           linkedin_verified?: boolean | null
           longest_streak?: number | null
           mobile_optimized?: boolean | null
+          networking_goals?: string[] | null
+          networking_pitch?: string | null
           onboarding_completed?: boolean | null
           points_to_next_level?: number | null
+          preferred_intro_style?: string | null
+          professional_summary?: string | null
+          professional_title?: string | null
+          resume_url?: string | null
+          skills?: string[] | null
           updated_at?: string | null
           username?: string | null
+          years_experience?: number | null
         }
         Relationships: []
       }
@@ -1744,6 +1906,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_experiences: {
+        Row: {
+          company: string
+          created_at: string
+          description: string | null
+          end_date: string | null
+          id: string
+          is_current: boolean | null
+          position: string
+          start_date: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company: string
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          is_current?: boolean | null
+          position: string
+          start_date?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company?: string
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          is_current?: boolean | null
+          position?: string
+          start_date?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_follows: {
         Row: {
@@ -2117,9 +2318,9 @@ export type Database = {
       bulk_insert_financial_terms: {
         Args: { terms_data: Json }
         Returns: {
-          inserted_count: number
           error_count: number
           errors: string[]
+          inserted_count: number
         }[]
       }
       calculate_user_streak: {
@@ -2134,10 +2335,10 @@ export type Database = {
         Args: { video_id_param: string }
         Returns: {
           avg_clarity: number
-          avg_usefulness: number
-          avg_entertainment: number
           avg_difficulty: number
+          avg_entertainment: number
           avg_overall: number
+          avg_usefulness: number
           total_ratings: number
         }[]
       }
@@ -2147,17 +2348,17 @@ export type Database = {
       }
       has_role: {
         Args: {
-          _user_id: string
           _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
         }
         Returns: boolean
       }
       update_learning_progress: {
         Args: {
-          p_user_id: string
           p_module_id: string
           p_progress_percentage: number
           p_time_spent?: number
+          p_user_id: string
         }
         Returns: Json
       }
