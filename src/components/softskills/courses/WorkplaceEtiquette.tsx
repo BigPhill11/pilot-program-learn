@@ -1,14 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Clock, Users, Target, Award, Building, Coffee, Calendar, Mail, Phone, Star } from 'lucide-react';
+import { Clock, Users, Target, Award, Building, Coffee, Calendar, Mail, Phone, Star, ArrowLeft } from 'lucide-react';
+import { useSoftSkillsProgress } from '@/hooks/useSoftSkillsProgress';
 
-const WorkplaceEtiquette = () => {
+interface WorkplaceEtiquetteProps {
+  onBack: () => void;
+}
+
+const WorkplaceEtiquette: React.FC<WorkplaceEtiquetteProps> = ({ onBack }) => {
   const [currentModule, setCurrentModule] = useState<number | null>(null);
-  const [completedModules, setCompletedModules] = useState<number[]>([]);
-  const [totalTimeSpent, setTotalTimeSpent] = useState(0);
+  const [completedModules, setCompletedModules] = useState<Set<number>>(new Set());
+  
+  const { 
+    getModuleProgress, 
+    completeModule, 
+    updateModuleProgress,
+    loading,
+    syncing 
+  } = useSoftSkillsProgress({ courseId: 'workplace_etiquette' });
 
   const modules = [
     {
@@ -18,7 +30,6 @@ const WorkplaceEtiquette = () => {
       icon: Building,
       estimatedTime: '20 minutes',
       keyTopics: ['Personal space', 'Noise management', 'Shared spaces', 'Office supplies'],
-      isCompleted: completedModules.includes(1),
       isUnlocked: true
     },
     {
@@ -28,8 +39,7 @@ const WorkplaceEtiquette = () => {
       icon: Mail,
       estimatedTime: '30 minutes',
       keyTopics: ['Email etiquette', 'Phone manners', 'Meeting protocols', 'Message timing'],
-      isCompleted: completedModules.includes(2),
-      isUnlocked: completedModules.includes(1)
+      isUnlocked: completedModules.has(1)
     },
     {
       id: 3,
@@ -38,8 +48,7 @@ const WorkplaceEtiquette = () => {
       icon: Calendar,
       estimatedTime: '25 minutes',
       keyTopics: ['Meeting punctuality', 'Calendar etiquette', 'Agenda management', 'Follow-up protocols'],
-      isCompleted: completedModules.includes(3),
-      isUnlocked: completedModules.includes(2)
+      isUnlocked: completedModules.has(2)
     },
     {
       id: 4,
@@ -48,8 +57,7 @@ const WorkplaceEtiquette = () => {
       icon: Coffee,
       estimatedTime: '35 minutes',
       keyTopics: ['Office parties', 'Lunch etiquette', 'Networking events', 'Social boundaries'],
-      isCompleted: completedModules.includes(4),
-      isUnlocked: completedModules.includes(3)
+      isUnlocked: completedModules.has(3)
     },
     {
       id: 5,
@@ -58,8 +66,7 @@ const WorkplaceEtiquette = () => {
       icon: Phone,
       estimatedTime: '25 minutes',
       keyTopics: ['Video call etiquette', 'Digital collaboration', 'Remote communication', 'Online presence'],
-      isCompleted: completedModules.includes(5),
-      isUnlocked: completedModules.includes(4)
+      isUnlocked: completedModules.has(4)
     },
     {
       id: 6,
@@ -68,15 +75,30 @@ const WorkplaceEtiquette = () => {
       icon: Star,
       estimatedTime: '30 minutes',
       keyTopics: ['Cultural awareness', 'Inclusive language', 'Holiday considerations', 'Diversity respect'],
-      isCompleted: completedModules.includes(6),
-      isUnlocked: completedModules.includes(5)
+      isUnlocked: completedModules.has(5)
     }
   ];
 
-  const handleModuleComplete = (moduleId: number) => {
-    setCompletedModules(prev => [...prev, moduleId]);
-    setTotalTimeSpent(prev => prev + 25); // Assume 25 minutes per module
-    setCurrentModule(null);
+  // Update completion status based on progress data
+  useEffect(() => {
+    const completed = new Set<number>();
+    for (let i = 1; i <= 6; i++) {
+      const moduleProgress = getModuleProgress(`module_${i}`, 'workplace_etiquette');
+      if (moduleProgress?.completedAt) {
+        completed.add(i);
+      }
+    }
+    setCompletedModules(completed);
+  }, [getModuleProgress]);
+
+  const handleModuleComplete = async (moduleId: number) => {
+    try {
+      await completeModule(`module_${moduleId}`, 'workplace_etiquette', 100);
+      setCompletedModules(prev => new Set([...prev, moduleId]));
+      setCurrentModule(null);
+    } catch (error) {
+      console.error('Failed to complete module:', error);
+    }
   };
 
   const handleStartModule = (moduleId: number) => {
@@ -87,7 +109,7 @@ const WorkplaceEtiquette = () => {
     setCurrentModule(null);
   };
 
-  const overallProgress = (completedModules.length / modules.length) * 100;
+  const overallProgress = (completedModules.size / modules.length) * 100;
 
   // For now, render placeholder content for modules until individual components are created
   if (currentModule) {
@@ -143,12 +165,17 @@ const WorkplaceEtiquette = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-8">
-      {/* Course Header */}
-      <div className="text-center space-y-4">
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <Building className="h-12 w-12 text-primary" />
-          <h1 className="text-4xl font-bold text-foreground">Workplace Etiquette</h1>
-        </div>
+      {/* Header */}
+      <div className="flex items-center space-x-4 mb-8">
+        <Button variant="outline" onClick={onBack}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Courses
+        </Button>
+        <div className="flex-1 text-center">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <Building className="h-12 w-12 text-primary" />
+            <h1 className="text-4xl font-bold text-foreground">Workplace Etiquette</h1>
+          </div>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
           Master professional etiquette and social skills to thrive in any workplace environment
         </p>
@@ -165,6 +192,7 @@ const WorkplaceEtiquette = () => {
           <div className="flex items-center gap-2">
             <Target className="h-4 w-4" />
             <span>Professional Etiquette</span>
+          </div>
           </div>
         </div>
       </div>
@@ -185,8 +213,8 @@ const WorkplaceEtiquette = () => {
             </div>
             <Progress value={overallProgress} className="h-3" />
             <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <span>{completedModules.length} of {modules.length} modules completed</span>
-              <span>{totalTimeSpent} minutes spent learning</span>
+              <span>{completedModules.size} of {modules.length} modules completed</span>
+              <span>Complete modules to track progress</span>
             </div>
           </div>
         </CardContent>
@@ -194,20 +222,23 @@ const WorkplaceEtiquette = () => {
 
       {/* Modules Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {modules.map((module) => (
-          <Card 
-            key={module.id} 
-            className={`transition-all duration-200 ${
-              module.isUnlocked 
-                ? 'hover:shadow-lg cursor-pointer border-border' 
-                : 'opacity-50 cursor-not-allowed border-muted'
-            } ${module.isCompleted ? 'bg-accent/20 border-primary' : ''}`}
-          >
+        {modules.map((module) => {
+          const isCompleted = completedModules.has(module.id);
+          
+          return (
+            <Card 
+              key={module.id} 
+              className={`transition-all duration-200 ${
+                module.isUnlocked 
+                  ? 'hover:shadow-lg cursor-pointer border-border' 
+                  : 'opacity-50 cursor-not-allowed border-muted'
+              } ${isCompleted ? 'bg-accent/20 border-primary' : ''}`}
+            >
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <div className={`p-2 rounded-lg ${
-                    module.isCompleted 
+                    isCompleted 
                       ? 'bg-primary text-primary-foreground' 
                       : module.isUnlocked 
                         ? 'bg-primary/10 text-primary' 
@@ -224,7 +255,7 @@ const WorkplaceEtiquette = () => {
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
-                  {module.isCompleted && (
+                  {isCompleted && (
                     <Badge variant="default" className="text-xs">
                       Completed
                     </Badge>
@@ -256,14 +287,15 @@ const WorkplaceEtiquette = () => {
                   onClick={() => handleStartModule(module.id)}
                   disabled={!module.isUnlocked}
                   className="w-full"
-                  variant={module.isCompleted ? "outline" : "default"}
+                  variant={isCompleted ? "outline" : "default"}
                 >
-                  {module.isCompleted ? 'Review Module' : 'Start Module'}
+                  {isCompleted ? 'Review Module' : 'Start Module'}
                 </Button>
               </div>
             </CardContent>
           </Card>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

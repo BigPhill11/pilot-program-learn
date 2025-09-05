@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ArrowLeft, BookOpen, CheckCircle2, Lock, Users, MessageSquare } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { useSoftSkillsProgressAdapter } from '@/hooks/useProgressAdapter';
+import { useSoftSkillsProgress } from '@/hooks/useSoftSkillsProgress';
 import CommunicationModule1 from './communication/CommunicationModule1';
 import CommunicationModule2 from './communication/CommunicationModule2';
 import CommunicationModule3 from './communication/CommunicationModule3';
@@ -21,33 +21,42 @@ const BusinessCommunicationExcellence: React.FC<BusinessCommunicationExcellenceP
   const [selectedModule, setSelectedModule] = useState<number | null>(null);
   const [completedModules, setCompletedModules] = useState<Set<number>>(new Set());
 
-  // Use progress tracking for each module
-  const module1Progress = useSoftSkillsProgressAdapter('business_communication', 'module_1', 'Communication Foundations');
-  const module2Progress = useSoftSkillsProgressAdapter('business_communication', 'module_2', 'Verbal Communication');
-  const module3Progress = useSoftSkillsProgressAdapter('business_communication', 'module_3', 'Written Communication');
-  const module4Progress = useSoftSkillsProgressAdapter('business_communication', 'module_4', 'Presentation Skills');
-  const module5Progress = useSoftSkillsProgressAdapter('business_communication', 'module_5', 'Digital Communication');
-  const module6Progress = useSoftSkillsProgressAdapter('business_communication', 'module_6', 'Advanced Communication');
+  // Use unified progress tracking
+  const { 
+    getModuleProgress, 
+    completeModule, 
+    updateModuleProgress,
+    loading,
+    syncing 
+  } = useSoftSkillsProgress({ courseId: 'business_communication' });
+
+  // Get individual module progress
+  const module1Progress = getModuleProgress('module_1', 'business_communication');
+  const module2Progress = getModuleProgress('module_2', 'business_communication');
+  const module3Progress = getModuleProgress('module_3', 'business_communication');
+  const module4Progress = getModuleProgress('module_4', 'business_communication');
+  const module5Progress = getModuleProgress('module_5', 'business_communication');
+  const module6Progress = getModuleProgress('module_6', 'business_communication');
 
   // Check completion status for all modules
   useEffect(() => {
     const completed = new Set<number>();
     
-    if (module1Progress.progress?.completedAt) completed.add(1);
-    if (module2Progress.progress?.completedAt) completed.add(2);
-    if (module3Progress.progress?.completedAt) completed.add(3);
-    if (module4Progress.progress?.completedAt) completed.add(4);
-    if (module5Progress.progress?.completedAt) completed.add(5);
-    if (module6Progress.progress?.completedAt) completed.add(6);
+    if (module1Progress?.completedAt) completed.add(1);
+    if (module2Progress?.completedAt) completed.add(2);
+    if (module3Progress?.completedAt) completed.add(3);
+    if (module4Progress?.completedAt) completed.add(4);
+    if (module5Progress?.completedAt) completed.add(5);
+    if (module6Progress?.completedAt) completed.add(6);
     
     setCompletedModules(completed);
   }, [
-    module1Progress.progress?.completedAt,
-    module2Progress.progress?.completedAt,
-    module3Progress.progress?.completedAt,
-    module4Progress.progress?.completedAt,
-    module5Progress.progress?.completedAt,
-    module6Progress.progress?.completedAt
+    module1Progress?.completedAt,
+    module2Progress?.completedAt,
+    module3Progress?.completedAt,
+    module4Progress?.completedAt,
+    module5Progress?.completedAt,
+    module6Progress?.completedAt
   ]);
 
   const modules = [
@@ -101,9 +110,14 @@ const BusinessCommunicationExcellence: React.FC<BusinessCommunicationExcellenceP
     }
   ];
 
-  const handleModuleComplete = (moduleId: number) => {
-    setCompletedModules(prev => new Set([...prev, moduleId]));
-    setSelectedModule(null);
+  const handleModuleComplete = async (moduleId: number) => {
+    try {
+      await completeModule(`module_${moduleId}`, 'business_communication', 100);
+      setCompletedModules(prev => new Set([...prev, moduleId]));
+      setSelectedModule(null);
+    } catch (error) {
+      console.error('Failed to complete module:', error);
+    }
   };
 
   const calculateOverallProgress = () => {

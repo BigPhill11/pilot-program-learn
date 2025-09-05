@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ArrowLeft, BookOpen, CheckCircle2, Lock, Users, Crown, PlayCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { useUnifiedProgress } from '@/hooks/useUnifiedProgress';
+import { useSoftSkillsProgress } from '@/hooks/useSoftSkillsProgress';
 import WorkingWomenModule1 from './working-women/WorkingWomenModule1';
 import WorkingWomenModule2 from './working-women/WorkingWomenModule2';
 import WorkingWomenModule3 from './working-women/WorkingWomenModule3';
@@ -20,60 +20,45 @@ const WorkingWomenExcellence: React.FC<WorkingWomenExcellenceProps> = ({ onBack 
   const [selectedModule, setSelectedModule] = useState<number | null>(null);
   const [completedModules, setCompletedModules] = useState<Set<number>>(new Set());
 
-  // Use unified progress tracking for each module
-  const module1Progress = useUnifiedProgress({ 
-    moduleId: 'module_1', 
-    moduleType: 'soft_skills', 
-    courseId: 'working_women' 
-  });
-  const module2Progress = useUnifiedProgress({ 
-    moduleId: 'module_2', 
-    moduleType: 'soft_skills', 
-    courseId: 'working_women' 
-  });
-  const module3Progress = useUnifiedProgress({ 
-    moduleId: 'module_3', 
-    moduleType: 'soft_skills', 
-    courseId: 'working_women' 
-  });
-  const module4Progress = useUnifiedProgress({ 
-    moduleId: 'module_4', 
-    moduleType: 'soft_skills', 
-    courseId: 'working_women' 
-  });
-  const module5Progress = useUnifiedProgress({ 
-    moduleId: 'module_5', 
-    moduleType: 'soft_skills', 
-    courseId: 'working_women' 
-  });
-  const module6Progress = useUnifiedProgress({ 
-    moduleId: 'module_6', 
-    moduleType: 'soft_skills', 
-    courseId: 'working_women' 
-  });
+  // Use unified progress tracking
+  const { 
+    getModuleProgress, 
+    completeModule, 
+    updateModuleProgress,
+    loading,
+    syncing 
+  } = useSoftSkillsProgress({ courseId: 'working_women' });
+
+  // Get individual module progress
+  const module1Progress = getModuleProgress('module_1', 'working_women');
+  const module2Progress = getModuleProgress('module_2', 'working_women');
+  const module3Progress = getModuleProgress('module_3', 'working_women');
+  const module4Progress = getModuleProgress('module_4', 'working_women');
+  const module5Progress = getModuleProgress('module_5', 'working_women');
+  const module6Progress = getModuleProgress('module_6', 'working_women');
 
   // Check completion status for all modules
   useEffect(() => {
     const completed = new Set<number>();
     
-    if (module1Progress.isCompleted) completed.add(1);
-    if (module2Progress.isCompleted) completed.add(2);
-    if (module3Progress.isCompleted) completed.add(3);
-    if (module4Progress.isCompleted) completed.add(4);
-    if (module5Progress.isCompleted) completed.add(5);
-    if (module6Progress.isCompleted) completed.add(6);
+    if (module1Progress?.completedAt) completed.add(1);
+    if (module2Progress?.completedAt) completed.add(2);
+    if (module3Progress?.completedAt) completed.add(3);
+    if (module4Progress?.completedAt) completed.add(4);
+    if (module5Progress?.completedAt) completed.add(5);
+    if (module6Progress?.completedAt) completed.add(6);
     
     setCompletedModules(completed);
   }, [
-    module1Progress.isCompleted,
-    module2Progress.isCompleted,
-    module3Progress.isCompleted,
-    module4Progress.isCompleted,
-    module5Progress.isCompleted,
-    module6Progress.isCompleted
+    module1Progress?.completedAt,
+    module2Progress?.completedAt,
+    module3Progress?.completedAt,
+    module4Progress?.completedAt,
+    module5Progress?.completedAt,
+    module6Progress?.completedAt
   ]);
 
-  const getModuleProgress = (moduleId: number) => {
+  const getModuleProgressData = (moduleId: number) => {
     switch (moduleId) {
       case 1: return module1Progress;
       case 2: return module2Progress;
@@ -93,7 +78,6 @@ const WorkingWomenExcellence: React.FC<WorkingWomenExcellenceProps> = ({ onBack 
       duration: '45 mins',
       topics: ['Executive Presence', 'Assertive Communication', 'Double Bind'],
       isUnlocked: true,
-      progressData: module1Progress
     },
     {
       id: 2,
@@ -101,8 +85,7 @@ const WorkingWomenExcellence: React.FC<WorkingWomenExcellenceProps> = ({ onBack 
       description: 'Master strategies for integrating professional ambitions with personal responsibilities and well-being',
       duration: '40 mins',
       topics: ['Work-Life Integration', 'Boundary Setting', 'Energy Management'],
-      isUnlocked: completedModules.has(1),
-      progressData: module2Progress
+      isUnlocked: completedModules.has(1)
     },
     {
       id: 3,
@@ -110,8 +93,7 @@ const WorkingWomenExcellence: React.FC<WorkingWomenExcellenceProps> = ({ onBack 
       description: 'Master the art of negotiating for what you\'re worth and advocating effectively for your career advancement',
       duration: '50 mins',
       topics: ['Market Value Research', 'Anchoring', 'Professional Advocacy'],
-      isUnlocked: completedModules.has(2),
-      progressData: module3Progress
+      isUnlocked: completedModules.has(2)
     },
     {
       id: 4,
@@ -119,8 +101,7 @@ const WorkingWomenExcellence: React.FC<WorkingWomenExcellenceProps> = ({ onBack 
       description: 'Develop strategies for effectively navigating gender-based challenges and biases in professional environments',
       duration: '45 mins',
       topics: ['Unconscious Bias', 'Glass Ceiling', 'Allyship'],
-      isUnlocked: completedModules.has(3),
-      progressData: module4Progress
+      isUnlocked: completedModules.has(3)
     },
     {
       id: 5,
@@ -128,8 +109,7 @@ const WorkingWomenExcellence: React.FC<WorkingWomenExcellenceProps> = ({ onBack 
       description: 'Create powerful professional networks and mentoring relationships that accelerate your career advancement',
       duration: '45 mins',
       topics: ['Strategic Networking', 'Sponsor vs. Mentor', 'Reciprocal Networking'],
-      isUnlocked: completedModules.has(4),
-      progressData: module5Progress
+      isUnlocked: completedModules.has(4)
     },
     {
       id: 6,
@@ -137,14 +117,18 @@ const WorkingWomenExcellence: React.FC<WorkingWomenExcellenceProps> = ({ onBack 
       description: 'Develop your authentic leadership style while breaking through barriers and creating opportunities for other women',
       duration: '50 mins',
       topics: ['Authentic Leadership', 'Glass Cliff', 'Barrier Breaking'],
-      isUnlocked: completedModules.has(5),
-      progressData: module6Progress
+      isUnlocked: completedModules.has(5)
     }
   ];
 
-  const handleModuleComplete = (moduleId: number) => {
-    setCompletedModules(prev => new Set([...prev, moduleId]));
-    setSelectedModule(null);
+  const handleModuleComplete = async (moduleId: number) => {
+    try {
+      await completeModule(`module_${moduleId}`, 'working_women', 100);
+      setCompletedModules(prev => new Set([...prev, moduleId]));
+      setSelectedModule(null);
+    } catch (error) {
+      console.error('Failed to complete module:', error);
+    }
   };
 
   const calculateOverallProgress = () => {
@@ -152,7 +136,7 @@ const WorkingWomenExcellence: React.FC<WorkingWomenExcellenceProps> = ({ onBack 
   };
 
   if (selectedModule) {
-    const progressData = getModuleProgress(selectedModule);
+    const progressData = getModuleProgressData(selectedModule);
     const moduleProps = {
       onBack: () => setSelectedModule(null),
       onComplete: () => handleModuleComplete(selectedModule),
@@ -222,8 +206,9 @@ const WorkingWomenExcellence: React.FC<WorkingWomenExcellenceProps> = ({ onBack 
           {modules.map((module) => {
             const isCompleted = completedModules.has(module.id);
             const isLocked = !module.isUnlocked;
-            const hasStarted = module.progressData?.progress && module.progressData.progress.progressPercentage > 0;
-            const progressPercentage = module.progressData?.progress?.progressPercentage || 0;
+            const moduleProgressData = getModuleProgressData(module.id);
+            const hasStarted = moduleProgressData && moduleProgressData.progressPercentage > 0;
+            const progressPercentage = moduleProgressData?.progressPercentage || 0;
 
             return (
               <Card 

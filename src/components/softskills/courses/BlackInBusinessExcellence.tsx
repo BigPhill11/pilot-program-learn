@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ArrowLeft, BookOpen, CheckCircle2, Lock, Users, Target } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { useSoftSkillsProgressAdapter } from '@/hooks/useProgressAdapter';
+import { useSoftSkillsProgress } from '@/hooks/useSoftSkillsProgress';
 import BlackBusinessModule1 from './black-business/BlackBusinessModule1';
 import BlackBusinessModule2 from './black-business/BlackBusinessModule2';
 import BlackBusinessModule3 from './black-business/BlackBusinessModule3';
@@ -20,33 +20,42 @@ const BlackInBusinessExcellence: React.FC<BlackInBusinessExcellenceProps> = ({ o
   const [selectedModule, setSelectedModule] = useState<number | null>(null);
   const [completedModules, setCompletedModules] = useState<Set<number>>(new Set());
 
-  // Use progress tracking for each module
-  const module1Progress = useSoftSkillsProgressAdapter('black_business', 'module_1', 'Authentic Leadership & Identity');
-  const module2Progress = useSoftSkillsProgressAdapter('black_business', 'module_2', 'Strategic Communication & Code-Switching');
-  const module3Progress = useSoftSkillsProgressAdapter('black_business', 'module_3', 'Building Strategic Networks');
-  const module4Progress = useSoftSkillsProgressAdapter('black_business', 'module_4', 'Navigating Workplace Politics & Bias');
-  const module5Progress = useSoftSkillsProgressAdapter('black_business', 'module_5', 'Leveraging Your Unique Perspective');
-  const module6Progress = useSoftSkillsProgressAdapter('black_business', 'module_6', 'Creating Inclusive Environments & Advocacy');
+  // Use unified progress tracking
+  const { 
+    getModuleProgress, 
+    completeModule, 
+    updateModuleProgress,
+    loading,
+    syncing 
+  } = useSoftSkillsProgress({ courseId: 'black_business' });
+
+  // Get individual module progress
+  const module1Progress = getModuleProgress('module_1', 'black_business');
+  const module2Progress = getModuleProgress('module_2', 'black_business');
+  const module3Progress = getModuleProgress('module_3', 'black_business');
+  const module4Progress = getModuleProgress('module_4', 'black_business');
+  const module5Progress = getModuleProgress('module_5', 'black_business');
+  const module6Progress = getModuleProgress('module_6', 'black_business');
 
   // Check completion status for all modules
   useEffect(() => {
     const completed = new Set<number>();
     
-    if (module1Progress.progress?.completedAt) completed.add(1);
-    if (module2Progress.progress?.completedAt) completed.add(2);
-    if (module3Progress.progress?.completedAt) completed.add(3);
-    if (module4Progress.progress?.completedAt) completed.add(4);
-    if (module5Progress.progress?.completedAt) completed.add(5);
-    if (module6Progress.progress?.completedAt) completed.add(6);
+    if (module1Progress?.completedAt) completed.add(1);
+    if (module2Progress?.completedAt) completed.add(2);
+    if (module3Progress?.completedAt) completed.add(3);
+    if (module4Progress?.completedAt) completed.add(4);
+    if (module5Progress?.completedAt) completed.add(5);
+    if (module6Progress?.completedAt) completed.add(6);
     
     setCompletedModules(completed);
   }, [
-    module1Progress.progress?.completedAt,
-    module2Progress.progress?.completedAt,
-    module3Progress.progress?.completedAt,
-    module4Progress.progress?.completedAt,
-    module5Progress.progress?.completedAt,
-    module6Progress.progress?.completedAt
+    module1Progress?.completedAt,
+    module2Progress?.completedAt,
+    module3Progress?.completedAt,
+    module4Progress?.completedAt,
+    module5Progress?.completedAt,
+    module6Progress?.completedAt
   ]);
 
   const modules = [
@@ -100,9 +109,14 @@ const BlackInBusinessExcellence: React.FC<BlackInBusinessExcellenceProps> = ({ o
     }
   ];
 
-  const handleModuleComplete = (moduleId: number) => {
-    setCompletedModules(prev => new Set([...prev, moduleId]));
-    setSelectedModule(null);
+  const handleModuleComplete = async (moduleId: number) => {
+    try {
+      await completeModule(`module_${moduleId}`, 'black_business', 100);
+      setCompletedModules(prev => new Set([...prev, moduleId]));
+      setSelectedModule(null);
+    } catch (error) {
+      console.error('Failed to complete module:', error);
+    }
   };
 
   const calculateOverallProgress = () => {
