@@ -5,15 +5,21 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Clock, Users, MessageSquare, Shirt, Handshake, Star, Play, BookOpen, Lightbulb, PlayCircle } from 'lucide-react';
+import { Clock, Users, MessageSquare, Shirt, Handshake, Star, Play, BookOpen, Lightbulb, PlayCircle, Trophy, Target } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import CourseDetailView from '@/components/softskills/CourseDetailView';
+import { SoftSkillsProgressCard } from '@/components/progress/SoftSkillsProgressCard';
+import { SoftSkillsAchievements } from '@/components/progress/SoftSkillsAchievements';
+import { useSoftSkillsProgress } from '@/hooks/useSoftSkillsProgress';
 
 const SoftSkillsPage = () => {
   const { user } = useAuth();
   const [selectedCourse, setSelectedCourse] = useState<any>(null);
+  
+  // Use the new progress tracking hook
+  const { getCourseProgress, refreshProgress } = useSoftSkillsProgress();
 
   const { data: courses, isLoading } = useQuery({
     queryKey: ['soft-skills-courses'],
@@ -84,29 +90,40 @@ const SoftSkillsPage = () => {
     }
   };
 
-  const getCourseProgress = (courseId: string, courseTitle: string) => {
-    if (!moduleProgress) return { progress: 0, hasStarted: false };
-    
+  const getCourseProgressData = (courseId: string, courseTitle: string) => {
     // Map course titles to their course keys
     let courseKey = '';
     if (courseTitle.toLowerCase().includes('working women')) courseKey = 'working_women';
-    else if (courseTitle.toLowerCase().includes('professional interviewing')) courseKey = 'professional_interviewing';
+    else if (courseTitle.toLowerCase().includes('professional interviewing')) courseKey = 'interviewing';
     else if (courseTitle.toLowerCase().includes('networking')) courseKey = 'networking';
     else if (courseTitle.toLowerCase().includes('business communication')) courseKey = 'business_communication';
     else if (courseTitle.toLowerCase().includes('black in business')) courseKey = 'black_business';
+    else if (courseTitle.toLowerCase().includes('dress for success')) courseKey = 'business_attire';
+    else if (courseTitle.toLowerCase().includes('workplace etiquette')) courseKey = 'workplace_etiquette';
     
     if (!courseKey) return { progress: 0, hasStarted: false };
     
-    // Get all progress for this course
-    const courseProgress = moduleProgress.filter(p => p.course_id === courseKey);
+    // Use the new progress system
+    const courseProgressData = getCourseProgress(courseKey);
     
-    if (courseProgress.length === 0) return { progress: 0, hasStarted: false };
+    if (!courseProgressData) {
+      // Fallback to old system for backward compatibility
+      if (!moduleProgress) return { progress: 0, hasStarted: false };
+      
+      const legacyCourseProgress = moduleProgress.filter(p => p.course_id === courseKey);
+      if (legacyCourseProgress.length === 0) return { progress: 0, hasStarted: false };
+      
+      const hasStarted = legacyCourseProgress.some(p => p.progress_percentage > 0);
+      const totalProgress = legacyCourseProgress.reduce((sum, p) => sum + p.progress_percentage, 0);
+      const averageProgress = legacyCourseProgress.length > 0 ? totalProgress / legacyCourseProgress.length : 0;
+      
+      return { progress: averageProgress, hasStarted };
+    }
     
-    const hasStarted = courseProgress.some(p => p.progress_percentage > 0);
-    const totalProgress = courseProgress.reduce((sum, p) => sum + p.progress_percentage, 0);
-    const averageProgress = courseProgress.length > 0 ? totalProgress / courseProgress.length : 0;
-    
-    return { progress: averageProgress, hasStarted };
+    return { 
+      progress: courseProgressData.overallProgress, 
+      hasStarted: courseProgressData.overallProgress > 0 
+    };
   };
 
   const groupedCourses = courses?.reduce((acc, course) => {
@@ -127,7 +144,7 @@ const SoftSkillsPage = () => {
 
   const CourseCard = ({ course }: { course: any }) => {
     const IconComponent = categoryIcons[course.category as keyof typeof categoryIcons];
-    const { progress, hasStarted } = getCourseProgress(course.id, course.title);
+    const { progress, hasStarted } = getCourseProgressData(course.id, course.title);
     const isCompleted = progress >= 100;
     
     return (
@@ -217,6 +234,18 @@ const SoftSkillsPage = () => {
           Master essential professional skills for career success. From interviewing to networking, 
           develop the soft skills that complement your financial knowledge.
         </p>
+      </div>
+
+      {/* Progress Overview */}
+      <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <SoftSkillsProgressCard 
+          className="col-span-1"
+          onSync={refreshProgress}
+        />
+        <SoftSkillsAchievements 
+          className="col-span-1"
+          compact={true}
+        />
       </div>
 
       <Tabs defaultValue="all" className="space-y-6">
