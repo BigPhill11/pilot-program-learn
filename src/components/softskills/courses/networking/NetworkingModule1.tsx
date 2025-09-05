@@ -13,6 +13,16 @@ interface NetworkingModule1Props {
 }
 
 const NetworkingModule1: React.FC<NetworkingModule1Props> = ({ onBack, onComplete, isCompleted }) => {
+  // Move networkingTerms to the top to prevent hoisting issues
+  const networkingTerms = [
+    { term: "Networking", definition: "The practice of building and maintaining professional relationships for mutual benefit" },
+    { term: "Rapport", definition: "A harmonious relationship characterized by mutual understanding and trust" },
+    { term: "Value Proposition", definition: "A clear statement of the value you bring to a professional relationship" },
+    { term: "Follow-up", definition: "The practice of maintaining contact after an initial meeting or interaction" },
+    { term: "Personal Brand", definition: "How you present yourself professionally and what you're known for" },
+    { term: "Cold Outreach", definition: "Initiating contact with someone you haven't met before" }
+  ];
+
   const { progress: moduleProgress, saveResponse, saveGameScore, completeModule, updateCompletionPercentage, getProgressHistory } = 
     useSoftSkillsProgressAdapter('networking-like-pro', 'module-1', 'What is Professional Networking?');
     
@@ -84,15 +94,6 @@ const NetworkingModule1: React.FC<NetworkingModule1Props> = ({ onBack, onComplet
       saveGameScore('networking-terms-match', gameScore, 60);
     }
   }, [termGame.completed, gameScore, saveGameScore]);
-
-  const networkingTerms = [
-    { term: "Networking", definition: "The practice of building and maintaining professional relationships for mutual benefit" },
-    { term: "Rapport", definition: "A harmonious relationship characterized by mutual understanding and trust" },
-    { term: "Value Proposition", definition: "A clear statement of the value you bring to a professional relationship" },
-    { term: "Follow-up", definition: "The practice of maintaining contact after an initial meeting or interaction" },
-    { term: "Personal Brand", definition: "How you present yourself professionally and what you're known for" },
-    { term: "Cold Outreach", definition: "Initiating contact with someone you haven't met before" }
-  ];
 
 
   const steps = [
