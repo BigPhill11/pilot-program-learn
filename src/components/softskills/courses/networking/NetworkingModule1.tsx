@@ -1,27 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, ArrowRight, Users, Brain, Target, CheckCircle, Gamepad2, Star, History, BookOpen } from 'lucide-react';
 import { useSoftSkillsProgressAdapter } from '@/hooks/useProgressAdapter';
 import { PandaCelebration } from '@/components/ui/panda-celebration';
+import { useToast } from '@/hooks/use-toast';
 
 interface NetworkingModule1Props {
   onBack: () => void;
   onComplete: () => void;
-  isCompleted: boolean;
+  isCompleted?: boolean;
 }
 
-const NetworkingModule1: React.FC<NetworkingModule1Props> = ({ onBack, onComplete, isCompleted }) => {
-  // Move networkingTerms to the top to prevent hoisting issues
-  const networkingTerms = [
+const NetworkingModule1: React.FC<NetworkingModule1Props> = ({ onBack, onComplete, isCompleted = false }) => {
+  const { toast } = useToast();
+  
+  // Memoize networking terms to prevent recreation on every render
+  const networkingTerms = useMemo(() => [
     { term: "Networking", definition: "The practice of building and maintaining professional relationships for mutual benefit" },
     { term: "Rapport", definition: "A harmonious relationship characterized by mutual understanding and trust" },
     { term: "Value Proposition", definition: "A clear statement of the value you bring to a professional relationship" },
     { term: "Follow-up", definition: "The practice of maintaining contact after an initial meeting or interaction" },
     { term: "Personal Brand", definition: "How you present yourself professionally and what you're known for" },
     { term: "Cold Outreach", definition: "Initiating contact with someone you haven't met before" }
-  ];
+  ], []);
 
   const { progress: moduleProgress, saveResponse, saveGameScore, completeModule, updateCompletionPercentage, getProgressHistory } = 
     useSoftSkillsProgressAdapter('networking-like-pro', 'module-1', 'What is Professional Networking?');
@@ -35,6 +38,7 @@ const NetworkingModule1: React.FC<NetworkingModule1Props> = ({ onBack, onComplet
   const [showCelebration, setShowCelebration] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [progressHistory, setProgressHistory] = useState<any[]>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
   
   const [termGame, setTermGame] = useState({
     currentTerm: 0,
@@ -43,57 +47,84 @@ const NetworkingModule1: React.FC<NetworkingModule1Props> = ({ onBack, onComplet
     completed: false
   });
 
-  // Create static shuffled options for each term to prevent re-shuffling on renders
-  const [gameOptions, setGameOptions] = useState<any[][]>([]);
-
-  // Initialize static game options when component mounts
-  useEffect(() => {
-    const options = networkingTerms.map((currentTerm) => {
-      // Get the correct answer and 2 random wrong answers
+  // Memoize game options to prevent recreation on every render
+  const gameOptions = useMemo(() => {
+    return networkingTerms.map((currentTerm) => {
       const correctAnswer = currentTerm;
       const wrongAnswers = networkingTerms
         .filter(term => term.term !== currentTerm.term)
         .sort(() => Math.random() - 0.5)
         .slice(0, 2);
       
-      // Combine and shuffle once
-      const allOptions = [correctAnswer, ...wrongAnswers]
+      return [correctAnswer, ...wrongAnswers]
         .sort(() => Math.random() - 0.5);
-      
-      return allOptions;
     });
-    setGameOptions(options);
-  }, []);
+  }, [networkingTerms]);
 
   // Load progress history on component mount
   useEffect(() => {
     const loadHistory = async () => {
-      const history = await getProgressHistory();
-      setProgressHistory(history);
+      try {
+        const history = await getProgressHistory();
+        setProgressHistory(history);
+      } catch (error) {
+        console.error('Failed to load progress history:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load progress history",
+          variant: "destructive"
+        });
+      }
     };
     loadHistory();
-  }, [getProgressHistory]);
+  }, [getProgressHistory, toast]);
 
-  // Save quiz responses
-  const handleQuizAnswer = async (questionIndex: number, answerIndex: number, answerText: string, isCorrect: boolean) => {
+  // Optimized quiz answer handler with error handling
+  const handleQuizAnswer = useCallback(async (questionIndex: number, answerIndex: number, answerText: string, isCorrect: boolean) => {
+    if (isProcessing) return;
+    
     setQuizAnswers(prev => ({ ...prev, [questionIndex]: answerIndex }));
     setShowFeedback(prev => ({ ...prev, [questionIndex]: true }));
     
-    await saveResponse(
-      `quiz-${questionIndex}`,
-      questionIndex === 0 ? "What is the primary focus of effective networking?" : "Which mindset is most important for successful networking?",
-      answerIndex,
-      answerText,
-      isCorrect
-    );
-  };
-
-  // Save game completion
-  useEffect(() => {
-    if (termGame.completed && gameScore > 0) {
-      saveGameScore('networking-terms-match', gameScore, 60);
+    try {
+      setIsProcessing(true);
+      await saveResponse(
+        `quiz-${questionIndex}`,
+        questionIndex === 0 ? "What is the primary focus of effective networking?" : "Which mindset is most important for successful networking?",
+        answerIndex,
+        answerText,
+        isCorrect
+      );
+    } catch (error) {
+      console.error('Failed to save quiz response:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save your answer. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsProcessing(false);
     }
-  }, [termGame.completed, gameScore, saveGameScore]);
+  }, [saveResponse, isProcessing, toast]);
+
+  // Optimized game score saving with error handling
+  useEffect(() => {
+    const saveScore = async () => {
+      if (termGame.completed && gameScore > 0) {
+        try {
+          await saveGameScore('networking-terms-match', gameScore, 60);
+        } catch (error) {
+          console.error('Failed to save game score:', error);
+          toast({
+            title: "Error",
+            description: "Failed to save your game score",
+            variant: "destructive"
+          });
+        }
+      }
+    };
+    saveScore();
+  }, [termGame.completed, gameScore, saveGameScore, toast]);
 
 
   const steps = [
@@ -193,7 +224,10 @@ const NetworkingModule1: React.FC<NetworkingModule1Props> = ({ onBack, onComplet
                             className={`text-left justify-start p-4 h-auto hover:scale-102 transition-transform w-full ${
                               isSelected ? (isCorrect ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600") : ""
                             }`}
+                            disabled={termGame.selectedDefinition !== null}
                             onClick={() => {
+                              if (termGame.selectedDefinition !== null) return;
+                              
                               setTermGame(prev => ({ ...prev, selectedDefinition: index }));
                               
                               const feedbackText = isCorrect 
@@ -203,24 +237,19 @@ const NetworkingModule1: React.FC<NetworkingModule1Props> = ({ onBack, onComplet
                               setGameFeedback(feedbackText);
                               
                               setTimeout(() => {
-                                if (isCorrect) {
-                                  setTermGame(prev => ({ 
-                                    ...prev, 
-                                    score: prev.score + 10,
-                                    currentTerm: prev.currentTerm + 1,
-                                    selectedDefinition: null
-                                  }));
-                                } else {
-                                  setTermGame(prev => ({ 
-                                    ...prev, 
-                                    currentTerm: prev.currentTerm + 1,
-                                    selectedDefinition: null
-                                  }));
-                                }
+                                const newScore = isCorrect ? termGame.score + 10 : termGame.score;
+                                const isLastTerm = termGame.currentTerm >= networkingTerms.length - 1;
                                 
-                                if (termGame.currentTerm >= networkingTerms.length - 1) {
-                                  setTermGame(prev => ({ ...prev, completed: true }));
-                                  setGameScore(termGame.score + (isCorrect ? 10 : 0));
+                                setTermGame(prev => ({ 
+                                  ...prev, 
+                                  score: newScore,
+                                  currentTerm: isLastTerm ? prev.currentTerm : prev.currentTerm + 1,
+                                  selectedDefinition: null,
+                                  completed: isLastTerm
+                                }));
+                                
+                                if (isLastTerm) {
+                                  setGameScore(newScore);
                                 }
                                 setGameFeedback('');
                               }, 2500);
@@ -534,42 +563,69 @@ const NetworkingModule1: React.FC<NetworkingModule1Props> = ({ onBack, onComplet
   const isQuizComplete = Object.keys(quizAnswers).length >= 2;
   const isGameComplete = termGame.completed;
   
-  // Check if user can proceed to next step or complete module
-  const canProceed = currentStep < steps.length - 1 || 
-    (currentStep === steps.length - 1 && isQuizComplete && isGameComplete);
+  // Simplified completion logic - allow progression through steps, require quiz and game for final completion
+  const canProceed = useMemo(() => {
+    if (currentStep < steps.length - 1) return true;
+    return isQuizComplete && isGameComplete;
+  }, [currentStep, isQuizComplete, isGameComplete, steps.length]);
   
-  const handleNext = async () => {
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
-      await updateCompletionPercentage(((currentStep + 2) / steps.length) * 100);
-    } else if (canProceed) {
-      await completeModule();
-      // Show celebration animation for completed module
-      setShowCelebration(true);
+  const handleNext = useCallback(async () => {
+    if (isProcessing) return;
+    
+    try {
+      setIsProcessing(true);
+      
+      if (currentStep < steps.length - 1) {
+        setCurrentStep(currentStep + 1);
+        await updateCompletionPercentage(((currentStep + 2) / steps.length) * 100);
+      } else if (canProceed) {
+        await completeModule();
+        setShowCelebration(true);
+        toast({
+          title: "Module Complete!",
+          description: "You've successfully completed the Networking Fundamentals module."
+        });
+      }
+    } catch (error) {
+      console.error('Failed to proceed:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save progress. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsProcessing(false);
     }
-  };
+  }, [currentStep, steps.length, canProceed, updateCompletionPercentage, completeModule, isProcessing, toast]);
 
-  const handleModuleComplete = async () => {
+  const handleModuleComplete = useCallback(async () => {
     setShowCelebration(false);
-    // Mark as completed and trigger parent callback
     onComplete();
-    // Also auto-advance to next module after short delay
     setTimeout(() => {
-      onBack(); // Go back to course overview where next module will be unlocked
+      onBack();
     }, 1000);
-  };
+  }, [onComplete, onBack]);
 
-  const loadProgressHistory = async () => {
-    const history = await getProgressHistory();
-    setProgressHistory(history);
-    setShowHistory(true);
-  };
+  const loadProgressHistory = useCallback(async () => {
+    try {
+      const history = await getProgressHistory();
+      setProgressHistory(history);
+      setShowHistory(true);
+    } catch (error) {
+      console.error('Failed to load progress history:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load progress history",
+        variant: "destructive"
+      });
+    }
+  }, [getProgressHistory, toast]);
 
-  const handlePrevious = () => {
+  const handlePrevious = useCallback(() => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
-  };
+  }, [currentStep]);
 
   const progress = ((currentStep + 1) / steps.length) * 100;
 
