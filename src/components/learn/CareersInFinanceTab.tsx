@@ -12,6 +12,7 @@ import { managementConsultingLessons } from "@/data/management-consulting-lesson
 import { vcLessons } from "@/data/venture-capital-lessons";
 import { ibDivisions } from "@/data/ib-divisions";
 import { useIsMobile } from '@/hooks/use-mobile';
+import AssetManagementJourneySection from './sections/AssetManagementJourneySection';
 
 const CareersInFinanceTab = () => {
     const [selectedCareer, setSelectedCareer] = useState<FinanceCareerData | null>(null);
@@ -66,6 +67,11 @@ const CareersInFinanceTab = () => {
                     Explore different finance career paths with interactive learning journeys. Master each field step by step with Phil as your guide!
                 </p>
             </div>
+            {/* Asset Management Journey Section */}
+            <div className="mb-8">
+                <AssetManagementJourneySection />
+            </div>
+
             <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-2 xl:grid-cols-3'} gap-4 md:gap-6`}>
                 {financeCareerData.map(career => (
                     <Card 
