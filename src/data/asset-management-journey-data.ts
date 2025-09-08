@@ -567,6 +567,386 @@ export const assetManagementJourneyData: AssetManagementLevel[] = [
         }
       }
     ]
+  },
+  {
+    id: 5,
+    title: "Client Relations & Sales",
+    description: "Build trust with clients through transparency, clear communication, and strong presentation skills.",
+    overview: "Asset management isn't just about numbers — it's about relationships. Managers must build trust with clients by being transparent, explaining performance clearly, and showing accountability during both good and bad markets. Sales and client relations are also crucial for attracting new investors, which helps firms grow and serve more clients.",
+    realLifeExample: "Picture a pension board for city workers meeting with an asset manager to review how their money has been invested. The manager prepares a presentation showing charts of returns compared to benchmarks, explaining how diversification helped limit losses during a market downturn. They are transparent about the risks the portfolio still faces and outline steps to manage them going forward. Board members ask tough questions — like why one fund underperformed — and the manager answers honestly, reinforcing trust. Because the manager communicates clearly and openly, the pension board decides to keep the firm as their partner for another contract term.",
+    flashcards: [
+      {
+        term: "Client",
+        definition: "A client is the individual or institution who hires an asset manager to handle investments. Clients rely on managers for expertise, transparency, and trust."
+      },
+      {
+        term: "Presentation",
+        definition: "A presentation is a structured meeting where managers explain their strategies and results to clients. Strong presentations highlight performance, risks, and the path forward."
+      },
+      {
+        term: "Transparency",
+        definition: "Transparency means being open and honest about fees, risks, and results. Asset managers who hide information risk losing client trust."
+      },
+      {
+        term: "Business Development",
+        definition: "Business development is the process of finding and winning new clients. For example, managers might pitch their services to a pension board to secure a contract."
+      },
+      {
+        term: "Reporting",
+        definition: "Reporting provides clients with written updates on performance and strategy. These documents include charts, numbers, and explanations about how the portfolio is doing."
+      }
+    ],
+    quiz: [
+      {
+        question: "Why is transparency key in asset management client relationships?",
+        options: [
+          "It's legally required by all regulators",
+          "It builds trust and helps clients make informed decisions",
+          "It guarantees higher returns for clients",
+          "It reduces management fees automatically"
+        ],
+        correctAnswer: 1,
+        explanation: "Transparency builds trust between asset managers and clients, allowing clients to make informed decisions about their investments."
+      },
+      {
+        question: "In the Pitch Practice game, what factors make a pitch effective?",
+        options: [
+          "Using complex financial jargon",
+          "Promising guaranteed returns",
+          "Clarity, trust, and accuracy",
+          "Focusing only on past performance"
+        ],
+        correctAnswer: 2,
+        explanation: "Effective pitches demonstrate clarity in communication, build trust with clients, and provide accurate information about strategies and risks."
+      },
+      {
+        question: "What does 'business development' mean in asset management?",
+        options: [
+          "Developing new investment products only",
+          "The process of finding and winning new clients",
+          "Managing existing client portfolios",
+          "Regulatory compliance activities"
+        ],
+        correctAnswer: 1,
+        explanation: "Business development in asset management involves finding and winning new clients to grow the firm's assets under management."
+      },
+      {
+        question: "In the Build Trust game, what happens if you give unclear or dishonest answers?",
+        options: [
+          "Clients increase their investments",
+          "Trust Points are reduced",
+          "Fees are automatically lowered",
+          "Performance improves"
+        ],
+        correctAnswer: 1,
+        explanation: "Unclear or dishonest communication reduces Trust Points in the game, reflecting how poor communication damages client relationships in real life."
+      },
+      {
+        question: "In the pension board example, what helped the manager retain the client's business?",
+        options: [
+          "Promising higher returns next quarter",
+          "Hiding the portfolio's weaknesses",
+          "Clear communication and honest answers about performance",
+          "Reducing fees significantly"
+        ],
+        correctAnswer: 2,
+        explanation: "The manager retained the client by being transparent about performance, explaining risks honestly, and communicating clearly about the portfolio strategy."
+      }
+    ],
+    miniGames: [
+      {
+        title: "Pitch Practice",
+        description: "Build effective client presentations by selecting key talking points",
+        type: "role-match",
+        gameData: {
+          scenarios: [
+            "Teacher pension wants stable income",
+            "Young professional seeks growth",
+            "Retiree needs preservation of capital",
+            "Corporation has excess cash to invest"
+          ],
+          roles: [
+            "Conservative bond strategy",
+            "Aggressive growth portfolio",
+            "Capital preservation focus",
+            "Short-term liquid investments"
+          ]
+        }
+      },
+      {
+        title: "Build Trust",
+        description: "Respond to tough client questions while maintaining trust",
+        type: "quiz-showdown",
+        gameData: {
+          questions: [
+            {
+              question: "Why did our portfolio underperform last quarter?",
+              options: [
+                "Market conditions were unusually challenging for our strategy",
+                "It's not our fault, markets are unpredictable",
+                "Our strategy was perfect, this is just temporary",
+                "Every portfolio has bad quarters"
+              ],
+              correctAnswer: 0,
+              timeLimit: 15
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    id: 6,
+    title: "Operations & Technology",
+    description: "Master the operational backbone that makes asset management possible, from trade execution to compliance.",
+    overview: "Behind every investment is a backbone of operations and technology. Operations ensure trades are executed properly, data is managed, and regulations are followed. Technology boosts efficiency, provides real-time information, and prevents costly errors. Without strong operations and tech, asset managers would struggle to function.",
+    realLifeExample: "Imagine a hedge fund trader placing an order to buy millions of dollars' worth of Apple stock. Behind the scenes, sophisticated systems handle trade execution, ensuring the order is processed quickly and at the best available price. Compliance software simultaneously checks whether the trade violates any laws or policies. Data management systems record the trade for reports to regulators and clients. Technology tools like Bloomberg Terminals give the firm real-time updates to track performance. Without this infrastructure, errors could cost millions, delay trades, or even cause legal trouble.",
+    flashcards: [
+      {
+        term: "Trade Execution",
+        definition: "Trade execution is the process of completing a buy or sell order in the market. It requires speed and accuracy to ensure clients' money is invested correctly."
+      },
+      {
+        term: "Compliance",
+        definition: "Compliance is following all financial laws, internal rules, and ethical standards. Firms must ensure employees act legally to avoid penalties or reputational damage."
+      },
+      {
+        term: "Data Management",
+        definition: "Data management involves storing, organizing, and analyzing investment data. Strong systems allow managers to make informed decisions quickly."
+      },
+      {
+        term: "Reporting",
+        definition: "Reporting in operations ensures accurate, transparent communication to both regulators and clients. Errors in reporting can harm a firm's reputation and break the law."
+      },
+      {
+        term: "FinTech",
+        definition: "FinTech refers to financial technology innovations that improve efficiency in investing. Examples include robo-advisors, mobile trading apps, and blockchain tools."
+      }
+    ],
+    quiz: [
+      {
+        question: "Why is trade execution critical in asset management?",
+        options: [
+          "It determines which stocks to buy",
+          "It ensures orders are completed quickly and accurately",
+          "It calculates portfolio performance",
+          "It manages client relationships"
+        ],
+        correctAnswer: 1,
+        explanation: "Trade execution is critical because it ensures buy and sell orders are completed quickly and accurately, protecting clients' investments from errors and delays."
+      },
+      {
+        question: "In the Trade Tracker game, what must you check after placing a buy order?",
+        options: [
+          "Only the stock price",
+          "Price, timing, and settlement accuracy",
+          "Just the company's financial statements",
+          "Only regulatory compliance"
+        ],
+        correctAnswer: 1,
+        explanation: "After placing a buy order, you must verify the price is correct, timing is appropriate, and settlement will occur properly to ensure the trade is executed as intended."
+      },
+      {
+        question: "Why is compliance important, and what risks occur if it's ignored?",
+        options: [
+          "It only affects internal policies",
+          "It prevents legal penalties and reputational damage",
+          "It's just a suggestion for best practices",
+          "It only matters for large firms"
+        ],
+        correctAnswer: 1,
+        explanation: "Compliance is essential because ignoring financial laws and regulations can result in severe legal penalties, fines, and lasting reputational damage to the firm."
+      },
+      {
+        question: "In the Spot the Violation game, what rule is broken if a trader buys before a client order?",
+        options: [
+          "Market timing rules",
+          "Front-running violation",
+          "Pricing regulations",
+          "Reporting requirements"
+        ],
+        correctAnswer: 1,
+        explanation: "When a trader buys stock before executing a client's order, it's called front-running, which is illegal because it prioritizes the trader's profit over the client's interests."
+      },
+      {
+        question: "In the hedge fund Apple trade example, how do Bloomberg Terminals support managers?",
+        options: [
+          "They execute all trades automatically",
+          "They provide real-time market data and analytics",
+          "They replace the need for compliance",
+          "They guarantee profitable trades"
+        ],
+        correctAnswer: 1,
+        explanation: "Bloomberg Terminals provide real-time market data, news, analytics, and trading tools that help managers make informed investment decisions quickly."
+      }
+    ],
+    miniGames: [
+      {
+        title: "Trade Tracker",
+        description: "Follow trades through execution and spot potential errors",
+        type: "role-match",
+        gameData: {
+          scenarios: [
+            "Order placed",
+            "Price verification",
+            "Execution confirmed",
+            "Settlement processing"
+          ],
+          roles: [
+            "Check timing",
+            "Verify accuracy",
+            "Confirm completion",
+            "Record transaction"
+          ]
+        }
+      },
+      {
+        title: "Spot the Violation",
+        description: "Identify compliance violations in trading scenarios",
+        type: "quiz-showdown",
+        gameData: {
+          questions: [
+            {
+              question: "Trader buys stock before executing client order",
+              options: [
+                "This is acceptable",
+                "This is front-running violation",
+                "This depends on the stock",
+                "This is only wrong if caught"
+              ],
+              correctAnswer: 1,
+              timeLimit: 15
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    id: 7,
+    title: "Industry Evolution & Trends",
+    description: "Explore how technology, ESG investing, and globalization are reshaping asset management.",
+    overview: "The asset management industry is constantly evolving. New products like ETFs make investing easier, robo-advisors automate portfolios, ESG investing emphasizes sustainability, and globalization broadens access to worldwide markets. Disruptive technologies like blockchain and AI continue to reshape how managers work, challenging traditional practices.",
+    realLifeExample: "Think about how robo-advisors like Betterment and Wealthfront have changed investing. In the past, most people needed to call a financial advisor or meet with an asset manager to build a portfolio. Now, anyone with a smartphone can answer a few questions about their goals, and algorithms automatically create and rebalance a personalized portfolio. These tools charge low fees, making investing affordable for younger generations. While traditional managers still play a role, robo-advisors highlight how technology is disrupting the industry and making investing more accessible.",
+    flashcards: [
+      {
+        term: "ETF (Exchange-Traded Fund)",
+        definition: "An Exchange-Traded Fund (ETF) is an investment fund that bundles a group of assets and trades on an exchange like a stock. Investors value ETFs for diversification, liquidity, and affordability."
+      },
+      {
+        term: "Robo-Advisor",
+        definition: "A robo-advisor is a digital platform that uses algorithms to build and manage portfolios with little human involvement. They appeal to beginners because they provide low-cost, personalized investment strategies."
+      },
+      {
+        term: "ESG (Environmental, Social, Governance)",
+        definition: "ESG investing considers not only returns but also a company's broader impact on the planet and society. Investors might avoid polluters and support renewable energy firms."
+      },
+      {
+        term: "Globalization",
+        definition: "Globalization in investing means spreading money across different countries. It creates new opportunities but also adds risks like currency fluctuations and political instability."
+      },
+      {
+        term: "Disruption",
+        definition: "Disruption describes how new technologies or business models change traditional asset management. Blockchain, AI, and decentralized finance are reshaping how money is invested and managed."
+      }
+    ],
+    quiz: [
+      {
+        question: "What is an ETF, and why might an investor choose it over buying individual stocks?",
+        options: [
+          "ETFs only invest in bonds",
+          "ETFs provide instant diversification and liquidity at low cost",
+          "ETFs guarantee higher returns than stocks",
+          "ETFs are only for institutional investors"
+        ],
+        correctAnswer: 1,
+        explanation: "ETFs bundle multiple assets together, providing instant diversification, trade like stocks for liquidity, and typically have lower costs than buying individual stocks separately."
+      },
+      {
+        question: "In the Trend Tracker game, how would you classify robo-advisors today?",
+        options: [
+          "Declining trend",
+          "Growing trend",
+          "Stable/mature trend",
+          "Emerging trend"
+        ],
+        correctAnswer: 1,
+        explanation: "Robo-advisors are classified as a growing trend because they continue to gain market share and attract new users, especially younger investors."
+      },
+      {
+        question: "What does ESG stand for, and how does it influence investment choices?",
+        options: [
+          "Economic, Social, Global factors that focus only on returns",
+          "Environmental, Social, Governance factors that consider sustainability",
+          "Equity, Stocks, Growth factors for portfolio construction",
+          "Exchange, Securities, Government factors for regulation"
+        ],
+        correctAnswer: 1,
+        explanation: "ESG stands for Environmental, Social, and Governance factors. It influences investment choices by considering a company's sustainability and social impact, not just financial returns."
+      },
+      {
+        question: "In the Future or Past game, where would you place pensions and blockchain tools?",
+        options: [
+          "Both are Old School",
+          "Both are New School",
+          "Pensions are Old School, blockchain is New School",
+          "Pensions are New School, blockchain is Old School"
+        ],
+        correctAnswer: 2,
+        explanation: "Pensions are traditional (Old School) investment vehicles, while blockchain represents new, disruptive technology (New School) in asset management."
+      },
+      {
+        question: "In the robo-advisor example, why are these platforms especially attractive to young investors?",
+        options: [
+          "They guarantee higher returns",
+          "They offer low fees and easy smartphone access",
+          "They only invest in technology stocks",
+          "They don't require any money to start"
+        ],
+        correctAnswer: 1,
+        explanation: "Robo-advisors attract young investors because they offer low fees, making investing affordable, and provide easy access through smartphone apps that fit younger generations' digital preferences."
+      }
+    ],
+    miniGames: [
+      {
+        title: "Trend Tracker",
+        description: "Classify financial trends as Growing, Declining, or Emerging",
+        type: "role-match",
+        gameData: {
+          scenarios: [
+            "ETFs",
+            "Robo-advisors",
+            "Traditional pensions",
+            "ESG investing"
+          ],
+          roles: [
+            "Growing",
+            "Growing", 
+            "Declining",
+            "Emerging"
+          ]
+        }
+      },
+      {
+        title: "Future or Past",
+        description: "Sort investment tools into Old School vs New School categories",
+        type: "role-match",
+        gameData: {
+          scenarios: [
+            "Mutual funds",
+            "Blockchain investing",
+            "Robo-advisors",
+            "Pension funds"
+          ],
+          roles: [
+            "Old School",
+            "New School",
+            "New School",
+            "Old School"
+          ]
+        }
+      }
+    ]
   }
 ];
 
