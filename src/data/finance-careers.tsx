@@ -1185,5 +1185,13 @@ export const interactiveFinanceCareers: InteractiveCareerData[] = [
     icon: Rocket,
     levels: 7,
     isInteractive: true
+  },
+  {
+    id: "asset-management",
+    title: "Asset Management",
+    description: "Master asset management through interactive lessons covering portfolio construction, risk management, and client relations with hands-on games and quizzes.",
+    icon: PieChart,
+    levels: 7,
+    isInteractive: true
   }
 ];
