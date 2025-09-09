@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { Upload, Youtube, AlertCircle, CheckCircle, Loader2, FileVideo } from 'lucide-react';
+import { Upload, Youtube, AlertCircle, CheckCircle, Loader2, FileVideo, Image } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const INDUSTRIES = [
@@ -36,12 +36,14 @@ interface VideoUploadDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onVideoCreated: () => void;
+  defaultCategory?: string;
 }
 
 const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
   open,
   onOpenChange,
-  onVideoCreated
+  onVideoCreated,
+  defaultCategory
 }) => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -54,23 +56,34 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
     category: '',
     role_tier: '',
     youtube_url: '',
-    tags: ''
+    tags: '',
+    publishNow: false
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
 
   const resetForm = () => {
     setFormData({
       title: '',
       description: '',
-      category: '',
+      category: defaultCategory || '',
       role_tier: '',
       youtube_url: '',
-      tags: ''
+      tags: '',
+      publishNow: false
     });
     setSelectedFile(null);
+    setThumbnailFile(null);
     setUploadProgress(0);
   };
+
+  // Set default category when dialog opens
+  useEffect(() => {
+    if (open && defaultCategory) {
+      setFormData(prev => ({ ...prev, category: defaultCategory }));
+    }
+  }, [open, defaultCategory]);
 
   const handleClose = () => {
     if (!uploading) {
@@ -108,6 +121,35 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
     }
   };
 
+  const handleThumbnailSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      if (!validTypes.includes(file.type)) {
+        toast({
+          title: 'Invalid file type',
+          description: 'Please select a valid image file (JPEG, PNG, WebP)',
+          variant: 'destructive'
+        });
+        return;
+      }
+
+      // Validate file size (5MB max)
+      const maxSize = 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        toast({
+          title: 'File too large',
+          description: 'Please select an image smaller than 5MB',
+          variant: 'destructive'
+        });
+        return;
+      }
+
+      setThumbnailFile(file);
+    }
+  };
+
   const validateYouTubeUrl = (url: string) => {
     const patterns = [
       /^https?:\/\/(www\.)?youtube\.com\/watch\?v=[\w-]+/,
@@ -139,11 +181,25 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
 
     if (uploadError) throw uploadError;
 
+    return filePath;
+  };
+
+  const uploadThumbnailFile = async (file: File): Promise<string> => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+    const filePath = `${user?.id}/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('video-thumbnails')
+      .upload(filePath, file);
+
+    if (uploadError) throw uploadError;
+
     const { data: { publicUrl } } = supabase.storage
-      .from('phil-videos')
+      .from('video-thumbnails')
       .getPublicUrl(filePath);
 
-    return filePath;
+    return publicUrl;
   };
 
   const handleSubmit = async () => {
@@ -189,6 +245,12 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
       let storage_path = null;
       let source_url = null;
       let duration_sec = 0;
+      let thumbnail_url = '';
+
+      // Upload thumbnail if provided
+      if (thumbnailFile) {
+        thumbnail_url = await uploadThumbnailFile(thumbnailFile);
+      }
 
       if (uploadType === 'file' && selectedFile) {
         storage_path = await uploadVideoFile(selectedFile);
@@ -198,6 +260,14 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
         source_url = formData.youtube_url;
         // In a real app, you'd fetch video metadata from YouTube API
         duration_sec = 600; // 10 minutes default
+        
+        // Generate YouTube thumbnail if no custom thumbnail
+        if (!thumbnail_url) {
+          const videoId = extractYouTubeVideoId(formData.youtube_url);
+          if (videoId) {
+            thumbnail_url = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+          }
+        }
       }
 
       // Create video record in database
@@ -213,23 +283,23 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
           source_url,
           storage_path,
           duration_sec,
-          published: false, // Videos start as drafts
+          published: formData.publishNow,
           processing_status: uploadType === 'file' ? 'processing' : 'completed',
           created_by: user.id,
           duration: '5:00', // Default duration string
           company: 'Phil\'s Friends',
           course_category: formData.category,
           video_url: source_url || '',
-          thumbnail_url: ''
+          thumbnail_url
         });
 
       if (dbError) throw dbError;
 
       toast({
         title: 'Video uploaded successfully',
-        description: uploadType === 'file' 
-          ? 'Your video is being processed and will be available soon'
-          : 'Your YouTube video has been added to the library'
+        description: formData.publishNow 
+          ? 'Your video has been published and is now live'
+          : 'Your video has been saved as a draft'
       });
 
       resetForm();
@@ -304,6 +374,27 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
                       </Alert>
                     )}
 
+                    <div>
+                      <Label htmlFor="thumbnail-file">Thumbnail Image (Optional)</Label>
+                      <Input
+                        id="thumbnail-file"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleThumbnailSelect}
+                        disabled={uploading}
+                        className="mt-1"
+                      />
+                    </div>
+
+                    {thumbnailFile && (
+                      <Alert>
+                        <Image className="h-4 w-4" />
+                        <AlertDescription>
+                          <strong>{thumbnailFile.name}</strong> ({(thumbnailFile.size / 1024 / 1024).toFixed(1)} MB)
+                        </AlertDescription>
+                      </Alert>
+                    )}
+
                     {uploading && uploadProgress > 0 && (
                       <div className="space-y-2">
                         <div className="flex justify-between text-sm text-muted-foreground">
@@ -350,6 +441,30 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
                         <AlertCircle className="h-4 w-4" />
                         <AlertDescription>
                           Please enter a valid YouTube URL
+                        </AlertDescription>
+                      </Alert>
+                    )}
+
+                    <div>
+                      <Label htmlFor="youtube-thumbnail">Custom Thumbnail (Optional)</Label>
+                      <Input
+                        id="youtube-thumbnail"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleThumbnailSelect}
+                        disabled={uploading}
+                        className="mt-1"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Leave empty to use YouTube's default thumbnail
+                      </p>
+                    </div>
+
+                    {thumbnailFile && (
+                      <Alert>
+                        <Image className="h-4 w-4" />
+                        <AlertDescription>
+                          <strong>{thumbnailFile.name}</strong> ({(thumbnailFile.size / 1024 / 1024).toFixed(1)} MB)
                         </AlertDescription>
                       </Alert>
                     )}
@@ -434,6 +549,20 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
                 disabled={uploading}
                 className="mt-1"
               />
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="publishNow"
+                checked={formData.publishNow}
+                onChange={(e) => setFormData(prev => ({ ...prev, publishNow: e.target.checked }))}
+                disabled={uploading}
+                className="h-4 w-4"
+              />
+              <Label htmlFor="publishNow" className="text-sm">
+                Publish immediately (leave unchecked to save as draft)
+              </Label>
             </div>
           </div>
         </div>

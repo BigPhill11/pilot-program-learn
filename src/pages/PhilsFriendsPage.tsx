@@ -11,7 +11,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
-import { Search, Play, Plus, Edit, Clock, Users, Filter, Video, Award, Target } from 'lucide-react';
+import { Search, Play, Plus, Edit, Clock, Users, Filter, Video, Award, Target, Briefcase, Heart, MessageCircle } from 'lucide-react';
 import VideoUploadDialog from '@/components/videos/VideoUploadDialog';
 import VideoDetailDialog from '@/components/videos/VideoDetailDialog';
 import VideoManagementPanel from '@/components/videos/VideoManagementPanel';
@@ -63,8 +63,10 @@ const PhilsFriendsPage: React.FC = () => {
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
+  const [activeTab, setActiveTab] = useState('careers');
+  const [currentCategory, setCurrentCategory] = useState('');
 
-  const fetchVideos = async () => {
+  const fetchVideos = async (category?: string) => {
     try {
       setLoading(true);
       let query = supabase
@@ -74,6 +76,12 @@ const PhilsFriendsPage: React.FC = () => {
       // Only show published videos to non-admin users
       if (!isAdmin) {
         query = query.eq('published', true);
+      }
+
+      // Filter by tab category
+      const tabCategory = category || getTabCategory(activeTab);
+      if (tabCategory) {
+        query = query.eq('course_category', tabCategory);
       }
 
       // Apply filters
@@ -115,9 +123,28 @@ const PhilsFriendsPage: React.FC = () => {
     }
   };
 
+  const getTabCategory = (tab: string) => {
+    switch (tab) {
+      case 'careers': return 'careers-in-finance';
+      case 'softskills': return 'soft-skills';
+      case 'general': return 'general';
+      default: return '';
+    }
+  };
+
   useEffect(() => {
     fetchVideos();
-  }, [selectedIndustry, selectedRoleTier, searchQuery, sortBy, isAdmin]);
+  }, [selectedIndustry, selectedRoleTier, searchQuery, sortBy, isAdmin, activeTab]);
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    setCurrentCategory(getTabCategory(tab));
+  };
+
+  const handleAddVideo = () => {
+    setCurrentCategory(getTabCategory(activeTab));
+    setShowUploadDialog(true);
+  };
 
   const formatDuration = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -177,12 +204,30 @@ const PhilsFriendsPage: React.FC = () => {
               </p>
             </div>
             {isAdmin && (
-              <Button onClick={() => setShowUploadDialog(true)} className="gap-2">
+              <Button onClick={handleAddVideo} className="gap-2">
                 <Plus className="h-4 w-4" />
                 Add Video
               </Button>
             )}
           </div>
+
+          {/* Category Tabs */}
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="mb-6">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="careers" className="gap-2">
+                <Briefcase className="h-4 w-4" />
+                Careers in Finance
+              </TabsTrigger>
+              <TabsTrigger value="softskills" className="gap-2">
+                <Heart className="h-4 w-4" />
+                Soft Skills
+              </TabsTrigger>
+              <TabsTrigger value="general" className="gap-2">
+                <MessageCircle className="h-4 w-4" />
+                General Videos
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
 
           {/* Filters and Search */}
           <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -265,16 +310,22 @@ const PhilsFriendsPage: React.FC = () => {
                 onClick={() => handleVideoClick(video)}
               >
                 <div className="relative">
-                  <div className="aspect-video bg-muted flex items-center justify-center">
-                    {video.thumbnail_url ? (
-                      <img 
-                        src={video.thumbnail_url} 
-                        alt={video.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <Video className="h-12 w-12 text-muted-foreground" />
-                    )}
+                   <div className="aspect-video bg-muted flex items-center justify-center">
+                     {video.thumbnail_url ? (
+                       <img 
+                         src={video.thumbnail_url} 
+                         alt={video.name}
+                         className="w-full h-full object-cover"
+                         onError={(e) => {
+                           const target = e.target as HTMLImageElement;
+                           target.style.display = 'none';
+                           target.nextElementSibling?.classList.remove('hidden');
+                         }}
+                       />
+                     ) : null}
+                     {!video.thumbnail_url && (
+                       <Video className="h-12 w-12 text-muted-foreground" />
+                     )}
                   </div>
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                     <Play className="h-12 w-12 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -318,7 +369,8 @@ const PhilsFriendsPage: React.FC = () => {
         <VideoUploadDialog 
           open={showUploadDialog}
           onOpenChange={setShowUploadDialog}
-          onVideoCreated={fetchVideos}
+          onVideoCreated={() => fetchVideos()}
+          defaultCategory={currentCategory}
         />
 
         <VideoDetailDialog
