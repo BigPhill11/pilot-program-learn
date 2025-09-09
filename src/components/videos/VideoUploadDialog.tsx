@@ -61,6 +61,7 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [transcriptFile, setTranscriptFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
 
   const resetForm = () => {
@@ -75,6 +76,7 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
     });
     setSelectedFile(null);
     setThumbnailFile(null);
+    setTranscriptFile(null);
     setUploadProgress(0);
   };
 
@@ -150,6 +152,38 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
     }
   };
 
+  const handleTranscriptSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validate file type
+      const validTypes = ['text/plain', 'text/vtt', 'application/x-subrip'];
+      const fileExt = file.name.toLowerCase().split('.').pop();
+      const validExtensions = ['txt', 'vtt', 'srt'];
+      
+      if (!validTypes.includes(file.type) && !validExtensions.includes(fileExt || '')) {
+        toast({
+          title: 'Invalid file type',
+          description: 'Please select a valid transcript file (TXT, VTT, SRT)',
+          variant: 'destructive'
+        });
+        return;
+      }
+
+      // Validate file size (2MB max)
+      const maxSize = 2 * 1024 * 1024;
+      if (file.size > maxSize) {
+        toast({
+          title: 'File too large',
+          description: 'Please select a transcript file smaller than 2MB',
+          variant: 'destructive'
+        });
+        return;
+      }
+
+      setTranscriptFile(file);
+    }
+  };
+
   const validateYouTubeUrl = (url: string) => {
     const patterns = [
       /^https?:\/\/(www\.)?youtube\.com\/watch\?v=[\w-]+/,
@@ -202,6 +236,49 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
     return publicUrl;
   };
 
+  const uploadTranscriptFile = async (file: File): Promise<string> => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+    const filePath = `${user?.id}/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('video-transcripts')
+      .upload(filePath, file);
+
+    if (uploadError) throw uploadError;
+
+    return filePath;
+  };
+
+  const processTranscript = async (videoId: string, transcriptPath: string) => {
+    try {
+      // Read transcript file content
+      const { data: transcriptData } = await supabase.storage
+        .from('video-transcripts')
+        .download(transcriptPath);
+
+      if (transcriptData) {
+        const transcriptText = await transcriptData.text();
+        
+        // Call AI processing function
+        const { error } = await supabase.functions.invoke('process-video-transcript', {
+          body: {
+            videoId,
+            transcript: transcriptText
+          }
+        });
+
+        if (error) {
+          console.error('Transcript processing error:', error);
+          throw error;
+        }
+      }
+    } catch (error) {
+      console.error('Error processing transcript:', error);
+      // Don't throw - video upload should succeed even if transcript processing fails
+    }
+  };
+
   const handleSubmit = async () => {
     if (!user) {
       toast({
@@ -246,10 +323,16 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
       let source_url = null;
       let duration_sec = 0;
       let thumbnail_url = '';
+      let transcript_path = null;
 
       // Upload thumbnail if provided
       if (thumbnailFile) {
         thumbnail_url = await uploadThumbnailFile(thumbnailFile);
+      }
+
+      // Upload transcript if provided
+      if (transcriptFile) {
+        transcript_path = await uploadTranscriptFile(transcriptFile);
       }
 
       if (uploadType === 'file' && selectedFile) {
@@ -271,7 +354,7 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
       }
 
       // Create video record in database
-      const { error: dbError } = await supabase
+      const { data: videoData, error: dbError } = await supabase
         .from('phils_friends_videos')
         .insert({
           name: formData.title,
@@ -284,16 +367,24 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
           storage_path,
           duration_sec,
           published: formData.publishNow,
-          processing_status: uploadType === 'file' ? 'processing' : 'completed',
+          processing_status: transcriptFile ? 'processing' : (uploadType === 'file' ? 'processing' : 'completed'),
           created_by: user.id,
           duration: '5:00', // Default duration string
           company: 'Phil\'s Friends',
           course_category: formData.category,
           video_url: source_url || '',
           thumbnail_url
-        });
+        })
+        .select()
+        .single();
 
       if (dbError) throw dbError;
+
+      // Process transcript if uploaded
+      if (transcriptFile && transcript_path && videoData) {
+        // Process transcript in background
+        processTranscript(videoData.id, transcript_path);
+      }
 
       toast({
         title: 'Video uploaded successfully',
@@ -500,6 +591,45 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
                 rows={3}
               />
             </div>
+
+            {/* Transcript Upload Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Transcript Upload (Optional)</CardTitle>
+                <CardDescription>
+                  Upload a transcript to automatically generate video clips with AI
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div>
+                  <Label htmlFor="transcript-file">Transcript File</Label>
+                  <Input
+                    id="transcript-file"
+                    type="file"
+                    accept=".txt,.vtt,.srt"
+                    onChange={handleTranscriptSelect}
+                    disabled={uploading}
+                    className="mt-1"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Supports TXT, VTT, and SRT formats. AI will analyze the transcript to create video clips automatically.
+                  </p>
+                </div>
+
+                {transcriptFile && (
+                  <Alert className="mt-4">
+                    <FileVideo className="h-4 w-4" />
+                    <AlertDescription>
+                      <strong>{transcriptFile.name}</strong> ({(transcriptFile.size / 1024).toFixed(1)} KB)
+                      <br />
+                      <span className="text-muted-foreground">
+                        AI will process this transcript to create video clips after upload
+                      </span>
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </CardContent>
+            </Card>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>

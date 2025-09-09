@@ -1,6 +1,9 @@
 
 project_id = "aqqbxivolegafwuurxxm"
 
+[functions.process-video-transcript]
+verify_jwt = false
+
 [functions.market-data]
 verify_jwt = false
 
