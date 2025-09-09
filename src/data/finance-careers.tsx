@@ -1141,6 +1141,15 @@ export const financeCareerData: FinanceCareerData[] = [
         duration: '17:45'
       }
     ]
+  },
+  {
+    id: 'wealth-management',
+    name: 'Wealth Management',
+    description: 'Master holistic financial advisory, from planning foundations to client relations.',
+    icon: Shield,
+    color: 'from-emerald-500 to-teal-600',
+    levels: [],
+    videos: []
   }
 ];
 
