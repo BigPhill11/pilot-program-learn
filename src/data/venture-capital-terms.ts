@@ -2,260 +2,112 @@ export const vcTerms = {
   level1: [
     {
       term: "Venture Capital",
-      definition: "Funding provided to startups and early-stage companies with high growth potential in exchange for equity.",
+      definition: "Venture capital is funding for early-stage companies with high growth potential. It involves more risk than traditional lending.",
       category: "basics",
-      analogy: "Like being the bank that lends money to a lemonade stand, but instead of getting paid back with interest, you own part of the lemonade business.",
-      example: "Sequoia Capital investing $12.5M in Google in 1999 for 12.5% equity."
-    },
-    {
-      term: "Portfolio Company",
-      definition: "A company in which a venture capital firm has invested.",
-      category: "basics",
-      analogy: "Like the different stocks in your investment portfolio, but these are entire companies you help grow.",
-      example: "Uber is a portfolio company of Benchmark Capital."
-    },
-    {
-      term: "Term Sheet",
-      definition: "A non-binding document outlining the basic terms and conditions of an investment.",
-      category: "basics",
-      analogy: "Like a letter of intent when buying a house - it outlines the deal before the final paperwork.",
-      example: "A term sheet might specify $5M investment for 20% equity with board seat."
-    },
-    {
-      term: "Due Diligence",
-      definition: "The process of investigating and verifying information about a potential investment.",
-      category: "basics",
-      analogy: "Like getting a home inspection before buying a house - checking everything works before you invest.",
-      example: "Reviewing financial statements, interviewing customers, and analyzing market size."
+      analogy: "Like investing in a young athlete with potential to become a superstar - high risk but potentially huge rewards.",
+      example: "A VC firm investing $1M in a startup app in exchange for 20% ownership."
     },
     {
       term: "Equity",
-      definition: "Ownership interest in a company, typically represented as a percentage.",
+      definition: "Equity is ownership in a company. VCs receive shares in return for their investment.",
       category: "basics",
       analogy: "Like owning a slice of pizza - the bigger your slice, the more of the pizza you own.",
-      example: "Owning 10% equity means you own 10% of the company's value."
+      example: "Owning 20% equity means you own 20% of the company's value."
+    },
+    {
+      term: "Startup",
+      definition: "A startup is a young company designed to scale quickly, often in technology or innovation-driven industries.",
+      category: "basics",
+      analogy: "Like a seedling that's designed to grow into a giant tree very quickly.",
+      example: "Uber started as a small app connecting riders with drivers and scaled globally."
+    },
+    {
+      term: "Return on Investment (ROI)",
+      definition: "ROI measures how much profit an investor makes compared to the amount invested.",
+      category: "basics",
+      analogy: "Like measuring how much money you made from a lemonade stand compared to what you spent on supplies.",
+      example: "Investing $1M and getting back $10M is a 10x ROI."
+    },
+    {
+      term: "High Risk, High Reward",
+      definition: "VC investments are risky because most startups fail. However, successful ones can return multiples of the original investment.",
+      category: "basics",
+      analogy: "Like playing in a lottery where most tickets lose, but the winners get huge prizes.",
+      example: "9 out of 10 startups might fail, but 1 success can return 100x the investment."
     }
   ],
   level2: [
     {
-      term: "Series A",
-      definition: "The first significant round of venture capital financing, typically raising $2-15M.",
-      category: "deal_process",
-      analogy: "Like the first major upgrade to your lemonade stand - getting a real store and professional equipment.",
-      example: "Airbnb raised $7.2M in Series A from Greylock Partners in 2009."
+      term: "Limited Partners (LPs)",
+      definition: "LPs are institutions or wealthy individuals who invest in VC funds. They provide capital but don't make decisions.",
+      category: "ecosystem",
+      analogy: "Like silent investors in a restaurant - they provide the money but let the chef decide what to cook.",
+      example: "University endowments, pension funds, and wealthy families who invest in VC funds."
     },
     {
-      term: "Valuation",
-      definition: "The estimated worth of a company, often expressed as pre-money or post-money valuation.",
-      category: "valuation",
-      analogy: "Like getting your house appraised - determining what the company is worth before and after investment.",
-      example: "A company with $8M pre-money valuation raising $2M has $10M post-money valuation."
+      term: "General Partners (GPs)",
+      definition: "GPs manage VC funds, choose startups, and work with founders.",
+      category: "ecosystem",
+      analogy: "Like the chef in a restaurant - they make the day-to-day decisions and run the business.",
+      example: "Partners at firms like Sequoia Capital who decide which startups to fund."
     },
     {
-      term: "Cap Table",
-      definition: "Short for capitalization table; shows ownership percentages of all shareholders.",
-      category: "deal_process",
-      analogy: "Like a pie chart showing who owns what slice of the company pie.",
-      example: "Founders: 60%, employees: 20%, Series A investors: 20%."
+      term: "Accelerator",
+      definition: "An accelerator is a program that helps startups grow quickly with mentorship, funding, and networking.",
+      category: "ecosystem",
+      analogy: "Like a bootcamp for startups - intensive training to get them ready for the big leagues.",
+      example: "Y Combinator, which helped launch Airbnb, Dropbox, and hundreds of other startups."
     },
     {
-      term: "Board of Directors",
-      definition: "A group of people who oversee company management and make key strategic decisions.",
-      category: "governance",
-      analogy: "Like the board of trustees at a school - they guide major decisions but don't run day-to-day operations.",
-      example: "Typical early-stage board: 2 founders, 1 investor, 1 independent director."
+      term: "Fund",
+      definition: "A fund is a pool of money raised by a VC firm to invest in startups.",
+      category: "ecosystem",
+      analogy: "Like a big piggy bank that multiple people contribute to, which is then used to make investments.",
+      example: "A $100M fund that invests $2-5M in each of 20-50 startups."
     },
     {
-      term: "Runway",
-      definition: "How long a company can operate with its current cash before needing more funding.",
-      category: "basics",
-      analogy: "Like how far your car can go with the gas in the tank before needing to refuel.",
-      example: "With $1M in the bank and $100K monthly burn, the company has 10 months runway."
+      term: "Entrepreneur",
+      definition: "An entrepreneur is someone who starts and grows a business.",
+      category: "ecosystem",
+      analogy: "Like an explorer who ventures into unknown territory to discover new opportunities.",
+      example: "Elon Musk starting Tesla, or college students starting a tech company in their dorm room."
     }
   ],
   level3: [
     {
-      term: "IRR",
-      definition: "Internal Rate of Return; measures the annual return rate of an investment.",
-      category: "valuation",
-      analogy: "Like the interest rate on a savings account, but for venture investments - how much your money grows per year.",
-      example: "A 30% IRR means your investment grows 30% annually on average."
+      term: "Due Diligence",
+      definition: "Due diligence is the research process VCs use to evaluate a startup.",
+      category: "evaluation",
+      analogy: "Like doing homework before buying a used car - checking everything to make sure it's a good investment.",
+      example: "Reviewing financial statements, interviewing customers, and analyzing the competition."
     },
     {
-      term: "Multiple of Money",
-      definition: "How many times your original investment you get back (e.g., 3x, 5x, 10x).",
-      category: "valuation",
-      analogy: "Like getting $10 back for every $1 you put into a slot machine.",
-      example: "Investing $1M and getting $5M back is a 5x multiple."
+      term: "Market Size (TAM)",
+      definition: "TAM (Total Addressable Market) is how big the opportunity is. Bigger markets attract more VC interest.",
+      category: "evaluation",
+      analogy: "Like the size of the ocean you're fishing in - bigger ocean means more potential fish to catch.",
+      example: "The global food delivery market being worth $100+ billion annually."
     },
     {
-      term: "Liquidation Preference",
-      definition: "The right to get paid first when a company is sold or liquidated.",
-      category: "deal_process",
-      analogy: "Like being first in line at a buffet - you get served before everyone else.",
-      example: "1x liquidation preference means you get your money back before common shareholders."
+      term: "Product-Market Fit",
+      definition: "Product-market fit is when customers strongly want and use a product.",
+      category: "evaluation",
+      analogy: "Like finding the perfect key for a lock - everything clicks and works smoothly.",
+      example: "When Instagram users were sharing millions of photos daily because they loved the app."
     },
     {
-      term: "Anti-dilution",
-      definition: "Protection against ownership percentage being reduced in future funding rounds.",
-      category: "deal_process",
-      analogy: "Like a price-match guarantee - if the company's value goes down, you get more shares to maintain your ownership.",
-      example: "Weighted average anti-dilution adjusts your ownership if the company raises money at a lower valuation."
+      term: "Competitive Advantage",
+      definition: "A competitive advantage is what makes a startup better than rivals (technology, brand, network).",
+      category: "evaluation",
+      analogy: "Like having a secret recipe that makes your restaurant better than all the others.",
+      example: "Tesla's battery technology giving them an edge over other electric car companies."
     },
     {
-      term: "Pro Rata Rights",
-      definition: "The right to maintain ownership percentage by investing in future rounds.",
-      category: "deal_process",
-      analogy: "Like having the right to buy more tickets to stay in the same section when a concert venue expands.",
-      example: "If you own 10% and the company raises more money, you can invest to keep 10%."
-    }
-  ],
-  level4: [
-    {
-      term: "Portfolio Construction",
-      definition: "The strategy of building a diversified set of investments across different stages, sectors, and risk levels.",
-      category: "portfolio",
-      analogy: "Like creating a balanced meal with different food groups - you want variety to be healthy.",
-      example: "A fund might invest 40% in early-stage, 40% in growth-stage, and 20% in late-stage companies."
-    },
-    {
-      term: "Sector Focus",
-      definition: "Concentrating investments in specific industries or market segments.",
-      category: "strategy",
-      analogy: "Like becoming a specialist doctor instead of a general practitioner - deep expertise in one area.",
-      example: "Andreessen Horowitz focuses on enterprise software, consumer, and crypto sectors."
-    },
-    {
-      term: "Co-investment",
-      definition: "When multiple investors participate in the same funding round.",
-      category: "deal_process",
-      analogy: "Like splitting the cost of a expensive dinner with friends - sharing the risk and reward.",
-      example: "Series B led by Sequoia with participation from existing investors."
-    },
-    {
-      term: "Follow-on Investment",
-      definition: "Additional investment in existing portfolio companies in later rounds.",
-      category: "portfolio",
-      analogy: "Like doubling down on a winning poker hand - investing more in companies that are doing well.",
-      example: "First Round initially invested $500K in Uber, then invested in 6 more rounds."
-    },
-    {
-      term: "Value Creation",
-      definition: "Activities beyond just providing capital to help portfolio companies grow and succeed.",
-      category: "portfolio",
-      analogy: "Like being a mentor and coach, not just a financial backer - helping with strategy, hiring, and connections.",
-      example: "Helping portfolio companies recruit executives, make strategic partnerships, or improve operations."
-    }
-  ],
-  level5: [
-    {
-      term: "Fund Lifecycle",
-      definition: "The typical 10-year process of raising a fund, making investments, and returning money to investors.",
-      category: "fundraising",
-      analogy: "Like planting a garden - you plant seeds (investments), tend them for years, then harvest the results.",
-      example: "Years 1-3: raising and investing, Years 4-7: supporting portfolio, Years 8-10: exits and returns."
-    },
-    {
-      term: "Limited Partner (LP)",
-      definition: "Institutional investors who provide capital to venture capital funds.",
-      category: "fundraising",
-      analogy: "Like being a silent business partner - you provide the money but the VC firm does all the work.",
-      example: "University endowments, pension funds, and wealthy individuals who invest in VC funds."
-    },
-    {
-      term: "Carried Interest",
-      definition: "The VC firm's share of profits from successful investments, typically 20%.",
-      category: "fundraising",
-      analogy: "Like a performance bonus - you only get paid extra if the investments do well.",
-      example: "If a fund returns $300M on $100M invested, the firm keeps 20% of the $200M profit."
-    },
-    {
-      term: "Management Fee",
-      definition: "Annual fee (typically 2%) charged by VC firms to cover operating expenses.",
-      category: "fundraising",
-      analogy: "Like paying a monthly management fee for your apartment - it covers the basic costs of running the business.",
-      example: "A $100M fund charges $2M annually in management fees."
-    },
-    {
-      term: "Deployment Period",
-      definition: "The time frame (typically 3-5 years) during which a fund actively makes new investments.",
-      category: "fundraising",
-      analogy: "Like having a shopping spree with a time limit - you need to spend the fund's money wisely within a certain period.",
-      example: "A 2020 vintage fund should deploy most capital by 2025."
-    }
-  ],
-  level6: [
-    {
-      term: "ESG Investing",
-      definition: "Environmental, Social, and Governance factors considered in investment decisions.",
-      category: "strategy",
-      analogy: "Like choosing to shop at stores that align with your values - investing in companies that do good.",
-      example: "Investing in clean energy startups or companies with diverse leadership teams."
-    },
-    {
-      term: "Impact Metrics",
-      definition: "Measurable outcomes that demonstrate positive social or environmental impact.",
-      category: "strategy",
-      analogy: "Like tracking how many trees you've planted or pounds of waste you've reduced - measuring your positive impact.",
-      example: "Portfolio companies reducing 1M tons of CO2 emissions or creating 5,000 jobs."
-    },
-    {
-      term: "Diversity & Inclusion",
-      definition: "Efforts to invest in and support underrepresented founders and diverse teams.",
-      category: "governance",
-      analogy: "Like ensuring your sports team has players from different backgrounds - better performance through diverse perspectives.",
-      example: "All Raise helps increase funding for female founders in venture capital."
-    },
-    {
-      term: "Corporate Governance",
-      definition: "Systems and processes by which companies are directed and controlled.",
-      category: "governance",
-      analogy: "Like the rules and procedures that govern how a school or club operates - ensuring fair and effective management.",
-      example: "Board structure, executive compensation, and shareholder rights."
-    },
-    {
-      term: "Sustainable Investing",
-      definition: "Investment strategy that considers long-term environmental and social impact alongside financial returns.",
-      category: "strategy",
-      analogy: "Like choosing to fish in a way that preserves the ocean for future generations - thinking beyond immediate gains.",
-      example: "Investing in circular economy companies that reduce waste and environmental impact."
-    }
-  ],
-  level7: [
-    {
-      term: "Fund Formation",
-      definition: "The legal and operational process of establishing a new venture capital fund.",
-      category: "fundraising",
-      analogy: "Like starting a new business - you need legal structure, operating procedures, and initial capital.",
-      example: "Creating fund documents, registering with SEC, and establishing investment committee."
-    },
-    {
-      term: "Institutional LPs",
-      definition: "Large organizations like pension funds, endowments, and sovereign wealth funds that invest in VC funds.",
-      category: "fundraising",
-      analogy: "Like the major sponsors of a sports team - big organizations that provide significant funding.",
-      example: "Harvard endowment, CalPERS pension fund, or sovereign wealth funds from Norway or Singapore."
-    },
-    {
-      term: "Secondary Markets",
-      definition: "Markets where existing LP interests or portfolio company shares are bought and sold.",
-      category: "strategy",
-      analogy: "Like a used car market, but for venture investments - trading existing stakes rather than making new investments.",
-      example: "Selling your stake in a 5-year-old fund to another investor before it fully matures."
-    },
-    {
-      term: "Exit Strategy",
-      definition: "Plans for how investors will eventually sell their ownership and realize returns.",
-      category: "strategy",
-      analogy: "Like planning your retirement - knowing how and when you'll cash out your investments.",
-      example: "IPO (going public), acquisition by larger company, or management buyout."
-    },
-    {
-      term: "Platform Building",
-      definition: "Creating systematic resources and capabilities to support all portfolio companies.",
-      category: "leadership",
-      analogy: "Like building a comprehensive gym with all the equipment and trainers - creating infrastructure that helps everyone succeed.",
-      example: "Andreessen Horowitz's talent team, marketing support, and technical advisory services."
+      term: "Scalability",
+      definition: "Scalability is the ability to grow quickly without costs rising equally fast.",
+      category: "evaluation",
+      analogy: "Like a digital music service - adding more users doesn't cost much more than serving fewer users.",
+      example: "Netflix can serve millions of customers with the same content library and infrastructure."
     }
   ]
 };

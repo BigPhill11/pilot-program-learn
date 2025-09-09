@@ -6,10 +6,9 @@ import { financeCareerData, FinanceCareerData } from '@/data/finance-careers';
 import EnhancedFinanceCareerJourney from './EnhancedFinanceCareerJourney';
 import FinanceCareerJourney from './FinanceCareerJourney';
 import InteractiveConsultingLesson from "./InteractiveConsultingLesson";
-import InteractiveVCLesson from "./InteractiveVCLesson";
 import IBDivisionsHub from "./IBDivisionsHub";
 import { managementConsultingLessons } from "@/data/management-consulting-lessons";
-import { vcLessons } from "@/data/venture-capital-lessons";
+import VCJourney from './VCJourney';
 import { ibDivisions } from "@/data/ib-divisions";
 import { useIsMobile } from '@/hooks/use-mobile';
 import AssetManagementJourney from './AssetManagementJourney';
@@ -36,11 +35,7 @@ const CareersInFinanceTab = () => {
       }
       
       if (selectedCareer.id === 'venture-capital') {
-        return <InteractiveVCLesson
-          lesson={vcLessons[0]}
-          onBack={() => setSelectedCareer(null)}
-          onComplete={() => setSelectedCareer(null)}
-        />;
+        return <VCJourney onBack={() => setSelectedCareer(null)} />;
       }
 
       if (selectedCareer.id === 'asset-management') {
