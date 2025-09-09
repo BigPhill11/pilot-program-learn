@@ -26,6 +26,7 @@ const Navbar = () => {
     { label: 'Learn', path: '/learn' },
     { label: 'Soft Skills', path: '/soft-skills' },
     { label: 'Panda Trading', path: '/paper-trading' },
+    { label: 'Phil\'s Friends', path: '/phils-friends' },
     { label: 'Ask Phil', path: '/ask-phil' },
   ];
 
