@@ -1212,8 +1212,15 @@ export type Database = {
           created_by: string | null
           description: string
           duration: string
+          duration_sec: number | null
           id: string
           name: string
+          processing_status: string | null
+          published: boolean | null
+          role_tier: string | null
+          source_type: string | null
+          source_url: string | null
+          storage_path: string | null
           thumbnail_url: string | null
           title: string
           updated_at: string
@@ -1227,8 +1234,15 @@ export type Database = {
           created_by?: string | null
           description: string
           duration: string
+          duration_sec?: number | null
           id?: string
           name: string
+          processing_status?: string | null
+          published?: boolean | null
+          role_tier?: string | null
+          source_type?: string | null
+          source_url?: string | null
+          storage_path?: string | null
           thumbnail_url?: string | null
           title: string
           updated_at?: string
@@ -1242,8 +1256,15 @@ export type Database = {
           created_by?: string | null
           description?: string
           duration?: string
+          duration_sec?: number | null
           id?: string
           name?: string
+          processing_status?: string | null
+          published?: boolean | null
+          role_tier?: string | null
+          source_type?: string | null
+          source_url?: string | null
+          storage_path?: string | null
           thumbnail_url?: string | null
           title?: string
           updated_at?: string
@@ -2176,6 +2197,35 @@ export type Database = {
           },
         ]
       }
+      user_video_badges: {
+        Row: {
+          awarded_at: string | null
+          badge_id: string | null
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          awarded_at?: string | null
+          badge_id?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          awarded_at?: string | null
+          badge_id?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_video_badges_badge_id_fkey"
+            columns: ["badge_id"]
+            isOneToOne: false
+            referencedRelation: "video_badges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vc_module_progress: {
         Row: {
           created_at: string
@@ -2214,6 +2264,128 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      video_analytics: {
+        Row: {
+          clip_id: string | null
+          created_at: string | null
+          event_type: string
+          id: string
+          progress_pct: number | null
+          user_id: string | null
+          video_id: string | null
+        }
+        Insert: {
+          clip_id?: string | null
+          created_at?: string | null
+          event_type: string
+          id?: string
+          progress_pct?: number | null
+          user_id?: string | null
+          video_id?: string | null
+        }
+        Update: {
+          clip_id?: string | null
+          created_at?: string | null
+          event_type?: string
+          id?: string
+          progress_pct?: number | null
+          user_id?: string | null
+          video_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_analytics_clip_id_fkey"
+            columns: ["clip_id"]
+            isOneToOne: false
+            referencedRelation: "video_clips"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "video_analytics_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "phils_friends_videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      video_badges: {
+        Row: {
+          badge_code: string
+          badge_description: string | null
+          badge_icon: string | null
+          badge_name: string
+          created_at: string | null
+          id: string
+        }
+        Insert: {
+          badge_code: string
+          badge_description?: string | null
+          badge_icon?: string | null
+          badge_name: string
+          created_at?: string | null
+          id?: string
+        }
+        Update: {
+          badge_code?: string
+          badge_description?: string | null
+          badge_icon?: string | null
+          badge_name?: string
+          created_at?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
+      video_clips: {
+        Row: {
+          clip_order: number | null
+          created_at: string | null
+          end_sec: number
+          excerpt: string | null
+          id: string
+          published: boolean | null
+          start_sec: number
+          thumbnail_url: string | null
+          title: string
+          updated_at: string | null
+          video_id: string | null
+        }
+        Insert: {
+          clip_order?: number | null
+          created_at?: string | null
+          end_sec: number
+          excerpt?: string | null
+          id?: string
+          published?: boolean | null
+          start_sec: number
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string | null
+          video_id?: string | null
+        }
+        Update: {
+          clip_order?: number | null
+          created_at?: string | null
+          end_sec?: number
+          excerpt?: string | null
+          id?: string
+          published?: boolean | null
+          start_sec?: number
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string | null
+          video_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_clips_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "phils_friends_videos"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       video_comments: {
         Row: {
@@ -2263,6 +2435,51 @@ export type Database = {
           },
         ]
       }
+      video_points: {
+        Row: {
+          awarded_at: string | null
+          clip_id: string | null
+          event_type: string
+          id: string
+          points_earned: number
+          user_id: string | null
+          video_id: string | null
+        }
+        Insert: {
+          awarded_at?: string | null
+          clip_id?: string | null
+          event_type: string
+          id?: string
+          points_earned?: number
+          user_id?: string | null
+          video_id?: string | null
+        }
+        Update: {
+          awarded_at?: string | null
+          clip_id?: string | null
+          event_type?: string
+          id?: string
+          points_earned?: number
+          user_id?: string | null
+          video_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_points_clip_id_fkey"
+            columns: ["clip_id"]
+            isOneToOne: false
+            referencedRelation: "video_clips"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "video_points_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "phils_friends_videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       video_ratings: {
         Row: {
           clarity_rating: number
@@ -2306,6 +2523,68 @@ export type Database = {
             columns: ["video_id"]
             isOneToOne: false
             referencedRelation: "trading_videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      video_streaks: {
+        Row: {
+          current_streak_days: number | null
+          last_active_date: string | null
+          longest_streak_days: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          current_streak_days?: number | null
+          last_active_date?: string | null
+          longest_streak_days?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          current_streak_days?: number | null
+          last_active_date?: string | null
+          longest_streak_days?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      video_transcripts: {
+        Row: {
+          created_at: string | null
+          id: string
+          parsed_cues: Json | null
+          raw_content: string
+          transcript_type: string
+          updated_at: string | null
+          video_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          parsed_cues?: Json | null
+          raw_content: string
+          transcript_type: string
+          updated_at?: string | null
+          video_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          parsed_cues?: Json | null
+          raw_content?: string
+          transcript_type?: string
+          updated_at?: string | null
+          video_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_transcripts_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "phils_friends_videos"
             referencedColumns: ["id"]
           },
         ]
