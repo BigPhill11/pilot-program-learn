@@ -17,6 +17,12 @@ export interface WealthLevel {
   quiz: {
     questions: string[];
   };
+  activities: Array<{
+    title: string;
+    instructions: string[];
+    reflection?: string;
+    bonus?: string;
+  }>;
 }
 
 export const wealthManagementJourneyData: WealthLevel[] = [
@@ -71,7 +77,17 @@ export const wealthManagementJourneyData: WealthLevel[] = [
         "In Scenario Builder, why would a retired teacher need estate planning?",
         "In the doctor example, how did the wealth manager go beyond just investments?"
       ]
-    }
+    },
+    activities: [
+      {
+        title: "Life Goals Mapping",
+        instructions: [
+          "Write down 3 big goals you'd like to achieve in life (college, first car, retirement, starting a business).",
+          "Next to each goal, list how much you think it might cost and when you'll need the money."
+        ],
+        reflection: "Which of these goals would a wealth manager help you plan for?"
+      }
+    ]
   },
   {
     id: 2,
@@ -124,7 +140,18 @@ export const wealthManagementJourneyData: WealthLevel[] = [
         "In Plan Builder, what happens if a client spends too much and saves too little?",
         "In the young couple example, how did the wealth manager balance short-term and long-term goals?"
       ]
-    }
+    },
+    activities: [
+      {
+        title: "Create a Mini Financial Plan",
+        instructions: [
+          "Track your income (allowance, job, side hustle) and expenses for one week.",
+          "Split your spending into categories: Needs (food, transport), Wants (clothes, entertainment), Savings (future goals).",
+          "Using the \"50/30/20 rule\" (50% needs, 30% wants, 20% savings), check how your week compares.",
+          "Adjust one expense you could cut to boost your savings."
+        ]
+      }
+    ]
   },
   {
     id: 4,
@@ -177,7 +204,17 @@ export const wealthManagementJourneyData: WealthLevel[] = [
         "In the Protect the Plan game, which tool would help with unexpected medical bills?",
         "In the executive example, how did the wealth manager balance market and healthcare risks?"
       ]
-    }
+    },
+    activities: [
+      {
+        title: "Identify Your Risks",
+        instructions: [
+          "List 3 financial risks you or your family could face (job loss, medical expenses, inflation).",
+          "For each risk, write down 1 way to prepare (emergency fund, insurance, diversification)."
+        ],
+        bonus: "Ask a parent or mentor what financial risks they prepare for."
+      }
+    ]
   },
   {
     id: 5,
@@ -230,7 +267,18 @@ export const wealthManagementJourneyData: WealthLevel[] = [
         "In the Client Match game, what communication approach would fit a retiree?",
         "In the family business owner example, how did the wealth manager build trust?"
       ]
-    }
+    },
+    activities: [
+      {
+        title: "Practice Explaining",
+        instructions: [
+          "Pick a financial term (budget, diversification, retirement account).",
+          "Pretend you're explaining it to a 10-year-old sibling or friend.",
+          "Write out your explanation in simple, everyday words.",
+          "Share it with a peer and see if they understood. Adjust if not."
+        ]
+      }
+    ]
   },
   {
     id: 6,
@@ -283,7 +331,17 @@ export const wealthManagementJourneyData: WealthLevel[] = [
         "In Estate Planner, what tool helps avoid probate court?",
         "In the retired couple example, how did charitable giving support both legacy and taxes?"
       ]
-    }
+    },
+    activities: [
+      {
+        title: "Tax-Efficient Choices",
+        instructions: [
+          "Research: What is the difference between a regular savings account and a tax-advantaged retirement account (like a Roth IRA)?",
+          "Imagine you're saving $100/month for 10 years. Compare what happens in each account."
+        ],
+        reflection: "Why might a wealth manager suggest tax-advantaged accounts early in life?"
+      }
+    ]
   },
   {
     id: 7,
@@ -336,7 +394,19 @@ export const wealthManagementJourneyData: WealthLevel[] = [
         "In Future or Past, where would you place robo-advisors and pensions?",
         "In the millennial example, how did the wealth manager combine technology and values?"
       ]
-    }
+    },
+    activities: [
+      {
+        title: "Compare Old vs New Tools",
+        instructions: [
+          "Make two lists:",
+          "Traditional tools (mutual funds, pensions, in-person financial advisors).",
+          "New tools (robo-advisors, Robinhood, Betterment, ESG funds).",
+          "Research: Pick one from each list and note how they work."
+        ],
+        reflection: "Which tool would you personally prefer, and why?"
+      }
+    ]
   },
   {
     id: 3,
@@ -389,7 +459,19 @@ export const wealthManagementJourneyData: WealthLevel[] = [
         "In Risk Match, which client should invest more heavily in bonds — a 25-year-old or a retiree?",
         "In the 25-year-old example, why did the wealth manager recommend more stocks?"
       ]
-    }
+    },
+    activities: [
+      {
+        title: "Build a Sample Portfolio",
+        instructions: [
+          "Pick three companies or funds you know (Apple, Nike, S&P 500 ETF).",
+          "Assign fake money ($1,000 total) across them.",
+          "Research: Which is riskier? Which is more stable?",
+          "Decide your allocation based on your age and time horizon (younger = more growth, older = more stability)."
+        ],
+        reflection: "How would you rebalance this in 5 years?"
+      }
+    ]
   }
 ];
 
