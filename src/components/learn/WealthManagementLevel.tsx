@@ -210,19 +210,14 @@ const WealthManagementLevel: React.FC<WealthManagementLevelProps> = ({
 
           <TabsContent value="quiz" className="space-y-6">
             <div className="space-y-6">
-              {level.quiz.questions.map((question, index) => (
+              {level.quiz.questions.map((quizItem, index) => (
                 <InteractiveQuiz
                   key={index}
                   topicId={`wealth-level-${level.id}-quiz-${index}`}
-                  question={question}
-                  options={[
-                    "Option A",
-                    "Option B", 
-                    "Option C",
-                    "Option D"
-                  ]}
-                  correctAnswerIndex={0}
-                  feedbackForIncorrect="Review the level content and try again!"
+                  question={quizItem.question}
+                  options={quizItem.options}
+                  correctAnswerIndex={quizItem.correctAnswerIndex}
+                  feedbackForIncorrect={quizItem.explanation}
                   onQuizComplete={(topicId, isCorrect) => {
                     onQuizComplete(isCorrect);
                     handleActivityComplete(`quiz-${level.id}-${index}`);

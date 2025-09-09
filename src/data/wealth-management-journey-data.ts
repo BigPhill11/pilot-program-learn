@@ -15,7 +15,12 @@ export interface WealthLevel {
     keyTerms: string;
   }>;
   quiz: {
-    questions: string[];
+    questions: Array<{
+      question: string;
+      options: string[];
+      correctAnswerIndex: number;
+      explanation: string;
+    }>;
   };
   activities: Array<{
     title: string;
@@ -71,11 +76,50 @@ export const wealthManagementJourneyData: WealthLevel[] = [
     ],
     quiz: {
       questions: [
-        "What makes wealth management different from asset management?",
-        "In Match the Service, what wealth management service matches \"I want to protect my family if something happens to me\"?",
-        "Why is trust important in wealth management client relationships?",
-        "In Scenario Builder, why would a retired teacher need estate planning?",
-        "In the doctor example, how did the wealth manager go beyond just investments?"
+        {
+          question: "What makes wealth management different from asset management?",
+          options: [
+            "Wealth management only focuses on investments, while asset management includes planning",
+            "Wealth management is holistic, covering investments, taxes, estate planning, and life goals",
+            "Asset management is for individuals, wealth management is for institutions", 
+            "There is no difference between the two"
+          ],
+          correctAnswerIndex: 1,
+          explanation: "Wealth management takes a comprehensive approach to all aspects of a client's financial life, not just investments."
+        },
+        {
+          question: "In the Match the Service game, what wealth management service matches \"I want to protect my family if something happens to me\"?",
+          options: [
+            "Investment Planning",
+            "Tax Planning", 
+            "Insurance and Estate Planning",
+            "Retirement Planning"
+          ],
+          correctAnswerIndex: 2,
+          explanation: "Insurance and estate planning are designed to protect and provide for family members in case of unexpected events."
+        },
+        {
+          question: "Why is trust important in wealth management client relationships?",
+          options: [
+            "Trust is not important in financial relationships",
+            "Trust ensures clients will follow advice and maintain long-term relationships",
+            "Trust is only needed for large accounts",
+            "Trust helps reduce fees"
+          ],
+          correctAnswerIndex: 1,
+          explanation: "Trust is the foundation of wealth management - without it, clients won't follow advice or stay long-term with an advisor."
+        },
+        {
+          question: "In the doctor example, how did the wealth manager go beyond just investments?",
+          options: [
+            "Only recommended mutual funds",
+            "Created a comprehensive plan including retirement, taxes, insurance, and college funding",
+            "Focused solely on tax reduction",
+            "Only provided investment advice"
+          ],
+          correctAnswerIndex: 1,
+          explanation: "The wealth manager created a holistic strategy addressing multiple aspects of the doctor's financial life, not just investments."
+        }
       ]
     },
     activities: [
@@ -134,11 +178,50 @@ export const wealthManagementJourneyData: WealthLevel[] = [
     ],
     quiz: {
       questions: [
-        "Why is budgeting important in financial planning?",
-        "In Goal Sorter, why is an emergency fund considered a short-term priority?",
-        "What's the difference between retirement planning and estate planning?",
-        "In Plan Builder, what happens if a client spends too much and saves too little?",
-        "In the young couple example, how did the wealth manager balance short-term and long-term goals?"
+        {
+          question: "Why is budgeting important in financial planning?",
+          options: [
+            "Budgeting is not necessary for wealthy people",
+            "It ensures clients spend wisely and save enough for their goals",
+            "Budgeting only matters for businesses",
+            "It's only useful for tracking expenses"
+          ],
+          correctAnswerIndex: 1,
+          explanation: "Budgeting helps clients balance spending with savings to achieve their financial goals."
+        },
+        {
+          question: "In Goal Sorter, why is an emergency fund considered a short-term priority?",
+          options: [
+            "Because it's meant for long-term growth",
+            "Emergency funds aren't actually important",
+            "Because it needs to be accessible for unexpected expenses that could happen anytime",
+            "It's only for wealthy individuals"
+          ],
+          correctAnswerIndex: 2,
+          explanation: "Emergency funds must be readily accessible to cover unexpected expenses, making them a short-term liquidity priority."
+        },
+        {
+          question: "What's the difference between retirement planning and estate planning?",
+          options: [
+            "There is no difference",
+            "Retirement planning is for living expenses after work; estate planning is for transferring wealth after death",
+            "Estate planning is only for retirement",
+            "Retirement planning only involves investments"
+          ],
+          correctAnswerIndex: 1,
+          explanation: "Retirement planning focuses on having enough to live on after stopping work, while estate planning addresses wealth transfer after death."
+        },
+        {
+          question: "In the young couple example, how did the wealth manager balance short-term and long-term goals?",
+          options: [
+            "Focused only on long-term retirement savings",
+            "Only helped with buying a house",
+            "Created a plan that addressed both home buying (short-term) and retirement savings (long-term)",
+            "Ignored short-term goals entirely"
+          ],
+          correctAnswerIndex: 2,
+          explanation: "The wealth manager helped them save for their immediate goal (house) while also starting retirement savings for the future."
+        }
       ]
     },
     activities: [
@@ -198,11 +281,50 @@ export const wealthManagementJourneyData: WealthLevel[] = [
     ],
     quiz: {
       questions: [
-        "What is longevity risk, and why is it important in retirement planning?",
-        "In the Risk Identifier game, what type of risk is \"rising prices eroding savings\"?",
-        "Why should clients keep an emergency fund?",
-        "In the Protect the Plan game, which tool would help with unexpected medical bills?",
-        "In the executive example, how did the wealth manager balance market and healthcare risks?"
+        {
+          question: "What is longevity risk, and why is it important in retirement planning?",
+          options: [
+            "The risk of not living long enough",
+            "The risk of outliving your money in retirement",
+            "The risk of inflation",
+            "The risk of market crashes"
+          ],
+          correctAnswerIndex: 1,
+          explanation: "Longevity risk is the possibility of outliving your savings, which requires careful retirement planning for longer life expectancy."
+        },
+        {
+          question: "In the Risk Identifier game, what type of risk is \"rising prices eroding savings\"?",
+          options: [
+            "Market risk",
+            "Credit risk",
+            "Inflation risk",
+            "Liquidity risk"
+          ],
+          correctAnswerIndex: 2,
+          explanation: "Rising prices that erode purchasing power over time is the definition of inflation risk."
+        },
+        {
+          question: "Why should clients keep an emergency fund?",
+          options: [
+            "To invest in high-risk opportunities",
+            "To cover unexpected expenses without disrupting long-term investments",
+            "Emergency funds aren't necessary",
+            "Only for entertainment expenses"
+          ],
+          correctAnswerIndex: 1,
+          explanation: "Emergency funds provide a cash buffer for unexpected expenses, protecting long-term investment strategies from disruption."
+        },
+        {
+          question: "In the executive example, how did the wealth manager balance market and healthcare risks?",
+          options: [
+            "Only focused on investments",
+            "Used diversification for market risk and insurance for healthcare risk",
+            "Ignored healthcare risks",
+            "Put everything in cash"
+          ],
+          correctAnswerIndex: 1,
+          explanation: "The wealth manager used diversified investments to manage market risk and health/disability insurance to protect against healthcare costs."
+        }
       ]
     },
     activities: [
@@ -261,11 +383,50 @@ export const wealthManagementJourneyData: WealthLevel[] = [
     ],
     quiz: {
       questions: [
-        "Why is transparency important in wealth management?",
-        "In the Trust Builder game, what happens if you give vague answers to client concerns?",
-        "What does active listening mean, and why is it useful?",
-        "In the Client Match game, what communication approach would fit a retiree?",
-        "In the family business owner example, how did the wealth manager build trust?"
+        {
+          question: "Why is transparency important in wealth management?",
+          options: [
+            "It's not important for client relationships",
+            "It builds trust and credibility with clients",
+            "Only for legal reasons",
+            "To justify higher fees"
+          ],
+          correctAnswerIndex: 1,
+          explanation: "Transparency about risks, fees, and performance builds trust and credibility, which are essential for long-term client relationships."
+        },
+        {
+          question: "What does active listening mean, and why is it useful?",
+          options: [
+            "Listening to music while working",
+            "Paying full attention to client concerns and reflecting them back to tailor strategies",
+            "Only hearing what you want to hear",
+            "Listening without responding"
+          ],
+          correctAnswerIndex: 1,
+          explanation: "Active listening involves full attention to client concerns and reflecting them back, helping to create personalized strategies."
+        },
+        {
+          question: "In the Client Match game, what communication approach would fit a retiree?",
+          options: [
+            "Focus on aggressive growth strategies",
+            "Emphasize stability, income, and capital preservation",
+            "Only discuss high-risk investments",
+            "Avoid discussing their portfolio"
+          ],
+          correctAnswerIndex: 1,
+          explanation: "Retirees typically prioritize stability, steady income, and preserving their capital rather than aggressive growth."
+        },
+        {
+          question: "In the family business owner example, how did the wealth manager build trust?",
+          options: [
+            "By avoiding difficult questions",
+            "By openly explaining fees, showing performance, and addressing concerns directly",
+            "By promising unrealistic returns",
+            "By hiding performance information"
+          ],
+          correctAnswerIndex: 1,
+          explanation: "The wealth manager built trust through transparency about fees, honest performance reporting, and directly addressing client concerns."
+        }
       ]
     },
     activities: [
@@ -325,11 +486,50 @@ export const wealthManagementJourneyData: WealthLevel[] = [
     ],
     quiz: {
       questions: [
-        "What is tax planning, and why is it important?",
-        "In Tax Smart, what income source is taxed at a lower rate if held long-term?",
-        "Why do clients use trusts in estate planning?",
-        "In Estate Planner, what tool helps avoid probate court?",
-        "In the retired couple example, how did charitable giving support both legacy and taxes?"
+        {
+          question: "What is tax planning, and why is it important?",
+          options: [
+            "Tax planning is illegal",
+            "Arranging finances to minimize taxes owed while staying within the law",
+            "Tax planning only benefits the wealthy",
+            "It's the same as tax evasion"
+          ],
+          correctAnswerIndex: 1,
+          explanation: "Tax planning legally arranges finances to minimize tax liability, helping clients keep more of their wealth."
+        },
+        {
+          question: "In Tax Smart, what income source is taxed at a lower rate if held long-term?",
+          options: [
+            "Salary income",
+            "Short-term capital gains",
+            "Long-term capital gains",
+            "Interest income"
+          ],
+          correctAnswerIndex: 2,
+          explanation: "Long-term capital gains (held over one year) typically have lower tax rates than ordinary income or short-term gains."
+        },
+        {
+          question: "Why do clients use trusts in estate planning?",
+          options: [
+            "Trusts are not useful",
+            "To help reduce taxes, avoid probate, and control asset distribution",
+            "Only for tax evasion",
+            "Trusts are only for the ultra-wealthy"
+          ],
+          correctAnswerIndex: 1,
+          explanation: "Trusts can help reduce estate taxes, avoid probate court, and provide control over how and when assets are distributed to beneficiaries."
+        },
+        {
+          question: "In the retired couple example, how did charitable giving support both legacy and taxes?",
+          options: [
+            "It didn't help with taxes",
+            "Provided tax deductions while supporting causes they cared about",
+            "Only helped with legacy, not taxes",
+            "Charitable giving increases taxes"
+          ],
+          correctAnswerIndex: 1,
+          explanation: "Charitable giving through donor-advised funds provided tax benefits while allowing the couple to support causes important to them."
+        }
       ]
     },
     activities: [
@@ -388,11 +588,50 @@ export const wealthManagementJourneyData: WealthLevel[] = [
     ],
     quiz: {
       questions: [
-        "What is a robo-advisor, and why is it appealing to younger investors?",
-        "In Trend Tracker, how would you classify ESG investing?",
-        "What does ESG stand for, and how does it affect choices?",
-        "In Future or Past, where would you place robo-advisors and pensions?",
-        "In the millennial example, how did the wealth manager combine technology and values?"
+        {
+          question: "What is a robo-advisor, and why is it appealing to younger investors?",
+          options: [
+            "A human advisor who works remotely",
+            "A digital platform using algorithms for low-cost, automated portfolio management",
+            "A type of investment fund",
+            "A trading robot"
+          ],
+          correctAnswerIndex: 1,
+          explanation: "Robo-advisors are digital platforms that use algorithms to provide automated, low-cost investment management, appealing to younger investors for convenience and affordability."
+        },
+        {
+          question: "In Trend Tracker, how would you classify ESG investing?",
+          options: [
+            "Declining",
+            "Stable",
+            "Growing",
+            "Irrelevant"
+          ],
+          correctAnswerIndex: 2,
+          explanation: "ESG investing is a growing trend, especially among younger investors who want their investments to align with their values."
+        },
+        {
+          question: "What does ESG stand for, and how does it affect investment choices?",
+          options: [
+            "Earnings, Sales, Growth - focuses only on financial returns",
+            "Environmental, Social, Governance - considers sustainability and values alongside returns",
+            "Exchange, Securities, Guidelines - regulatory framework",
+            "ESG has no impact on investments"
+          ],
+          correctAnswerIndex: 1,
+          explanation: "ESG stands for Environmental, Social, and Governance factors, allowing investors to align their money with their values while pursuing returns."
+        },
+        {
+          question: "In the millennial example, how did the wealth manager combine technology and values?",
+          options: [
+            "Used only traditional methods",
+            "Ignored client values entirely",
+            "Blended robo-advisor efficiency with personal advice for ESG investments",
+            "Only focused on returns"
+          ],
+          correctAnswerIndex: 2,
+          explanation: "The wealth manager created a hybrid model combining the efficiency of robo-advisors with personal guidance for ESG investing that aligned with the client's values."
+        }
       ]
     },
     activities: [
@@ -453,11 +692,50 @@ export const wealthManagementJourneyData: WealthLevel[] = [
     ],
     quiz: {
       questions: [
-        "Why is asset allocation important in wealth management?",
-        "In Build a Portfolio, what happens if you put everything into stocks?",
-        "What is risk tolerance, and how does it change over time?",
-        "In Risk Match, which client should invest more heavily in bonds — a 25-year-old or a retiree?",
-        "In the 25-year-old example, why did the wealth manager recommend more stocks?"
+        {
+          question: "Why is asset allocation important in wealth management?",
+          options: [
+            "It's only important for large portfolios",
+            "It balances risk and return by spreading money across different asset types",
+            "Asset allocation doesn't matter",
+            "It's only used by professional investors"
+          ],
+          correctAnswerIndex: 1,
+          explanation: "Asset allocation helps balance risk and return by diversifying investments across stocks, bonds, and other assets."
+        },
+        {
+          question: "In Build a Portfolio, what happens if you put everything into stocks?",
+          options: [
+            "You get guaranteed returns",
+            "Nothing happens",
+            "You increase risk significantly and reduce diversification",
+            "You eliminate all risk"
+          ],
+          correctAnswerIndex: 2,
+          explanation: "Putting everything in stocks increases risk and eliminates the benefits of diversification across asset classes."
+        },
+        {
+          question: "What is risk tolerance, and how does it change over time?",
+          options: [
+            "Risk tolerance never changes",
+            "It's how comfortable someone is with losses; typically decreases as people age",
+            "Only young people have risk tolerance",
+            "Risk tolerance is the same for everyone"
+          ],
+          correctAnswerIndex: 1,
+          explanation: "Risk tolerance reflects comfort with potential losses and typically decreases with age as people have less time to recover from losses."
+        },
+        {
+          question: "In the 25-year-old example, why did the wealth manager recommend more stocks?",
+          options: [
+            "Stocks are always the best investment",
+            "Because they had a long time horizon (40 years) allowing for growth despite volatility",
+            "Because bonds are too risky",
+            "To avoid taxes"
+          ],
+          correctAnswerIndex: 1,
+          explanation: "A 40-year time horizon allows for higher stock allocation because there's time to ride out market volatility for long-term growth."
+        }
       ]
     },
     activities: [
