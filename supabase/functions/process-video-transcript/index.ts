@@ -70,7 +70,9 @@ serve(async (req) => {
     });
 
     if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.statusText}`);
+      const errorData = await response.text();
+      console.error('OpenAI API error:', response.status, response.statusText, errorData);
+      throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`);
     }
 
     const aiResponse = await response.json();
@@ -109,11 +111,12 @@ serve(async (req) => {
       throw insertError;
     }
 
-    // Update video processing status
+    // Update video processing status and auto-publish
     const { error: updateError } = await supabaseClient
       .from('phils_friends_videos')
       .update({ 
         processing_status: 'completed',
+        published: true,
         updated_at: new Date().toISOString()
       })
       .eq('id', videoId);

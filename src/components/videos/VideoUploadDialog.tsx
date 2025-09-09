@@ -366,8 +366,8 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
           source_url,
           storage_path,
           duration_sec,
-          published: formData.publishNow,
-          processing_status: transcriptFile ? 'processing' : (uploadType === 'file' ? 'processing' : 'completed'),
+          published: transcriptFile ? false : true, // Auto-publish videos without transcript processing
+          processing_status: transcriptFile ? 'processing' : 'completed',
           created_by: user.id,
           duration: '5:00', // Default duration string
           company: 'Phil\'s Friends',
