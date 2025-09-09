@@ -124,6 +124,13 @@ const WealthManagementJourney: React.FC<WealthManagementJourneyProps> = ({ onBac
             </div>
           </div>
 
+          <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-blue-800 text-sm">
+              <strong>📚 Learning Path:</strong> Complete levels in order to unlock the next level. 
+              Master all flashcard terms in each level for full comprehension.
+            </p>
+          </div>
+
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {wealthManagementJourneyData.map((level) => (
               <WealthManagementJourneyLevelCard

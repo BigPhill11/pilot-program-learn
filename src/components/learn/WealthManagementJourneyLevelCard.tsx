@@ -52,7 +52,10 @@ const WealthManagementJourneyLevelCard: React.FC<WealthManagementJourneyLevelCar
         </CardTitle>
         
         <CardDescription className={!isUnlocked ? 'text-muted-foreground' : ''}>
-          {level.overview.slice(0, 120)}...
+          {!isUnlocked && level.id > 1 ? 
+            `Complete Level ${level.id - 1} to unlock this level.` : 
+            `${level.overview.slice(0, 120)}...`
+          }
         </CardDescription>
       </CardHeader>
       
@@ -73,7 +76,7 @@ const WealthManagementJourneyLevelCard: React.FC<WealthManagementJourneyLevelCar
             className={`w-full ${isCompleted ? "bg-emerald-500 hover:bg-emerald-600" : isUnlocked ? "bg-emerald-600 hover:bg-emerald-700" : ""}`}
             disabled={!isUnlocked}
           >
-            {isCompleted ? "Review Level" : isUnlocked ? "Start Level" : "Locked"}
+            {isCompleted ? "✓ Review Level" : isUnlocked ? "Start Level" : "🔒 Locked"}
           </Button>
         </div>
       </CardContent>

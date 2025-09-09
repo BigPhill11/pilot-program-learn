@@ -104,6 +104,7 @@ const WealthManagementLevel: React.FC<WealthManagementLevelProps> = ({
               currentIndex={currentFlashcardIndex}
               onIndexChange={setCurrentFlashcardIndex}
               onComplete={() => handleActivityComplete(`flashcards-${level.id}`)}
+              levelId={level.id}
             />
           </TabsContent>
 
