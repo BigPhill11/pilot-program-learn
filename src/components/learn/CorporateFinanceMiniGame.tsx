@@ -49,6 +49,14 @@ const CorporateFinanceMiniGame: React.FC<CorporateFinanceMiniGameProps> = ({ min
         return selectedGame === 0 ? renderSortTheMoneyGame() : renderProfitPuzzleGame();
       case 3:
         return selectedGame === 0 ? renderFutureValueGame() : renderPresentValueGame();
+      case 4:
+        return selectedGame === 0 ? renderProjectPickerGame() : renderOpportunityTradeOffGame();
+      case 5:
+        return selectedGame === 0 ? renderCostSorterGame() : renderHurdleDecisionGame();
+      case 6:
+        return selectedGame === 0 ? renderLeverageLadderGame() : renderRiskScenarioGame();
+      case 7:
+        return selectedGame === 0 ? renderProfitChoiceGame() : renderDividendDilemmaGame();
       default:
         return renderGenericGame();
     }
@@ -413,6 +421,102 @@ const CorporateFinanceMiniGame: React.FC<CorporateFinanceMiniGameProps> = ({ min
         <p className="text-gray-600 mb-4">Interactive game coming soon!</p>
         <div className="bg-blue-100 dark:bg-blue-900/30 p-4 rounded-lg">
           <p>Compare money today vs. money in the future</p>
+        </div>
+      </div>
+    );
+  };
+
+  const renderProjectPickerGame = () => {
+    return (
+      <div className="text-center p-8">
+        <h3 className="text-lg font-bold mb-4">Project Picker</h3>
+        <p className="text-gray-600 mb-4">Interactive game coming soon!</p>
+        <div className="bg-blue-100 dark:bg-blue-900/30 p-4 rounded-lg">
+          <p>Compare project options using NPV and payback calculations</p>
+        </div>
+      </div>
+    );
+  };
+
+  const renderOpportunityTradeOffGame = () => {
+    return (
+      <div className="text-center p-8">
+        <h3 className="text-lg font-bold mb-4">Opportunity Trade-Off</h3>
+        <p className="text-gray-600 mb-4">Interactive game coming soon!</p>
+        <div className="bg-green-100 dark:bg-green-900/30 p-4 rounded-lg">
+          <p>Choose the best project from multiple options with limited budget</p>
+        </div>
+      </div>
+    );
+  };
+
+  const renderCostSorterGame = () => {
+    return (
+      <div className="text-center p-8">
+        <h3 className="text-lg font-bold mb-4">Cost Sorter</h3>
+        <p className="text-gray-600 mb-4">Interactive game coming soon!</p>
+        <div className="bg-purple-100 dark:bg-purple-900/30 p-4 rounded-lg">
+          <p>Sort financing methods into debt and equity categories</p>
+        </div>
+      </div>
+    );
+  };
+
+  const renderHurdleDecisionGame = () => {
+    return (
+      <div className="text-center p-8">
+        <h3 className="text-lg font-bold mb-4">Hurdle Decision</h3>
+        <p className="text-gray-600 mb-4">Interactive game coming soon!</p>
+        <div className="bg-orange-100 dark:bg-orange-900/30 p-4 rounded-lg">
+          <p>Decide whether to accept or reject projects based on hurdle rates</p>
+        </div>
+      </div>
+    );
+  };
+
+  const renderLeverageLadderGame = () => {
+    return (
+      <div className="text-center p-8">
+        <h3 className="text-lg font-bold mb-4">Leverage Ladder</h3>
+        <p className="text-gray-600 mb-4">Interactive game coming soon!</p>
+        <div className="bg-red-100 dark:bg-red-900/30 p-4 rounded-lg">
+          <p>Adjust debt/equity slider to see effects on profits and risks</p>
+        </div>
+      </div>
+    );
+  };
+
+  const renderRiskScenarioGame = () => {
+    return (
+      <div className="text-center p-8">
+        <h3 className="text-lg font-bold mb-4">Risk Scenario</h3>
+        <p className="text-gray-600 mb-4">Interactive game coming soon!</p>
+        <div className="bg-yellow-100 dark:bg-yellow-900/30 p-4 rounded-lg">
+          <p>Choose optimal leverage for different economic conditions</p>
+        </div>
+      </div>
+    );
+  };
+
+  const renderProfitChoiceGame = () => {
+    return (
+      <div className="text-center p-8">
+        <h3 className="text-lg font-bold mb-4">Profit Choice</h3>
+        <p className="text-gray-600 mb-4">Interactive game coming soon!</p>
+        <div className="bg-teal-100 dark:bg-teal-900/30 p-4 rounded-lg">
+          <p>Decide how to use profits: dividends, buybacks, or reinvestment</p>
+        </div>
+      </div>
+    );
+  };
+
+  const renderDividendDilemmaGame = () => {
+    return (
+      <div className="text-center p-8">
+        <h3 className="text-lg font-bold mb-4">Dividend Dilemma</h3>
+        <p className="text-gray-600 mb-4">Interactive game coming coming soon!</p>
+        <div className="bg-indigo-100 dark:bg-indigo-900/30 p-4 rounded-lg">
+          <p>Match dividend policies with different company types</p>
         </div>
       </div>
     );

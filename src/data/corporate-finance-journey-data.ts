@@ -226,5 +226,277 @@ export const corporateFinanceLevels: CorporateFinanceLevel[] = [
       }
     ],
     takeHomeActivity: "If you save $500 today and it earns 8% annual interest, how much will it be worth in 10 years? Then calculate the present value of receiving $2,000 in 10 years if the discount rate is 8%. Write a short paragraph about which choice feels smarter."
+  },
+  {
+    id: 4,
+    title: "Capital Budgeting (Choosing Projects)",
+    description: "Learn how companies decide which projects are worth funding",
+    overview: "Capital budgeting is the process companies use to decide which projects or investments are worth funding. Because businesses cannot afford to pursue every idea, they must compare costs today against future benefits. Tools like net present value (NPV), internal rate of return (IRR), and payback period help determine if projects will create value. These choices are important because bad projects can waste money while good ones can drive growth. Capital budgeting ensures companies grow in ways that are profitable, sustainable, and aligned with long-term goals.",
+    flashcards: [
+      {
+        term: "Capital Budgeting",
+        definition: "Capital budgeting is how companies choose which long-term projects to invest in. It helps firms decide between options like opening a new store, building a factory, or launching a product. For example, Walmart may compare store expansion against investing in e-commerce."
+      },
+      {
+        term: "Net Present Value (NPV)",
+        definition: "NPV is the difference between the present value of future cash inflows and the cost of a project. A positive NPV means the project adds value; a negative one means it should be rejected. For instance, a $1M project returning $1.3M in present value has an NPV of +$300K."
+      },
+      {
+        term: "Internal Rate of Return (IRR)",
+        definition: "IRR is the interest rate that makes a project's cash inflows equal its outflows. A project with an IRR higher than the company's cost of capital is usually good. For example, if a project has a 15% IRR and the cost of capital is 10%, it is attractive."
+      },
+      {
+        term: "Payback Period",
+        definition: "The payback period is how long it takes for a project to earn back its initial cost. Shorter payback periods reduce risk because money is recovered faster. For instance, a $200K project earning $50K annually has a 4-year payback."
+      },
+      {
+        term: "Opportunity Cost",
+        definition: "Opportunity cost is the value of the next-best option a company gives up when it chooses one project. It ensures managers think about trade-offs. For example, if Amazon invests in cloud services, it cannot use that money for retail expansion."
+      }
+    ],
+    realLifeExample: "A retail chain must choose between opening 10 new physical stores or investing in an online shopping platform. Both projects cost $5 million. The stores are safer and produce steady income, while the online platform is riskier but has higher growth potential. After calculating NPV and IRR, the company decides on the e-commerce platform because its future value outweighs its longer payback period.",
+    miniGames: [
+      {
+        name: "Project Picker",
+        description: "Players compare two project options with costs and projected returns, then select the better investment.",
+        learningGoal: "Practice evaluating projects using NPV and payback.",
+        completionSystem: "Bronze = 50% correct, Silver = 75%, Gold = 100% correct.",
+        keyTerms: ["Capital Budgeting", "Net Present Value (NPV)", "Payback Period"]
+      },
+      {
+        name: "Opportunity Trade-Off",
+        description: "Players are given multiple projects but only one budget. They must choose the best option, knowing the others are missed opportunities.",
+        learningGoal: "Understand opportunity cost in project selection.",
+        completionSystem: "Points scored for choosing the highest-value option.",
+        keyTerms: ["Opportunity Cost", "Capital Budgeting"]
+      }
+    ],
+    quiz: [
+      {
+        question: "What is capital budgeting?",
+        answer: "Capital budgeting is how companies choose which long-term projects to invest in, helping firms decide between options like opening stores, building factories, or launching products."
+      },
+      {
+        question: "In Project Picker, what does a positive NPV mean?",
+        answer: "A positive NPV means the project adds value to the company and should be accepted, as the present value of returns exceeds the initial cost."
+      },
+      {
+        question: "What is the payback period for a $300K project that earns $100K annually?",
+        answer: "3 years ($300K ÷ $100K per year = 3 years to recover the initial investment)."
+      },
+      {
+        question: "What does opportunity cost mean in business decisions?",
+        answer: "Opportunity cost is the value of the next-best option a company gives up when it chooses one project over another."
+      },
+      {
+        question: "In the retail chain example, why did the company choose e-commerce over physical stores?",
+        answer: "Because the e-commerce platform's future value outweighed its longer payback period, despite being riskier than physical stores."
+      }
+    ],
+    takeHomeActivity: "Think of two projects a business in your community might consider (like opening a new café vs. creating a delivery service). Write 5–6 sentences comparing their risks, costs, and possible returns. Decide which one you would pick and why."
+  },
+  {
+    id: 5,
+    title: "Cost of Capital (The Price of Money)",
+    description: "Understand how companies determine the minimum return needed for projects",
+    overview: "Raising money always comes at a cost. Lenders charge interest when companies borrow, and shareholders expect returns when they invest. Together, these costs make up a company's 'cost of capital,' or the minimum return a project must earn to be worthwhile. Debt is usually cheaper because interest is tax-deductible, but it adds risk if payments cannot be made. Equity doesn't require repayment, but shareholders expect higher returns since they take on more risk. Knowing the cost of capital helps businesses set a 'hurdle rate' for projects and avoid losing money.",
+    flashcards: [
+      {
+        term: "Cost of Capital",
+        definition: "Cost of capital is the minimum return a company must earn to satisfy lenders and shareholders. It acts as a benchmark for investment decisions. For example, if a firm's cost of capital is 8%, any project must return more than 8% to add value."
+      },
+      {
+        term: "Cost of Debt",
+        definition: "Cost of debt is the interest rate a company pays when borrowing money. Debt is often cheaper because interest is tax-deductible. For example, a 6% bank loan effectively costs less after taxes."
+      },
+      {
+        term: "Cost of Equity",
+        definition: "Cost of equity is the return shareholders expect in exchange for investing in the company. Since shareholders take on more risk, they usually expect higher returns than lenders. For example, investors might want 12% returns to hold a company's stock."
+      },
+      {
+        term: "Weighted Average Cost of Capital (WACC)",
+        definition: "WACC is the blended cost of debt and equity, weighted by how much of each a company uses. It represents the overall hurdle rate for investments. For instance, if a firm is 50% debt and 50% equity, its WACC might be around 9%."
+      },
+      {
+        term: "Hurdle Rate",
+        definition: "The hurdle rate is the minimum acceptable return for a project. If a project earns less, it destroys value. For example, if the hurdle is 10% and a project earns only 7%, it should be rejected."
+      }
+    ],
+    realLifeExample: "A company wants to build a new manufacturing plant. Its WACC is 8%. If the plant is expected to earn 6%, it fails to meet the hurdle rate and is rejected. However, if another project earns 12%, it passes the test and gets approved. This shows how cost of capital helps companies avoid bad investments.",
+    miniGames: [
+      {
+        name: "Cost Sorter",
+        description: "Players drag financing methods like loans, bonds, and shares into 'debt' or 'equity' categories.",
+        learningGoal: "Distinguish between different sources of financing.",
+        completionSystem: "Bronze = 2 correct, Silver = 3–4, Gold = all correct.",
+        keyTerms: ["Cost of Debt", "Cost of Equity"]
+      },
+      {
+        name: "Hurdle Decision",
+        description: "Players are given project returns and hurdle rates, and they must decide whether to accept or reject.",
+        learningGoal: "Apply the hurdle rate to project selection.",
+        completionSystem: "Points for correct project choices.",
+        keyTerms: ["Hurdle Rate", "Cost of Capital"]
+      }
+    ],
+    quiz: [
+      {
+        question: "What is cost of capital?",
+        answer: "Cost of capital is the minimum return a company must earn to satisfy lenders and shareholders, acting as a benchmark for investment decisions."
+      },
+      {
+        question: "In Cost Sorter, what type of financing is issuing shares?",
+        answer: "Issuing shares is equity financing, as it gives investors ownership in exchange for money."
+      },
+      {
+        question: "Why is debt usually cheaper than equity?",
+        answer: "Debt is usually cheaper because interest payments are tax-deductible, and lenders face less risk than shareholders who get paid after debt obligations."
+      },
+      {
+        question: "In Hurdle Decision, why reject a project earning less than the hurdle rate?",
+        answer: "Because projects earning less than the hurdle rate destroy value and fail to meet the minimum return required by investors."
+      },
+      {
+        question: "In the plant example, why was the 6% return project rejected?",
+        answer: "Because the 6% return was less than the company's 8% WACC hurdle rate, meaning it would destroy shareholder value."
+      }
+    ],
+    takeHomeActivity: "Pick a well-known company and research whether it uses more debt or equity. Write 5–6 sentences on why you think it balances funding that way, and whether it seems safe or risky."
+  },
+  {
+    id: 6,
+    title: "Capital Structure (Balancing Debt and Equity)",
+    description: "Learn how companies balance debt and equity financing",
+    overview: "Capital structure is the mix of debt and equity a company uses to fund its operations. The right balance matters because too much debt increases the risk of bankruptcy, while too much equity dilutes ownership and control. Some industries, like utilities, can handle higher debt because their cash flows are steady. Others, like technology startups, rely more on equity because their revenues are less predictable. Companies aim for an 'optimal capital structure' that lowers costs while keeping risk manageable.",
+    flashcards: [
+      {
+        term: "Capital Structure",
+        definition: "Capital structure is the combination of debt and equity a company uses to fund itself. It shows how a firm balances borrowing with ownership. For example, a company may be 60% equity and 40% debt."
+      },
+      {
+        term: "Leverage",
+        definition: "Leverage is the extent to which a company uses debt. High leverage can boost profits in good times but magnify losses in bad times. For instance, airlines often use high leverage, which makes them vulnerable during recessions."
+      },
+      {
+        term: "Optimal Capital Structure",
+        definition: "This is the mix of debt and equity that minimizes costs and maximizes firm value. It balances the benefits of debt with the risks of too much borrowing. For example, a retail company may find 50/50 debt-equity is optimal."
+      },
+      {
+        term: "Financial Risk",
+        definition: "Financial risk is the danger of not meeting debt payments. Companies with unpredictable cash flows face higher financial risk if they use too much debt. For example, a startup with no steady income has high financial risk if it borrows heavily."
+      },
+      {
+        term: "Trade-Off Theory",
+        definition: "This theory explains that companies balance the benefits of debt (like tax savings) against its costs (like bankruptcy risk). For instance, Google may use some debt for tax benefits but rely on equity to avoid excessive risk."
+      }
+    ],
+    realLifeExample: "A hotel chain finances its expansion with 70% debt and 30% equity. When business is booming, leverage increases profits because debt is cheaper than equity. But during COVID-19, travel collapsed, and the company struggled to repay loans. This shows both the upside and downside of debt-heavy capital structures.",
+    miniGames: [
+      {
+        name: "Leverage Ladder",
+        description: "Players adjust a debt/equity slider to see how profits, costs, and risks change.",
+        learningGoal: "Understand the trade-offs of leverage.",
+        completionSystem: "Points for finding the balance with lowest risk and best value.",
+        keyTerms: ["Leverage", "Capital Structure", "Financial Risk"]
+      },
+      {
+        name: "Risk Scenario",
+        description: "Players face scenarios (economic boom, recession, crisis) and choose whether high or low leverage is better.",
+        learningGoal: "Connect leverage decisions with real-world conditions.",
+        completionSystem: "Bronze = some correct, Silver = most correct, Gold = all correct.",
+        keyTerms: ["Leverage", "Trade-Off Theory"]
+      }
+    ],
+    quiz: [
+      {
+        question: "What is capital structure?",
+        answer: "Capital structure is the combination of debt and equity a company uses to fund itself, showing how a firm balances borrowing with ownership."
+      },
+      {
+        question: "In Leverage Ladder, what happens when leverage is too high?",
+        answer: "When leverage is too high, financial risk increases significantly, making the company vulnerable to bankruptcy if it cannot meet debt payments."
+      },
+      {
+        question: "What is the benefit of using debt?",
+        answer: "The main benefit of debt is that it's usually cheaper than equity because interest is tax-deductible, and debt doesn't dilute ownership."
+      },
+      {
+        question: "In Risk Scenario, why is high leverage dangerous during a recession?",
+        answer: "High leverage is dangerous during recessions because revenues may fall while debt payments remain fixed, increasing bankruptcy risk."
+      },
+      {
+        question: "In the hotel example, how did COVID-19 highlight the risks of leverage?",
+        answer: "COVID-19 caused travel to collapse, reducing hotel revenues while debt payments remained the same, showing how leverage magnifies losses during crises."
+      }
+    ],
+    takeHomeActivity: "Pick a company you know (like Starbucks or Ford). Research if it uses more debt or equity. Write 5–6 sentences explaining whether you think its structure is risky or stable."
+  },
+  {
+    id: 7,
+    title: "Dividends & Corporate Decisions",
+    description: "Understand how companies decide what to do with their profits",
+    overview: "Once companies make profits, they must decide what to do with them. They can reinvest in the business, pay down debt, or return money to shareholders. Dividends are regular payments to shareholders, while stock buybacks reduce the number of shares and often raise share value. Some companies, especially in tech, reinvest most profits into growth, while mature companies pay higher dividends. These decisions affect shareholder satisfaction and company growth strategy, tying together all parts of corporate finance.",
+    flashcards: [
+      {
+        term: "Dividends",
+        definition: "Dividends are payments companies make to shareholders from profits. They are a way of sharing earnings. For example, Coca-Cola pays steady dividends to investors."
+      },
+      {
+        term: "Retained Earnings",
+        definition: "Retained earnings are profits a company keeps instead of paying out. They are used for reinvestment in projects or future growth. For example, Amazon often reinvests its profits rather than paying dividends."
+      },
+      {
+        term: "Stock Buyback",
+        definition: "A stock buyback happens when a company repurchases its own shares from the market. This reduces supply and often increases the stock price. For example, Apple regularly buys back billions in stock."
+      },
+      {
+        term: "Payout Ratio",
+        definition: "The payout ratio is the percentage of profits given to shareholders as dividends. A high ratio means most profits are paid out; a low one means more reinvestment. For instance, a utility company may have a 70% payout ratio."
+      },
+      {
+        term: "Reinvestment",
+        definition: "Reinvestment means putting profits back into the business to grow. It could fund R&D, marketing, or acquisitions. For example, Google reinvests heavily into new technologies."
+      }
+    ],
+    realLifeExample: "Apple makes tens of billions in profit each year. Instead of paying it all out, the company reinvests in new products, buys back stock, and still pays shareholders regular dividends. This mix keeps investors happy while ensuring long-term growth. It shows how dividend policy, reinvestment, and buybacks are all strategic decisions in corporate finance.",
+    miniGames: [
+      {
+        name: "Profit Choice",
+        description: "Players decide what to do with profits (dividends, buybacks, reinvestment, debt repayment). They see how investors react.",
+        learningGoal: "Learn trade-offs in profit distribution.",
+        completionSystem: "Bronze = poor choices, Silver = balanced, Gold = optimal mix.",
+        keyTerms: ["Dividends", "Stock Buyback", "Retained Earnings"]
+      },
+      {
+        name: "Dividend Dilemma",
+        description: "Players are given company profiles (fast-growing tech vs stable utility) and must choose dividend or reinvestment policies.",
+        learningGoal: "Match payout strategies with company types.",
+        completionSystem: "Points based on correct matches.",
+        keyTerms: ["Payout Ratio", "Reinvestment"]
+      }
+    ],
+    quiz: [
+      {
+        question: "What are dividends?",
+        answer: "Dividends are payments companies make to shareholders from profits as a way of sharing earnings with investors."
+      },
+      {
+        question: "In Profit Choice, why might investors like buybacks?",
+        answer: "Investors like buybacks because they reduce the number of shares outstanding, which often increases the stock price and provides returns without taxable dividend income."
+      },
+      {
+        question: "What are retained earnings used for?",
+        answer: "Retained earnings are used for reinvestment in projects, future growth, R&D, marketing, acquisitions, or paying down debt."
+      },
+      {
+        question: "In Dividend Dilemma, which company type usually pays higher dividends?",
+        answer: "Stable, mature companies (like utilities) usually pay higher dividends, while fast-growing tech companies typically reinvest most profits."
+      },
+      {
+        question: "In the Apple example, how does the company balance reinvestment and shareholder rewards?",
+        answer: "Apple reinvests in new products, buys back stock to increase share value, and pays regular dividends, creating a balanced approach that satisfies different investor preferences."
+      }
+    ],
+    takeHomeActivity: "Pick a company you admire. Research whether it pays dividends, buys back stock, or reinvests profits. Write a 6–7 sentence reflection on whether you agree with their strategy and why."
   }
 ];
