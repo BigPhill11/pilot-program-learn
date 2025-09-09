@@ -19,8 +19,25 @@ interface CorporateFinanceMiniGameProps {
 
 const CorporateFinanceMiniGame: React.FC<CorporateFinanceMiniGameProps> = ({ miniGames, levelId }) => {
   const [selectedGame, setSelectedGame] = useState<number>(0);
-  const [gameState, setGameState] = useState<any>({});
   const [score, setScore] = useState(0);
+  
+  // Debt vs Equity Game State
+  const [debtEquityScenario, setDebtEquityScenario] = useState(0);
+  const [debtEquityAnswers, setDebtEquityAnswers] = useState<string[]>([]);
+  
+  // Finance Detective Game State
+  const [financeDetectiveStory, setFinanceDetectiveStory] = useState(0);
+  const [financeDetectiveAnswers, setFinanceDetectiveAnswers] = useState<string[]>([]);
+  const [showExplanations, setShowExplanations] = useState(false);
+  
+  // Sort Money Game State
+  const [draggedItem, setDraggedItem] = useState<any>(null);
+  const [sorted, setSorted] = useState<Record<string, any[]>>({});
+  
+  // Profit Puzzle Game State
+  const [profitScenario, setProfitScenario] = useState(0);
+  const [userAnswer, setUserAnswer] = useState('');
+  const [profitResults, setProfitResults] = useState<boolean[]>([]);
 
   const currentGame = miniGames[selectedGame];
 
@@ -46,15 +63,12 @@ const CorporateFinanceMiniGame: React.FC<CorporateFinanceMiniGameProps> = ({ min
       { text: "Firm gets a business loan", answer: "debt", type: "debt" }
     ];
 
-    const [currentScenario, setCurrentScenario] = useState(0);
-    const [userAnswers, setUserAnswers] = useState<string[]>([]);
-
     const handleAnswer = (answer: string) => {
-      const newAnswers = [...userAnswers, answer];
-      setUserAnswers(newAnswers);
+      const newAnswers = [...debtEquityAnswers, answer];
+      setDebtEquityAnswers(newAnswers);
       
-      if (currentScenario < scenarios.length - 1) {
-        setCurrentScenario(currentScenario + 1);
+      if (debtEquityScenario < scenarios.length - 1) {
+        setDebtEquityScenario(debtEquityScenario + 1);
       } else {
         const correct = newAnswers.filter((ans, idx) => ans === scenarios[idx].type).length;
         setScore(correct);
@@ -62,12 +76,12 @@ const CorporateFinanceMiniGame: React.FC<CorporateFinanceMiniGameProps> = ({ min
     };
 
     const reset = () => {
-      setCurrentScenario(0);
-      setUserAnswers([]);
+      setDebtEquityScenario(0);
+      setDebtEquityAnswers([]);
       setScore(0);
     };
 
-    if (userAnswers.length === scenarios.length) {
+    if (debtEquityAnswers.length === scenarios.length) {
       return (
         <div className="space-y-4">
           <div className="text-center">
@@ -88,7 +102,7 @@ const CorporateFinanceMiniGame: React.FC<CorporateFinanceMiniGameProps> = ({ min
     return (
       <div className="space-y-4">
         <div className="text-center">
-          <p className="text-lg mb-4">{scenarios[currentScenario].text}</p>
+          <p className="text-lg mb-4">{scenarios[debtEquityScenario].text}</p>
           <p className="text-sm text-gray-600 mb-4">Is this debt or equity?</p>
           <div className="flex gap-4 justify-center">
             <Button 
@@ -106,7 +120,7 @@ const CorporateFinanceMiniGame: React.FC<CorporateFinanceMiniGameProps> = ({ min
           </div>
         </div>
         <div className="text-center text-sm text-gray-500">
-          Question {currentScenario + 1} of {scenarios.length}
+          Question {debtEquityScenario + 1} of {scenarios.length}
         </div>
       </div>
     );
@@ -131,16 +145,12 @@ const CorporateFinanceMiniGame: React.FC<CorporateFinanceMiniGameProps> = ({ min
       }
     ];
 
-    const [currentStory, setCurrentStory] = useState(0);
-    const [userAnswers, setUserAnswers] = useState<string[]>([]);
-    const [showExplanations, setShowExplanations] = useState(false);
-
     const handleAnswer = (answer: string) => {
-      const newAnswers = [...userAnswers, answer];
-      setUserAnswers(newAnswers);
+      const newAnswers = [...financeDetectiveAnswers, answer];
+      setFinanceDetectiveAnswers(newAnswers);
       
-      if (currentStory < stories.length - 1) {
-        setCurrentStory(currentStory + 1);
+      if (financeDetectiveStory < stories.length - 1) {
+        setFinanceDetectiveStory(financeDetectiveStory + 1);
       } else {
         setShowExplanations(true);
         const correct = newAnswers.filter((ans, idx) => ans === stories[idx].answer).length;
@@ -149,8 +159,8 @@ const CorporateFinanceMiniGame: React.FC<CorporateFinanceMiniGameProps> = ({ min
     };
 
     const reset = () => {
-      setCurrentStory(0);
-      setUserAnswers([]);
+      setFinanceDetectiveStory(0);
+      setFinanceDetectiveAnswers([]);
       setShowExplanations(false);
       setScore(0);
     };
@@ -165,7 +175,7 @@ const CorporateFinanceMiniGame: React.FC<CorporateFinanceMiniGameProps> = ({ min
           {stories.map((story, idx) => (
             <div key={idx} className="p-4 border rounded-lg bg-gray-50 dark:bg-gray-800">
               <p className="font-medium mb-2">{story.text}</p>
-              <p className="text-sm text-gray-600 mb-1">Your answer: {userAnswers[idx]}</p>
+              <p className="text-sm text-gray-600 mb-1">Your answer: {financeDetectiveAnswers[idx]}</p>
               <p className="text-sm text-green-600">Correct: {story.answer}</p>
               <p className="text-sm text-blue-600">{story.explanation}</p>
             </div>
@@ -181,7 +191,7 @@ const CorporateFinanceMiniGame: React.FC<CorporateFinanceMiniGameProps> = ({ min
     return (
       <div className="space-y-4">
         <div className="text-center">
-          <p className="text-lg mb-4">{stories[currentStory].text}</p>
+          <p className="text-lg mb-4">{stories[financeDetectiveStory].text}</p>
           <p className="text-sm text-gray-600 mb-4">What financing method would you recommend?</p>
           <div className="flex gap-4 justify-center">
             <Button 
@@ -215,10 +225,13 @@ const CorporateFinanceMiniGame: React.FC<CorporateFinanceMiniGameProps> = ({ min
     ];
 
     const categories = ["Asset", "Liability", "Revenue", "Expense"];
-    const [draggedItem, setDraggedItem] = useState<any>(null);
-    const [sorted, setSorted] = useState<Record<string, any[]>>({
-      Asset: [], Liability: [], Revenue: [], Expense: [], Unsorted: [...items]
-    });
+    
+    // Initialize sorted state if empty
+    if (Object.keys(sorted).length === 0) {
+      setSorted({
+        Asset: [], Liability: [], Revenue: [], Expense: [], Unsorted: [...items]
+      });
+    }
 
     const handleDrop = (category: string) => {
       if (draggedItem) {
@@ -313,17 +326,13 @@ const CorporateFinanceMiniGame: React.FC<CorporateFinanceMiniGameProps> = ({ min
       { revenue: 25000, expenses: 35000, answer: -10000 }
     ];
 
-    const [currentScenario, setCurrentScenario] = useState(0);
-    const [userAnswer, setUserAnswer] = useState('');
-    const [results, setResults] = useState<boolean[]>([]);
-
     const checkAnswer = () => {
-      const correct = parseInt(userAnswer) === scenarios[currentScenario].answer;
-      const newResults = [...results, correct];
-      setResults(newResults);
+      const correct = parseInt(userAnswer) === scenarios[profitScenario].answer;
+      const newResults = [...profitResults, correct];
+      setProfitResults(newResults);
       
-      if (currentScenario < scenarios.length - 1) {
-        setCurrentScenario(currentScenario + 1);
+      if (profitScenario < scenarios.length - 1) {
+        setProfitScenario(profitScenario + 1);
         setUserAnswer('');
       } else {
         setScore(newResults.filter(r => r).length);
@@ -331,13 +340,13 @@ const CorporateFinanceMiniGame: React.FC<CorporateFinanceMiniGameProps> = ({ min
     };
 
     const reset = () => {
-      setCurrentScenario(0);
+      setProfitScenario(0);
       setUserAnswer('');
-      setResults([]);
+      setProfitResults([]);
       setScore(0);
     };
 
-    if (results.length === scenarios.length) {
+    if (profitResults.length === scenarios.length) {
       return (
         <div className="space-y-4">
           <div className="text-center">
@@ -352,7 +361,7 @@ const CorporateFinanceMiniGame: React.FC<CorporateFinanceMiniGameProps> = ({ min
       );
     }
 
-    const current = scenarios[currentScenario];
+    const current = scenarios[profitScenario];
     return (
       <div className="space-y-4">
         <div className="text-center">
@@ -379,7 +388,7 @@ const CorporateFinanceMiniGame: React.FC<CorporateFinanceMiniGameProps> = ({ min
           </Button>
         </div>
         <div className="text-center text-sm text-gray-500">
-          Scenario {currentScenario + 1} of {scenarios.length}
+          Scenario {profitScenario + 1} of {scenarios.length}
         </div>
       </div>
     );
