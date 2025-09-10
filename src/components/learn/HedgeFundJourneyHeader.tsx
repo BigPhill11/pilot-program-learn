@@ -1,7 +1,5 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { TrendingUp, Users, DollarSign } from 'lucide-react';
+import { TrendingUp } from 'lucide-react';
 
 interface HedgeFundJourneyHeaderProps {
   completedLevels: number;
@@ -12,84 +10,94 @@ const HedgeFundJourneyHeader: React.FC<HedgeFundJourneyHeaderProps> = ({
   completedLevels,
   totalLevels
 }) => {
-  const progressPercentage = (completedLevels / totalLevels) * 100;
+  const progressPercentage = Math.round((completedLevels / totalLevels) * 100);
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="text-center space-y-4">
-        <div className="flex items-center justify-center gap-2">
-          <TrendingUp className="h-8 w-8 text-blue-600" />
-          <h1 className="text-4xl font-bold text-blue-600">Hedge Fund Journey</h1>
+        <div className="flex items-center justify-center gap-3">
+          <div className="w-12 h-12 rounded-full bg-orange-500 flex items-center justify-center">
+            <TrendingUp className="h-6 w-6 text-white" />
+          </div>
+          <h1 className="text-4xl font-bold text-orange-600">Hedge Fund Journey</h1>
         </div>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Master the world of hedge funds through this comprehensive 3-level journey. 
-          Learn about alternative investments, strategies, and the exclusive world of hedge fund investing.
+        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+          Master how hedge funds operate, generate returns, and create value for sophisticated investors. 
+          Learn the advanced strategies that drive alternative investment success.
         </p>
       </div>
 
-      <Card className="border-blue-200 bg-blue-50/50">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <DollarSign className="h-5 w-5 text-blue-500" />
-            Your Progress
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex justify-between items-center">
-            <span className="text-sm font-medium">
-              {completedLevels} of {totalLevels} levels completed
-            </span>
-            <span className="text-sm text-blue-600 font-semibold">
-              {progressPercentage.toFixed(0)}%
-            </span>
+      {/* Progress Section */}
+      <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-lg border border-orange-200 p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <TrendingUp className="h-5 w-5 text-orange-600" />
+          <h2 className="text-xl font-bold text-orange-800">Your Progress</h2>
+          <span className="ml-auto text-sm text-orange-600 font-semibold">
+            {completedLevels}/{totalLevels} Levels
+          </span>
+        </div>
+        
+        <div className="mb-4">
+          <div className="text-sm text-orange-700 mb-2">Journey Progress</div>
+          <div className="w-full bg-orange-200 rounded-full h-3">
+            <div 
+              className="bg-gradient-to-r from-orange-500 to-red-500 h-3 rounded-full transition-all duration-500"
+              style={{ width: `${progressPercentage}%` }}
+            />
           </div>
-          <Progress value={progressPercentage} className="h-3" />
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-            <div className="text-center space-y-2">
-              <div className="text-2xl font-bold text-blue-600">{completedLevels}</div>
-              <div className="text-sm text-muted-foreground">Levels Completed</div>
-            </div>
-            <div className="text-center space-y-2">
-              <div className="text-2xl font-bold text-green-600">{completedLevels * 5}</div>
-              <div className="text-sm text-muted-foreground">Terms Learned</div>
-            </div>
-            <div className="text-center space-y-2">
-              <div className="text-2xl font-bold text-purple-600">{completedLevels * 15}</div>
-              <div className="text-sm text-muted-foreground">XP Earned</div>
-            </div>
+          <div className="text-right text-sm text-orange-600 font-semibold mt-1">
+            {progressPercentage}%
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="text-center">
-          <CardContent className="pt-6">
-            <TrendingUp className="h-8 w-8 text-blue-500 mx-auto mb-2" />
-            <h3 className="font-semibold">Advanced Strategies</h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              Learn complex investment approaches
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="text-center">
-          <CardContent className="pt-6">
-            <Users className="h-8 w-8 text-green-500 mx-auto mb-2" />
-            <h3 className="font-semibold">Exclusive Access</h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              Understand who can invest and why
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="text-center">
-          <CardContent className="pt-6">
-            <DollarSign className="h-8 w-8 text-purple-500 mx-auto mb-2" />
-            <h3 className="font-semibold">Fee Structure</h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              Master the "2 and 20" fee model
-            </p>
-          </CardContent>
-        </Card>
+        <div className="grid grid-cols-3 gap-6">
+          <div className="text-center">
+            <div className="text-3xl font-bold text-orange-600">{completedLevels}</div>
+            <div className="text-sm text-orange-700">Completed Levels</div>
+          </div>
+          <div className="text-center">
+            <div className="text-3xl font-bold text-orange-600">{totalLevels}</div>
+            <div className="text-sm text-orange-700">Total Levels</div>
+          </div>
+          <div className="text-center">
+            <div className="text-3xl font-bold text-orange-600">{progressPercentage}%</div>
+            <div className="text-sm text-orange-700">Journey Progress</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Learning Categories */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-gradient-to-br from-orange-100 to-orange-50 rounded-lg p-6 border border-orange-200">
+          <div className="w-10 h-10 rounded-lg bg-orange-500 flex items-center justify-center mb-4">
+            <TrendingUp className="h-5 w-5 text-white" />
+          </div>
+          <h3 className="font-bold text-orange-800 text-lg mb-2">Hedge Fund Fundamentals</h3>
+          <p className="text-sm text-orange-700">
+            Master hedge fund basics, structure, and regulatory environment
+          </p>
+        </div>
+        
+        <div className="bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-lg p-6 border border-yellow-200">
+          <div className="w-10 h-10 rounded-lg bg-yellow-500 flex items-center justify-center mb-4">
+            <TrendingUp className="h-5 w-5 text-white" />
+          </div>
+          <h3 className="font-bold text-yellow-800 text-lg mb-2">Investment Strategies</h3>
+          <p className="text-sm text-yellow-700">
+            Understand complex trading strategies and risk management
+          </p>
+        </div>
+        
+        <div className="bg-gradient-to-br from-green-100 to-green-50 rounded-lg p-6 border border-green-200">
+          <div className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center mb-4">
+            <TrendingUp className="h-5 w-5 text-white" />
+          </div>
+          <h3 className="font-bold text-green-800 text-lg mb-2">Fee Structures & Investors</h3>
+          <p className="text-sm text-green-700">
+            Grasp fee models and sophisticated investor requirements
+          </p>
+        </div>
       </div>
     </div>
   );

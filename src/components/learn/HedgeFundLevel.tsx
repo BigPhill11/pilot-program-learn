@@ -5,7 +5,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, Lock, Lightbulb, BookOpen, Gamepad2, Users, Brain, PenTool } from 'lucide-react';
 import HedgeFundFlashcard from './HedgeFundFlashcard';
-import InteractiveQuiz from '@/components/InteractiveQuiz';
+import HedgeFundMiniGame from './HedgeFundMiniGame';
+import HedgeFundQuizWithFeedback from './HedgeFundQuizWithFeedback';
 
 interface HedgeFundLevelProps {
   level: any;
@@ -25,6 +26,7 @@ const HedgeFundLevel: React.FC<HedgeFundLevelProps> = ({
   const [activeTab, setActiveTab] = useState('overview');
   const [completedQuiz, setCompletedQuiz] = useState(false);
   const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
+  const [masteredTerms, setMasteredTerms] = useState<Set<string>>(new Set());
 
   if (!isUnlocked) {
     return (
@@ -59,7 +61,7 @@ const HedgeFundLevel: React.FC<HedgeFundLevelProps> = ({
   return (
     <div className="space-y-6">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <BookOpen className="h-4 w-4" />
             Overview
@@ -75,6 +77,10 @@ const HedgeFundLevel: React.FC<HedgeFundLevelProps> = ({
           <TabsTrigger value="example" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
             Real Example
+          </TabsTrigger>
+          <TabsTrigger value="miniGames" className="flex items-center gap-2">
+            <Gamepad2 className="h-4 w-4" />
+            Mini Games
           </TabsTrigger>
           <TabsTrigger value="quiz" className="flex items-center gap-2">
             <Brain className="h-4 w-4" />
@@ -128,12 +134,36 @@ const HedgeFundLevel: React.FC<HedgeFundLevelProps> = ({
               </CardTitle>
             </CardHeader>
             <CardContent>
+              <div className="mb-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Mastered Terms</span>
+                  <Badge variant="outline">
+                    {masteredTerms.size}/{level.flashcards.length}
+                  </Badge>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                  <div 
+                    className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${(masteredTerms.size / level.flashcards.length) * 100}%` }}
+                  />
+                </div>
+              </div>
               <div className="grid gap-4">
                 {level.flashcards.map((flashcard: any, index: number) => (
                   <HedgeFundFlashcard
                     key={index}
                     term={flashcard.term}
                     definition={flashcard.definition}
+                    isMastered={masteredTerms.has(flashcard.term)}
+                    onMastered={() => {
+                      const newMastered = new Set(masteredTerms);
+                      if (masteredTerms.has(flashcard.term)) {
+                        newMastered.delete(flashcard.term);
+                      } else {
+                        newMastered.add(flashcard.term);
+                      }
+                      setMasteredTerms(newMastered);
+                    }}
                   />
                 ))}
               </div>
@@ -155,27 +185,36 @@ const HedgeFundLevel: React.FC<HedgeFundLevelProps> = ({
               </p>
             </CardContent>
           </Card>
+        </TabsContent>
 
-          {level.miniGames && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Gamepad2 className="h-5 w-5 text-indigo-500" />
-                  Mini Games
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {level.miniGames.map((game: any, index: number) => (
-                  <div key={index} className="border rounded-lg p-4">
-                    <h4 className="font-semibold text-lg mb-2">{game.name}</h4>
-                    <p className="text-sm text-muted-foreground mb-2">{game.description}</p>
-                    <p className="text-sm font-medium mb-2">Learning Goal: {game.learningGoal}</p>
-                    <p className="text-sm text-blue-600">{game.completionSystem}</p>
+        <TabsContent value="miniGames" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Gamepad2 className="h-5 w-5 text-indigo-500" />
+                Mini Games
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {level.miniGames?.map((game: any, index: number) => (
+                <div key={index} className="border rounded-lg p-6 bg-gradient-to-r from-indigo-50 to-purple-50">
+                  <h4 className="font-bold text-xl mb-3 text-indigo-700">{game.name}</h4>
+                  <p className="text-muted-foreground mb-3 leading-relaxed">{game.description}</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <p className="text-sm font-semibold text-indigo-600 mb-1">Learning Goal:</p>
+                      <p className="text-sm text-muted-foreground">{game.learningGoal}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-green-600 mb-1">Completion:</p>
+                      <p className="text-sm text-muted-foreground">{game.completionSystem}</p>
+                    </div>
                   </div>
-                ))}
-              </CardContent>
-            </Card>
-          )}
+                  <HedgeFundMiniGame game={game} levelId={level.id} />
+                </div>
+              ))}
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="quiz" className="space-y-6">
@@ -193,41 +232,16 @@ const HedgeFundLevel: React.FC<HedgeFundLevelProps> = ({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {!completedQuiz ? (
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">
-                      Question {currentQuizIndex + 1} of {level.quiz.length}
-                    </span>
-                    <div className="w-32 bg-gray-200 rounded-full h-2">
-                      <div 
-                        className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${((currentQuizIndex + 1) / level.quiz.length) * 100}%` }}
-                      />
-                    </div>
-                  </div>
-                  <InteractiveQuiz
-                    topicId={`hedge-fund-level-${level.id}-quiz-${currentQuizIndex}`}
-                    question={level.quiz[currentQuizIndex].question}
-                    options={level.quiz[currentQuizIndex].options}
-                    correctAnswerIndex={level.quiz[currentQuizIndex].correctAnswerIndex}
-                    feedbackForIncorrect={level.quiz[currentQuizIndex].feedbackForIncorrect}
-                    onQuizComplete={handleQuizComplete}
-                    isCompleted={false}
-                  />
-                </div>
-              ) : (
-                <div className="text-center space-y-4">
-                  <CheckCircle className="h-12 w-12 text-green-500 mx-auto" />
-                  <h3 className="text-xl font-semibold">Quiz Complete!</h3>
-                  <p className="text-muted-foreground">
-                    Great job! You've answered all {level.quiz.length} questions.
-                  </p>
-                  <Button variant="outline" onClick={resetQuiz}>
-                    Retake Quiz
-                  </Button>
-                </div>
-              )}
+              <HedgeFundQuizWithFeedback
+                questions={level.quiz}
+                onQuizComplete={(allCorrect) => {
+                  setCompletedQuiz(true);
+                  if (allCorrect) {
+                    // Bonus: only mark as complete if all answers are correct
+                    onQuizComplete(true);
+                  }
+                }}
+              />
             </CardContent>
           </Card>
         </TabsContent>
