@@ -14,6 +14,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import AssetManagementJourney from './AssetManagementJourney';
 import WealthManagementJourney from './WealthManagementJourney';
 import CorporateFinanceJourney from './CorporateFinanceJourney';
+import HedgeFundJourney from './HedgeFundJourney';
 
 const CareersInFinanceTab = () => {
     const [selectedCareer, setSelectedCareer] = useState<FinanceCareerData | null>(null);
@@ -50,6 +51,10 @@ const CareersInFinanceTab = () => {
       if (selectedCareer.id === 'corporate-finance') {
         return <CorporateFinanceJourney onBack={() => setSelectedCareer(null)} />;
       }
+
+      if (selectedCareer.id === 'hedge-funds') {
+        return <HedgeFundJourney onBack={() => setSelectedCareer(null)} />;
+      }
       
       // Investment Banking - show divisions selection
       if (selectedCareer.id === 'investment-banking') {
@@ -84,7 +89,7 @@ const CareersInFinanceTab = () => {
                         className="flex flex-col hover:shadow-lg hover:border-primary transition-all cursor-pointer group h-full relative"
                         onClick={() => setSelectedCareer(career)}
                     >
-                        {(['investment-banking', 'management-consulting', 'private-equity', 'venture-capital', 'asset-management', 'corporate-finance'].includes(career.id) || career.name === 'Wealth Management') && (
+                        {(['investment-banking', 'management-consulting', 'private-equity', 'venture-capital', 'asset-management', 'corporate-finance', 'hedge-funds'].includes(career.id) || career.name === 'Wealth Management') && (
                             <div className="absolute top-2 right-2">
                                 <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white">
                                     ✨ Interactive
@@ -101,8 +106,8 @@ const CareersInFinanceTab = () => {
                                 {career.name}
                             </CardTitle>
                             <Badge variant="outline" className="mx-auto block w-fit mb-4">
-                                {career.id === 'investment-banking' ? 'IB Divisions Available' : 
-                                 (['management-consulting', 'private-equity', 'venture-capital', 'asset-management', 'corporate-finance'].includes(career.id) || career.name === 'Wealth Management') ? 'Interactive Journey' : '7-Level Journey'}
+                                 {career.id === 'investment-banking' ? 'IB Divisions Available' : 
+                                 (['management-consulting', 'private-equity', 'venture-capital', 'asset-management', 'corporate-finance', 'hedge-funds'].includes(career.id) || career.name === 'Wealth Management') ? 'Interactive Journey' : '7-Level Journey'}
                             </Badge>
                             
                             <CardDescription className={`${isMobile ? 'text-xs' : 'text-sm'} leading-relaxed`}>
@@ -117,7 +122,7 @@ const CareersInFinanceTab = () => {
                                 </div>
                             )}
                             
-                            {(['management-consulting', 'private-equity', 'venture-capital', 'asset-management', 'corporate-finance'].includes(career.id) || career.name === 'Wealth Management') && (
+                            {(['management-consulting', 'private-equity', 'venture-capital', 'asset-management', 'corporate-finance', 'hedge-funds'].includes(career.id) || career.name === 'Wealth Management') && (
                                 <div className="mt-3 p-2 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border border-orange-200">
                                     <p className="text-xs text-orange-700 font-medium">
                                         🎮 Now with interactive games, quizzes, and real-world examples!
