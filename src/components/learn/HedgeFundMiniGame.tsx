@@ -149,6 +149,240 @@ const HedgeFundMiniGame: React.FC<HedgeFundMiniGameProps> = ({ game, levelId }) 
           ]
         };
       }
+    } else if (levelId === 3) {
+      if (game.name === "Fee Calculator") {
+        return {
+          questions: [
+            {
+              prompt: "Fund has $100M assets, earns $20M profit. Calculate '2 and 20' fees:",
+              options: ["$2M management + $4M performance = $6M total", "$4M management + $2M performance = $6M total", "$20M management + $4M performance = $24M total", "$2M management + $20M performance = $22M total"],
+              correct: "$2M management + $4M performance = $6M total",
+              explanation: "Management fee: 2% of $100M = $2M. Performance fee: 20% of $20M profit = $4M. Total = $6M."
+            },
+            {
+              prompt: "Fund has $500M assets, loses $50M. What fees are charged?",
+              options: ["$10M management fee only", "$10M performance fee only", "No fees charged", "$60M total fees"],
+              correct: "$10M management fee only",
+              explanation: "Management fees (2% of assets = $10M) are charged regardless of performance. No performance fees on losses."
+            },
+            {
+              prompt: "Fund charges '3 and 30' on $200M with $40M profit. Total fees?",
+              options: ["$6M + $12M = $18M", "$40M + $12M = $52M", "$6M + $40M = $46M", "$3M + $30M = $33M"],
+              correct: "$6M + $12M = $18M",
+              explanation: "Management: 3% of $200M = $6M. Performance: 30% of $40M = $12M. Total = $18M."
+            }
+          ]
+        };
+      } else if (game.name === "Investor Match") {
+        return {
+          questions: [
+            {
+              prompt: "Which investor CAN invest in hedge funds?",
+              options: ["College student with $5,000", "Teacher with $50,000 401k", "University endowment with $1B", "Retail investor with $100,000"],
+              correct: "University endowment with $1B",
+              explanation: "University endowments are institutional investors with sufficient assets and sophistication to invest in hedge funds."
+            },
+            {
+              prompt: "Why can't most retail investors access hedge funds?",
+              options: ["Hedge funds don't want their money", "Minimum investments too high + accreditation requirements", "Government forbids all retail investment", "Hedge funds only invest in bonds"],
+              correct: "Minimum investments too high + accreditation requirements",
+              explanation: "Hedge funds require high minimums (often $1M+) and investors must be 'accredited' with sufficient wealth/income."
+            }
+          ]
+        };
+      }
+    } else if (levelId === 4) {
+      if (game.name === "Risk Match-Up") {
+        return {
+          questions: [
+            {
+              prompt: "A hedge fund can't sell its investments quickly without huge losses. What risk is this?",
+              options: ["Market Risk", "Liquidity Risk", "Leverage Risk", "Operational Risk"],
+              correct: "Liquidity Risk",
+              explanation: "Liquidity risk occurs when you can't sell investments quickly without significant price reductions."
+            },
+            {
+              prompt: "A fund borrowed $900M to invest $100M of its own money. Markets drop 2%. What's the main risk?",
+              options: ["Market Risk", "Liquidity Risk", "Leverage Risk", "Systemic Risk"],
+              correct: "Leverage Risk",
+              explanation: "With 10:1 leverage, a 2% market drop becomes a 20% loss on the fund's own money - that's leverage risk."
+            },
+            {
+              prompt: "A massive hedge fund collapse starts affecting banks and other investors. What risk is this?",
+              options: ["Market Risk", "Liquidity Risk", "Operational Risk", "Systemic Risk"],
+              correct: "Systemic Risk",
+              explanation: "Systemic risk is when problems at one large institution spread throughout the financial system."
+            }
+          ]
+        };
+      } else if (game.name === "Leverage Danger") {
+        return {
+          questions: [
+            {
+              prompt: "Market is stable. How much leverage should a conservative fund use?",
+              options: ["10:1 leverage (very high)", "3:1 leverage (moderate)", "1:1 leverage (no borrowing)", "20:1 leverage (extreme)"],
+              correct: "3:1 leverage (moderate)",
+              explanation: "Even in stable markets, conservative funds use moderate leverage to limit downside risk."
+            },
+            {
+              prompt: "Markets are very volatile and unpredictable. Best leverage choice?",
+              options: ["Increase leverage to 15:1", "Use 1:1 leverage (no borrowing)", "Keep normal 5:1 leverage", "Use maximum 25:1 leverage"],
+              correct: "Use 1:1 leverage (no borrowing)",
+              explanation: "In volatile markets, smart funds reduce or eliminate leverage to avoid catastrophic losses."
+            }
+          ]
+        };
+      }
+    } else if (levelId === 5) {
+      if (game.name === "Rule or Freedom") {
+        return {
+          questions: [
+            {
+              prompt: "Can hedge funds accept investments from college students with $1,000?",
+              options: ["Allowed - anyone can invest", "Restricted - only accredited investors", "Allowed with special permission", "Restricted - minimum $10M only"],
+              correct: "Restricted - only accredited investors",
+              explanation: "Hedge funds can only accept investments from accredited investors, which requires significant wealth/income."
+            },
+            {
+              prompt: "Can hedge funds use complex derivatives and short selling?",
+              options: ["Restricted - too risky for funds", "Allowed - hedge funds have strategy freedom", "Allowed only with SEC approval", "Restricted - only banks can do this"],
+              correct: "Allowed - hedge funds have strategy freedom",
+              explanation: "Hedge funds have much more freedom than mutual funds to use complex strategies and instruments."
+            },
+            {
+              prompt: "Must hedge funds publish their holdings daily like mutual funds?",
+              options: ["Yes - same transparency rules", "No - hedge funds can keep strategies secret", "Yes - but only to large investors", "No - they never report anything"],
+              correct: "No - hedge funds can keep strategies secret",
+              explanation: "Hedge funds have much less transparency requirements than mutual funds and can keep their strategies confidential."
+            }
+          ]
+        };
+      } else if (game.name === "Investor Filter") {
+        return {
+          questions: [
+            {
+              prompt: "College student with $5,000 in savings wants to invest. Qualified?",
+              options: ["Yes - meets income requirements", "No - doesn't meet wealth/income requirements", "Yes - age doesn't matter", "No - must be over 25"],
+              correct: "No - doesn't meet wealth/income requirements",
+              explanation: "Accredited investors need $1M+ net worth or $200K+ annual income. A college student typically doesn't qualify."
+            },
+            {
+              prompt: "Harvard University endowment with $50B wants to invest. Qualified?",
+              options: ["No - universities can't invest in hedge funds", "Yes - institutional investors are automatically qualified", "No - must get special government permission", "Yes - but only up to $1M"],
+              correct: "Yes - institutional investors are automatically qualified",
+              explanation: "Large institutions like university endowments automatically qualify as accredited investors."
+            },
+            {
+              prompt: "Doctor earning $500K/year with $800K net worth. Qualified?",
+              options: ["No - net worth too low", "Yes - income exceeds $200K threshold", "No - must have both high income AND $1M net worth", "Yes - doctors get special exemption"],
+              correct: "Yes - income exceeds $200K threshold",
+              explanation: "You can qualify as accredited with either $1M+ net worth OR $200K+ annual income (or $300K+ joint income)."
+            }
+          ]
+        };
+      }
+    } else if (levelId === 6) {
+      if (game.name === "Who Won, Who Lost?") {
+        return {
+          questions: [
+            {
+              prompt: "George Soros in 1992 with the British Pound:",
+              options: ["Major Win", "Major Loss", "Broke Even", "Small Win"],
+              correct: "Major Win",
+              explanation: "Soros made over $1 billion in one day by shorting the British Pound, earning the nickname 'the man who broke the Bank of England.'"
+            },
+            {
+              prompt: "Long-Term Capital Management (LTCM) in 1998:",
+              options: ["Major Win", "Major Loss", "Moderate Success", "Small Loss"],
+              correct: "Major Loss",
+              explanation: "LTCM collapsed due to excessive leverage, losing billions and requiring a government-orchestrated bailout."
+            },
+            {
+              prompt: "John Paulson during the 2007-2008 housing crisis:",
+              options: ["Major Loss", "Major Win", "Moderate Loss", "Broke Even"],
+              correct: "Major Win",
+              explanation: "Paulson made over $15 billion by betting against the U.S. housing market before it collapsed."
+            },
+            {
+              prompt: "Archegos Capital in 2021:",
+              options: ["Record Profits", "Major Loss", "Steady Growth", "Small Win"],
+              correct: "Major Loss",
+              explanation: "Archegos collapsed when its highly leveraged bets on tech stocks failed, causing massive losses for banks too."
+            }
+          ]
+        };
+      } else if (game.name === "Crisis Predictor") {
+        return {
+          questions: [
+            {
+              prompt: "Fund uses 20:1 leverage betting everything on one currency. Likely outcome?",
+              options: ["Steady profits", "High chance of collapse", "Guaranteed success", "Moderate returns"],
+              correct: "High chance of collapse",
+              explanation: "Extreme leverage with no diversification is a recipe for disaster - small moves can wipe out the fund."
+            },
+            {
+              prompt: "Fund diversifies across many strategies with moderate leverage during crisis. Likely outcome?",
+              options: ["Immediate collapse", "Better survival chances", "Guaranteed profits", "Total loss"],
+              correct: "Better survival chances",
+              explanation: "Diversification and moderate leverage help hedge funds survive market crises, though profits aren't guaranteed."
+            }
+          ]
+        };
+      }
+    } else if (levelId === 7) {
+      if (game.name === "Future or Past?") {
+        return {
+          questions: [
+            {
+              prompt: "Classify: AI-powered trading algorithms",
+              options: ["Future Trend", "Past Trend", "Current Standard", "Outdated Technology"],
+              correct: "Future Trend",
+              explanation: "AI and machine learning are increasingly important trends shaping the future of hedge fund trading."
+            },
+            {
+              prompt: "Classify: ESG (Environmental, Social, Governance) investing",
+              options: ["Past Trend", "Future Trend", "Irrelevant Factor", "Government Requirement"],
+              correct: "Future Trend",
+              explanation: "ESG investing is a growing trend as younger investors increasingly care about environmental and social impact."
+            },
+            {
+              prompt: "Classify: Relying only on human stock-picking without technology",
+              options: ["Future Trend", "Current Best Practice", "Past Trend", "Required by Law"],
+              correct: "Past Trend",
+              explanation: "Pure human-driven investing without technology is becoming less competitive as quant and AI methods advance."
+            },
+            {
+              prompt: "Classify: Charging '2 and 20' fees without justification",
+              options: ["Future Trend", "Past Trend", "Industry Standard", "Growing Practice"],
+              correct: "Past Trend",
+              explanation: "High fees without strong performance justification are under pressure from cheaper investment alternatives."
+            }
+          ]
+        };
+      } else if (game.name === "Survival Strategy") {
+        return {
+          questions: [
+            {
+              prompt: "Hedge fund faces competition from cheap index funds. Best strategy?",
+              options: ["Raise fees to seem more exclusive", "Develop AI systems for better performance", "Copy index fund strategies exactly", "Ignore the competition"],
+              correct: "Develop AI systems for better performance",
+              explanation: "To justify higher fees, hedge funds must prove superior performance through technology and innovation."
+            },
+            {
+              prompt: "Young investors care about environmental impact. What should funds do?",
+              options: ["Ignore ESG completely", "Develop ESG investment strategies", "Only invest in oil companies", "Focus purely on profits"],
+              correct: "Develop ESG investment strategies",
+              explanation: "Adapting to investor values by incorporating ESG factors can attract the next generation of wealthy investors."
+            },
+            {
+              prompt: "Robo-advisors offer similar returns for 0.25% fees vs hedge fund's 2% fees. Response?",
+              options: ["Increase fees to 3%", "Prove superior value or reduce fees", "Copy robo-advisor strategies", "Market exclusively to older investors"],
+              correct: "Prove superior value or reduce fees",
+              explanation: "Hedge funds must either demonstrate clear value above cheap alternatives or adjust their fee structure to remain competitive."
+            }
+          ]
+        };
+      }
     }
     
     return { questions: [] };
