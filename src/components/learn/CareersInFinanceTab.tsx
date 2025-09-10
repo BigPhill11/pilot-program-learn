@@ -15,6 +15,7 @@ import AssetManagementJourney from './AssetManagementJourney';
 import WealthManagementJourney from './WealthManagementJourney';
 import CorporateFinanceJourney from './CorporateFinanceJourney';
 import HedgeFundJourney from './HedgeFundJourney';
+import ManagementConsultingJourney from './ManagementConsultingJourney';
 
 const CareersInFinanceTab = () => {
     const [selectedCareer, setSelectedCareer] = useState<FinanceCareerData | null>(null);
