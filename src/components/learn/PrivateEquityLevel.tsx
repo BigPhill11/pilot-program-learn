@@ -162,9 +162,9 @@ const PrivateEquityLevel: React.FC<PrivateEquityLevelProps> = ({
               <div className="space-y-6">
                 <div>
                   <h3 className="text-lg font-semibold mb-3">Phil's Analogy</h3>
-                  <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200">
+                  <Card className="bg-gradient-to-r from-purple-50 to-violet-50 border border-purple-200">
                     <CardContent className="p-4">
-                      <p className="text-sm leading-relaxed text-blue-900">
+                      <p className="text-sm leading-relaxed text-purple-900">
                         {level.content.philsAnalogy}
                       </p>
                     </CardContent>
@@ -174,7 +174,7 @@ const PrivateEquityLevel: React.FC<PrivateEquityLevelProps> = ({
                 <Button 
                   onClick={() => handleSectionComplete('phils-analogy', 5)}
                   disabled={getSectionStatus('phils-analogy') === 'completed'}
-                  className="w-full"
+                  className="w-full bg-gradient-to-r from-purple-500 to-violet-600 hover:from-purple-600 hover:to-violet-700"
                 >
                   {getSectionStatus('phils-analogy') === 'completed' ? (
                     <>
@@ -217,9 +217,9 @@ const PrivateEquityLevel: React.FC<PrivateEquityLevelProps> = ({
               <div className="space-y-6">
                 <div>
                   <h3 className="text-lg font-semibold mb-3">Take-Home Activity</h3>
-                  <Card className="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200">
+                  <Card className="bg-gradient-to-r from-purple-50 to-violet-50 border border-purple-200">
                     <CardContent className="p-4">
-                      <p className="text-sm leading-relaxed text-orange-900">
+                      <p className="text-sm leading-relaxed text-purple-900">
                         {level.content.takeHomeActivity}
                       </p>
                     </CardContent>
@@ -229,7 +229,7 @@ const PrivateEquityLevel: React.FC<PrivateEquityLevelProps> = ({
                 <Button 
                   onClick={() => handleSectionComplete('activity', 15)}
                   disabled={getSectionStatus('activity') === 'completed'}
-                  className="w-full"
+                  className="w-full bg-gradient-to-r from-purple-500 to-violet-600 hover:from-purple-600 hover:to-violet-700"
                 >
                   {getSectionStatus('activity') === 'completed' ? (
                     <>

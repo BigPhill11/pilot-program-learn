@@ -76,7 +76,7 @@ const PrivateEquityFlashcard: React.FC<PrivateEquityFlashcardProps> = ({
 
       <div className="w-full bg-gray-200 rounded-full h-2">
         <div
-          className="bg-primary h-2 rounded-full transition-all duration-500"
+          className="bg-gradient-to-r from-purple-500 to-violet-600 h-2 rounded-full transition-all duration-500"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -86,7 +86,7 @@ const PrivateEquityFlashcard: React.FC<PrivateEquityFlashcardProps> = ({
           <div className="flex-1 flex flex-col justify-center">
             {!isFlipped ? (
               <div>
-                <h4 className="text-xl font-bold mb-4 text-primary">
+                <h4 className="text-xl font-bold mb-4 text-purple-600">
                   {currentCard?.term}
                 </h4>
                 <p className="text-muted-foreground">Click to reveal definition</p>
@@ -133,7 +133,7 @@ const PrivateEquityFlashcard: React.FC<PrivateEquityFlashcardProps> = ({
           <Button
             onClick={handleMastered}
             disabled={masteredCards.includes(currentIndex) || isCompleted}
-            className="bg-green-600 hover:bg-green-700"
+            className="bg-gradient-to-r from-purple-500 to-violet-600 hover:from-purple-600 hover:to-violet-700"
           >
             {masteredCards.includes(currentIndex) ? 'Mastered' : 'Mark as Mastered'}
           </Button>
@@ -150,9 +150,9 @@ const PrivateEquityFlashcard: React.FC<PrivateEquityFlashcardProps> = ({
       </div>
 
       {isCompleted && (
-        <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
-          <Trophy className="h-6 w-6 text-green-600 mx-auto mb-2" />
-          <p className="text-green-800 font-medium">Flashcards Completed! +25 points</p>
+        <div className="text-center p-4 bg-purple-50 rounded-lg border border-purple-200">
+          <Trophy className="h-6 w-6 text-purple-600 mx-auto mb-2" />
+          <p className="text-purple-800 font-medium">Flashcards Completed! +25 points</p>
         </div>
       )}
     </div>

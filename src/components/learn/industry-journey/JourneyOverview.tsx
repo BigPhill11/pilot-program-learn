@@ -39,7 +39,7 @@ const JourneyOverview: React.FC<JourneyOverviewProps> = ({
         </div>
       </div>
 
-      <ProgressCard progress={progress} totalLevels={journey.levels.length} />
+      <ProgressCard progress={progress} totalLevels={journey.levels.length} journeyId={journey.id} />
 
       <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'} gap-4`}>
         {journey.levels.map((level: any) => {
@@ -54,6 +54,7 @@ const JourneyOverview: React.FC<JourneyOverviewProps> = ({
               isCompleted={isCompleted}
               isUnlocked={isUnlocked}
               onLevelSelect={() => onLevelSelect(levelId)}
+              journeyId={journey.id}
             />
           );
         })}

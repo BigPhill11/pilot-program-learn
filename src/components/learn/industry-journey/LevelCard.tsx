@@ -10,13 +10,15 @@ interface LevelCardProps {
   isCompleted: boolean;
   isUnlocked: boolean;
   onLevelSelect: () => void;
+  journeyId?: string;
 }
 
 const LevelCard: React.FC<LevelCardProps> = ({
   level,
   isCompleted,
   isUnlocked,
-  onLevelSelect
+  onLevelSelect,
+  journeyId
 }) => {
   const isMobile = useIsMobile();
   const levelId = level.level || level.id;
@@ -27,7 +29,9 @@ const LevelCard: React.FC<LevelCardProps> = ({
     <Card 
       className={`transition-all cursor-pointer hover:shadow-lg ${
         isCompleted ? 'border-green-500 bg-green-50' :
-        isUnlocked ? 'border-blue-500 hover:border-blue-600' :
+        isUnlocked ? (journeyId === 'private-equity' 
+          ? 'border-purple-500 hover:border-purple-600' 
+          : 'border-blue-500 hover:border-blue-600') :
         'border-gray-200 opacity-60 cursor-not-allowed'
       }`}
       onClick={() => isUnlocked && onLevelSelect()}
@@ -51,7 +55,7 @@ const LevelCard: React.FC<LevelCardProps> = ({
             <div key={idx} className="flex items-center gap-2">
               <div className={`w-2 h-2 rounded-full ${
                 isCompleted ? 'bg-green-500' : 
-                isUnlocked ? 'bg-blue-500' : 
+                isUnlocked ? (journeyId === 'private-equity' ? 'bg-purple-500' : 'bg-blue-500') : 
                 'bg-gray-300'
               }`}></div>
               <span className={`${isMobile ? 'text-xs' : 'text-sm'} text-muted-foreground`}>
