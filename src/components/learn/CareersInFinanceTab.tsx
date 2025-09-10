@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { Card, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Badge } from '@/components/ui/badge';
 import { financeCareerData, FinanceCareerData } from '@/data/finance-careers';
-import EnhancedFinanceCareerJourney from './EnhancedFinanceCareerJourney';
 import FinanceCareerJourney from './FinanceCareerJourney';
+import PrivateEquityJourney from './PrivateEquityJourney';
 import IBDivisionsHub from "./IBDivisionsHub";
 import VCJourney from './VCJourney';
 import { ibDivisions } from "@/data/ib-divisions";
@@ -58,9 +58,9 @@ const CareersInFinanceTab = () => {
         return null;
       }
       
-      // Use enhanced journey for Private Equity  
+      // Use new journey for Private Equity  
       if (selectedCareer.id === 'private-equity') {
-        return <EnhancedFinanceCareerJourney career={selectedCareer} onBack={() => setSelectedCareer(null)} />;
+        return <PrivateEquityJourney onBack={() => setSelectedCareer(null)} />;
       } else {
         return <FinanceCareerJourney career={selectedCareer} onBack={() => setSelectedCareer(null)} />;
       }
