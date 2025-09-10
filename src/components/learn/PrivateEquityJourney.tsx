@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { privateEquityJourneyData } from '@/data/private-equity-journey-data';
-import { useLocalStorage } from '@/hooks/use-local-storage';
-import JourneyOverview from './industry-journey/JourneyOverview';
+import PrivateEquityJourneyHeader from './PrivateEquityJourneyHeader';
+import PrivateEquityJourneyLevelCard from './PrivateEquityJourneyLevelCard';
 import PrivateEquityLevel from './PrivateEquityLevel';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft, Trophy, Sparkles } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useProgressTracking } from '@/hooks/useProgressTracking';
 
 interface PrivateEquityProgress {
   currentLevel: number;
@@ -16,46 +20,146 @@ interface PrivateEquityJourneyProps {
 }
 
 const PrivateEquityJourney: React.FC<PrivateEquityJourneyProps> = ({ onBack }) => {
+  const [completedLevels, setCompletedLevels] = useState<Set<number>>(new Set());
   const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
-  
-  const [progress, setProgress] = useLocalStorage<PrivateEquityProgress>('privateEquityProgress', {
-    currentLevel: 1,
-    completedLevels: [],
-    selectedDifficulty: 'beginner',
-    totalPointsEarned: 0
-  });
+  const [isJourneyCompleted, setIsJourneyCompleted] = useState(false);
+  const { updateQuizScore } = useProgressTracking();
 
-  const handleLevelComplete = (levelId: number, pointsEarned: number) => {
-    setProgress(prev => ({
-      ...prev,
-      completedLevels: [...new Set([...prev.completedLevels, levelId])],
-      currentLevel: Math.max(prev.currentLevel, levelId + 1),
-      totalPointsEarned: prev.totalPointsEarned + pointsEarned
-    }));
+  // Load progress from localStorage on component mount
+  useEffect(() => {
+    const savedProgress = localStorage.getItem('privateEquity-progress');
+    if (savedProgress) {
+      const progress = JSON.parse(savedProgress);
+      setCompletedLevels(new Set(progress.completedLevels || []));
+      setIsJourneyCompleted(progress.isCompleted || false);
+    }
+  }, []);
+
+  // Save progress to localStorage
+  const saveProgress = (newCompletedLevels: Set<number>, completed: boolean) => {
+    const progress = {
+      completedLevels: Array.from(newCompletedLevels),
+      isCompleted: completed
+    };
+    localStorage.setItem('privateEquity-progress', JSON.stringify(progress));
+  };
+
+  const handleLevelComplete = (levelId: number) => {
+    const newCompletedLevels = new Set(completedLevels);
+    newCompletedLevels.add(levelId);
+    
+    const allCompleted = newCompletedLevels.size === privateEquityJourneyData.levels.length;
+    
+    setCompletedLevels(newCompletedLevels);
+    setIsJourneyCompleted(allCompleted);
+    saveProgress(newCompletedLevels, allCompleted);
     setSelectedLevel(null);
   };
 
+  const handleQuizComplete = (isCorrect: boolean) => {
+    updateQuizScore('private-equity', isCorrect);
+  };
+
+  const handleLevelSelect = (levelId: number) => {
+    setSelectedLevel(levelId);
+  };
+
+  const isLevelUnlocked = (levelId: number): boolean => {
+    if (levelId === 1) return true;
+    return completedLevels.has(levelId - 1);
+  };
+
+  const handleBackToJourney = () => {
+    setSelectedLevel(null);
+  };
+
+  // If a specific level is selected, show that level
   if (selectedLevel) {
     const level = privateEquityJourneyData.levels.find(l => l.id === selectedLevel);
-    if (!level) return null;
-    
-    return (
-      <PrivateEquityLevel
-        level={level}
-        progress={progress}
-        onBack={() => setSelectedLevel(null)}
-        onComplete={(points) => handleLevelComplete(selectedLevel, points)}
-      />
-    );
+    if (level) {
+      return (
+        <PrivateEquityLevel
+          level={level}
+          onComplete={() => handleLevelComplete(selectedLevel)}
+          onBack={handleBackToJourney}
+          onQuizComplete={handleQuizComplete}
+        />
+      );
+    }
   }
 
   return (
-    <JourneyOverview
-      journey={privateEquityJourneyData}
-      progress={progress}
-      onBack={onBack}
-      onLevelSelect={setSelectedLevel}
-    />
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-violet-50 to-purple-50 dark:from-purple-950/20 dark:via-violet-950/20 dark:to-purple-950/20">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center gap-4 mb-8">
+          <Button
+            onClick={onBack}
+            variant="ghost"
+            size="sm"
+            className="text-purple-600 hover:text-purple-700 hover:bg-purple-100"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Finance Careers
+          </Button>
+        </div>
+
+        <PrivateEquityJourneyHeader
+          completedLevels={completedLevels.size}
+          totalLevels={privateEquityJourneyData.levels.length}
+        />
+
+        <div className="grid gap-6 mt-8">
+          {privateEquityJourneyData.levels.map((level) => (
+            <PrivateEquityJourneyLevelCard
+              key={level.id}
+              level={level}
+              isCompleted={completedLevels.has(level.id)}
+              isUnlocked={isLevelUnlocked(level.id)}
+              onLevelSelect={handleLevelSelect}
+            />
+          ))}
+
+          {isJourneyCompleted && (
+            <Card className="border-2 border-purple-300 bg-gradient-to-r from-purple-100 to-violet-100 dark:from-purple-900/30 dark:to-violet-900/30 shadow-lg">
+              <CardHeader className="text-center pb-3">
+                <div className="flex justify-center mb-4">
+                  <div className="relative">
+                    <Trophy className="h-16 w-16 text-purple-500" />
+                    <Sparkles className="h-6 w-6 text-violet-500 absolute -top-1 -right-1 animate-pulse" />
+                  </div>
+                </div>
+                <CardTitle className="text-2xl text-purple-700 dark:text-purple-300">
+                  🎉 Private Equity Journey Complete! 🎉
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-center">
+                <p className="text-purple-600 dark:text-purple-400 mb-6">
+                  Congratulations! You've mastered the fundamentals of private equity. 
+                  You now understand how PE firms create value and generate exceptional returns.
+                </p>
+                <div className="flex flex-wrap justify-center gap-4">
+                  <div className="bg-white/60 dark:bg-gray-800/60 px-4 py-2 rounded-lg">
+                    <span className="text-sm font-medium text-purple-700 dark:text-purple-300">
+                      ✅ PE Fundamentals
+                    </span>
+                  </div>
+                  <div className="bg-white/60 dark:bg-gray-800/60 px-4 py-2 rounded-lg">
+                    <span className="text-sm font-medium text-purple-700 dark:text-purple-300">
+                      ✅ Deal Types & Valuation
+                    </span>
+                  </div>
+                  <div className="bg-white/60 dark:bg-gray-800/60 px-4 py-2 rounded-lg">
+                    <span className="text-sm font-medium text-purple-700 dark:text-purple-300">
+                      ✅ Value Creation & Exits
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
 

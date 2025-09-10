@@ -11,16 +11,16 @@ import PrivateEquityQuizWithFeedback from './PrivateEquityQuizWithFeedback';
 
 interface PrivateEquityLevelProps {
   level: any;
-  progress: any;
   onBack: () => void;
-  onComplete: (points: number) => void;
+  onComplete: () => void;
+  onQuizComplete: (isCorrect: boolean) => void;
 }
 
 const PrivateEquityLevel: React.FC<PrivateEquityLevelProps> = ({
   level,
-  progress,
   onBack,
-  onComplete
+  onComplete,
+  onQuizComplete
 }) => {
   const isMobile = useIsMobile();
   const [completedSections, setCompletedSections] = useState<string[]>([]);
@@ -36,6 +36,7 @@ const PrivateEquityLevel: React.FC<PrivateEquityLevelProps> = ({
   const handleQuizComplete = (score: number, total: number) => {
     const points = Math.round((score / total) * 50);
     handleSectionComplete('quiz', points);
+    onQuizComplete(score === total);
     
     // Check if level is complete
     const requiredSections = ['overview', 'flashcards', 'mini-games', 'quiz'];
@@ -44,7 +45,7 @@ const PrivateEquityLevel: React.FC<PrivateEquityLevelProps> = ({
     );
     
     if (allCompleted) {
-      onComplete(totalPoints + points);
+      onComplete();
     }
   };
 
