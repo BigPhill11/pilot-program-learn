@@ -5,9 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { financeCareerData, FinanceCareerData } from '@/data/finance-careers';
 import EnhancedFinanceCareerJourney from './EnhancedFinanceCareerJourney';
 import FinanceCareerJourney from './FinanceCareerJourney';
-import InteractiveConsultingLesson from "./InteractiveConsultingLesson";
 import IBDivisionsHub from "./IBDivisionsHub";
-import { managementConsultingLessons } from "@/data/management-consulting-lessons";
 import VCJourney from './VCJourney';
 import { ibDivisions } from "@/data/ib-divisions";
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -30,11 +28,7 @@ const CareersInFinanceTab = () => {
     if (selectedCareer) {
       // Interactive lessons for specific careers
       if (selectedCareer.id === 'management-consulting') {
-        return <InteractiveConsultingLesson
-          lesson={managementConsultingLessons[0]}
-          onBack={() => setSelectedCareer(null)}
-          onComplete={() => setSelectedCareer(null)}
-        />;
+        return <ManagementConsultingJourney onBack={() => setSelectedCareer(null)} />;
       }
       
       if (selectedCareer.id === 'venture-capital') {
