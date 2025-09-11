@@ -279,6 +279,26 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
     }
   };
 
+  const triggerAutoTranscription = async (videoId: string, sourceUrl: string | null, sourceType: string) => {
+    try {
+      // Call enhanced transcription service
+      const { error } = await supabase.functions.invoke('enhanced-transcription', {
+        body: {
+          videoId,
+          sourceUrl,
+          sourceType
+        }
+      });
+
+      if (error) {
+        console.error('Auto transcription error:', error);
+      }
+    } catch (error) {
+      console.error('Error triggering auto transcription:', error);
+      // Don't throw - video upload should succeed even if transcription fails
+    }
+  };
+
   const handleSubmit = async () => {
     if (!user) {
       toast({
@@ -380,10 +400,13 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
 
       if (dbError) throw dbError;
 
-      // Process transcript if uploaded
+      // Process transcript if uploaded or trigger automatic transcription
       if (transcriptFile && transcript_path && videoData) {
         // Process transcript in background
         processTranscript(videoData.id, transcript_path);
+      } else if (videoData) {
+        // Trigger automatic transcription for all videos
+        triggerAutoTranscription(videoData.id, uploadType === 'youtube' ? formData.youtube_url : null, uploadType);
       }
 
       toast({

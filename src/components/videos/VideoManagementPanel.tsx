@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
@@ -19,9 +19,11 @@ import {
   Clock,
   Users,
   BarChart3,
-  Settings
+  Settings,
+  FileText
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import AdminTranscriptEditor from './AdminTranscriptEditor';
 
 interface Video {
   id: string;
@@ -31,6 +33,8 @@ interface Video {
   role_tier: string;
   duration_sec: number;
   source_type: string;
+  source_url?: string;
+  video_url?: string;
   published: boolean;
   processing_status: string;
   created_at: string;
@@ -54,6 +58,8 @@ const VideoManagementPanel: React.FC<VideoManagementPanelProps> = ({
     draftVideos: 0,
     processingVideos: 0
   });
+  const [selectedVideoForTranscript, setSelectedVideoForTranscript] = useState<Video | null>(null);
+  const [transcriptDialogOpen, setTranscriptDialogOpen] = useState(false);
 
   const fetchAdminVideos = async () => {
     try {
@@ -302,6 +308,18 @@ const VideoManagementPanel: React.FC<VideoManagementPanelProps> = ({
                     <TableCell>{formatDate(video.created_at)}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedVideoForTranscript(video);
+                            setTranscriptDialogOpen(true);
+                          }}
+                          title="Edit Transcript"
+                        >
+                          <FileText className="h-4 w-4" />
+                        </Button>
+                        
                         <div className="flex items-center space-x-2">
                           <Switch
                             id={`publish-${video.id}`}
@@ -331,6 +349,24 @@ const VideoManagementPanel: React.FC<VideoManagementPanelProps> = ({
           )}
         </CardContent>
       </Card>
+
+      {/* Transcript Editor Dialog */}
+      <Dialog open={transcriptDialogOpen} onOpenChange={setTranscriptDialogOpen}>
+        <DialogContent className="max-w-[95vw] max-h-[95vh] overflow-hidden">
+          <DialogHeader>
+            <DialogTitle>
+              Edit Transcript: {selectedVideoForTranscript?.name}
+            </DialogTitle>
+          </DialogHeader>
+          {selectedVideoForTranscript && (
+            <AdminTranscriptEditor
+              videoId={selectedVideoForTranscript.id}
+              videoUrl={selectedVideoForTranscript.source_url || selectedVideoForTranscript.video_url || ''}
+              onClose={() => setTranscriptDialogOpen(false)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

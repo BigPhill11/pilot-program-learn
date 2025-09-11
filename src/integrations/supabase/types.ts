@@ -2480,6 +2480,63 @@ export type Database = {
           },
         ]
       }
+      video_quiz_questions: {
+        Row: {
+          correct_answer: number
+          created_at: string | null
+          created_by: string | null
+          explanation: string | null
+          id: string
+          options: Json
+          question_text: string
+          question_type: string | null
+          timestamp_sec: number
+          updated_at: string | null
+          video_id: string
+        }
+        Insert: {
+          correct_answer: number
+          created_at?: string | null
+          created_by?: string | null
+          explanation?: string | null
+          id?: string
+          options?: Json
+          question_text: string
+          question_type?: string | null
+          timestamp_sec: number
+          updated_at?: string | null
+          video_id: string
+        }
+        Update: {
+          correct_answer?: number
+          created_at?: string | null
+          created_by?: string | null
+          explanation?: string | null
+          id?: string
+          options?: Json
+          question_text?: string
+          question_type?: string | null
+          timestamp_sec?: number
+          updated_at?: string | null
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_quiz_questions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "video_quiz_questions_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "phils_friends_videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       video_ratings: {
         Row: {
           clarity_rating: number
@@ -2527,6 +2584,63 @@ export type Database = {
           },
         ]
       }
+      video_segments: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          end_time: number
+          id: string
+          keywords: string[] | null
+          segment_type: string | null
+          start_time: number
+          title: string
+          updated_at: string | null
+          video_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_time: number
+          id?: string
+          keywords?: string[] | null
+          segment_type?: string | null
+          start_time: number
+          title: string
+          updated_at?: string | null
+          video_id: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_time?: number
+          id?: string
+          keywords?: string[] | null
+          segment_type?: string | null
+          start_time?: number
+          title?: string
+          updated_at?: string | null
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_segments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "video_segments_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "phils_friends_videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       video_streaks: {
         Row: {
           current_streak_days: number | null
@@ -2551,37 +2665,158 @@ export type Database = {
         }
         Relationships: []
       }
-      video_transcripts: {
+      video_timestamp_comments: {
         Row: {
+          comment_text: string
           created_at: string | null
           id: string
+          parent_comment_id: string | null
+          timestamp_sec: number
+          updated_at: string | null
+          user_id: string
+          video_id: string
+        }
+        Insert: {
+          comment_text: string
+          created_at?: string | null
+          id?: string
+          parent_comment_id?: string | null
+          timestamp_sec: number
+          updated_at?: string | null
+          user_id: string
+          video_id: string
+        }
+        Update: {
+          comment_text?: string
+          created_at?: string | null
+          id?: string
+          parent_comment_id?: string | null
+          timestamp_sec?: number
+          updated_at?: string | null
+          user_id?: string
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_timestamp_comments_parent_comment_id_fkey"
+            columns: ["parent_comment_id"]
+            isOneToOne: false
+            referencedRelation: "video_timestamp_comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "video_timestamp_comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "video_timestamp_comments_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "phils_friends_videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      video_transcripts: {
+        Row: {
+          confidence_score: number | null
+          created_at: string | null
+          id: string
+          language_code: string | null
           parsed_cues: Json | null
+          processing_status: string | null
           raw_content: string
+          searchable_content: string | null
           transcript_type: string
           updated_at: string | null
           video_id: string | null
+          word_timestamps: Json | null
         }
         Insert: {
+          confidence_score?: number | null
           created_at?: string | null
           id?: string
+          language_code?: string | null
           parsed_cues?: Json | null
+          processing_status?: string | null
           raw_content: string
+          searchable_content?: string | null
           transcript_type: string
           updated_at?: string | null
           video_id?: string | null
+          word_timestamps?: Json | null
         }
         Update: {
+          confidence_score?: number | null
           created_at?: string | null
           id?: string
+          language_code?: string | null
           parsed_cues?: Json | null
+          processing_status?: string | null
           raw_content?: string
+          searchable_content?: string | null
           transcript_type?: string
           updated_at?: string | null
           video_id?: string | null
+          word_timestamps?: Json | null
         }
         Relationships: [
           {
             foreignKeyName: "video_transcripts_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "phils_friends_videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      video_user_notes: {
+        Row: {
+          created_at: string | null
+          highlight_text: string | null
+          id: string
+          note_text: string | null
+          note_type: string | null
+          timestamp_sec: number
+          updated_at: string | null
+          user_id: string
+          video_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          highlight_text?: string | null
+          id?: string
+          note_text?: string | null
+          note_type?: string | null
+          timestamp_sec: number
+          updated_at?: string | null
+          user_id: string
+          video_id: string
+        }
+        Update: {
+          created_at?: string | null
+          highlight_text?: string | null
+          id?: string
+          note_text?: string | null
+          note_type?: string | null
+          timestamp_sec?: number
+          updated_at?: string | null
+          user_id?: string
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_user_notes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "video_user_notes_video_id_fkey"
             columns: ["video_id"]
             isOneToOne: false
             referencedRelation: "phils_friends_videos"
