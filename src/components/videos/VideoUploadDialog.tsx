@@ -440,7 +440,7 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
           processing_status: transcriptFile ? 'processing' : 'completed',
           created_by: user.id,
           duration: '5:00', // Default duration string
-          company: 'Phil\'s Friends',
+          company: formData.company || 'Phil\'s Friends',
           // Use the active tab's mapped category (e.g., careers-in-finance, soft-skills, general)
           course_category: defaultCategory || '',
           video_url: source_url || '',
@@ -559,21 +559,6 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
                         </AlertDescription>
                       </Alert>
                     )}
-
-                    {uploading && uploadProgress > 0 && (
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm text-muted-foreground">
-                          <span>Uploading...</span>
-                          <span>{Math.round(uploadProgress)}%</span>
-                        </div>
-                        <div className="w-full bg-muted rounded-full h-2">
-                          <div 
-                            className="bg-primary h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${uploadProgress}%` }}
-                          />
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -593,6 +578,7 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
                       <Label htmlFor="youtube-url">YouTube URL</Label>
                       <Input
                         id="youtube-url"
+                        type="url"
                         placeholder="https://www.youtube.com/watch?v=..."
                         value={formData.youtube_url}
                         onChange={(e) => setFormData(prev => ({ ...prev, youtube_url: e.target.value }))}
@@ -601,26 +587,17 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
                       />
                     </div>
 
-                    {formData.youtube_url && !validateYouTubeUrl(formData.youtube_url) && (
-                      <Alert variant="destructive">
-                        <AlertCircle className="h-4 w-4" />
-                        <AlertDescription>
-                          Please enter a valid YouTube URL
-                        </AlertDescription>
-                      </Alert>
-                    )}
-
                     <div>
-                      <Label htmlFor="youtube-thumbnail">Custom Thumbnail (Optional)</Label>
+                      <Label htmlFor="custom-thumbnail">Custom Thumbnail (Optional)</Label>
                       <Input
-                        id="youtube-thumbnail"
+                        id="custom-thumbnail"
                         type="file"
                         accept="image/*"
                         onChange={handleThumbnailSelect}
                         disabled={uploading}
                         className="mt-1"
                       />
-                      <p className="text-xs text-muted-foreground mt-1">
+                      <p className="text-sm text-muted-foreground mt-1">
                         Leave empty to use YouTube's default thumbnail
                       </p>
                     </div>
@@ -639,8 +616,68 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
             </TabsContent>
           </Tabs>
 
-          {/* Video Metadata Form */}
+          {/* Transcript Upload */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Transcript Upload (Optional)</CardTitle>
+              <CardDescription>
+                Upload a transcript to automatically generate video clips with AI
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div>
+                <Label htmlFor="transcript-file">Transcript File</Label>
+                <Input
+                  id="transcript-file"
+                  type="file"
+                  accept=".txt,.vtt,.srt"
+                  onChange={handleTranscriptSelect}
+                  disabled={uploading}
+                  className="mt-1"
+                />
+                <p className="text-sm text-muted-foreground mt-1">
+                  Supports TXT, VTT, and SRT formats. AI will analyze the transcript to create video clips automatically.
+                </p>
+              </div>
+
+              {transcriptFile && (
+                <Alert className="mt-4">
+                  <FileVideo className="h-4 w-4" />
+                  <AlertDescription>
+                    <strong>{transcriptFile.name}</strong> ({(transcriptFile.size / 1024).toFixed(1)} KB)
+                  </AlertDescription>
+                </Alert>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Basic Info Section */}
           <div className="space-y-4">
+            <div>
+              <Label htmlFor="category">Video Section *</Label>
+              <Select 
+                value={formData.category} 
+                onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
+                disabled={uploading}
+              >
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select section" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="careers-in-finance">Careers in Finance</SelectItem>
+                  <SelectItem value="soft-skills">Soft Skills</SelectItem>
+                  <SelectItem value="general">General Videos</SelectItem>
+                </SelectContent>
+              </Select>
+              {formData.category && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  {formData.category === 'careers-in-finance' && 'Industry professionals sharing career insights'}
+                  {formData.category === 'soft-skills' && 'Professional development and workplace skills'}
+                  {formData.category === 'general' && 'General finance and market content'}
+                </p>
+              )}
+            </div>
+
             <div>
               <Label htmlFor="title">Title *</Label>
               <Input
@@ -657,7 +694,7 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
               <Label htmlFor="description">Description</Label>
               <Textarea
                 id="description"
-                placeholder="Brief description of the video content"
+                placeholder="Describe the video content"
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 disabled={uploading}
@@ -665,50 +702,148 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
                 rows={3}
               />
             </div>
+          </div>
 
-            {/* Transcript Upload Section */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Transcript Upload (Optional)</CardTitle>
-                <CardDescription>
-                  Upload a transcript to automatically generate video clips with AI
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div>
-                  <Label htmlFor="transcript-file">Transcript File</Label>
-                  <Input
-                    id="transcript-file"
-                    type="file"
-                    accept=".txt,.vtt,.srt"
-                    onChange={handleTranscriptSelect}
-                    disabled={uploading}
-                    className="mt-1"
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Supports TXT, VTT, and SRT formats. AI will analyze the transcript to create video clips automatically.
-                  </p>
+          {/* Category-Specific Fields */}
+          {formData.category && (
+            <div className="space-y-4 p-4 bg-muted/30 rounded-lg border">
+              <h3 className="font-medium text-foreground">
+                {formData.category === 'careers-in-finance' && 'Career Video Details'}
+                {formData.category === 'soft-skills' && 'Soft Skills Video Details'}  
+                {formData.category === 'general' && 'General Video Details'}
+              </h3>
+
+              {/* Careers in Finance Fields */}
+              {formData.category === 'careers-in-finance' && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="company">Company *</Label>
+                    <Input
+                      id="company"
+                      placeholder="Goldman Sachs, JP Morgan, etc."
+                      value={formData.company}
+                      onChange={(e) => setFormData(prev => ({ ...prev, company: e.target.value }))}
+                      disabled={uploading}
+                      className="mt-1"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="role_tier">Target Role Level *</Label>
+                    <Select 
+                      value={formData.role_tier} 
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, role_tier: value }))}
+                      disabled={uploading}
+                    >
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Select role level" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Intern">Intern</SelectItem>
+                        <SelectItem value="Analyst">Analyst</SelectItem>
+                        <SelectItem value="Associate">Associate</SelectItem>
+                        <SelectItem value="Managing Director">Managing Director</SelectItem>
+                        <SelectItem value="Professional">Professional</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
+              )}
 
-                {transcriptFile && (
-                  <Alert className="mt-4">
-                    <FileVideo className="h-4 w-4" />
-                    <AlertDescription>
-                      <strong>{transcriptFile.name}</strong> ({(transcriptFile.size / 1024).toFixed(1)} KB)
-                      <br />
-                      <span className="text-muted-foreground">
-                        AI will process this transcript to create video clips after upload
-                      </span>
-                    </AlertDescription>
-                  </Alert>
-                )}
-              </CardContent>
-            </Card>
+              {/* Soft Skills Fields */}
+              {formData.category === 'soft-skills' && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="speaker_name">Speaker Name *</Label>
+                      <Input
+                        id="speaker_name"
+                        placeholder="Speaker's full name"
+                        value={formData.speaker_name}
+                        onChange={(e) => setFormData(prev => ({ ...prev, speaker_name: e.target.value }))}
+                        disabled={uploading}
+                        className="mt-1"
+                      />
+                    </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Category selection - removed from here since it's now dynamic based on form */}
+                    <div>
+                      <Label htmlFor="company">Company *</Label>
+                      <Input
+                        id="company"
+                        placeholder="Company name"
+                        value={formData.company}
+                        onChange={(e) => setFormData(prev => ({ ...prev, company: e.target.value }))}
+                        disabled={uploading}
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="soft_skills_section">Soft Skills Section *</Label>
+                    <Select 
+                      value={formData.soft_skills_section} 
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, soft_skills_section: value }))}
+                      disabled={uploading}
+                    >
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Select soft skills section" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {SOFT_SKILLS_SECTIONS.map(section => (
+                          <SelectItem key={section} value={section}>{section}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              )}
+
+              {/* General Video Fields */}
+              {formData.category === 'general' && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="level">Level *</Label>
+                    <Select 
+                      value={formData.level} 
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, level: value }))}
+                      disabled={uploading}
+                    >
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Select level" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {VIDEO_LEVELS.map(level => (
+                          <SelectItem key={level} value={level}>{level}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="video_type">Video Type *</Label>
+                    <Select 
+                      value={formData.video_type} 
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, video_type: value }))}
+                      disabled={uploading}
+                    >
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Select video type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {VIDEO_TYPES.map(type => (
+                          <SelectItem key={type} value={type}>{type}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              )}
             </div>
+          )}
 
+          {/* Tags and Publish Options */}
+          <div className="space-y-4">
             <div>
               <Label htmlFor="tags">Tags (comma-separated)</Label>
               <Input
