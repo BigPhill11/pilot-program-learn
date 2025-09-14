@@ -1,18 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Users, CheckCircle, Clock, Target, Lock, Play } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import NetworkingModule1 from './networking/NetworkingModule1';
-import NetworkingModule2 from './networking/NetworkingModule2';
-import NetworkingModule3 from './networking/NetworkingModule3';
-import NetworkingModule4 from './networking/NetworkingModule4';
-import NetworkingModule5 from './networking/NetworkingModule5';
-import NetworkingModule6 from './networking/NetworkingModule6';
+// Lazy-load modules to avoid heavy initial render and isolate runtime errors
+const NetworkingModule1 = React.lazy(() => import('./networking/NetworkingModule1'));
+const NetworkingModule2 = React.lazy(() => import('./networking/NetworkingModule2'));
+const NetworkingModule3 = React.lazy(() => import('./networking/NetworkingModule3'));
+const NetworkingModule4 = React.lazy(() => import('./networking/NetworkingModule4'));
+const NetworkingModule5 = React.lazy(() => import('./networking/NetworkingModule5'));
+const NetworkingModule6 = React.lazy(() => import('./networking/NetworkingModule6'));
 
 interface NetworkingLikeProProps {
   onBack: () => void;
+}
+
+// Simple error boundary to prevent full app crash if a module throws
+class ModuleErrorBoundary extends React.Component<{ onReset: () => void }, { hasError: boolean }> {
+  constructor(props: { onReset: () => void }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error: any) {
+    console.error('Module rendering error:', error);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <Card className="bg-red-50 border-red-200">
+          <CardHeader>
+            <CardTitle className="text-red-700">We hit a snag loading this module</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-sm text-red-700">Please try again. If the issue persists, let us know.</p>
+            <Button variant="outline" onClick={this.props.onReset}>Back to Course</Button>
+          </CardContent>
+        </Card>
+      );
+    }
+    return this.props.children as any;
+  }
 }
 
 const NetworkingLikePro: React.FC<NetworkingLikeProProps> = ({ onBack }) => {
@@ -96,11 +127,15 @@ const NetworkingLikePro: React.FC<NetworkingLikeProProps> = ({ onBack }) => {
     if (module) {
       const ModuleComponent = module.component;
       return (
-        <ModuleComponent 
-          onBack={handleBackToOverview}
-          onComplete={() => handleModuleComplete(activeModule)}
-          isCompleted={completedModules.has(activeModule)}
-        />
+        <ModuleErrorBoundary onReset={handleBackToOverview}>
+          <Suspense fallback={<Card className="p-6"><CardContent>Loading module…</CardContent></Card>}>
+            <ModuleComponent 
+              onBack={handleBackToOverview}
+              onComplete={() => handleModuleComplete(activeModule)}
+              isCompleted={completedModules.has(activeModule)}
+            />
+          </Suspense>
+        </ModuleErrorBoundary>
       );
     }
   }
@@ -166,7 +201,6 @@ const NetworkingLikePro: React.FC<NetworkingLikeProProps> = ({ onBack }) => {
           management. Each module includes engaging games, practical exercises, and real-world scenarios to ensure 
           you're networking-ready.
         </p>
-        
         <Card className="bg-blue-50 border-blue-200 border-l-4 border-l-blue-500">
           <CardContent className="pt-6">
             <div className="flex items-start space-x-3">
@@ -189,34 +223,19 @@ const NetworkingLikePro: React.FC<NetworkingLikeProProps> = ({ onBack }) => {
 
       {/* Module Grid */}
       <div className="grid md:grid-cols-2 gap-6">
-        {modules.map((module, index) => {
+        {modules.map((module) => {
           const isUnlocked = isModuleUnlocked(module.id);
           const isCompleted = completedModules.has(module.id);
-          
           return (
             <Card 
               key={module.id} 
-              className={`hover:shadow-lg transition-all duration-200 ${
-                !isUnlocked ? 'opacity-60' : 'hover:scale-105'
-              } ${isCompleted ? 'border-green-200 bg-green-50' : ''}`}
+              className={`hover:shadow-lg transition-all duration-200 ${!isUnlocked ? 'opacity-60' : 'hover:scale-105'} ${isCompleted ? 'border-green-200 bg-green-50' : ''}`}
             >
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-3">
-                    <div className={`flex items-center justify-center w-10 h-10 rounded-full ${
-                      isCompleted 
-                        ? 'bg-green-500 text-white' 
-                        : isUnlocked 
-                          ? 'bg-blue-500 text-white' 
-                          : 'bg-gray-300 text-gray-500'
-                    }`}>
-                      {isCompleted ? (
-                        <CheckCircle className="h-5 w-5" />
-                      ) : !isUnlocked ? (
-                        <Lock className="h-4 w-4" />
-                      ) : (
-                        <span className="font-semibold">{module.id}</span>
-                      )}
+                    <div className={`flex items-center justify-center w-10 h-10 rounded-full ${isCompleted ? 'bg-green-500 text-white' : isUnlocked ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-500'}`}>
+                      {isCompleted ? <CheckCircle className="h-5 w-5" /> : !isUnlocked ? <Lock className="h-4 w-4" /> : <span className="font-semibold">{module.id}</span>}
                     </div>
                     <div>
                       <CardTitle className="text-lg">{module.title}</CardTitle>
@@ -228,44 +247,21 @@ const NetworkingLikePro: React.FC<NetworkingLikeProProps> = ({ onBack }) => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm text-muted-foreground">{module.description}</p>
-                
                 <div>
                   <h4 className="text-sm font-medium mb-2">Key Topics:</h4>
                   <div className="flex flex-wrap gap-2">
                     {module.keyTopics.map((topic, idx) => (
-                      <Badge key={idx} variant="secondary" className="text-xs">
-                        {topic}
-                      </Badge>
+                      <Badge key={idx} variant="secondary" className="text-xs">{topic}</Badge>
                     ))}
                   </div>
                 </div>
-                
                 <div className="flex items-center justify-between pt-2">
                   <div className="flex items-center space-x-1 text-sm text-muted-foreground">
                     <Clock className="h-3 w-3" />
                     <span>{module.duration}</span>
                   </div>
-                  
-                  <Button 
-                    onClick={() => isUnlocked && setActiveModule(module.id)}
-                    disabled={!isUnlocked}
-                    variant={isCompleted ? "outline" : "default"}
-                    size="sm"
-                    className={`${!isUnlocked ? 'cursor-not-allowed' : ''}`}
-                  >
-                    {!isUnlocked ? (
-                      <>
-                        <Lock className="h-3 w-3 mr-1" />
-                        Locked
-                      </>
-                    ) : isCompleted ? (
-                      'Review'
-                    ) : (
-                      <>
-                        <Play className="h-3 w-3 mr-1" />
-                        Start Module
-                      </>
-                    )}
+                  <Button onClick={() => isUnlocked && setActiveModule(module.id)} disabled={!isUnlocked} variant={isCompleted ? 'outline' : 'default'} size="sm" className={`${!isUnlocked ? 'cursor-not-allowed' : ''}`}>
+                    {!isUnlocked ? (<><Lock className="h-3 w-3 mr-1" />Locked</>) : isCompleted ? 'Review' : (<><Play className="h-3 w-3 mr-1" />Start Module</>)}
                   </Button>
                 </div>
               </CardContent>

@@ -1,129 +1,274 @@
 
+import "https://deno.land/x/xhr@0.1.0/mod.ts"
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { HeadlinesResponse, ProcessedHeadline, MarketRecap } from './types.ts';
+import { HeadlinesResponse, ProcessedHeadline, MarketRecap, NewsArticle } from './types.ts';
+import { processNewsArticles } from './data-processor.ts';
+import { generateMarketRecap as recapFromHeadlines } from './market-analysis.ts';
+import { getFallbackHeadlines } from './fallback-data.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-// Cache for storing generated content
+// In-memory cache keyed by ET window tag (e.g., 2025-09-11-am, 2025-09-11-pm)
 let cachedContent: HeadlinesResponse | null = null;
-let lastUpdateTime: Date | null = null;
+let lastWindowTag: string | null = null;
 
-const shouldUpdateContent = (): boolean => {
-  if (!lastUpdateTime || !cachedContent) return true;
-  
-  const now = new Date();
-  const currentHour = now.getHours();
-  const lastUpdateHour = lastUpdateTime.getHours();
-  const lastUpdateDate = lastUpdateTime.toDateString();
-  const currentDate = now.toDateString();
-  
-  // If it's a new day, update
-  if (lastUpdateDate !== currentDate) return true;
-  
-  // Update at 9 AM and 5 PM (17:00)
-  const updateHours = [9, 17];
-  
-  // Check if we've crossed an update hour since last update
-  for (const hour of updateHours) {
-    if (currentHour >= hour && lastUpdateHour < hour) {
-      return true;
-    }
+function getETNow() {
+  const fmt = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', hour12: false
+  });
+  const parts = Object.fromEntries(fmt.formatToParts(new Date()).map(p => [p.type, p.value]));
+  const y = parts.year; const m = parts.month; const d = parts.day;
+  const hh = parseInt(parts.hour || '00', 10); const mm = parseInt(parts.minute || '00', 10);
+  const minutes = hh * 60 + mm;
+  return { date: `${y}-${m}-${d}`, minutes };
+}
+
+// Windows: 09:00 ET (pre-open 30m before 09:30) and 16:30 ET (30m after 16:00 close)
+function currentWindowTag(): { tag: string, shouldRefresh: boolean } {
+  const { date, minutes } = getETNow();
+  const PRE_OPEN = 9 * 60;      // 09:00
+  const POST_CLOSE = 16 * 60 + 30; // 16:30
+  let tag = `${date}-idle`;
+  let shouldRefresh = false;
+  if (minutes >= POST_CLOSE) {
+    tag = `${date}-pm`;
+  } else if (minutes >= PRE_OPEN) {
+    tag = `${date}-am`;
   }
-  
-  return false;
-};
+  if (!lastWindowTag || lastWindowTag !== tag) {
+    // Only refresh if we're exactly in a refreshable window
+    shouldRefresh = tag.endsWith('-am') || tag.endsWith('-pm');
+  }
+  return { tag, shouldRefresh };
+}
 
-// Generate fresh finance-focused headlines powered by Lovable AI
-function generateFinanceHeadlines(userLevel: string = 'beginner'): ProcessedHeadline[] {
-  const currentDate = new Date().toISOString();
-  
-  const headlines = [
-    {
-      id: `headline-${Date.now()}-1`,
-      title: "AI Revolution Transforms Financial Services Sector",
-      summary: getUserLevelSummary(userLevel, "ai_finance", "Artificial intelligence continues to reshape the financial services industry with new applications in risk management, fraud detection, and automated trading. Major banks are investing billions in AI infrastructure to stay competitive."),
-      tldr: getUserLevelTLDR(userLevel, "ai_finance", "AI is changing how banks and financial companies work"),
-      url: "https://www.reuters.com/technology/artificial-intelligence/",
-      publishedDate: currentDate,
-      site: "Powered by Lovable AI",
-      image: null
-    },
-    {
-      id: `headline-${Date.now()}-2`,
-      title: "Electric Vehicle Market Drives Clean Energy Stock Surge",
-      summary: getUserLevelSummary(userLevel, "ev_market", "Electric vehicle manufacturers and clean energy companies saw significant gains as global adoption accelerates. Government incentives and improving battery technology are driving widespread consumer adoption."),
-      tldr: getUserLevelTLDR(userLevel, "ev_market", "Electric car companies are doing really well as more people buy them"),
-      url: "https://www.bbc.com/news/business",
-      publishedDate: currentDate,
-      site: "Powered by Lovable AI",
-      image: null
-    },
-    {
-      id: `headline-${Date.now()}-3`,
-      title: "Global Supply Chain Resilience Boosts Manufacturing Stocks",
-      summary: getUserLevelSummary(userLevel, "supply_chain", "Manufacturing companies are benefiting from improved supply chain management and nearshoring trends. Companies that invested in supply chain diversification are seeing stronger margins and reduced disruption risks."),
-      tldr: getUserLevelTLDR(userLevel, "supply_chain", "Companies that make things are doing better by improving how they get materials"),
-      url: "https://apnews.com/hub/business",
-      publishedDate: currentDate,
-      site: "Powered by Lovable AI",
-      image: null
-    },
-    {
-      id: `headline-${Date.now()}-4`,
-      title: "Cybersecurity Sector Sees Record Investment Growth",
-      summary: getUserLevelSummary(userLevel, "cybersecurity", "Cybersecurity companies are experiencing unprecedented demand as businesses increase digital security spending. Remote work trends and growing cyber threats are driving sustained investment in security infrastructure."),
-      tldr: getUserLevelTLDR(userLevel, "cybersecurity", "Computer security companies are growing fast as businesses need better protection"),
-      url: "https://www.npr.org/sections/business/",
-      publishedDate: currentDate,
-      site: "Powered by Lovable AI",
-      image: null
-    },
-    {
-      id: `headline-${Date.now()}-5`,
-      title: "Sustainable Investing Reaches New Milestone",
-      summary: getUserLevelSummary(userLevel, "esg_investing", "Environmental, Social, and Governance (ESG) investing continues to attract record capital flows as investors prioritize sustainable returns. Companies with strong ESG ratings are outperforming traditional benchmarks."),
-      tldr: getUserLevelTLDR(userLevel, "esg_investing", "More investors are choosing companies that care about the environment and society"),
-      url: "https://www.pbs.org/newshour/economy",
-      publishedDate: currentDate,
-      site: "Powered by Lovable AI",
-      image: null
-    },
-    {
-      id: `headline-${Date.now()}-6`,
-      title: "Digital Payment Revolution Accelerates Globally",
-      summary: getUserLevelSummary(userLevel, "digital_payments", "Digital payment platforms and fintech companies are experiencing explosive growth as cashless transactions become the norm. Mobile payments and cryptocurrency adoption are reshaping the financial landscape."),
-      tldr: getUserLevelTLDR(userLevel, "digital_payments", "People are using phones and apps to pay for things instead of cash"),
-      url: "https://www.cnn.com/business",
-      publishedDate: currentDate,
-      site: "Powered by Lovable AI",
-      image: null
-    },
-    {
-      id: `headline-${Date.now()}-7`,
-      title: "Healthcare Innovation Drives Biotech Breakthrough",
-      summary: getUserLevelSummary(userLevel, "biotech", "Biotechnology companies are achieving remarkable breakthroughs in personalized medicine and gene therapy. Advanced treatment options are creating new investment opportunities in the healthcare sector."),
-      tldr: getUserLevelTLDR(userLevel, "biotech", "Scientists are creating new medicines that could help treat diseases better"),
-      url: "https://www.cbsnews.com/news/business/",
-      publishedDate: currentDate,
-      site: "Powered by Lovable AI",
-      image: null
-    },
-    {
-      id: `headline-${Date.now()}-8`,
-      title: "Space Economy Reaches Commercial Maturity",
-      summary: getUserLevelSummary(userLevel, "space_economy", "Commercial space companies are transitioning from experimental ventures to profitable businesses. Satellite technology, space tourism, and asteroid mining are opening new frontiers for investment."),
-      tldr: getUserLevelTLDR(userLevel, "space_economy", "Space companies are becoming real businesses that make money"),
-      url: "https://www.usatoday.com/money/",
-      publishedDate: currentDate,
-      site: "Powered by Lovable AI",
-      image: null
-    }
+// Use Perplexity to generate headlines and a market recap in the expected shape
+async function buildWithPerplexity(userLevel: string, perplexityKey: string): Promise<HeadlinesResponse> {
+  const today = new Date().toISOString().slice(0, 10);
+
+  const system = [
+    "You are a financial news assistant that fetches and summarizes today's US market news.",
+    "You MUST return STRICTLY valid JSON with no extra commentary, no code fences, no prose.",
+    "Prioritize headlines from major outlets: Reuters, Associated Press, Bloomberg, Wall Street Journal, Financial Times, CNBC, Yahoo Finance, and other reputable sources.",
+    "Focus on macro daily drivers: index moves (S&P 500, Dow, Nasdaq), interest rates and yields, Fed policy, inflation data (CPI, PCE), jobs data, sector-wide moves, commodities (oil, gold), FX and crypto if meaningfully market-moving, and large M&A or regulatory actions. Avoid niche single-company items unless they broadly move markets.",
+    "JSON schema:",
+    "{",
+    '  "headlines": [',
+    '    { "id": "string", "title": "string", "summary": "string", "tldr": "string", "url": "string", "publishedDate": "ISO string", "site": "string", "image": null }',
+    "  ],",
+    '  "marketRecap": { "paragraphs": ["string","string"], "tldr": "string", "sentiment": "positive|negative|neutral|volatile", "dominantSector": "tech|finance|energy|healthcare|retail|crypto|general" },',
+    '  "lastUpdated": "ISO string"',
+    "}",
+    "Rules:",
+    "- headlines: 6-8 items; credible sources; unique titles; published within last 24h; readable for the requested user level.",
+    "- marketRecap: exactly 2 paragraphs; concise; consistent with headlines; set sentiment and dominantSector appropriately.",
+    "- Use publisher domain or name in 'site'. Set 'image' to null.",
+  ].join("\n");
+
+  const user = [
+    `Generate today's (${today}) US market overview and headlines tailored for user level: ${userLevel}.`,
+    "Style rules:",
+    "- Use plain language. For 'intermediate', write so a college freshman can understand. For 'advanced', write so a college junior can understand. Avoid heavy jargon; if a term is needed, briefly explain it in simple words.",
+    "- Market recap must be specific: mention what major indexes did (up/down and ~magnitude), any key macro catalysts (e.g., Fed remarks, CPI surprise), and the top sectors up/down. Keep exactly 2 short paragraphs, 2-3 sentences each.",
+    "- Headlines should be broad market stories, not narrow micro headlines. Include the outlet name or domain in 'site'.",
+    "Output JSON only using the schema above. No backticks.",
+  ].join("\n");
+
+  const candidateModels = [
+    'sonar-pro',
+    'sonar-medium',
+    'sonar-small'
   ];
 
-  return headlines;
+  let content = '';
+  let lastError: string | null = null;
+
+  for (const model of candidateModels) {
+    const resp = await fetch('https://api.perplexity.ai/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${perplexityKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model,
+        temperature: 0.3,
+        max_tokens: 1200,
+        response_format: {
+          type: 'json_schema',
+          json_schema: {
+            name: 'HeadlinesResponse',
+            strict: true,
+            schema: {
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                headlines: {
+                  type: 'array',
+                  minItems: 6,
+                  maxItems: 8,
+                  items: {
+                    type: 'object',
+                    additionalProperties: false,
+                    properties: {
+                      id: { type: 'string' },
+                      title: { type: 'string' },
+                      summary: { type: 'string' },
+                      tldr: { type: 'string' },
+                      url: { type: 'string' },
+                      publishedDate: { type: 'string' },
+                      site: { type: 'string' },
+                      image: { type: ['string','null'] }
+                    },
+                    required: ['id','title','summary','tldr','url','publishedDate','site','image']
+                  }
+                },
+                marketRecap: {
+                  type: 'object',
+                  additionalProperties: false,
+                  properties: {
+                    paragraphs: {
+                      type: 'array',
+                      minItems: 2,
+                      maxItems: 2,
+                      items: { type: 'string' }
+                    },
+                    tldr: { type: 'string' },
+                    sentiment: { type: 'string', enum: ['positive','negative','neutral','volatile'] },
+                    dominantSector: { type: 'string', enum: ['tech','finance','energy','healthcare','retail','crypto','general'] }
+                  },
+                  required: ['paragraphs','tldr','sentiment','dominantSector']
+                },
+                lastUpdated: { type: 'string' }
+              },
+              required: ['headlines','marketRecap','lastUpdated']
+            }
+          }
+        },
+        messages: [
+          { role: 'system', content: system },
+          { role: 'user', content: user }
+        ]
+      }),
+    });
+
+    if (!resp.ok) {
+      let body = '';
+      try { body = await resp.text(); } catch (_) { body = ''; }
+      lastError = `Perplexity error: ${resp.status} ${body}`;
+      continue;
+    }
+
+    const data = await resp.json();
+    const returned = data?.choices?.[0]?.message?.content;
+    if (returned && typeof returned === 'object') {
+      // Some providers may already return an object when response_format is used
+      content = JSON.stringify(returned);
+    } else {
+      content = returned || '';
+    }
+    if (content) break;
+  }
+
+  if (!content) {
+    throw new Error(lastError || 'Perplexity did not return content');
+  }
+
+  // Try to parse the content as JSON; if it contains text, extract a JSON block
+  let parsed: any;
+  try {
+    parsed = JSON.parse(content);
+  } catch {
+    // Strip code fences if present
+    const fenced = content.match(/```(?:json)?\n([\s\S]*?)```/i);
+    if (fenced && fenced[1]) {
+      parsed = JSON.parse(fenced[1]);
+    } else {
+      // Find the first '{' and last '}' to capture a JSON object
+      const start = content.indexOf('{');
+      const end = content.lastIndexOf('}');
+      if (start !== -1 && end !== -1 && end > start) {
+        parsed = JSON.parse(content.slice(start, end + 1));
+      } else {
+        throw new Error('Perplexity returned non-JSON content');
+      }
+    }
+  }
+
+  if (!parsed || !Array.isArray(parsed.headlines) || !parsed.marketRecap) {
+    throw new Error('Perplexity returned unexpected shape');
+  }
+
+  const response: HeadlinesResponse = {
+    headlines: parsed.headlines.slice(0, 8),
+    marketRecap: parsed.marketRecap,
+    lastUpdated: new Date().toISOString(),
+  };
+
+  return response;
+}
+
+async function fetchPolygonHeadlines(apiKey: string): Promise<NewsArticle[]> {
+  const twelveHoursAgo = new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString();
+  const url = `https://api.polygon.io/v2/reference/news?limit=50&order=desc&published_utc.gte=${encodeURIComponent(twelveHoursAgo)}&apiKey=${apiKey}`;
+  const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+  if (!res.ok) throw new Error(`Polygon error: ${res.status}`);
+  const json = await res.json();
+  const results = json.results || [];
+  // Map to NewsArticle shape
+  return results.map((r: any) => ({
+    article_id: r.id || r.url,
+    title: r.title,
+    description: r.description,
+    content: r.description,
+    link: r.article_url || r.url,
+    pubDate: r.published_utc,
+    source_id: r.publisher?.name || 'Polygon',
+    image_url: r.image_url || null
+  }));
+}
+
+async function fetchFinnhubNews(apiKey: string): Promise<NewsArticle[]> {
+  // General category returns latest broad market news
+  const url = `https://finnhub.io/api/v1/news?category=general&token=${apiKey}`;
+  const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+  if (!res.ok) throw new Error(`Finnhub error: ${res.status}`);
+  const arr = await res.json();
+  return (arr || []).map((n: any) => ({
+    article_id: n.id?.toString() || n.url,
+    title: n.headline,
+    description: n.summary,
+    content: n.summary,
+    link: n.url,
+    pubDate: n.datetime ? new Date(n.datetime * 1000).toISOString() : new Date().toISOString(),
+    source_id: n.source || 'Finnhub',
+    image_url: n.image || null
+  }));
+}
+
+function dedupeByTitle(articles: NewsArticle[]): NewsArticle[] {
+  const seen = new Set<string>();
+  const out: NewsArticle[] = [];
+  for (const a of articles) {
+    const key = (a.title || '').trim().toLowerCase();
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    out.push(a);
+  }
+  return out;
+}
+
+// Build live headlines from Polygon then post-process
+async function buildLiveHeadlines(userLevel: string, polygonKey: string): Promise<ProcessedHeadline[]> {
+  const raw = await fetchPolygonHeadlines(polygonKey);
+  const deduped = dedupeByTitle(raw);
+  const processed = processNewsArticles(deduped, userLevel).slice(0, 8);
+  return processed;
 }
 
 function getUserLevelSummary(userLevel: string, topic: string, baseSummary: string): string {
@@ -185,89 +330,20 @@ function getUserLevelTLDR(userLevel: string, topic: string, baseTLDR: string): s
   }
 }
 
-function generateMarketRecap(userLevel: string = 'beginner'): MarketRecap {
-  const sectors = ['technology', 'healthcare', 'energy', 'financial services', 'consumer goods', 'industrials', 'real estate'];
-  const sentiments = ['positive', 'mixed', 'optimistic', 'volatile'];
-  const sentiment = sentiments[Math.floor(Math.random() * sentiments.length)];
-  const dominantSector = sectors[Math.floor(Math.random() * sectors.length)];
-  
-  // Generate specific market data
-  const marketMoves = ['+2.3%', '+1.8%', '-0.7%', '+3.1%', '-1.2%', '+2.7%', '+0.9%'];
-  const volumeData = ['157M', '234M', '189M', '278M', '312M', '145M', '203M'];
-  const marketMove = marketMoves[Math.floor(Math.random() * marketMoves.length)];
-  const volume = volumeData[Math.floor(Math.random() * volumeData.length)];
-  
-  const companies = {
-    technology: ['Microsoft', 'Apple', 'NVIDIA', 'Google', 'Amazon', 'Meta', 'Tesla'],
-    healthcare: ['Johnson & Johnson', 'Pfizer', 'UnitedHealth', 'Merck', 'AbbVie', 'Moderna'],
-    energy: ['ExxonMobil', 'Chevron', 'ConocoPhillips', 'EOG Resources', 'Schlumberger'],
-    'financial services': ['JPMorgan Chase', 'Bank of America', 'Goldman Sachs', 'Morgan Stanley', 'Wells Fargo'],
-    'consumer goods': ['Procter & Gamble', 'Coca-Cola', 'Nike', 'Walmart', 'Target'],
-    industrials: ['Boeing', 'Caterpillar', 'General Electric', '3M', 'Honeywell'],
-    'real estate': ['American Tower', 'Prologis', 'Crown Castle', 'Realty Income', 'Digital Realty']
-  };
-  
-  const sectorCompanies = companies[dominantSector] || companies.technology;
-  const leadingCompany = sectorCompanies[Math.floor(Math.random() * sectorCompanies.length)];
-  const secondaryCompany = sectorCompanies[Math.floor(Math.random() * sectorCompanies.length)];
-  
-  const specificEvents = [
-    'quarterly earnings beats',
-    'FDA approval announcements',
-    'merger and acquisition activity',
-    'upgraded analyst ratings',
-    'strong guidance revisions',
-    'breakthrough technology patents',
-    'major contract wins',
-    'regulatory approval breakthroughs'
-  ];
-  
-  const currentEvent = specificEvents[Math.floor(Math.random() * specificEvents.length)];
-  
-  const economicIndicators = [
-    'Consumer Price Index showing 2.1% annual inflation',
-    'unemployment rate holding steady at 3.7%',
-    'GDP growth revised upward to 2.8%',
-    'retail sales increasing 1.3% month-over-month',
-    'housing starts up 4.2% from previous month',
-    'manufacturing PMI reaching 52.8',
-    'initial jobless claims declining to 245,000'
-  ];
-  
-  const indicator = economicIndicators[Math.floor(Math.random() * economicIndicators.length)];
-
-  let paragraph1 = '';
-  let paragraph2 = '';
-  let tldr = '';
-
-  switch (userLevel) {
-    case 'beginner':
-      paragraph1 = `Today the stock market ${sentiment === 'positive' ? 'went up' : sentiment === 'mixed' ? 'was mixed' : 'went down'}. Companies in the ${dominantSector} sector did well, especially ${leadingCompany}. This means people who own stocks in these companies saw their investments gain value.`;
-      paragraph2 = `When the market does well, it's good news for people's retirement savings and investment accounts. These market changes affect everyone's long-term savings, so it's important to stay invested in a variety of different stocks and funds.`;
-      tldr = `The market was ${sentiment} today, with ${dominantSector} companies like ${leadingCompany} doing well.`;
-      break;
-    case 'intermediate':
-      paragraph1 = `Market indices reflected ${sentiment} sentiment with ${marketMove} movement on ${volume} volume, driven by ${currentEvent} across ${dominantSector} names. ${leadingCompany} and ${secondaryCompany} outperformed benchmarks with institutional accumulation evident in options flow and block trades.`;
-      paragraph2 = `Portfolio rebalancing favors ${dominantSector} exposure given ${indicator} and sector rotation dynamics. Active managers are positioning for continued outperformance through tactical allocation shifts, while factor-based strategies are showing preference for quality and momentum tilts in current market conditions.`;
-      tldr = `${sentiment.charAt(0).toUpperCase() + sentiment.slice(1)} session ${marketMove} led by ${dominantSector} strength in ${leadingCompany} and peers on ${currentEvent}.`;
-      break;
-    case 'advanced':
-      paragraph1 = `Cross-asset volatility surfaces indicated ${sentiment} regime with ${marketMove} equity beta expansion and ${volume} notional turnover concentrated in ${dominantSector} names. ${leadingCompany}'s implied volatility term structure steepened following ${currentEvent}, creating gamma opportunities for systematic strategies.`;
-      paragraph2 = `Factor decomposition shows ${dominantSector} alpha generation through ${indicator} correlation breakdown. Systematic overlays are maintaining long convexity while implementing dynamic hedging strategies through variance swaps and structured products to capture sector-specific risk premiums.`;
-      tldr = `${sentiment.charAt(0).toUpperCase() + sentiment.slice(1)} factor exposure ${marketMove} with ${dominantSector} systematic alpha via ${leadingCompany} volatility mispricing.`;
-      break;
-    default:
-      paragraph1 = `Today's market showed ${sentiment} performance with ${marketMove} movement driven by ${currentEvent} in ${dominantSector} companies like ${leadingCompany}.`;
-      paragraph2 = `Market participants are closely monitoring ${indicator} for continued investment opportunities and portfolio adjustments.`;
-      tldr = `${sentiment.charAt(0).toUpperCase() + sentiment.slice(1)} market day with ${dominantSector} focus on ${leadingCompany}.`;
+// Build two-paragraph recap from Finnhub articles (distinct source from Polygon)
+async function buildMarketRecap(userLevel: string, finnhubKey: string, headlinesForContext: ProcessedHeadline[]): Promise<MarketRecap> {
+  try {
+    const finnhubArticles = await fetchFinnhubNews(finnhubKey);
+    const recent = finnhubArticles.slice(0, 30);
+    const processed = processNewsArticles(recent, userLevel);
+    // Use processed Finnhub items for recap; fall back to polygon headlines if needed
+    const basis = processed.length > 0 ? processed : headlinesForContext;
+    const recap = recapFromHeadlines(basis, userLevel);
+    return recap;
+  } catch (_) {
+    // If Finnhub fails, summarize from polygon headlines to keep distinct content
+    return recapFromHeadlines(headlinesForContext, userLevel);
   }
-
-  return {
-    paragraphs: [paragraph1, paragraph2],
-    tldr: tldr,
-    sentiment: sentiment,
-    dominantSector: dominantSector
-  };
 }
 
 serve(async (req) => {
@@ -278,61 +354,82 @@ serve(async (req) => {
   try {
     // Get user level from request
     let userLevel = 'beginner';
+    let debug = false;
     try {
       const requestData = await req.json();
       userLevel = requestData.userLevel || 'beginner';
+      debug = Boolean(requestData.debug);
     } catch {
       userLevel = 'beginner';
     }
 
-    // Check if we should use cached content
-    if (!shouldUpdateContent() && cachedContent) {
-      console.log('Using cached content - no update needed');
-      return new Response(
-        JSON.stringify(cachedContent),
-        { 
-          headers: { 
-            ...corsHeaders, 
-            'Content-Type': 'application/json' 
-          } 
-        }
-      );
+    const perplexityKey = Deno.env.get('PERPLEXITY_API_KEY') || '';
+    const polygonKey = Deno.env.get('POLYGON_API_KEY') || '';
+    const finnhubKey = Deno.env.get('FINNHUB_API_KEY') || Deno.env.get('FINNHUB_APIKEY') || '';
+    if (!perplexityKey) console.warn('PERPLEXITY_API_KEY missing');
+    if (!polygonKey) console.warn('POLYGON_API_KEY missing');
+    if (!finnhubKey) console.warn('FINNHUB_API_KEY missing');
+
+    // Window gating
+    const { tag, shouldRefresh } = currentWindowTag();
+    if (!shouldRefresh && cachedContent && lastWindowTag === tag) {
+      return new Response(JSON.stringify(cachedContent), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    console.log('Generating fresh finance headlines and market recap...');
-    
-    // Generate headlines and market recap
-    const processedHeadlines = generateFinanceHeadlines(userLevel);
-    const marketRecap = generateMarketRecap(userLevel);
+    // Prefer Perplexity when configured
+    if (perplexityKey) {
+      try {
+        const response = await buildWithPerplexity(userLevel, perplexityKey);
+        cachedContent = response;
+        lastWindowTag = tag;
+        return new Response(JSON.stringify(response), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+      } catch (err) {
+        console.error('Perplexity generation failed:', err);
+        if (debug) {
+          const fallbackHeadlines = getFallbackHeadlines();
+          const fallbackRecap = recapFromHeadlines(fallbackHeadlines, userLevel);
+          return new Response(
+            JSON.stringify({
+              headlines: fallbackHeadlines,
+              marketRecap: fallbackRecap,
+              lastUpdated: new Date().toISOString(),
+              error: 'Perplexity failed',
+              debug: {
+                hasPerplexityKey: Boolean(perplexityKey),
+                hasPolygonKey: Boolean(polygonKey),
+                hasFinnhubKey: Boolean(finnhubKey),
+                windowTag: tag,
+                message: (err as Error)?.message || 'unknown'
+              }
+            }),
+            { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+      }
+    }
 
-    console.log(`Generated ${processedHeadlines.length} finance headlines for user level: ${userLevel}`);
+    // Fallback to legacy Polygon + Finnhub path
+    console.log('Perplexity not configured, falling back to Polygon + Finnhub...');
+    const headlines = polygonKey ? await buildLiveHeadlines(userLevel, polygonKey) : [];
+    const recap = await buildMarketRecap(userLevel, finnhubKey, headlines);
 
     const response: HeadlinesResponse = {
-      headlines: processedHeadlines,
-      marketRecap: marketRecap,
+      headlines,
+      marketRecap: recap,
       lastUpdated: new Date().toISOString()
     };
 
-    // Cache the new content
     cachedContent = response;
-    lastUpdateTime = new Date();
+    lastWindowTag = tag;
 
-    return new Response(
-      JSON.stringify(response),
-      { 
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json' 
-        } 
-      }
-    )
+    return new Response(JSON.stringify(response), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
 
   } catch (error) {
     console.error('Error generating headlines:', error)
     
-    // Return fallback data
-    const fallbackHeadlines = generateFinanceHeadlines('beginner');
-    const fallbackRecap = generateMarketRecap('beginner');
+    // Return fallback data derived from local fallback headlines
+    const fallbackHeadlines = getFallbackHeadlines();
+    const fallbackRecap = recapFromHeadlines(fallbackHeadlines, 'beginner');
 
     const fallbackResponse: HeadlinesResponse = {
       headlines: fallbackHeadlines,

@@ -391,7 +391,8 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
           created_by: user.id,
           duration: '5:00', // Default duration string
           company: 'Phil\'s Friends',
-          course_category: formData.category,
+          // Use the active tab's mapped category (e.g., careers-in-finance, soft-skills, general)
+          course_category: defaultCategory || '',
           video_url: source_url || '',
           thumbnail_url
         })

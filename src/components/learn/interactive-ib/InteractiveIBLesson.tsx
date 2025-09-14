@@ -20,6 +20,7 @@ interface InteractiveIBLessonProps {
   lesson: InteractiveLessonContent;
   onBack: () => void;
   onComplete: () => void;
+  customTermsMap?: Record<string, { term: string; definition: string; analogy: string }>;
 }
 
 const InteractiveIBLesson: React.FC<InteractiveIBLessonProps> = ({
@@ -32,7 +33,9 @@ const InteractiveIBLesson: React.FC<InteractiveIBLessonProps> = ({
   const { progress, markTermMastered, saveQuizScore, markActivityCompleted, getProgressPercentage } = useLessonProgress(lesson.level.toString());
 
   const userLevel = profile?.app_version || 'beginner';
-  const ibTerms = getIBTermsForLevel(userLevel);
+  const ibTerms = (typeof lesson.level === 'number' && lesson.level > 0 && lesson.level <= 7 && !arguments[0]?.customTermsMap)
+    ? getIBTermsForLevel(userLevel)
+    : (arguments[0]?.customTermsMap || getIBTermsForLevel(userLevel));
 
   // Get key terms from the lesson content using keyTerms instead of keyPoints
   const keyTerms = lesson.keyTerms.map(termKey => {

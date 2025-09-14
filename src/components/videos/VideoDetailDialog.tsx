@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -6,9 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { supabase } from '@/integrations/supabase/client';
+import { useLocalStorage } from '@/hooks/use-local-storage';
 import { 
   Play, 
   Clock, 
@@ -42,6 +44,23 @@ interface Video {
   storage_path?: string;
 }
 
+interface WordTimestamp {
+  word: string;
+  start: number;
+  end: number;
+  confidence: number;
+}
+
+interface ViewerSegment {
+  id: string;
+  start_time: number;
+  end_time: number;
+  title: string;
+  description: string;
+  keywords: string[];
+  segment_type: string;
+}
+
 interface VideoDetailDialogProps {
   video: Video | null;
   open: boolean;
@@ -59,13 +78,54 @@ const VideoDetailDialog: React.FC<VideoDetailDialogProps> = ({
 
   const [loading, setLoading] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [embedBaseUrl, setEmbedBaseUrl] = useState<string | null>(null);
+  const [transcript, setTranscript] = useState('');
+  const [wordTimestamps, setWordTimestamps] = useState<WordTimestamp[]>([]);
+  const [segments, setSegments] = useState<ViewerSegment[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [highlightedIndices, setHighlightedIndices] = useState<number[]>([]);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [showQuiz, setShowQuiz] = useState(false);
+  const [activeQuizSeg, setActiveQuizSeg] = useState<ViewerSegment | null>(null);
+  const [quizQuestion, setQuizQuestion] = useState('');
+  const [quizChoices, setQuizChoices] = useState<string[]>([]);
+  const [quizCorrectIndex, setQuizCorrectIndex] = useState(0);
+  const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
+  const [answeredQuizIds, setAnsweredQuizIds] = useState<string[]>([]);
+
+  const [adminSettings] = useLocalStorage('phils_friends_admin_settings', {
+    autoTranscriptionEnabled: true,
+    autoPublishAfterTranscription: true,
+    viewerTranscriptEnabled: true,
+    viewerChaptersEnabled: true,
+    enableComments: false,
+    points: { start: 5, watch50: 10, complete: 10 }
+  });
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
     if (video && open) {
       loadVideoUrl();
+      fetchTranscriptData();
+      fetchSegments();
       trackVideoView();
     }
   }, [video, open]);
+
+  useEffect(() => {
+    if (!searchQuery || wordTimestamps.length === 0) {
+      setHighlightedIndices([]);
+      return;
+    }
+    const q = searchQuery.toLowerCase();
+    const matches: number[] = [];
+    wordTimestamps.forEach((w, i) => {
+      if (w.word.toLowerCase().includes(q)) matches.push(i);
+    });
+    setHighlightedIndices(matches);
+  }, [searchQuery, wordTimestamps]);
 
   const loadVideoUrl = async () => {
     if (!video) return;
@@ -75,7 +135,9 @@ const VideoDetailDialog: React.FC<VideoDetailDialogProps> = ({
         // Convert YouTube URL to embed URL
         const videoId = extractYouTubeVideoId(video.source_url);
         if (videoId) {
-          setVideoUrl(`https://www.youtube.com/embed/${videoId}`);
+          const base = `https://www.youtube.com/embed/${videoId}`;
+          setEmbedBaseUrl(base);
+          setVideoUrl(base);
         }
       } else if (video.storage_path) {
         // Get signed URL for uploaded video
@@ -95,6 +157,58 @@ const VideoDetailDialog: React.FC<VideoDetailDialogProps> = ({
     }
   };
 
+  const parseQuizFromSegment = (seg: ViewerSegment) => {
+    if (!seg) return null;
+    // Prefer keywords entry quiz::JSON
+    const keywords = (seg as any).keywords as string[] | undefined;
+    if (Array.isArray(keywords)) {
+      const quizEntry = keywords.find(k => typeof k === 'string' && k.startsWith('quiz::')) as string | undefined;
+      if (quizEntry) {
+        try {
+          const json = quizEntry.substring('quiz::'.length);
+          const payload = JSON.parse(json);
+          if (payload && Array.isArray(payload.choices)) {
+            return payload as { question: string; choices: string[]; correctIndex: number };
+          }
+        } catch (_) {
+          // ignore
+        }
+      }
+    }
+    return null;
+  };
+
+  const fetchTranscriptData = async () => {
+    if (!video) return;
+    try {
+      const { data, error } = await supabase
+        .from('video_transcripts')
+        .select('*')
+        .eq('video_id', video.id)
+        .single();
+      if (error) return; // gracefully ignore if none yet
+      setTranscript(data?.raw_content || '');
+      setWordTimestamps(Array.isArray(data?.word_timestamps) ? data.word_timestamps as unknown as WordTimestamp[] : []);
+    } catch (e) {
+      // ignore
+    }
+  };
+
+  const fetchSegments = async () => {
+    if (!video) return;
+    try {
+      const { data, error } = await supabase
+        .from('video_segments')
+        .select('*')
+        .eq('video_id', video.id)
+        .order('start_time');
+      if (error) return;
+      setSegments((data || []) as unknown as ViewerSegment[]);
+    } catch (e) {
+      // ignore
+    }
+  };
+
   const extractYouTubeVideoId = (url: string) => {
     const patterns = [
       /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/
@@ -105,6 +219,106 @@ const VideoDetailDialog: React.FC<VideoDetailDialogProps> = ({
       if (match) return match[1];
     }
     return null;
+  };
+
+  const seekTo = (seconds: number) => {
+    if (!video) return;
+    const s = Math.max(0, Math.floor(seconds));
+    if (video.source_type === 'youtube') {
+      if (embedBaseUrl && iframeRef.current) {
+        const autoplayUrl = `${embedBaseUrl}?start=${s}&autoplay=1`;
+        iframeRef.current.src = autoplayUrl;
+      }
+    } else if (videoRef.current) {
+      videoRef.current.currentTime = s;
+      videoRef.current.play().catch(() => {});
+    }
+  };
+
+  const handleWordClick = (w: WordTimestamp) => {
+    seekTo(w.start);
+  };
+
+  const jumpToSegment = (seg: ViewerSegment) => {
+    const quiz = parseQuizFromSegment(seg);
+    if (quiz && !answeredQuizIds.includes(seg.id)) {
+      pausePlayback();
+      setActiveQuizSeg(seg);
+      setQuizQuestion(quiz.question);
+      setQuizChoices(quiz.choices);
+      setQuizCorrectIndex(quiz.correctIndex ?? 0);
+      setSelectedChoice(null);
+      setShowQuiz(true);
+      return;
+    }
+    seekTo(seg.start_time);
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const pausePlayback = () => {
+    if (video?.source_type === 'youtube') {
+      if (embedBaseUrl && iframeRef.current) {
+        iframeRef.current.src = embedBaseUrl; // reload without autoplay
+      }
+    } else if (videoRef.current) {
+      videoRef.current.pause();
+    }
+  };
+
+  const onTimeUpdate = () => {
+    if (!videoRef.current || !video) return;
+    const t = videoRef.current.currentTime;
+    setCurrentTime(t);
+    // If we reach a quiz segment start and not answered, trigger quiz
+    const pending = segments.find(seg => (seg as any).segment_type === 'quiz' && !answeredQuizIds.includes(seg.id) && t >= seg.start_time && t < seg.start_time + 0.5);
+    if (pending) {
+      const quiz = parseQuizFromSegment(pending);
+      if (quiz) {
+        pausePlayback();
+        setActiveQuizSeg(pending);
+        setQuizQuestion(quiz.question);
+        setQuizChoices(quiz.choices);
+        setQuizCorrectIndex(quiz.correctIndex ?? 0);
+        setSelectedChoice(null);
+        setShowQuiz(true);
+      }
+    }
+  };
+
+  const awardPoints = async (eventType: string, points: number) => {
+    try {
+      if (!video || !user) return;
+      await supabase
+        .from('video_points')
+        .insert({
+          user_id: user.id,
+          video_id: video.id,
+          event_type: eventType,
+          points_earned: points
+        });
+    } catch (_) {
+      // ignore
+    }
+  };
+
+  const handleQuizSubmit = async () => {
+    if (selectedChoice == null || !activeQuizSeg) return;
+    const isCorrect = selectedChoice === quizCorrectIndex;
+    if (isCorrect) {
+      setAnsweredQuizIds(prev => [...prev, activeQuizSeg.id]);
+      setShowQuiz(false);
+      toast({ title: 'Correct!', description: 'Great job, continuing...' });
+      await awardPoints('QUIZ_CORRECT', adminSettings?.points?.watch50 ?? 10);
+      // Resume playback from segment start
+      seekTo(activeQuizSeg.start_time);
+    } else {
+      toast({ title: 'Try again', description: 'Please select the correct answer', variant: 'destructive' });
+    }
   };
 
   const trackVideoView = async () => {
@@ -128,7 +342,7 @@ const VideoDetailDialog: React.FC<VideoDetailDialogProps> = ({
           user_id: user.id,
           video_id: video.id,
           event_type: 'VIDEO_STARTED',
-          points_earned: 5
+          points_earned: adminSettings?.points?.start ?? 5
         });
 
     } catch (error) {
@@ -198,6 +412,7 @@ const VideoDetailDialog: React.FC<VideoDetailDialogProps> = ({
               {videoUrl ? (
                 video.source_type === 'youtube' ? (
                   <iframe
+                    ref={iframeRef}
                     src={videoUrl}
                     title={video.name}
                     className="w-full h-full"
@@ -206,10 +421,16 @@ const VideoDetailDialog: React.FC<VideoDetailDialogProps> = ({
                   />
                 ) : (
                   <video
+                    ref={videoRef}
                     src={videoUrl}
                     controls
                     className="w-full h-full"
                     poster={video.thumbnail_url}
+                    onTimeUpdate={onTimeUpdate}
+                    onEnded={async () => {
+                      await awardPoints('VIDEO_COMPLETED', adminSettings?.points?.complete ?? 10);
+                      toast({ title: 'Completed!', description: 'You earned completion points.' });
+                    }}
                   >
                     Your browser does not support the video tag.
                   </video>
@@ -262,6 +483,81 @@ const VideoDetailDialog: React.FC<VideoDetailDialogProps> = ({
                   </p>
                 </div>
               )}
+            </div>
+
+            {/* Transcript */}
+            <div className="space-y-4">
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg">Transcript</CardTitle>
+                  <CardDescription>Click words to jump to that moment</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="relative mb-3">
+                    <Input
+                      placeholder="Search transcript..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-3"
+                    />
+                  </div>
+                  <div className="max-h-64 overflow-y-auto border rounded p-3">
+                    {wordTimestamps.length > 0 ? (
+                      <div className="space-y-1">
+                        {wordTimestamps.map((w, i) => (
+                          <span
+                            key={i}
+                            className={`inline-block mr-1 mb-1 px-1 py-0.5 rounded cursor-pointer text-sm ${highlightedIndices.includes(i) ? 'bg-yellow-200 dark:bg-yellow-800' : 'hover:bg-muted'}`}
+                            title={`${formatTime(w.start)} - ${formatTime(w.end)}`}
+                            onClick={() => handleWordClick(w)}
+                          >
+                            {w.word}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-sm text-muted-foreground whitespace-pre-wrap">
+                        {transcript || 'Transcript will appear here once available.'}
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Chapters / Segments */}
+            <div className="space-y-4">
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg">Chapters</CardTitle>
+                  <CardDescription>Jump to key sections</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {segments.length === 0 ? (
+                    <div className="text-sm text-muted-foreground">No chapters yet.</div>
+                  ) : (
+                    <div className="space-y-2">
+                      {segments.map((seg) => (
+                        <div
+                          key={seg.id}
+                          className="p-3 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors"
+                          onClick={() => jumpToSegment(seg)}
+                        >
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-medium text-sm">{seg.title}</h4>
+                            <Badge variant="secondary" className="text-xs">
+                              {formatTime(seg.start_time)} - {formatTime(seg.end_time)}
+                            </Badge>
+                          </div>
+                          {seg.description && (
+                            <p className="text-xs text-muted-foreground mt-1">{seg.description}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </div>
           </div>
 
@@ -345,6 +641,33 @@ const VideoDetailDialog: React.FC<VideoDetailDialogProps> = ({
             </ScrollArea>
           </div>
         </div>
+
+        {/* Quiz Modal (simple) */}
+        {showQuiz && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-background border rounded-lg p-6 w-full max-w-md">
+              <h3 className="text-lg font-semibold mb-2">Checkpoint Quiz</h3>
+              <p className="mb-4">{quizQuestion}</p>
+              <div className="space-y-2">
+                {quizChoices.map((choice, idx) => (
+                  <label key={idx} className={`flex items-center gap-2 p-2 border rounded cursor-pointer ${selectedChoice === idx ? 'bg-muted' : ''} ${showQuiz && selectedChoice != null ? (idx === quizCorrectIndex ? 'border-green-500' : selectedChoice === idx ? 'border-red-500' : '') : ''}`}>
+                    <input
+                      type="radio"
+                      name="quiz-choice"
+                      checked={selectedChoice === idx}
+                      onChange={() => setSelectedChoice(idx)}
+                    />
+                    <span>{choice}</span>
+                  </label>
+                ))}
+              </div>
+              <div className="flex justify-end gap-2 mt-4">
+                <Button variant="outline" onClick={() => setShowQuiz(false)}>Cancel</Button>
+                <Button onClick={handleQuizSubmit}>Submit</Button>
+              </div>
+            </div>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );

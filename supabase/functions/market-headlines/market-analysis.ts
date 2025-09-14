@@ -128,40 +128,44 @@ function generateBeginnerTldr(sentiment: string, topic: string): string {
 
 function generateIntermediateParagraph1(sentiment: string, topic: string, topics: TopicAnalysis): string {
   const sectorCount = Object.values(topics).filter(count => count > 0).length;
-  const leadingSector = topic === 'tech' ? 'technology sector' : topic === 'finance' ? 'financial services' : topic === 'energy' ? 'energy sector' : 'mixed sectors';
+  const leadingSector = topic === 'tech' ? 'technology' : topic === 'finance' ? 'financials' : topic === 'energy' ? 'energy' : topic;
   const currentDate = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-  
-  return `As of ${currentDate}, market sentiment reflected ${sentiment} momentum across ${sectorCount} key sectors, with the ${leadingSector} driving primary investor focus and capital allocation decisions. Equity valuations responded dynamically to fundamental news flow, corporate earnings updates, and macroeconomic indicators that influence sector rotation strategies among institutional portfolios. The broader market's price action suggests that professional investors are carefully weighing risk-adjusted returns while positioning for potential shifts in monetary policy and economic growth trajectories. Current market conditions indicate a complex interplay between technical indicators and fundamental analysis driving investment decisions across asset classes.`;
+
+  return `As of ${currentDate}, the market tone was ${sentiment}. Attention was centered on ${leadingSector}, with news tied to rates, inflation, earnings, and policy. Moves were broad across ~${sectorCount} sectors.`;
 }
 
 function generateIntermediateParagraph2(sectors: string[], sentiments: SentimentAnalysis): string {
-  const sentimentRatio = Math.round((sentiments.positive / (sentiments.positive + sentiments.negative)) * 100);
-  const totalSectors = sectors.length;
-  
-  return `Portfolio managers and institutional investors are strategically positioning for continued volatility as ${sentimentRatio}% of market-moving news carried positive implications across ${totalSectors} distinct sectors. The broad market's response suggests risk appetite remains measured, with sector-specific catalysts driving individual equity performance more than systematic market factors or macro themes. Active fund managers are leveraging this environment to generate alpha through security selection and tactical asset allocation, while passive investors continue to benefit from long-term diversification strategies. The current market regime favors investors who can identify quality companies with strong fundamentals and sustainable competitive advantages, particularly as earnings season reveals which businesses can maintain profitability amid changing economic conditions.`;
+  const total = sentiments.positive + sentiments.negative + sentiments.neutral || 1;
+  const positiveShare = Math.round((sentiments.positive / total) * 100);
+  const sectorWord = sectors.length > 0 ? sectors.length.toString() : 'several';
+
+  return `${positiveShare}% of notable stories leaned positive across ${sectorWord} sectors. Investors are watching the next data releases and Fed comments to confirm the trend.`;
 }
 
 function generateIntermediateTldr(sentiment: string, topic: string): string {
   const todayDate = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
-  return `On ${todayDate}, markets showed ${sentiment} bias with ${topic} sector leadership driving institutional positioning and retail investor sentiment. Professional investors are focusing on fundamental analysis and sector rotation strategies while managing portfolio risk in the current environment.`;
+  const leader = topic === 'tech' ? 'technology' : topic === 'finance' ? 'financials' : topic;
+  return `On ${todayDate}, markets had a ${sentiment} tilt with ${leader} in focus. Traders watched rates, inflation, and earnings for direction.`;
 }
 
 function generateAdvancedParagraph1(sentiment: string, topic: string, topics: TopicAnalysis): string {
-  const sectorDispersion = Object.values(topics).filter(count => count > 0).length;
-  const alpha = topic === 'tech' ? 'technology beta exposure' : topic === 'finance' ? 'financial sector duration risk' : 'sector-neutral positioning';
+  const sectorCount = Object.values(topics).filter(count => count > 0).length;
+  const leader = topic === 'tech' ? 'technology' : topic === 'finance' ? 'financials' : topic === 'energy' ? 'energy' : topic;
   const currentDate = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-  
-  return `As of ${currentDate}, cross-sectional momentum indicators suggest ${sentiment} market microstructure with ${sectorDispersion}-factor sector dispersion driving alpha generation opportunities across multiple timeframes and volatility regimes. Factor loadings indicate ${alpha} as the primary systematic risk driver, while idiosyncratic volatility patterns suggest active management opportunities in single-name selections and pair trade strategies. The current correlation matrix exhibits regime-dependent characteristics that favor quantitative approaches utilizing alternative risk premia and factor tilts. Portfolio construction models are indicating optimal exposure through multi-factor frameworks that capture both momentum and mean-reversion signals while maintaining appropriate hedge ratios for tail risk scenarios.`;
+
+  return `As of ${currentDate}, breadth was ${sentiment} across ~${sectorCount} sectors, with leadership in ${leader}. The tape reacted to rates, inflation prints, earnings updates, and policy signals.`;
 }
 
 function generateAdvancedParagraph2(sectors: string[], sentiments: SentimentAnalysis): string {
-  const sharpeImplication = sentiments.positive > sentiments.negative ? 'positive Sharpe ratio expectations' : 'risk-parity rebalancing';
-  const totalSectors = sectors.length;
-  
-  return `Quantitative models are pricing in ${sharpeImplication} given the current correlation matrix and volatility surface dynamics across ${totalSectors} sector classifications and their respective factor exposures. Options flow and gamma positioning suggest institutional overlays are hedging tail risks while maintaining long bias, indicating sophisticated portfolio construction amid changing market regimes and factor premium compression in alternative risk premia strategies. The term structure of implied volatility reveals opportunities for systematic volatility harvesting and delta-neutral strategies that capitalize on skew and convexity mispricings. Advanced practitioners are leveraging machine learning algorithms and alternative data sources to identify regime changes before they manifest in traditional price-based indicators, enabling superior risk-adjusted returns through dynamic factor allocation and systematic rebalancing protocols.`;
+  const total = sentiments.positive + sentiments.negative + sentiments.neutral || 1;
+  const tone = sentiments.positive > sentiments.negative ? 'constructive' : sentiments.negative > sentiments.positive ? 'cautious' : 'mixed';
+  const sectorWord = sectors.length > 0 ? sectors.length.toString() : 'several';
+
+  return `Tone was ${tone} with ${sectorWord} sectors in play. Positioning remains sensitive to upcoming data and Fed commentary.`;
 }
 
 function generateAdvancedTldr(sentiment: string, topic: string): string {
   const todayDate = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
-  return `On ${todayDate}, factor models indicate ${sentiment} alpha opportunities with ${topic} systematic exposure driving institutional flow and derivative positioning strategies. Quantitative frameworks are identifying regime-dependent opportunities through multi-factor analysis and alternative risk premia optimization in current market conditions.`;
+  const leader = topic === 'tech' ? 'technology' : topic === 'finance' ? 'financials' : topic;
+  return `On ${todayDate}, market tone was ${sentiment} with ${leader} leading. Focus stayed on rates, inflation, and earnings catalysts.`;
 }

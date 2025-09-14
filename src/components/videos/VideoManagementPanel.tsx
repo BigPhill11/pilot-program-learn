@@ -3,9 +3,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { 
@@ -23,6 +24,7 @@ import {
   FileText
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useLocalStorage } from '@/hooks/use-local-storage';
 import AdminTranscriptEditor from './AdminTranscriptEditor';
 
 interface Video {
@@ -38,6 +40,7 @@ interface Video {
   published: boolean;
   processing_status: string;
   created_at: string;
+  storage_path?: string;
 }
 
 interface VideoManagementPanelProps {
@@ -60,6 +63,17 @@ const VideoManagementPanel: React.FC<VideoManagementPanelProps> = ({
   });
   const [selectedVideoForTranscript, setSelectedVideoForTranscript] = useState<Video | null>(null);
   const [transcriptDialogOpen, setTranscriptDialogOpen] = useState(false);
+  const [editorVideoUrl, setEditorVideoUrl] = useState<string>('');
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  const [adminSettings, setAdminSettings] = useLocalStorage('phils_friends_admin_settings', {
+    autoTranscriptionEnabled: true,
+    autoPublishAfterTranscription: true,
+    viewerTranscriptEnabled: true,
+    viewerChaptersEnabled: true,
+    enableComments: false,
+    points: { start: 5, watch50: 10, complete: 10 }
+  });
 
   const fetchAdminVideos = async () => {
     try {
@@ -102,6 +116,30 @@ const VideoManagementPanel: React.FC<VideoManagementPanelProps> = ({
   useEffect(() => {
     fetchAdminVideos();
   }, []);
+
+  const openTranscriptEditor = async (video: Video) => {
+    let url = '';
+    try {
+      if (video.source_type === 'youtube' && video.source_url) {
+        // Pass the standard YouTube URL; editor will convert to embed
+        url = video.source_url;
+      } else if (video.storage_path) {
+        const { data } = supabase.storage
+          .from('phil-videos')
+          .getPublicUrl(video.storage_path);
+        url = data.publicUrl;
+      } else if (video.video_url) {
+        url = video.video_url;
+      }
+    } catch (e) {
+      // fallback to whatever is available
+      url = video.video_url || video.source_url || '';
+    }
+
+    setSelectedVideoForTranscript(video);
+    setEditorVideoUrl(url);
+    setTranscriptDialogOpen(true);
+  };
 
   const togglePublished = async (videoId: string, currentStatus: boolean) => {
     try {
@@ -192,7 +230,14 @@ const VideoManagementPanel: React.FC<VideoManagementPanelProps> = ({
           <h2 className="text-2xl font-bold text-foreground">Video Management</h2>
           <p className="text-muted-foreground">Manage and monitor your video library</p>
         </div>
-        <Settings className="h-6 w-6 text-muted-foreground" />
+        <button
+          type="button"
+          aria-label="Settings"
+          className="p-2 rounded hover:bg-muted"
+          onClick={() => setSettingsOpen(true)}
+        >
+          <Settings className="h-6 w-6 text-muted-foreground" />
+        </button>
       </div>
 
       {/* Stats Cards */}
@@ -311,10 +356,7 @@ const VideoManagementPanel: React.FC<VideoManagementPanelProps> = ({
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => {
-                            setSelectedVideoForTranscript(video);
-                            setTranscriptDialogOpen(true);
-                          }}
+                          onClick={() => openTranscriptEditor(video)}
                           title="Edit Transcript"
                         >
                           <FileText className="h-4 w-4" />
@@ -361,10 +403,115 @@ const VideoManagementPanel: React.FC<VideoManagementPanelProps> = ({
           {selectedVideoForTranscript && (
             <AdminTranscriptEditor
               videoId={selectedVideoForTranscript.id}
-              videoUrl={selectedVideoForTranscript.source_url || selectedVideoForTranscript.video_url || ''}
+              videoUrl={editorVideoUrl}
               onClose={() => setTranscriptDialogOpen(false)}
             />
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Admin Settings Dialog */}
+      <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle>Phil's Friends Settings</DialogTitle>
+            <DialogDescription>Configure processing and viewer options</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Auto-transcription on upload</p>
+                <p className="text-sm text-muted-foreground">Generate transcript and segments automatically</p>
+              </div>
+              <Switch
+                checked={!!adminSettings.autoTranscriptionEnabled}
+                onCheckedChange={(val) => setAdminSettings({ ...adminSettings, autoTranscriptionEnabled: val })}
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Auto-publish after transcription</p>
+                <p className="text-sm text-muted-foreground">Publish once processing completes</p>
+              </div>
+              <Switch
+                checked={!!adminSettings.autoPublishAfterTranscription}
+                onCheckedChange={(val) => setAdminSettings({ ...adminSettings, autoPublishAfterTranscription: val })}
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Viewer transcript</p>
+                <p className="text-sm text-muted-foreground">Show interactive transcript to viewers</p>
+              </div>
+              <Switch
+                checked={!!adminSettings.viewerTranscriptEnabled}
+                onCheckedChange={(val) => setAdminSettings({ ...adminSettings, viewerTranscriptEnabled: val })}
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Viewer chapters</p>
+                <p className="text-sm text-muted-foreground">Show chapters generated from segments</p>
+              </div>
+              <Switch
+                checked={!!adminSettings.viewerChaptersEnabled}
+                onCheckedChange={(val) => setAdminSettings({ ...adminSettings, viewerChaptersEnabled: val })}
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Comments</p>
+                <p className="text-sm text-muted-foreground">Enable time-stamped comments (coming soon)</p>
+              </div>
+              <Switch
+                checked={!!adminSettings.enableComments}
+                onCheckedChange={(val) => setAdminSettings({ ...adminSettings, enableComments: val })}
+              />
+            </div>
+
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="points-start">Points: Start</Label>
+                <Input
+                  id="points-start"
+                  type="number"
+                  value={adminSettings.points?.start ?? 5}
+                  onChange={(e) => setAdminSettings({
+                    ...adminSettings,
+                    points: { ...adminSettings.points, start: parseInt(e.target.value) || 0 }
+                  })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="points-50">Points: Watch 50%</Label>
+                <Input
+                  id="points-50"
+                  type="number"
+                  value={adminSettings.points?.watch50 ?? 10}
+                  onChange={(e) => setAdminSettings({
+                    ...adminSettings,
+                    points: { ...adminSettings.points, watch50: parseInt(e.target.value) || 0 }
+                  })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="points-complete">Points: Complete</Label>
+                <Input
+                  id="points-complete"
+                  type="number"
+                  value={adminSettings.points?.complete ?? 10}
+                  onChange={(e) => setAdminSettings({
+                    ...adminSettings,
+                    points: { ...adminSettings.points, complete: parseInt(e.target.value) || 0 }
+                  })}
+                />
+              </div>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

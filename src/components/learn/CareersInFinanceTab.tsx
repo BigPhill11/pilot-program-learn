@@ -14,6 +14,7 @@ import WealthManagementJourney from './WealthManagementJourney';
 import CorporateFinanceJourney from './CorporateFinanceJourney';
 import HedgeFundJourney from './HedgeFundJourney';
 import ManagementConsultingJourney from './ManagementConsultingJourney';
+import InvestmentBankingJourney from './InvestmentBankingJourney';
 
 const CareersInFinanceTab = () => {
     const [selectedCareer, setSelectedCareer] = useState<FinanceCareerData | null>(null);
@@ -53,9 +54,12 @@ const CareersInFinanceTab = () => {
       
       // Investment Banking - show divisions selection
       if (selectedCareer.id === 'investment-banking') {
-        setSelectedCareer(null);
-        setShowIBDivisions(true);
-        return null;
+        return (
+          <InvestmentBankingJourney 
+            onBack={() => setSelectedCareer(null)} 
+            onOpenDivisions={() => setShowIBDivisions(true)} 
+          />
+        );
       }
       
       // Use new journey for Private Equity  
