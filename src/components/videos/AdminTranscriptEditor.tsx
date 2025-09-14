@@ -749,9 +749,24 @@ const AdminTranscriptEditor: React.FC<AdminTranscriptEditorProps> = ({
                         onChange={(e) => setQuizQuestion(e.target.value)}
                       />
                       <Input
-                        placeholder="Choices (pipe-separated, e.g., Option A|Option B|Option C|Option D)"
-                        value={quizChoices}
-                        onChange={(e) => setQuizChoices(e.target.value)}
+                        placeholder="Option A"
+                        value={quizA}
+                        onChange={(e) => setQuizA(e.target.value)}
+                      />
+                      <Input
+                        placeholder="Option B"
+                        value={quizB}
+                        onChange={(e) => setQuizB(e.target.value)}
+                      />
+                      <Input
+                        placeholder="Option C"
+                        value={quizC}
+                        onChange={(e) => setQuizC(e.target.value)}
+                      />
+                      <Input
+                        placeholder="Option D"
+                        value={quizD}
+                        onChange={(e) => setQuizD(e.target.value)}
                       />
                       <Input
                         placeholder="Correct choice index (0-based)"

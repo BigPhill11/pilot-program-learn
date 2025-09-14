@@ -14,22 +14,30 @@ import { useAuth } from '@/hooks/useAuth';
 import { Upload, Youtube, AlertCircle, CheckCircle, Loader2, FileVideo, Image } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-const INDUSTRIES = [
-  'Asset Management',
-  'Investment Banking', 
-  'Private Equity',
-  'Venture Capital',
-  'Hedge Funds',
-  'Wealth Management',
+// Soft Skills Sections - matches existing modules
+const SOFT_SKILLS_SECTIONS = [
+  'Networking Like a Pro',
+  'Professional Interviewing Mastery',
+  'Business Communication Excellence',
+  'Workplace Etiquette',
+  'Dress for Success',
+  'Working Women Excellence',
+  'Black in Business Excellence'
+];
+
+// Video Types for General Videos
+const VIDEO_TYPES = [
+  'Stock Market',
+  'Personal Finance',
+  'Economics',
   'Other'
 ];
 
-const ROLE_TIERS = [
-  'Intern',
-  'Analyst', 
-  'Associate',
-  'Managing Director',
-  'Professional'
+// Levels for General Videos
+const VIDEO_LEVELS = [
+  'Beginner',
+  'Intermediate',
+  'Pro'
 ];
 
 interface VideoUploadDialogProps {
@@ -57,7 +65,12 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
     role_tier: '',
     youtube_url: '',
     tags: '',
-    publishNow: false
+    publishNow: false,
+    company: '',
+    speaker_name: '',
+    soft_skills_section: '',
+    video_type: '',
+    level: ''
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
@@ -72,7 +85,12 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
       role_tier: '',
       youtube_url: '',
       tags: '',
-      publishNow: false
+      publishNow: false,
+      company: '',
+      speaker_name: '',
+      soft_skills_section: '',
+      video_type: '',
+      level: ''
     });
     setSelectedFile(null);
     setThumbnailFile(null);
@@ -309,10 +327,42 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
       return;
     }
 
-    if (!formData.title || !formData.category || !formData.role_tier) {
+    // Validation based on category
+    const isCareerVideo = formData.category === 'careers-in-finance';
+    const isSoftSkillsVideo = formData.category === 'soft-skills';
+    const isGeneralVideo = formData.category === 'general';
+
+    if (!formData.title || !formData.category) {
       toast({
         title: 'Missing information',
-        description: 'Please fill in all required fields',
+        description: 'Please fill in title and category',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    if (isCareerVideo && (!formData.role_tier || !formData.company)) {
+      toast({
+        title: 'Missing information',
+        description: 'Please fill in company and role tier for career videos',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    if (isSoftSkillsVideo && (!formData.speaker_name || !formData.company || !formData.soft_skills_section)) {
+      toast({
+        title: 'Missing information',
+        description: 'Please fill in speaker name, company, and soft skills section',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    if (isGeneralVideo && (!formData.level || !formData.video_type)) {
+      toast({
+        title: 'Missing information',
+        description: 'Please fill in level and video type for general videos',
         variant: 'destructive'
       });
       return;
@@ -656,41 +706,7 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
             </Card>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="category">Industry *</Label>
-                <Select 
-                  value={formData.category} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
-                  disabled={uploading}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select industry" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {INDUSTRIES.map(industry => (
-                      <SelectItem key={industry} value={industry}>{industry}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="role_tier">Target Role Level *</Label>
-                <Select 
-                  value={formData.role_tier} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, role_tier: value }))}
-                  disabled={uploading}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select role level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {ROLE_TIERS.map(tier => (
-                      <SelectItem key={tier} value={tier}>{tier}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              {/* Category selection - removed from here since it's now dynamic based on form */}
             </div>
 
             <div>

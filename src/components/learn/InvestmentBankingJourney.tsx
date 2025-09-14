@@ -9,6 +9,7 @@ import { ibDivisions, type IBDivision } from '@/data/ib-divisions';
 
 interface InvestmentBankingJourneyProps {
   onBack: () => void;
+  onOpenDivisions?: () => void;
 }
 
 const InvestmentBankingJourney: React.FC<InvestmentBankingJourneyProps> = ({ onBack }) => {

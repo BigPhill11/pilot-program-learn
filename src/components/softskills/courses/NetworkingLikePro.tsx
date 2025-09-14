@@ -17,8 +17,8 @@ interface NetworkingLikeProProps {
 }
 
 // Simple error boundary to prevent full app crash if a module throws
-class ModuleErrorBoundary extends React.Component<{ onReset: () => void }, { hasError: boolean }> {
-  constructor(props: { onReset: () => void }) {
+class ModuleErrorBoundary extends React.Component<{ onReset: () => void; children: React.ReactNode }, { hasError: boolean }> {
+  constructor(props: { onReset: () => void; children: React.ReactNode }) {
     super(props);
     this.state = { hasError: false };
   }
@@ -42,7 +42,7 @@ class ModuleErrorBoundary extends React.Component<{ onReset: () => void }, { has
         </Card>
       );
     }
-    return this.props.children as any;
+    return this.props.children;
   }
 }
 
