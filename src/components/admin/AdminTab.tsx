@@ -5,8 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { Shield, BookOpen, CheckCircle, RotateCcw } from 'lucide-react';
+import { Shield, BookOpen, CheckCircle, RotateCcw, Settings, Users, Target } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { moduleRegistry, getAllModules } from '@/data/ModuleRegistry';
+import { useAdminMode } from '@/contexts/AdminModeContext';
 
 interface LessonCompletion {
   id: string;
@@ -22,10 +24,14 @@ const AdminTab = () => {
   const [completions, setCompletions] = useState<LessonCompletion[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const { jumpToLevel, canAccessLevel } = useAdminMode();
+  
   const careers = [
     { id: 'investment-banking', name: 'Investment Banking', levels: 7 },
     { id: 'private-equity', name: 'Private Equity', levels: 7 }
   ];
+
+  const allModules = getAllModules();
 
   useEffect(() => {
     fetchCompletions();
@@ -197,13 +203,68 @@ const AdminTab = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-red-800">
             <Shield className="h-5 w-5" />
-            Admin Panel
+            Enhanced Admin Panel
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-red-700 text-sm">
+          <p className="text-red-700 text-sm mb-4">
             ⚠️ Admin-only functionality. You can skip lessons and manage progress here.
           </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="flex items-center gap-2 text-sm">
+              <Settings className="h-4 w-4 text-blue-600" />
+              <span>Admin Mode Available</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <Users className="h-4 w-4 text-green-600" />
+              <span>{allModules.length} Modules Registered</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <Target className="h-4 w-4 text-purple-600" />
+              <span>Quick Level Access</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* All Learning Modules Overview */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BookOpen className="h-5 w-5" />
+            All Learning Modules
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {allModules.map((module) => (
+              <Card key={module.id} className="border-gray-200">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm flex items-center justify-between">
+                    {module.name}
+                    <Badge variant="outline">{module.levels.length} levels</Badge>
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground">{module.description}</p>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="flex flex-wrap gap-1">
+                    {module.levels.map((level) => (
+                      <Button
+                        key={level.id}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => jumpToLevel(module.id, level.id)}
+                        className="h-8 px-2 text-xs"
+                        title={`${level.title} - ${level.description}`}
+                      >
+                        L{level.id}
+                      </Button>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </CardContent>
       </Card>
 
