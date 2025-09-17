@@ -242,10 +242,10 @@ const PhilsFriendsPage: React.FC = () => {
             </div>
             
             <Select value={selectedIndustry} onValueChange={setSelectedIndustry}>
-              <SelectTrigger className="w-full md:w-48">
+              <SelectTrigger className="w-full md:w-48 bg-background border-border">
                 <SelectValue placeholder="Industry" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-background border-border shadow-lg z-50">
                 <SelectItem value="all">All Industries</SelectItem>
                 {INDUSTRIES.map(industry => (
                   <SelectItem key={industry} value={industry}>{industry}</SelectItem>
@@ -254,10 +254,10 @@ const PhilsFriendsPage: React.FC = () => {
             </Select>
 
             <Select value={selectedRoleTier} onValueChange={setSelectedRoleTier}>
-              <SelectTrigger className="w-full md:w-48">
+              <SelectTrigger className="w-full md:w-48 bg-background border-border">
                 <SelectValue placeholder="Role Level" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-background border-border shadow-lg z-50">
                 <SelectItem value="all">All Levels</SelectItem>
                 {ROLE_TIERS.map(tier => (
                   <SelectItem key={tier} value={tier}>{tier}</SelectItem>
@@ -266,10 +266,10 @@ const PhilsFriendsPage: React.FC = () => {
             </Select>
 
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-full md:w-32">
+              <SelectTrigger className="w-full md:w-32 bg-background border-border">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-background border-border shadow-lg z-50">
                 <SelectItem value="recent">Recent</SelectItem>
                 <SelectItem value="duration">Duration</SelectItem>
                 <SelectItem value="title">Title</SelectItem>

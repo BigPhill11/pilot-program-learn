@@ -26,10 +26,12 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import AdminTranscriptEditor from './AdminTranscriptEditor';
+import VideoEditDialog from './VideoEditDialog';
 
 interface Video {
   id: string;
   name: string;
+  title: string;
   description: string;
   category: string;
   role_tier: string;
@@ -41,6 +43,12 @@ interface Video {
   processing_status: string;
   created_at: string;
   storage_path?: string;
+  company: string;
+  speaker_name?: string;
+  soft_skills_section?: string;
+  video_type?: string;
+  level?: string;
+  tags?: string;
 }
 
 interface VideoManagementPanelProps {
@@ -65,6 +73,8 @@ const VideoManagementPanel: React.FC<VideoManagementPanelProps> = ({
   const [transcriptDialogOpen, setTranscriptDialogOpen] = useState(false);
   const [editorVideoUrl, setEditorVideoUrl] = useState<string>('');
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [selectedVideoForEdit, setSelectedVideoForEdit] = useState<Video | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   const [adminSettings, setAdminSettings] = useLocalStorage('phils_friends_admin_settings', {
     autoTranscriptionEnabled: true,
@@ -356,6 +366,18 @@ const VideoManagementPanel: React.FC<VideoManagementPanelProps> = ({
                         <Button
                           variant="outline"
                           size="sm"
+                          onClick={() => {
+                            setSelectedVideoForEdit(video);
+                            setEditDialogOpen(true);
+                          }}
+                          title="Edit Video"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        
+                        <Button
+                          variant="outline"
+                          size="sm"
                           onClick={() => openTranscriptEditor(video)}
                           title="Edit Transcript"
                         >
@@ -409,6 +431,17 @@ const VideoManagementPanel: React.FC<VideoManagementPanelProps> = ({
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Edit Video Dialog */}
+      <VideoEditDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        video={selectedVideoForEdit}
+        onVideoUpdated={() => {
+          fetchAdminVideos();
+          onVideoUpdate();
+        }}
+      />
 
       {/* Admin Settings Dialog */}
       <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
