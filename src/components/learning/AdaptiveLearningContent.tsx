@@ -10,32 +10,16 @@ import { useAuth } from '@/hooks/useAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
 import PandaLogo from '@/components/icons/PandaLogo';
 
-const AdaptiveLearningContent: React.FC = () => {
+interface AdaptiveLearningContentProps {
+  onNavigateToTab?: (tabValue: string) => void;
+}
+
+const AdaptiveLearningContent: React.FC<AdaptiveLearningContentProps> = ({ onNavigateToTab }) => {
   const { profile } = useAuth();
   const isMobile = useIsMobile();
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
 
   const learningPaths = [
-    {
-      id: 'beginner',
-      title: 'Foundation Builder',
-      icon: BookOpen,
-      description: 'Start with basic financial concepts',
-      color: 'emerald',
-      progress: 45,
-      lessons: 12,
-      estimated: '2 weeks'
-    },
-    {
-      id: 'stocks',
-      title: 'Stock Market Explorer',
-      icon: TrendingUp,
-      description: 'Learn about stocks and trading',
-      color: 'blue',
-      progress: 30,
-      lessons: 8,
-      estimated: '1 week'
-    },
     {
       id: 'personal',
       title: 'Personal Finance Pro',
@@ -44,7 +28,30 @@ const AdaptiveLearningContent: React.FC = () => {
       color: 'purple',
       progress: 60,
       lessons: 15,
-      estimated: '3 weeks'
+      estimated: '3 weeks',
+      targetTab: 'personal-finance'
+    },
+    {
+      id: 'companies',
+      title: 'Company Discovery',
+      icon: TrendingUp,
+      description: 'Explore and analyze companies',
+      color: 'blue',
+      progress: 30,
+      lessons: 8,
+      estimated: '1 week',
+      targetTab: 'companies'
+    },
+    {
+      id: 'beginner',
+      title: 'Foundation Builder',
+      icon: BookOpen,
+      description: 'Start with basic financial concepts',
+      color: 'emerald',
+      progress: 45,
+      lessons: 12,
+      estimated: '2 weeks',
+      targetTab: 'careers'
     },
     {
       id: 'games',
@@ -54,7 +61,8 @@ const AdaptiveLearningContent: React.FC = () => {
       color: 'orange',
       progress: 25,
       lessons: 6,
-      estimated: '1 week'
+      estimated: '1 week',
+      targetTab: 'adaptive'
     }
   ];
 
@@ -165,7 +173,13 @@ const AdaptiveLearningContent: React.FC = () => {
               <Card 
                 key={path.id}
                 className={`${getColorClasses(path.color)} cursor-pointer transition-all hover:shadow-lg`}
-                onClick={() => setSelectedPath(path.id)}
+                onClick={() => {
+                  if (path.id === 'games') {
+                    setSelectedPath(path.id);
+                  } else if (onNavigateToTab && path.targetTab) {
+                    onNavigateToTab(path.targetTab);
+                  }
+                }}
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">

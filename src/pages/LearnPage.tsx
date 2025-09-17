@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PersonalFinanceTab from "@/components/learn/PersonalFinanceTab";
 import CompanyDiscoveryTab from "@/components/learn/CompanyDiscoveryTab";
@@ -13,12 +13,13 @@ import { useIsMobile } from "@/hooks/use-mobile";
 const LearnPage = () => {
   const isMobile = useIsMobile();
   const { isAdmin, loading } = useAdminAuth();
+  const [activeTab, setActiveTab] = useState('adaptive');
 
   return (
     <div className="container mx-auto px-4 py-8">
       <TermOfTheDay />
       
-      <Tabs defaultValue="adaptive" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className={`grid w-full ${isAdmin ? (isMobile ? 'grid-cols-3' : 'grid-cols-5') : (isMobile ? 'grid-cols-2' : 'grid-cols-4')} ${isMobile ? 'h-auto' : ''}`}>
           <TabsTrigger value="adaptive" className={isMobile ? 'text-xs py-3' : ''}>
             {isMobile ? 'Adaptive' : 'Adaptive Learning'}
@@ -40,7 +41,7 @@ const LearnPage = () => {
         </TabsList>
         
         <TabsContent value="adaptive" className="mt-6">
-          <AdaptiveLearningContent />
+          <AdaptiveLearningContent onNavigateToTab={setActiveTab} />
         </TabsContent>
         
         <TabsContent value="personal-finance" className="mt-6">
