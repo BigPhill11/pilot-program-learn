@@ -9,6 +9,24 @@ import { supabase } from '@/integrations/supabase/client';
 import { CheckCircle, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
+// Career Industries for Careers in Finance
+const CAREER_INDUSTRIES = [
+  'Asset Management',
+  'Investment Banking',
+  'Private Equity',
+  'Venture Capital',
+  'Hedge Funds',
+  'Wealth Management',
+  'Other'
+];
+
+// Role Tiers for Careers in Finance
+const ROLE_TIERS = [
+  'Beginner',
+  'Intermediate', 
+  'Pro'
+];
+
 // Soft Skills Sections - matches existing modules
 const SOFT_SKILLS_SECTIONS = [
   'Networking Like a Pro',
@@ -18,6 +36,13 @@ const SOFT_SKILLS_SECTIONS = [
   'Dress for Success',
   'Working Women Excellence',
   'Black in Business Excellence'
+];
+
+// Soft Skills Levels
+const SOFT_SKILLS_LEVELS = [
+  'Beginner',
+  'Intermediate',
+  'Pro'
 ];
 
 // Video Types for General Videos
@@ -75,7 +100,8 @@ const VideoEditDialog: React.FC<VideoEditDialogProps> = ({
     soft_skills_section: '',
     video_type: '',
     level: '',
-    tags: ''
+    tags: '',
+    industry: ''
   });
 
   useEffect(() => {
@@ -90,7 +116,8 @@ const VideoEditDialog: React.FC<VideoEditDialogProps> = ({
         soft_skills_section: video.soft_skills_section || '',
         video_type: video.video_type || '',
         level: video.level || '',
-        tags: video.tags || ''
+        tags: video.tags || '',
+        industry: video.category || ''
       });
     }
   }, [video, open]);
@@ -118,19 +145,19 @@ const VideoEditDialog: React.FC<VideoEditDialogProps> = ({
       return;
     }
 
-    if (isCareerVideo && (!formData.role_tier || !formData.company)) {
+    if (isCareerVideo && (!formData.industry || !formData.level || !formData.company)) {
       toast({
         title: 'Missing information',
-        description: 'Please fill in company and role tier for career videos',
+        description: 'Please fill in industry, level, and company for career videos',
         variant: 'destructive'
       });
       return;
     }
 
-    if (isSoftSkillsVideo && (!formData.speaker_name || !formData.company || !formData.soft_skills_section)) {
+    if (isSoftSkillsVideo && (!formData.speaker_name || !formData.company || !formData.soft_skills_section || !formData.level)) {
       toast({
         title: 'Missing information',
-        description: 'Please fill in speaker name, company, and soft skills section',
+        description: 'Please fill in speaker name, company, soft skills section, and level',
         variant: 'destructive'
       });
       return;
@@ -154,8 +181,8 @@ const VideoEditDialog: React.FC<VideoEditDialogProps> = ({
           name: formData.title,
           title: formData.title,
           description: formData.description,
-          category: formData.category,
-          role_tier: formData.role_tier,
+          category: formData.industry || formData.video_type || formData.soft_skills_section || formData.category,
+          role_tier: formData.level || formData.role_tier,
           company: formData.company,
           speaker_name: formData.speaker_name || null,
           soft_skills_section: formData.soft_skills_section || null,
@@ -265,7 +292,45 @@ const VideoEditDialog: React.FC<VideoEditDialogProps> = ({
 
               {/* Careers in Finance Fields */}
               {formData.category === 'careers-in-finance' && (
-                <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="industry">Industry *</Label>
+                      <Select 
+                        value={formData.industry} 
+                        onValueChange={(value) => setFormData(prev => ({ ...prev, industry: value }))}
+                        disabled={updating}
+                      >
+                        <SelectTrigger className="mt-1">
+                          <SelectValue placeholder="Select industry" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {CAREER_INDUSTRIES.map(industry => (
+                            <SelectItem key={industry} value={industry}>{industry}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="level">Level *</Label>
+                      <Select 
+                        value={formData.level} 
+                        onValueChange={(value) => setFormData(prev => ({ ...prev, level: value }))}
+                        disabled={updating}
+                      >
+                        <SelectTrigger className="mt-1">
+                          <SelectValue placeholder="Select level" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {ROLE_TIERS.map(tier => (
+                            <SelectItem key={tier} value={tier}>{tier}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
                   <div>
                     <Label htmlFor="company">Company *</Label>
                     <Input
@@ -276,26 +341,6 @@ const VideoEditDialog: React.FC<VideoEditDialogProps> = ({
                       disabled={updating}
                       className="mt-1"
                     />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="role_tier">Target Role Level *</Label>
-                    <Select 
-                      value={formData.role_tier} 
-                      onValueChange={(value) => setFormData(prev => ({ ...prev, role_tier: value }))}
-                      disabled={updating}
-                    >
-                      <SelectTrigger className="mt-1">
-                        <SelectValue placeholder="Select role level" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Intern">Intern</SelectItem>
-                        <SelectItem value="Analyst">Analyst</SelectItem>
-                        <SelectItem value="Associate">Associate</SelectItem>
-                        <SelectItem value="Managing Director">Managing Director</SelectItem>
-                        <SelectItem value="Professional">Professional</SelectItem>
-                      </SelectContent>
-                    </Select>
                   </div>
                 </div>
               )}
@@ -329,22 +374,42 @@ const VideoEditDialog: React.FC<VideoEditDialogProps> = ({
                     </div>
                   </div>
 
-                  <div>
-                    <Label htmlFor="soft_skills_section">Soft Skills Section *</Label>
-                    <Select 
-                      value={formData.soft_skills_section} 
-                      onValueChange={(value) => setFormData(prev => ({ ...prev, soft_skills_section: value }))}
-                      disabled={updating}
-                    >
-                      <SelectTrigger className="mt-1">
-                        <SelectValue placeholder="Select soft skills section" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {SOFT_SKILLS_SECTIONS.map(section => (
-                          <SelectItem key={section} value={section}>{section}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="soft_skills_section">Soft Skills Section *</Label>
+                      <Select 
+                        value={formData.soft_skills_section} 
+                        onValueChange={(value) => setFormData(prev => ({ ...prev, soft_skills_section: value }))}
+                        disabled={updating}
+                      >
+                        <SelectTrigger className="mt-1">
+                          <SelectValue placeholder="Select soft skills section" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {SOFT_SKILLS_SECTIONS.map(section => (
+                            <SelectItem key={section} value={section}>{section}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="level">Level *</Label>
+                      <Select 
+                        value={formData.level} 
+                        onValueChange={(value) => setFormData(prev => ({ ...prev, level: value }))}
+                        disabled={updating}
+                      >
+                        <SelectTrigger className="mt-1">
+                          <SelectValue placeholder="Select level" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {SOFT_SKILLS_LEVELS.map(level => (
+                            <SelectItem key={level} value={level}>{level}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 </div>
               )}

@@ -16,7 +16,8 @@ import VideoUploadDialog from '@/components/videos/VideoUploadDialog';
 import VideoDetailDialog from '@/components/videos/VideoDetailDialog';
 import VideoManagementPanel from '@/components/videos/VideoManagementPanel';
 
-const INDUSTRIES = [
+// Career Industries
+const CAREER_INDUSTRIES = [
   'Asset Management',
   'Investment Banking', 
   'Private Equity',
@@ -26,12 +27,30 @@ const INDUSTRIES = [
   'Other'
 ];
 
-const ROLE_TIERS = [
-  'Intern',
-  'Analyst', 
-  'Associate',
-  'Managing Director',
-  'Professional'
+// Soft Skills Sections
+const SOFT_SKILLS_SECTIONS = [
+  'Networking Like a Pro',
+  'Professional Interviewing Mastery',
+  'Business Communication Excellence',
+  'Workplace Etiquette',
+  'Dress for Success',
+  'Working Women Excellence',
+  'Black in Business Excellence'
+];
+
+// General Video Types
+const GENERAL_VIDEO_TYPES = [
+  'Stock Market',
+  'Personal Finance',
+  'Economics',
+  'Other'
+];
+
+// All Levels
+const ALL_LEVELS = [
+  'Beginner',
+  'Intermediate',
+  'Pro'
 ];
 
 interface Video {
@@ -57,8 +76,8 @@ const PhilsFriendsPage: React.FC = () => {
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedIndustry, setSelectedIndustry] = useState<string>('all');
-  const [selectedRoleTier, setSelectedRoleTier] = useState<string>('all');
+  const [selectedFilter, setSelectedFilter] = useState<string>('all');
+  const [selectedLevel, setSelectedLevel] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('recent');
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
@@ -85,12 +104,12 @@ const PhilsFriendsPage: React.FC = () => {
       }
 
       // Apply filters
-      if (selectedIndustry !== 'all') {
-        query = query.eq('category', selectedIndustry);
+      if (selectedFilter !== 'all') {
+        query = query.eq('category', selectedFilter);
       }
       
-      if (selectedRoleTier !== 'all') {
-        query = query.eq('role_tier', selectedRoleTier);
+      if (selectedLevel !== 'all') {
+        query = query.eq('role_tier', selectedLevel);
       }
 
       // Apply search
@@ -134,11 +153,40 @@ const PhilsFriendsPage: React.FC = () => {
 
   useEffect(() => {
     fetchVideos();
-  }, [selectedIndustry, selectedRoleTier, searchQuery, sortBy, isAdmin, activeTab]);
+  }, [selectedFilter, selectedLevel, searchQuery, sortBy, isAdmin, activeTab]);
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
     setCurrentCategory(getTabCategory(tab));
+    // Reset filters when changing tabs
+    setSelectedFilter('all');
+    setSelectedLevel('all');
+  };
+
+  const getFilterOptions = () => {
+    switch (activeTab) {
+      case 'careers':
+        return CAREER_INDUSTRIES;
+      case 'softskills':
+        return SOFT_SKILLS_SECTIONS;
+      case 'general':
+        return GENERAL_VIDEO_TYPES;
+      default:
+        return [];
+    }
+  };
+
+  const getFilterLabel = () => {
+    switch (activeTab) {
+      case 'careers':
+        return 'All Industries';
+      case 'softskills':
+        return 'All Modules';
+      case 'general':
+        return 'All Types';
+      default:
+        return 'All Categories';
+    }
   };
 
   const handleAddVideo = () => {
@@ -241,26 +289,26 @@ const PhilsFriendsPage: React.FC = () => {
               />
             </div>
             
-            <Select value={selectedIndustry} onValueChange={setSelectedIndustry}>
+            <Select value={selectedFilter} onValueChange={setSelectedFilter}>
               <SelectTrigger className="w-full md:w-48 bg-background border-border">
-                <SelectValue placeholder="Industry" />
+                <SelectValue placeholder={getFilterLabel()} />
               </SelectTrigger>
               <SelectContent className="bg-background border-border shadow-lg z-50">
-                <SelectItem value="all">All Industries</SelectItem>
-                {INDUSTRIES.map(industry => (
-                  <SelectItem key={industry} value={industry}>{industry}</SelectItem>
+                <SelectItem value="all">{getFilterLabel()}</SelectItem>
+                {getFilterOptions().map(option => (
+                  <SelectItem key={option} value={option}>{option}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
 
-            <Select value={selectedRoleTier} onValueChange={setSelectedRoleTier}>
+            <Select value={selectedLevel} onValueChange={setSelectedLevel}>
               <SelectTrigger className="w-full md:w-48 bg-background border-border">
-                <SelectValue placeholder="Role Level" />
+                <SelectValue placeholder="Level" />
               </SelectTrigger>
               <SelectContent className="bg-background border-border shadow-lg z-50">
                 <SelectItem value="all">All Levels</SelectItem>
-                {ROLE_TIERS.map(tier => (
-                  <SelectItem key={tier} value={tier}>{tier}</SelectItem>
+                {ALL_LEVELS.map(level => (
+                  <SelectItem key={level} value={level}>{level}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -296,7 +344,7 @@ const PhilsFriendsPage: React.FC = () => {
             <Video className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-foreground mb-2">No videos found</h3>
             <p className="text-muted-foreground">
-              {searchQuery || selectedIndustry !== 'all' || selectedRoleTier !== 'all'
+              {searchQuery || selectedFilter !== 'all' || selectedLevel !== 'all'
                 ? 'Try adjusting your filters to see more content.'
                 : 'Check back soon for new content!'}
             </p>
