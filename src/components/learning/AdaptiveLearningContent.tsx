@@ -8,6 +8,7 @@ import { BookOpen, Trophy, Target, Brain, PlayCircle, Clock, Users, Star, Zap, T
 import InteractiveLearningHub from './InteractiveLearningHub';
 import { useAuth } from '@/hooks/useAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useProgressContext } from '@/contexts/ProgressContext';
 import PandaLogo from '@/components/icons/PandaLogo';
 
 interface AdaptiveLearningContentProps {
@@ -18,6 +19,36 @@ const AdaptiveLearningContent: React.FC<AdaptiveLearningContentProps> = ({ onNav
   const { profile } = useAuth();
   const isMobile = useIsMobile();
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
+  const { getModuleProgress, getTotalCompletedModules, getOverallProgress } = useProgressContext();
+
+  // Calculate progress for each learning path
+  const getPersonalFinanceProgress = () => {
+    const modules = ['taxes', 'budget', 'credit', 'future-planning', 'big-purchases', 'financial-safety'];
+    const completed = modules.filter(module => {
+      const progress = getModuleProgress(module, 'personal-finance');
+      return progress?.completedAt;
+    }).length;
+    return Math.round((completed / modules.length) * 100);
+  };
+
+  const getCareersProgress = () => {
+    const progress = getModuleProgress('investment-banking', 'careers');
+    return progress?.progressPercentage || 0;
+  };
+
+  const getCompanyProgress = () => {
+    const progress = getModuleProgress('company-discovery', 'companies');
+    return progress?.progressPercentage || 0;
+  };
+
+  const getGamesProgress = () => {
+    // Track interactive learning hub progress
+    const progress = getModuleProgress('interactive-hub', 'learning');
+    return progress?.progressPercentage || 25; // Default to 25% if no data
+  };
+
+  const totalCompleted = getTotalCompletedModules();
+  const overallProgress = Math.round(getOverallProgress());
 
   const learningPaths = [
     {
@@ -26,7 +57,7 @@ const AdaptiveLearningContent: React.FC<AdaptiveLearningContentProps> = ({ onNav
       icon: Target,
       description: 'Master budgeting and planning',
       color: 'purple',
-      progress: 60,
+      progress: getPersonalFinanceProgress(),
       lessons: 15,
       estimated: '3 weeks',
       targetTab: 'personal-finance'
@@ -37,18 +68,18 @@ const AdaptiveLearningContent: React.FC<AdaptiveLearningContentProps> = ({ onNav
       icon: TrendingUp,
       description: 'Explore and analyze companies',
       color: 'blue',
-      progress: 30,
+      progress: getCompanyProgress(),
       lessons: 8,
       estimated: '1 week',
       targetTab: 'companies'
     },
     {
       id: 'beginner',
-      title: 'Foundation Builder',
+      title: 'Careers in Finance',
       icon: BookOpen,
-      description: 'Start with basic financial concepts',
+      description: 'Explore investment banking careers',
       color: 'emerald',
-      progress: 45,
+      progress: getCareersProgress(),
       lessons: 12,
       estimated: '2 weeks',
       targetTab: 'careers'
@@ -59,7 +90,7 @@ const AdaptiveLearningContent: React.FC<AdaptiveLearningContentProps> = ({ onNav
       icon: PlayCircle,
       description: 'Interactive financial games',
       color: 'orange',
-      progress: 25,
+      progress: getGamesProgress(),
       lessons: 6,
       estimated: '1 week',
       targetTab: 'adaptive'
@@ -67,10 +98,10 @@ const AdaptiveLearningContent: React.FC<AdaptiveLearningContentProps> = ({ onNav
   ];
 
   const dailyTasks = [
-    { title: 'Complete Market Quiz', completed: true, points: 10 },
-    { title: 'Read Financial Term', completed: true, points: 5 },
-    { title: 'Play Panda Jump', completed: false, points: 15 },
-    { title: 'Watch Trading Video', completed: false, points: 20 }
+    { title: 'Complete Market Quiz', completed: totalCompleted > 5, points: 10 },
+    { title: 'Read Financial Term', completed: overallProgress > 20, points: 5 },
+    { title: 'Play Panda Jump', completed: getGamesProgress() > 30, points: 15 },
+    { title: 'Watch Trading Video', completed: getCareersProgress() > 10, points: 20 }
   ];
 
   const getColorClasses = (color: string) => {
@@ -133,15 +164,15 @@ const AdaptiveLearningContent: React.FC<AdaptiveLearningContentProps> = ({ onNav
         <Card className="border-blue-200">
           <CardContent className="p-4 text-center">
             <Brain className="h-8 w-8 mx-auto mb-2 text-blue-600" />
-            <div className="text-2xl font-bold text-blue-700">12</div>
-            <div className="text-xs text-muted-foreground">Concepts Learned</div>
+            <div className="text-2xl font-bold text-blue-700">{totalCompleted}</div>
+            <div className="text-xs text-muted-foreground">Modules Completed</div>
           </CardContent>
         </Card>
         <Card className="border-green-200">
           <CardContent className="p-4 text-center">
             <Trophy className="h-8 w-8 mx-auto mb-2 text-green-600" />
-            <div className="text-2xl font-bold text-green-700">85%</div>
-            <div className="text-xs text-muted-foreground">Average Score</div>
+            <div className="text-2xl font-bold text-green-700">{overallProgress}%</div>
+            <div className="text-xs text-muted-foreground">Overall Progress</div>
           </CardContent>
         </Card>
         <Card className="border-purple-200">
