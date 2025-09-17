@@ -56,6 +56,7 @@ const ALL_LEVELS = [
 interface Video {
   id: string;
   name: string;
+  title: string;
   description: string;
   category: string;
   role_tier: string;
@@ -66,6 +67,8 @@ interface Video {
   published: boolean;
   created_at: string;
   video_url?: string;
+  company: string;
+  course_category: string;
 }
 
 const PhilsFriendsPage: React.FC = () => {

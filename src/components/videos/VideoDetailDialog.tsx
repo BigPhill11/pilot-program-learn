@@ -11,6 +11,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useLocalStorage } from '@/hooks/use-local-storage';
+import VideoEditPanel from '@/components/videos/VideoEditPanel';
 import { 
   Play, 
   Clock, 
@@ -31,6 +32,7 @@ import { useToast } from '@/hooks/use-toast';
 interface Video {
   id: string;
   name: string;
+  title: string;
   description: string;
   category: string;
   role_tier: string;
@@ -42,6 +44,13 @@ interface Video {
   created_at: string;
   video_url?: string;
   storage_path?: string;
+  company: string;
+  speaker_name?: string;
+  soft_skills_section?: string;
+  video_type?: string;
+  level?: string;
+  tags?: string;
+  course_category: string;
 }
 
 interface WordTimestamp {
@@ -75,6 +84,7 @@ const VideoDetailDialog: React.FC<VideoDetailDialogProps> = ({
   const { user } = useAuth();
   const { isAdmin } = useAdminAuth();
   const { toast } = useToast();
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const [loading, setLoading] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
@@ -639,7 +649,27 @@ const VideoDetailDialog: React.FC<VideoDetailDialogProps> = ({
                 </CardContent>
               </Card>
             </ScrollArea>
+        </div>
+
+        {/* Video Edit Panel - Bottom Right */}
+        {isAdmin && (
+          <div className="absolute bottom-4 right-4 z-10">
+            <VideoEditPanel 
+              video={video} 
+              onVideoUpdated={() => setRefreshTrigger(prev => prev + 1)} 
+            />
           </div>
+        )}
+
+          {/* Video Edit Panel - Bottom Right */}
+          {isAdmin && (
+            <div className="absolute bottom-4 right-4 z-10">
+              <VideoEditPanel 
+                video={video} 
+                onVideoUpdated={() => setRefreshTrigger(prev => prev + 1)} 
+              />
+            </div>
+          )}
         </div>
 
         {/* Quiz Modal (simple) */}
