@@ -16,12 +16,22 @@ serve(async (req) => {
   try {
     const { message } = await req.json();
     
-    if (!message) {
+    // Input validation
+    if (!message || typeof message !== 'string') {
       return new Response(
-        JSON.stringify({ error: 'Message is required' }),
+        JSON.stringify({ error: 'Message is required and must be a string' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    if (message.length > 1000) {
+      return new Response(
+        JSON.stringify({ error: 'Message too long (max 1000 characters)' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const sanitizedMessage = message.trim().slice(0, 1000);
 
     const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
     
@@ -49,7 +59,7 @@ serve(async (req) => {
           },
           {
             role: 'user',
-            content: message
+            content: sanitizedMessage
           }
         ],
         temperature: 0.7,

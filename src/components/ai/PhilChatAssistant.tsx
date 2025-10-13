@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Send, Bot, User, Lightbulb, TrendingUp, DollarSign, Loader2, Brain, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import DOMPurify from 'dompurify';
 
 interface Message {
   id: string;
@@ -172,7 +173,9 @@ const PhilChatAssistant: React.FC = () => {
                     <p 
                       className="whitespace-pre-wrap"
                       dangerouslySetInnerHTML={{ 
-                        __html: message.sender === 'phil' ? message.text.replace(/\n/g, '<br />') : message.text 
+                        __html: message.sender === 'phil' 
+                          ? DOMPurify.sanitize(message.text.replace(/\n/g, '<br />'))
+                          : DOMPurify.sanitize(message.text)
                       }}
                     />
                     {message.sender === 'phil' && message.aiProvider && (

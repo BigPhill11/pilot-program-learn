@@ -13,12 +13,69 @@ serve(async (req) => {
   }
 
   try {
+    // Get authorization header
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Create client with user's JWT
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      { global: { headers: { Authorization: authHeader } } }
     );
 
+    // Get authenticated user
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    if (userError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { videoId, transcript } = await req.json();
+    
+    // Validate inputs
+    if (!videoId || !transcript) {
+      return new Response(
+        JSON.stringify({ error: 'videoId and transcript are required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (typeof transcript !== 'string' || transcript.length > 50000) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid transcript (max 50000 characters)' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Verify user owns the video
+    const { data: video, error: videoError } = await supabaseClient
+      .from('phils_friends_videos')
+      .select('created_by')
+      .eq('id', videoId)
+      .single();
+
+    if (videoError || !video) {
+      console.error('Video fetch error:', videoError);
+      return new Response(
+        JSON.stringify({ error: 'Video not found' }),
+        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (video.created_by !== user.id) {
+      return new Response(
+        JSON.stringify({ error: 'Forbidden: You do not own this video' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
     
     console.log('Processing transcript for video:', videoId);
 

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Wand2, Brain, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import DOMPurify from 'dompurify';
 
 const AskPhil = () => {
     const [question, setQuestion] = useState('');
@@ -108,7 +109,7 @@ const AskPhil = () => {
                              </div>
                              <p 
                                 className="text-muted-foreground"
-                                dangerouslySetInnerHTML={{ __html: answer.replace(/\n/g, '<br />') }}
+                                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(answer.replace(/\n/g, '<br />')) }}
                              />
                          </div>
                     )}
