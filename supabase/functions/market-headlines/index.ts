@@ -352,12 +352,28 @@ serve(async (req) => {
   }
 
   try {
+    // Validate request method
+    if (req.method !== 'GET' && req.method !== 'POST') {
+      return new Response(
+        JSON.stringify({ error: 'Method not allowed' }),
+        { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     // Get user level from request
     let userLevel = 'beginner';
     let debug = false;
     try {
       const requestData = await req.json();
-      userLevel = requestData.userLevel || 'beginner';
+      
+      // Validate userLevel if provided
+      if (requestData.userLevel && typeof requestData.userLevel === 'string') {
+        const validLevels = ['beginner', 'intermediate', 'advanced'];
+        if (validLevels.includes(requestData.userLevel)) {
+          userLevel = requestData.userLevel;
+        }
+      }
+      
       debug = Boolean(requestData.debug);
     } catch {
       userLevel = 'beginner';

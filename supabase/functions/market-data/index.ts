@@ -28,6 +28,13 @@ serve(async (req) => {
   }
 
   try {
+    // Validate request method
+    if (req.method !== 'GET' && req.method !== 'POST') {
+      return new Response(
+        JSON.stringify({ error: 'Method not allowed' }),
+        { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
     if (!FMP_API_KEY) {
       throw new Error("FMP_API_KEY is not set in environment variables.");
     }

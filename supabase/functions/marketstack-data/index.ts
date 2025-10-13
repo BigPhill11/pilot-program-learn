@@ -14,6 +14,13 @@ serve(async (req) => {
   }
 
   try {
+    // Validate request method
+    if (req.method !== 'GET' && req.method !== 'POST') {
+      return new Response(
+        JSON.stringify({ error: 'Method not allowed' }),
+        { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
     const marketstackApiKey = Deno.env.get('MARKETSTACK_API_KEY');
     
     if (!marketstackApiKey) {

@@ -12,7 +12,31 @@ serve(async (req) => {
   }
 
   try {
+    // Validate request method
+    if (req.method !== 'POST') {
+      return new Response(
+        JSON.stringify({ error: 'Method not allowed' }),
+        { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     const { refreshType } = await req.json()
+
+    // Validate refreshType parameter
+    if (!refreshType || typeof refreshType !== 'string') {
+      return new Response(
+        JSON.stringify({ error: 'refreshType is required and must be a string' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    if (refreshType !== 'market-data' && refreshType !== 'headlines') {
+      return new Response(
+        JSON.stringify({ error: 'refreshType must be either "market-data" or "headlines"' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL')
     const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')
     

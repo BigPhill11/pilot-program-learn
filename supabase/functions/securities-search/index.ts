@@ -14,21 +14,46 @@ serve(async (req) => {
   }
 
   try {
+    // Validate request method
+    if (req.method !== 'GET') {
+      return new Response(
+        JSON.stringify({ error: 'Method not allowed' }),
+        { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { searchParams } = new URL(req.url);
     const query = searchParams.get('query');
     
-    if (!query || query.length < 2) {
+    // Validate query parameter
+    if (!query || typeof query !== 'string') {
+      return new Response(
+        JSON.stringify({ error: 'Query parameter is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (query.length < 2) {
       return new Response(
         JSON.stringify({ error: 'Query must be at least 2 characters' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log(`Searching for securities: ${query}`);
+    if (query.length > 100) {
+      return new Response(
+        JSON.stringify({ error: 'Query too long (max 100 characters)' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const sanitizedQuery = query.trim();
+
+    console.log(`Searching for securities: ${sanitizedQuery}`);
 
     // Use Yahoo Finance search API (free, no API key required)
     const response = await fetch(
-      `https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(query)}&quotesCount=20&newsCount=0`,
+      `https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(sanitizedQuery)}&quotesCount=20&newsCount=0`,
       {
         method: 'GET',
         headers: {
