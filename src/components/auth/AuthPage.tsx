@@ -76,14 +76,11 @@ const AuthPage = () => {
       const { data, error } = await supabase.auth.signInAnonymously();
 
       if (error) {
-        console.error('Anonymous sign in error:', error);
         toast.error('Failed to sign in as guest: ' + error.message);
         return;
       }
 
       if (data.user) {
-        console.log('Guest user signed in:', data.user.id);
-        
         // Reset profile data for onboarding
         const { error: profileError } = await supabase
           .from('profiles')
@@ -96,24 +93,21 @@ const AuthPage = () => {
           });
 
         if (profileError) {
-          console.error('Profile update error:', profileError);
+          // Profile error handling without exposing details
+          toast.error('Failed to initialize guest profile');
+          return;
         }
 
         // Clear any existing assessment data
-        const { error: assessmentError } = await supabase
+        await supabase
           .from('initial_assessments')
           .delete()
           .eq('user_id', data.user.id);
-
-        if (assessmentError) {
-          console.error('Assessment deletion error:', assessmentError);
-        }
 
         toast.success('Signed in as guest! Starting onboarding...');
         navigate('/');
       }
     } catch (error) {
-      console.error('Guest sign in error:', error);
       toast.error('An unexpected error occurred');
     } finally {
       setLoading(false);
