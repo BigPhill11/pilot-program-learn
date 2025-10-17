@@ -42,6 +42,8 @@ export interface FinanceCareerData {
   color: string;
   levels: CareerLevel[];
   videos: CareerVideo[];
+  category: 'sell-side' | 'buy-side' | 'advisory' | 'corporate';
+  kidFriendlyDescription: string;
 }
 
 export const financeCareerData: FinanceCareerData[] = [
@@ -49,6 +51,8 @@ export const financeCareerData: FinanceCareerData[] = [
     id: 'investment-banking',
     name: 'Investment Banking',
     description: 'Help companies raise capital and execute strategic transactions',
+    kidFriendlyDescription: 'Help companies get money and make big business deals happen! 💼',
+    category: 'sell-side',
     icon: Building2,
     color: 'from-blue-500 to-indigo-600',
     levels: [
@@ -158,6 +162,8 @@ export const financeCareerData: FinanceCareerData[] = [
     id: 'private-equity',
     name: 'Private Equity',
     description: 'Invest in and transform private companies to generate superior returns',
+    kidFriendlyDescription: 'Buy companies, make them better, and sell them for profit! 📈',
+    category: 'buy-side',
     icon: TrendingUp,
     color: 'from-green-500 to-emerald-600',
     levels: [
@@ -274,6 +280,8 @@ export const financeCareerData: FinanceCareerData[] = [
     id: 'management-consulting',
     name: 'Management Consulting',
     description: 'Advise executives on strategy, operations, and organizational transformation',
+    kidFriendlyDescription: 'Be a business detective and help companies solve their biggest problems! 🔍',
+    category: 'advisory',
     icon: Users,
     color: 'from-purple-500 to-violet-600',
     levels: [
@@ -383,6 +391,8 @@ export const financeCareerData: FinanceCareerData[] = [
     id: 'hedge-funds',
     name: 'Hedge Funds',
     description: 'Generate absolute returns through sophisticated investment strategies',
+    kidFriendlyDescription: 'Use smart strategies to make money in any market condition! 🎯',
+    category: 'buy-side',
     icon: TrendingUp,
     color: 'from-red-500 to-rose-600',
     levels: [
@@ -492,6 +502,8 @@ export const financeCareerData: FinanceCareerData[] = [
     id: 'venture-capital',
     name: 'Venture Capital',
     description: 'Fund and guide early-stage companies with high growth potential',
+    kidFriendlyDescription: 'Find and support the next big startup that could change the world! 🚀',
+    category: 'buy-side',
     icon: Rocket,
     color: 'from-green-500 to-teal-600',
     levels: [
@@ -601,6 +613,8 @@ export const financeCareerData: FinanceCareerData[] = [
     id: 'commercial-banking',
     name: 'Commercial Banking',
     description: 'Provide financial services to businesses and institutional clients',
+    kidFriendlyDescription: 'Help businesses manage their money and grow! 🏦',
+    category: 'sell-side',
     icon: Landmark,
     color: 'from-blue-500 to-cyan-600',
     levels: [
@@ -710,6 +724,8 @@ export const financeCareerData: FinanceCareerData[] = [
     id: 'corporate-finance',
     name: 'Corporate Finance',
     description: 'Manage company finances, investments, and strategic financial decisions',
+    kidFriendlyDescription: 'Be the money expert inside a company making smart financial choices! 💰',
+    category: 'corporate',
     icon: Building2,
     color: 'from-indigo-500 to-purple-600',
     levels: [
@@ -819,6 +835,8 @@ export const financeCareerData: FinanceCareerData[] = [
     id: 'sales-trading',
     name: 'Sales & Trading',
     description: 'Execute trades and provide market insights to institutional clients',
+    kidFriendlyDescription: 'Buy and sell stocks super fast and help clients make smart trades! ⚡',
+    category: 'sell-side',
     icon: BarChart3,
     color: 'from-orange-500 to-red-600',
     levels: [
@@ -928,6 +946,8 @@ export const financeCareerData: FinanceCareerData[] = [
     id: 'wealth-management',
     name: 'Wealth Management',
     description: 'Provide comprehensive financial planning and investment services to high-net-worth clients',
+    kidFriendlyDescription: 'Help wealthy families protect and grow their money for generations! 🛡️',
+    category: 'buy-side',
     icon: Shield,
     color: 'from-emerald-500 to-green-600',
     levels: [
@@ -1037,6 +1057,8 @@ export const financeCareerData: FinanceCareerData[] = [
     id: 'asset-management',
     name: 'Asset Management',
     description: 'Manage investment portfolios and funds for institutional and retail clients',
+    kidFriendlyDescription: 'Invest money wisely for lots of different people and organizations! 💼',
+    category: 'buy-side',
     icon: PieChart,
     color: 'from-cyan-500 to-blue-600',
     levels: [
@@ -1141,15 +1163,6 @@ export const financeCareerData: FinanceCareerData[] = [
         duration: '17:45'
       }
     ]
-  },
-  {
-    id: 'wealth-management',
-    name: 'Wealth Management',
-    description: 'Master holistic financial advisory, from planning foundations to client relations.',
-    icon: Shield,
-    color: 'from-emerald-500 to-teal-600',
-    levels: [],
-    videos: []
   }
 ];
 
