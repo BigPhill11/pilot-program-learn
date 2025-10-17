@@ -5,6 +5,7 @@ import PersonalFinanceTab from "@/components/learn/PersonalFinanceTab";
 import CompanyDiscoveryTab from "@/components/learn/CompanyDiscoveryTab";
 import CareersInFinanceTab from "@/components/learn/CareersInFinanceTab";
 import AdaptiveLearningContent from "@/components/learning/AdaptiveLearningContent";
+import InteractiveLearningHub from "@/components/learning/InteractiveLearningHub";
 import TermOfTheDay from "@/components/learn/TermOfTheDay";
 import AdminTab from "@/components/admin/AdminTab";
 import AdminModeToggle from "@/components/admin/AdminModeToggle";
@@ -31,12 +32,15 @@ const LearnPage = () => {
         <TermOfTheDay />
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className={`grid w-full ${isAdmin ? (isMobile ? 'grid-cols-3' : 'grid-cols-5') : (isMobile ? 'grid-cols-2' : 'grid-cols-4')} ${isMobile ? 'h-auto' : ''}`}>
+        <TabsList className={`grid w-full ${isAdmin ? (isMobile ? 'grid-cols-3' : 'grid-cols-6') : (isMobile ? 'grid-cols-3' : 'grid-cols-5')} ${isMobile ? 'h-auto' : ''}`}>
           <TabsTrigger value="adaptive" className={isMobile ? 'text-xs py-3' : ''}>
             {isMobile ? 'Adaptive' : 'Adaptive Learning'}
           </TabsTrigger>
           <TabsTrigger value="personal-finance" className={isMobile ? 'text-xs py-3' : ''}>
             {isMobile ? 'Personal' : 'Personal Finance'}
+          </TabsTrigger>
+          <TabsTrigger value="interactive-hub" className={isMobile ? 'text-xs py-3' : ''}>
+            {isMobile ? 'Games' : 'Interactive Hub'}
           </TabsTrigger>
           <TabsTrigger value="companies" className={isMobile ? 'text-xs py-3' : ''}>
             {isMobile ? 'Companies' : 'Company Discovery'}
@@ -57,6 +61,10 @@ const LearnPage = () => {
         
         <TabsContent value="personal-finance" className="mt-6">
           <PersonalFinanceTab />
+        </TabsContent>
+        
+        <TabsContent value="interactive-hub" className="mt-6">
+          <InteractiveLearningHub />
         </TabsContent>
         
         <TabsContent value="companies" className="mt-6">

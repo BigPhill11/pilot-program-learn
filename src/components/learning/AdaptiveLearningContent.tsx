@@ -5,7 +5,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { BookOpen, Trophy, Target, Brain, PlayCircle, Clock, Users, Star, Zap, TrendingUp, Lightbulb } from 'lucide-react';
-import InteractiveLearningHub from './InteractiveLearningHub';
 import { useAuth } from '@/hooks/useAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useProgressContext } from '@/contexts/ProgressContext';
@@ -18,7 +17,6 @@ interface AdaptiveLearningContentProps {
 const AdaptiveLearningContent: React.FC<AdaptiveLearningContentProps> = ({ onNavigateToTab }) => {
   const { profile } = useAuth();
   const isMobile = useIsMobile();
-  const [selectedPath, setSelectedPath] = useState<string | null>(null);
   const { getModuleProgress, getTotalCompletedModules, getOverallProgress } = useProgressContext();
 
   // Calculate progress for each learning path
@@ -93,7 +91,7 @@ const AdaptiveLearningContent: React.FC<AdaptiveLearningContentProps> = ({ onNav
       progress: getGamesProgress(),
       lessons: 6,
       estimated: '1 week',
-      targetTab: 'adaptive'
+      targetTab: 'interactive-hub'
     }
   ];
 
@@ -113,21 +111,6 @@ const AdaptiveLearningContent: React.FC<AdaptiveLearningContentProps> = ({ onNav
     };
     return colors[color as keyof typeof colors] || colors.emerald;
   };
-
-  if (selectedPath) {
-    return (
-      <div className="max-w-6xl mx-auto p-6">
-        <Button 
-          variant="outline" 
-          onClick={() => setSelectedPath(null)}
-          className="mb-6"
-        >
-          ← Back to Learning Hub
-        </Button>
-        <InteractiveLearningHub />
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
@@ -205,9 +188,7 @@ const AdaptiveLearningContent: React.FC<AdaptiveLearningContentProps> = ({ onNav
                 key={path.id}
                 className={`${getColorClasses(path.color)} cursor-pointer transition-all hover:shadow-lg`}
                 onClick={() => {
-                  if (path.id === 'games') {
-                    setSelectedPath(path.id);
-                  } else if (onNavigateToTab && path.targetTab) {
+                  if (onNavigateToTab && path.targetTab) {
                     onNavigateToTab(path.targetTab);
                   }
                 }}
@@ -281,7 +262,7 @@ const AdaptiveLearningContent: React.FC<AdaptiveLearningContentProps> = ({ onNav
       {/* Quick Actions */}
       <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-3'} gap-4`}>
         <Button 
-          onClick={() => setSelectedPath('games')}
+          onClick={() => onNavigateToTab?.('interactive-hub')}
           className="h-20 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
         >
           <div className="text-center">
@@ -290,7 +271,7 @@ const AdaptiveLearningContent: React.FC<AdaptiveLearningContentProps> = ({ onNav
           </div>
         </Button>
         <Button 
-          onClick={() => setSelectedPath('beginner')}
+          onClick={() => onNavigateToTab?.('careers')}
           variant="outline"
           className="h-20"
         >
@@ -300,7 +281,7 @@ const AdaptiveLearningContent: React.FC<AdaptiveLearningContentProps> = ({ onNav
           </div>
         </Button>
         <Button 
-          onClick={() => setSelectedPath('stocks')}
+          onClick={() => onNavigateToTab?.('companies')}
           variant="outline"
           className="h-20"
         >
