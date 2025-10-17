@@ -49,26 +49,8 @@ const CareersInFinanceTab = () => {
       );
     }
 
-    // Show survey results
-    if (surveyResults) {
-      return (
-        <div className="space-y-6">
-          <Button
-            variant="outline"
-            onClick={handleBackToCategories}
-            className="mb-4"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to All Careers
-          </Button>
-          <CareerRecommendations 
-            recommendations={surveyResults}
-            careers={financeCareerData}
-            onSelectCareer={setSelectedCareer}
-          />
-        </div>
-      );
-    }
+    // Show survey results (but still show all careers below)
+    const showRecommendations = surveyResults !== null;
 
     // Show IB Divisions Hub
     if (showIBDivisions) {
@@ -181,22 +163,53 @@ const CareersInFinanceTab = () => {
 
     return (
         <div>
-            <div className="text-center mb-8 md:mb-12">
-                <h2 className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold tracking-tight text-foreground`}>
-                    Careers in Finance 💼
-                </h2>
-                <p className={`mt-3 max-w-2xl mx-auto ${isMobile ? 'text-base px-4' : 'text-lg'} text-muted-foreground`}>
-                    Discover your perfect finance career! Learn about different paths and find which one fits you best.
-                </p>
-                <Button
-                  onClick={() => setShowSurvey(true)}
-                  className="mt-6 bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90"
-                  size={isMobile ? "default" : "lg"}
-                >
-                  <Sparkles className="mr-2 h-5 w-5" />
-                  Take Career Quiz
-                </Button>
-            </div>
+            {/* Show recommendations if quiz was completed */}
+            {showRecommendations && (
+              <div className="mb-12">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold text-foreground`}>
+                    Your Personalized Matches ✨
+                  </h2>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleBackToCategories}
+                  >
+                    Clear Results
+                  </Button>
+                </div>
+                <CareerRecommendations 
+                  recommendations={surveyResults!}
+                  careers={financeCareerData}
+                  onSelectCareer={setSelectedCareer}
+                />
+                <div className="mt-8 pt-8 border-t">
+                  <h3 className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold text-foreground text-center mb-4`}>
+                    Explore All Careers Below 👇
+                  </h3>
+                </div>
+              </div>
+            )}
+
+            {/* Main header - only show if not showing recommendations */}
+            {!showRecommendations && (
+              <div className="text-center mb-8 md:mb-12">
+                  <h2 className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold tracking-tight text-foreground`}>
+                      Careers in Finance 💼
+                  </h2>
+                  <p className={`mt-3 max-w-2xl mx-auto ${isMobile ? 'text-base px-4' : 'text-lg'} text-muted-foreground`}>
+                      Discover your perfect finance career! Learn about different paths and find which one fits you best.
+                  </p>
+                  <Button
+                    onClick={() => setShowSurvey(true)}
+                    className="mt-6 bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90"
+                    size={isMobile ? "default" : "lg"}
+                  >
+                    <Sparkles className="mr-2 h-5 w-5" />
+                    Take Career Quiz
+                  </Button>
+              </div>
+            )}
 
             {/* Sell-Side Careers */}
             <div className="mb-12">
