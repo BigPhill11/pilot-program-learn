@@ -1,15 +1,17 @@
 
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles, Building2, Heart, Settings } from 'lucide-react';
+import { Sparkles, Building2, Heart, Settings, GraduationCap, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import EnhancedCompanySwipeCard from './EnhancedCompanySwipeCard';
 import CompanyDiscoveryProgress from './CompanyDiscoveryProgress';
 import InvestorDiscoveryFlow from './investor/InvestorDiscoveryFlow';
 import FavoriteCompanies from './FavoriteCompanies';
 import CompanyManager from '../admin/CompanyManager';
+import CompanyEvaluationLessons from './evaluation/CompanyEvaluationLessons';
 import { useCompanies } from '@/hooks/useCompanies';
 import { useAuth } from '@/hooks/useAuth';
+import { useEvaluationProgress } from '@/hooks/useEvaluationProgress';
 
 const CompanyDiscoveryTab: React.FC = () => {
   const { user } = useAuth();
@@ -18,6 +20,10 @@ const CompanyDiscoveryTab: React.FC = () => {
   const [viewedCompanies, setViewedCompanies] = useState<Set<string>>(new Set());
   const [showFavorites, setShowFavorites] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
+  const { allLessonsCompleted, getTotalProgress } = useEvaluationProgress();
+  
+  const lessonsComplete = allLessonsCompleted();
+  const progress = getTotalProgress();
 
   const handleSwipe = (companyId: string, liked: boolean) => {
     console.log(`Company ${companyId} was ${liked ? 'liked' : 'disliked'}`);
@@ -96,17 +102,35 @@ const CompanyDiscoveryTab: React.FC = () => {
         </div>
       </div>
 
-      <Tabs defaultValue="investor-discovery" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+      <Tabs defaultValue="learn" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="learn" className="flex items-center space-x-2">
+            <GraduationCap className="h-4 w-4" />
+            <span>Learn to Evaluate</span>
+          </TabsTrigger>
           <TabsTrigger value="investor-discovery" className="flex items-center space-x-2">
             <Sparkles className="h-4 w-4" />
             <span>Investor Discovery</span>
           </TabsTrigger>
-          <TabsTrigger value="browse-all" className="flex items-center space-x-2">
+          <TabsTrigger 
+            value="browse-all" 
+            className="flex items-center space-x-2"
+            disabled={!lessonsComplete}
+          >
+            {!lessonsComplete && <Lock className="h-4 w-4" />}
             <Building2 className="h-4 w-4" />
             <span>Browse All</span>
+            {!lessonsComplete && (
+              <span className="ml-1 text-xs bg-orange-500 text-white px-1.5 py-0.5 rounded">
+                {progress.percentage}%
+              </span>
+            )}
           </TabsTrigger>
         </TabsList>
+        
+        <TabsContent value="learn" className="mt-6">
+          <CompanyEvaluationLessons />
+        </TabsContent>
         
         <TabsContent value="investor-discovery" className="mt-6">
           <InvestorDiscoveryFlow />

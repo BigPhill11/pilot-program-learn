@@ -25,40 +25,16 @@ export const useEvaluationProgress = () => {
   const [loading, setLoading] = useState(true);
 
   const loadProgress = async () => {
-    if (!user) {
-      // Load from localStorage for non-authenticated users
-      const saved = localStorage.getItem('evaluation_progress');
-      if (saved) {
+    // Load from localStorage (works for both authenticated and non-authenticated users)
+    const saved = localStorage.getItem('evaluation_progress');
+    if (saved) {
+      try {
         setModuleProgress(JSON.parse(saved));
+      } catch (error) {
+        console.error('Error parsing saved progress:', error);
       }
-      setLoading(false);
-      return;
     }
-
-    try {
-      const { data, error } = await supabase
-        .from('user_evaluation_progress')
-        .select('*')
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
-      if (data) {
-        const formatted: ModuleProgress[] = data.map(item => ({
-          lessonNumber: item.lesson_number,
-          moduleNumber: item.module_number,
-          completed: item.completed,
-          quizScore: item.quiz_score,
-          timeSpent: item.time_spent_seconds,
-          completedAt: item.completed_at
-        }));
-        setModuleProgress(formatted);
-      }
-    } catch (error) {
-      console.error('Error loading evaluation progress:', error);
-    } finally {
-      setLoading(false);
-    }
+    setLoading(false);
   };
 
   const saveProgress = async (progress: ModuleProgress) => {
@@ -68,30 +44,8 @@ export const useEvaluationProgress = () => {
     updated.push(progress);
     setModuleProgress(updated);
 
-    if (!user) {
-      localStorage.setItem('evaluation_progress', JSON.stringify(updated));
-      return;
-    }
-
-    try {
-      const { error } = await supabase
-        .from('user_evaluation_progress')
-        .upsert({
-          user_id: user.id,
-          lesson_number: progress.lessonNumber,
-          module_number: progress.moduleNumber,
-          completed: progress.completed,
-          quiz_score: progress.quizScore,
-          time_spent_seconds: progress.timeSpent,
-          completed_at: progress.completedAt || new Date().toISOString()
-        }, {
-          onConflict: 'user_id,lesson_number,module_number'
-        });
-
-      if (error) throw error;
-    } catch (error) {
-      console.error('Error saving evaluation progress:', error);
-    }
+    // Save to localStorage
+    localStorage.setItem('evaluation_progress', JSON.stringify(updated));
   };
 
   const getModuleProgress = (lessonNumber: number, moduleNumber: string): ModuleProgress | null => {
