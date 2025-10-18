@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react';
-import { useAdminMode } from '@/contexts/AdminModeContext';
 import { getModuleById, getLevelById } from '@/data/ModuleRegistry';
 
 export interface NavigationState {
@@ -9,37 +8,21 @@ export interface NavigationState {
 }
 
 export const useModuleNavigation = () => {
-  const { isAdminModeActive, currentAdminPath, isPreviewMode } = useAdminMode();
   const [navigationState, setNavigationState] = useState<NavigationState>({
     currentModule: null,
     currentLevel: null,
     isAdminOverride: false
   });
 
-  // Parse current admin path
-  const getCurrentAdminNavigation = useCallback(() => {
-    if (!currentAdminPath || !isPreviewMode) return null;
-    
-    const [moduleId, levelId] = currentAdminPath.split('-');
-    return {
-      moduleId,
-      levelId: parseInt(levelId),
-      module: getModuleById(moduleId),
-      level: getLevelById(moduleId, parseInt(levelId))
-    };
-  }, [currentAdminPath, isPreviewMode]);
-
   const navigateToLevel = useCallback((moduleId: string, levelId: number) => {
     setNavigationState({
       currentModule: moduleId,
       currentLevel: levelId,
-      isAdminOverride: isAdminModeActive
+      isAdminOverride: false
     });
-  }, [isAdminModeActive]);
+  }, []);
 
   const canAccessLevel = useCallback((moduleId: string, levelId: number, userProgress?: any) => {
-    // Admin can access any level
-    if (isAdminModeActive) return true;
     
     // Check user progress for normal users
     const module = getModuleById(moduleId);
@@ -61,7 +44,7 @@ export const useModuleNavigation = () => {
     
     // Check if previous level is completed
     return userProgress?.[moduleId]?.[levelId - 1]?.completed === true;
-  }, [isAdminModeActive]);
+  }, []);
 
   const getModuleProgress = useCallback((moduleId: string, userProgress?: any) => {
     const module = getModuleById(moduleId);
@@ -99,9 +82,6 @@ export const useModuleNavigation = () => {
     navigateToLevel,
     canAccessLevel,
     getModuleProgress,
-    getAllModulesProgress,
-    getCurrentAdminNavigation,
-    isAdminModeActive,
-    isPreviewMode
+    getAllModulesProgress
   };
 };

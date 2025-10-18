@@ -8,7 +8,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { Shield, BookOpen, CheckCircle, RotateCcw, Settings, Users, Target } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { moduleRegistry, getAllModules } from '@/data/ModuleRegistry';
-import { useAdminMode } from '@/contexts/AdminModeContext';
 
 interface LessonCompletion {
   id: string;
@@ -23,8 +22,6 @@ const AdminTab = () => {
   const { toast } = useToast();
   const [completions, setCompletions] = useState<LessonCompletion[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const { jumpToLevel, canAccessLevel } = useAdminMode();
   
   const careers = [
     { id: 'investment-banking', name: 'Investment Banking', levels: 7 },
@@ -249,16 +246,14 @@ const AdminTab = () => {
                 <CardContent className="pt-0">
                   <div className="flex flex-wrap gap-1">
                     {module.levels.map((level) => (
-                      <Button
+                      <Badge
                         key={level.id}
                         variant="outline"
-                        size="sm"
-                        onClick={() => jumpToLevel(module.id, level.id)}
                         className="h-8 px-2 text-xs"
                         title={`${level.title} - ${level.description}`}
                       >
                         L{level.id}
-                      </Button>
+                      </Badge>
                     ))}
                   </div>
                 </CardContent>

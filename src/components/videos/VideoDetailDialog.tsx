@@ -8,7 +8,6 @@ import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
-import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import VideoEditPanel from '@/components/videos/VideoEditPanel';
@@ -82,8 +81,9 @@ const VideoDetailDialog: React.FC<VideoDetailDialogProps> = ({
   onOpenChange
 }) => {
   const { user } = useAuth();
-  const { isAdmin } = useAdminAuth();
   const { toast } = useToast();
+  // Admin check temporarily disabled - will be reimplemented later
+  const isAdmin = false;
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const [loading, setLoading] = useState(false);

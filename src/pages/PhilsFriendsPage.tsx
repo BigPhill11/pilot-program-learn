@@ -8,7 +8,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/hooks/useAuth';
-import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
 import { Search, Play, Plus, Edit, Clock, Users, Filter, Video, Award, Target, Briefcase, Heart, MessageCircle } from 'lucide-react';
@@ -73,8 +72,9 @@ interface Video {
 
 const PhilsFriendsPage: React.FC = () => {
   const { user } = useAuth();
-  const { isAdmin } = useAdminAuth();
   const isMobile = useIsMobile();
+  // Admin check temporarily disabled - will be reimplemented later
+  const isAdmin = false;
   
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(true);

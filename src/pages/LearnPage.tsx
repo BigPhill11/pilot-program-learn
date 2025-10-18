@@ -8,28 +8,24 @@ import AdaptiveLearningContent from "@/components/learning/AdaptiveLearningConte
 import InteractiveLearningHub from "@/components/learning/InteractiveLearningHub";
 import TermOfTheDay from "@/components/learn/TermOfTheDay";
 import AdminTab from "@/components/admin/AdminTab";
-import AdminModeToggle from "@/components/admin/AdminModeToggle";
-import AdminNavigationPanel from "@/components/admin/AdminNavigationPanel";
-import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { AdminModeProvider } from "@/contexts/AdminModeContext";
+import { useAuth } from "@/hooks/useAuth";
 
 const LearnPage = () => {
   const isMobile = useIsMobile();
-  const { isAdmin, loading } = useAdminAuth();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('adaptive');
+  
+  // Simplified admin check - will be replaced with proper system later
+  const isAdmin = false;
 
   const handleNavigateToTab = (tabValue: string) => {
     setActiveTab(tabValue);
   };
 
   return (
-    <AdminModeProvider>
-      <div className="container mx-auto px-4 py-8 relative">
-        <AdminModeToggle />
-        <AdminNavigationPanel onNavigateToTab={handleNavigateToTab} />
-        
-        <TermOfTheDay />
+    <div className="container mx-auto px-4 py-8 relative">
+      <TermOfTheDay />
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className={`grid w-full ${isAdmin ? (isMobile ? 'grid-cols-3' : 'grid-cols-6') : (isMobile ? 'grid-cols-3' : 'grid-cols-5')} ${isMobile ? 'h-auto' : ''}`}>
@@ -81,8 +77,7 @@ const LearnPage = () => {
           </TabsContent>
         )}
       </Tabs>
-      </div>
-    </AdminModeProvider>
+    </div>
   );
 };
 
