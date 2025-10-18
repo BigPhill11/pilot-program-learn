@@ -16,7 +16,7 @@ interface EvaluationLessonViewProps {
 
 const EvaluationLessonView: React.FC<EvaluationLessonViewProps> = ({ lesson, onBack }) => {
   const [activeTab, setActiveTab] = useState('overview');
-  const { getLessonProgress, isModuleUnlocked } = useEvaluationProgress();
+  const { getLessonProgress, isModuleUnlocked, getModuleProgress, refreshProgress } = useEvaluationProgress();
   
   const progress = getLessonProgress(lesson.lessonNumber, lesson.modules.length);
   const progressPercentage = lesson.modules.length > 0 
@@ -56,8 +56,8 @@ const EvaluationLessonView: React.FC<EvaluationLessonViewProps> = ({ lesson, onB
           </TabsTrigger>
           {lesson.modules.map((module, index) => {
             const isUnlocked = isModuleUnlocked(lesson.lessonNumber, module.moduleNumber);
-            const moduleProgress = getLessonProgress(lesson.lessonNumber, lesson.modules.length);
-            const isCompleted = moduleProgress.modulesCompleted > index;
+            const moduleCompletion = getModuleProgress(lesson.lessonNumber, module.moduleNumber);
+            const isCompleted = moduleCompletion?.completed || false;
 
             return (
               <TabsTrigger 
@@ -134,12 +134,17 @@ const EvaluationLessonView: React.FC<EvaluationLessonViewProps> = ({ lesson, onB
             <EvaluationModule 
               module={module} 
               lessonNumber={lesson.lessonNumber}
-              onComplete={() => {
+              onComplete={async () => {
+                // Refresh progress to get latest completion state
+                await refreshProgress();
+                
                 // Find next module
                 const currentIndex = lesson.modules.findIndex(m => m.id === module.id);
                 if (currentIndex < lesson.modules.length - 1) {
+                  // Navigate to next module
                   setActiveTab(lesson.modules[currentIndex + 1].id);
                 } else {
+                  // All modules completed, go back to overview
                   setActiveTab('overview');
                 }
               }}

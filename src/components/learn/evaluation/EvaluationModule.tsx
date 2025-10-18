@@ -54,6 +54,9 @@ const EvaluationModule: React.FC<EvaluationModuleProps> = ({
         title: '🎉 Module Complete!',
         description: `You scored ${score} out of ${module.quiz.questions.length}`,
       });
+
+      // Call onComplete callback to notify parent
+      onComplete();
     }
   };
 
@@ -219,19 +222,35 @@ const EvaluationModule: React.FC<EvaluationModuleProps> = ({
       <Card>
         <CardContent className="p-6 text-center space-y-4">
           <div>
-            <h3 className="font-semibold text-lg mb-2">Ready to Test Your Knowledge?</h3>
+            <h3 className="font-semibold text-lg mb-2">
+              {quizCompleted ? 'Module Completed!' : 'Ready to Test Your Knowledge?'}
+            </h3>
             <p className="text-sm text-muted-foreground">
-              Complete the quiz to unlock the next module. You need {module.quiz.passingScore} out of {module.quiz.questions.length} correct to pass.
+              {quizCompleted 
+                ? 'Great job! You can retake the quiz or move on to the next module.'
+                : `Complete the quiz to unlock the next module. You need ${module.quiz.passingScore} out of ${module.quiz.questions.length} correct to pass.`
+              }
             </p>
           </div>
-          <Button 
-            onClick={() => setShowQuiz(true)}
-            size="lg"
-            className="w-full max-w-md"
-          >
-            {quizCompleted ? 'Retake Quiz' : 'Start Quiz'}
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
+          <div className="flex gap-3 justify-center">
+            <Button 
+              onClick={() => setShowQuiz(true)}
+              size="lg"
+              variant={quizCompleted ? 'outline' : 'default'}
+            >
+              {quizCompleted ? 'Retake Quiz' : 'Start Quiz'}
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+            {quizCompleted && (
+              <Button 
+                onClick={onComplete}
+                size="lg"
+              >
+                Next Module
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>
