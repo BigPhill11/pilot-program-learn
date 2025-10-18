@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PersonalFinanceTab from "@/components/learn/PersonalFinanceTab";
 import CompanyDiscoveryTab from "@/components/learn/CompanyDiscoveryTab";
@@ -8,19 +8,34 @@ import AdaptiveLearningContent from "@/components/learning/AdaptiveLearningConte
 import InteractiveLearningHub from "@/components/learning/InteractiveLearningHub";
 import TermOfTheDay from "@/components/learn/TermOfTheDay";
 import AdminTab from "@/components/admin/AdminTab";
+import LearnTabTutorial from "@/components/onboarding/LearnTabTutorial";
+import LearnTabHelpMenu from "@/components/learn/LearnTabHelpMenu";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/hooks/useAuth";
+import { useOnboarding } from "@/hooks/useOnboarding";
 
 const LearnPage = () => {
   const isMobile = useIsMobile();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('adaptive');
+  const { learnTabTutorialCompleted, loading } = useOnboarding();
+  const [showTutorial, setShowTutorial] = useState(false);
   
   // Simplified admin check - will be replaced with proper system later
   const isAdmin = false;
 
+  useEffect(() => {
+    if (!loading && !learnTabTutorialCompleted) {
+      setShowTutorial(true);
+    }
+  }, [loading, learnTabTutorialCompleted]);
+
   const handleNavigateToTab = (tabValue: string) => {
     setActiveTab(tabValue);
+  };
+
+  const handleRestartTutorial = () => {
+    setShowTutorial(true);
   };
 
   return (
@@ -77,6 +92,12 @@ const LearnPage = () => {
           </TabsContent>
         )}
       </Tabs>
+      
+      {/* Learn Tab Tutorial */}
+      <LearnTabTutorial open={showTutorial} onClose={() => setShowTutorial(false)} />
+      
+      {/* Help Menu */}
+      {learnTabTutorialCompleted && <LearnTabHelpMenu onRestartTutorial={handleRestartTutorial} />}
     </div>
   );
 };
