@@ -586,7 +586,520 @@ export const evaluationLessons: EvaluationLesson[] = [
       emoji: '🕵️',
       description: 'Expert at reading market sentiment and investor psychology'
     },
-    modules: [] // To be implemented in Phase 1B
+    modules: [
+      {
+        id: 'module-2-1',
+        moduleNumber: '2.1',
+        title: 'News Impact & Media Influence',
+        description: 'Learn how news events and media coverage affect stock prices',
+        estimatedTime: '8-10 minutes',
+        objectives: [
+          'Understand how news moves stock prices',
+          'Distinguish between temporary and permanent impacts',
+          'Identify positive vs negative catalysts',
+          'Learn to filter signal from noise'
+        ],
+        content: {
+          introduction: 'Stock prices don\'t just move based on numbers - they react to news, rumors, and media coverage. A single tweet or earnings miss can send a stock soaring or crashing. Understanding media impact is crucial.',
+          sections: [
+            {
+              heading: 'How News Moves Markets',
+              content: 'News creates immediate reactions as investors adjust their expectations. Good news = buying pressure, bad news = selling pressure.',
+              bulletPoints: [
+                'Stock prices reflect future expectations, not just current performance',
+                'News changes expectations, which moves prices',
+                'Markets can overreact to headlines (opportunities!)',
+                'Major news: earnings reports, product launches, CEO changes',
+                'Unexpected news has bigger impact than anticipated events'
+              ]
+            },
+            {
+              heading: 'Positive vs Negative Catalysts',
+              content: 'Catalysts are events that trigger price movements. Recognizing them helps you anticipate market reactions.',
+              bulletPoints: [
+                '✅ Positive: Beat earnings, new product success, acquisition',
+                '✅ Positive: Partnership announcement, FDA approval',
+                '🚩 Negative: Miss earnings, product recall, lawsuit',
+                '🚩 Negative: CEO scandal, regulatory issues, guidance cut',
+                'Magnitude matters: "Beat by 5%" > "Beat by 1%"'
+              ]
+            },
+            {
+              heading: 'Temporary vs Permanent Impact',
+              content: 'Not all news has lasting effects. Some events are noise, others fundamentally change the company.',
+              analogy: '⏱️ Temporary: Coffee spill on your shirt (wash it off). Permanent: Getting fired from your job (major change).',
+              bulletPoints: [
+                'Temporary: Supply chain hiccup, one bad quarter, temporary scandal',
+                'Permanent: Losing major customer, technological disruption, industry decline',
+                'Stock might overreact short-term to temporary news (opportunity)',
+                'Permanent changes require re-evaluating the company',
+                'Ask: "Will this matter in 6 months?"'
+              ]
+            },
+            {
+              heading: 'Media Hype vs Reality',
+              content: 'Media loves drama and clicks. Learn to separate sensationalism from facts.',
+              bulletPoints: [
+                'Clickbait headlines exaggerate for attention',
+                'Check multiple sources, not just one article',
+                'Look at actual numbers, not just narrative',
+                'CNBC/Bloomberg more reliable than random blogs',
+                'Social media amplifies both hype and fear'
+              ]
+            }
+          ],
+          examples: [
+            {
+              companyName: 'Tesla',
+              scenario: 'Elon Musk tweets move Tesla stock 10%+ in minutes',
+              metrics: {
+                'Tweet Impact': '±10% price move',
+                'Duration': 'Often temporary'
+              },
+              outcome: 'Volatile but often reverses',
+              lesson: 'Social media can cause overreactions - don\'t panic buy/sell'
+            },
+            {
+              companyName: 'Johnson & Johnson',
+              scenario: 'Talc powder lawsuit news caused temporary sell-off',
+              metrics: {
+                'Initial Drop': '-10%',
+                'Recovery': 'Full recovery in months'
+              },
+              outcome: 'Temporary impact, company fundamentals unchanged',
+              lesson: 'Don\'t panic on temporary bad news for solid companies'
+            }
+          ],
+          interactiveElement: {
+            type: 'game',
+            component: 'NewsSentimentAnalyzer',
+            title: 'News Sentiment Analyzer Game',
+            description: 'Categorize news headlines as positive, negative, or neutral'
+          }
+        },
+        quiz: {
+          passingScore: 3,
+          questions: [
+            {
+              id: 'q2-1-1',
+              question: 'Company beats earnings expectations by 20%. What\'s the likely impact?',
+              options: [
+                'Stock price will drop',
+                'Stock price will likely rise (positive catalyst)',
+                'No impact on stock price',
+                'Stock will be delisted'
+              ],
+              correctAnswer: 1,
+              explanation: 'Beating earnings expectations significantly is a positive catalyst that typically drives the stock price up as investors become more optimistic.'
+            },
+            {
+              id: 'q2-1-2',
+              question: 'Which news is likely to have PERMANENT impact?',
+              options: [
+                'CEO caught in minor scandal',
+                'One quarter of missed earnings',
+                'Company loses its largest customer (50% of revenue)',
+                'Supply chain delay of 2 weeks'
+              ],
+              correctAnswer: 2,
+              explanation: 'Losing a customer representing 50% of revenue fundamentally changes the company\'s business and future prospects - this is a permanent, structural change.'
+            },
+            {
+              id: 'q2-1-3',
+              question: 'Stock drops 15% on negative news. What should you do FIRST?',
+              options: [
+                'Immediately sell everything',
+                'Immediately buy more (it\'s cheap!)',
+                'Research if the impact is temporary or permanent',
+                'Ignore it completely'
+              ],
+              correctAnswer: 2,
+              explanation: 'Before making any decision, assess whether the news represents a temporary setback or a permanent change to the company\'s prospects.'
+            },
+            {
+              id: 'q2-1-4',
+              question: 'Which is the MOST reliable news source for investing?',
+              options: [
+                'Random Twitter account',
+                'Sensational blog post',
+                'Bloomberg or company press release',
+                'Friend\'s tip at a party'
+              ],
+              correctAnswer: 2,
+              explanation: 'Established financial news sources like Bloomberg or official company press releases provide verified, factual information compared to unverified social media or rumors.'
+            },
+            {
+              id: 'q2-1-5',
+              question: 'What\'s a "catalyst" in investing?',
+              options: [
+                'A type of chemical reaction',
+                'An event that triggers a significant price movement',
+                'A person who invests in stocks',
+                'A trading strategy'
+              ],
+              correctAnswer: 1,
+              explanation: 'A catalyst is any event or news that triggers a significant change in investor expectations and thus causes a notable price movement.'
+            }
+          ]
+        },
+        keyTakeaways: [
+          'News drives stock prices by changing investor expectations',
+          'Positive catalysts (beats, launches) drive prices up',
+          'Distinguish temporary news (overreactions) from permanent changes',
+          'Verify news from reliable sources, ignore hype and clickbait',
+          'Ask "Will this matter in 6 months?" before reacting'
+        ]
+      },
+      {
+        id: 'module-2-2',
+        moduleNumber: '2.2',
+        title: 'Analyst Ratings & Price Targets',
+        description: 'Understand what analyst opinions mean and how to use them',
+        estimatedTime: '8-10 minutes',
+        objectives: [
+          'Learn what analyst ratings mean (buy/hold/sell)',
+          'Understand price targets and their reliability',
+          'Know why analysts sometimes disagree',
+          'Use analyst opinions as one data point, not the only one'
+        ],
+        content: {
+          introduction: 'Professional analysts spend their careers studying companies and making recommendations. But they\'re not always right! Learn how to interpret their opinions wisely.',
+          sections: [
+            {
+              heading: 'What Are Analyst Ratings?',
+              content: 'Analysts work for banks and research firms, providing recommendations to help investors make decisions.',
+              bulletPoints: [
+                'BUY/STRONG BUY: Analyst expects stock to go up',
+                'HOLD: Analyst thinks stock is fairly priced',
+                'SELL/STRONG SELL: Analyst expects stock to go down',
+                'OUTPERFORM: Should do better than market average',
+                'UNDERPERFORM: Should do worse than market average'
+              ]
+            },
+            {
+              heading: 'Price Targets Explained',
+              content: 'Price targets are the analyst\'s prediction of where the stock will be in 12 months.',
+              analogy: '🎯 Like predicting a sports score: educated guess based on data, but not guaranteed.',
+              bulletPoints: [
+                'Price Target = Analyst\'s 12-month price estimate',
+                'Based on valuation models and future projections',
+                'Compare target to current price for "upside/downside"',
+                'If stock is $50 and target is $70, that\'s 40% upside',
+                'Targets get updated as new info emerges'
+              ]
+            },
+            {
+              heading: 'Why Analysts Disagree',
+              content: 'Different analysts can have completely opposite opinions on the same stock. Here\'s why:',
+              bulletPoints: [
+                'Different assumptions about growth rates',
+                'Different valuation methods (P/E vs DCF)',
+                'Different time horizons (short vs long term)',
+                'Some are more optimistic/pessimistic by nature',
+                'Access to different information or interpretations'
+              ]
+            },
+            {
+              heading: 'How to Use Analyst Opinions',
+              content: 'Analyst ratings are valuable but should never be your only source of information.',
+              bulletPoints: [
+                '✅ DO: Look at consensus (average of all analysts)',
+                '✅ DO: Read the reasoning behind the rating',
+                '✅ DO: Notice when ratings change (upgrades/downgrades)',
+                '❌ DON\'T: Blindly follow one analyst',
+                '❌ DON\'T: Trade immediately on every rating change',
+                'Use ratings as one input in your own analysis'
+              ]
+            },
+            {
+              heading: 'Red Flags with Analysts',
+              content: 'Sometimes analyst opinions can be biased or conflicted.',
+              bulletPoints: [
+                '🚩 Analyst works for bank that does business with the company',
+                '🚩 Consistently wrong predictions on the same stock',
+                '🚩 Sudden rating change without explanation',
+                '✅ Independent research firms tend to be more objective',
+                '✅ Track record matters: some analysts are more accurate'
+              ]
+            }
+          ],
+          examples: [
+            {
+              companyName: 'NVIDIA',
+              scenario: 'Analysts had price targets from $400 to $800 (huge range!)',
+              metrics: {
+                'Low Target': '$400',
+                'High Target': '$800',
+                'Consensus': '$600'
+              },
+              outcome: 'Different views on AI growth potential',
+              lesson: 'Wide target range = high uncertainty about future'
+            },
+            {
+              companyName: 'Meta (Facebook)',
+              scenario: 'Multiple downgrades in 2022, upgrades in 2023',
+              metrics: {
+                '2022': 'Many SELL ratings',
+                '2023': 'Many BUY ratings'
+              },
+              outcome: 'Sentiment shifted as business improved',
+              lesson: 'Analyst consensus can change quickly with new information'
+            }
+          ],
+          interactiveElement: {
+            type: 'analyzer',
+            component: 'AnalystRatingDecoder',
+            title: 'Analyst Rating Decoder',
+            description: 'Learn to interpret analyst ratings and price targets'
+          }
+        },
+        quiz: {
+          passingScore: 3,
+          questions: [
+            {
+              id: 'q2-2-1',
+              question: 'What does a "BUY" rating mean?',
+              options: [
+                'You must buy the stock immediately',
+                'Analyst expects the stock price to increase',
+                'The stock is guaranteed to go up',
+                'The stock is currently cheap'
+              ],
+              correctAnswer: 1,
+              explanation: 'A BUY rating means the analyst expects the stock to increase in value, typically over the next 12 months. It\'s an opinion, not a guarantee.'
+            },
+            {
+              id: 'q2-2-2',
+              question: 'Stock is $50. Analyst price target is $75. What\'s the implied upside?',
+              options: ['25%', '50%', '75%', '33%'],
+              correctAnswer: 1,
+              explanation: 'Upside = ($75 - $50) / $50 = $25 / $50 = 50% potential gain according to the analyst\'s target.'
+            },
+            {
+              id: 'q2-2-3',
+              question: 'Why might two analysts have opposite ratings on the same stock?',
+              options: [
+                'One is definitely wrong',
+                'They have different assumptions about future growth',
+                'One didn\'t do their research',
+                'It never happens'
+              ],
+              correctAnswer: 1,
+              explanation: 'Analysts can reach different conclusions based on different assumptions about growth, competitive dynamics, or valuation methods - both could have valid reasoning.'
+            },
+            {
+              id: 'q2-2-4',
+              question: 'What\'s the BEST way to use analyst ratings?',
+              options: [
+                'Follow one favorite analyst exclusively',
+                'Ignore all analyst ratings completely',
+                'Look at consensus and use as one factor in your analysis',
+                'Trade immediately on every rating change'
+              ],
+              correctAnswer: 2,
+              explanation: 'Analyst consensus provides useful perspective, but should be combined with your own research and analysis - treat it as one input, not the final word.'
+            },
+            {
+              id: 'q2-2-5',
+              question: 'What\'s a potential conflict of interest for analysts?',
+              options: [
+                'They get paid for their research',
+                'They work for a bank that has business with the company',
+                'They publish their opinions publicly',
+                'They study multiple companies'
+              ],
+              correctAnswer: 1,
+              explanation: 'If an analyst\'s employer has a business relationship with the company being covered, there may be pressure to issue favorable ratings - this is a conflict of interest.'
+            }
+          ]
+        },
+        keyTakeaways: [
+          'Analyst ratings: BUY (expect up), HOLD (fairly priced), SELL (expect down)',
+          'Price targets predict where stock will be in 12 months',
+          'Analysts can disagree due to different assumptions and methods',
+          'Use analyst consensus as ONE factor, not your only source',
+          'Watch for conflicts of interest and track record of accuracy'
+        ]
+      },
+      {
+        id: 'module-2-3',
+        moduleNumber: '2.3',
+        title: 'Social Sentiment & Trends',
+        description: 'Navigate social media hype and distinguish FOMO from real opportunities',
+        estimatedTime: '8-10 minutes',
+        objectives: [
+          'Understand how social media influences stock prices',
+          'Recognize FOMO (Fear of Missing Out) vs rational investing',
+          'Learn to filter signal from noise in social feeds',
+          'Identify meme stock dynamics and risks'
+        ],
+        content: {
+          introduction: 'Social media has democratized investing, but it\'s also created echo chambers and hype cycles. Platforms like Reddit, Twitter, and TikTok can move stocks dramatically - sometimes for good reasons, often not.',
+          sections: [
+            {
+              heading: 'The Power of Social Media',
+              content: 'Millions of retail investors coordinate on social platforms, creating real market impact.',
+              bulletPoints: [
+                'WallStreetBets (Reddit): 14M+ members discussing stocks',
+                'Twitter/X: CEOs, influencers, and traders share ideas',
+                'TikTok/Instagram: Financial education (and misinformation)',
+                'Discord: Private investment communities',
+                'Social hype can create short-term volatility'
+              ]
+            },
+            {
+              heading: 'FOMO vs Rational Investing',
+              content: 'Fear of Missing Out drives irrational decisions. Don\'t let emotion override analysis.',
+              analogy: '🎢 FOMO is like jumping on a roller coaster that\'s already at the peak - exciting but risky!',
+              bulletPoints: [
+                'FOMO: "Everyone is buying, I need to get in NOW!"',
+                'Rational: "Let me analyze if this makes sense"',
+                'FOMO leads to buying high, panic selling low',
+                'Viral stocks often crash after the hype fades',
+                'If you heard about it late, you\'re probably late'
+              ]
+            },
+            {
+              heading: 'Meme Stocks Explained',
+              content: 'Meme stocks get massive retail attention, often disconnected from fundamentals.',
+              bulletPoints: [
+                'Examples: GameStop, AMC, Bed Bath & Beyond',
+                'Driven by social sentiment, not earnings/value',
+                'Can have explosive gains (and losses)',
+                'Short squeezes amplify volatility',
+                'High risk: hype can disappear overnight',
+                'Not for long-term investing strategies'
+              ]
+            },
+            {
+              heading: 'Spotting Pump and Dumps',
+              content: 'Coordinated schemes to artificially inflate stock prices, then sell for profit.',
+              bulletPoints: [
+                '🚩 Red Flag: Unknown account hyping penny stock',
+                '🚩 Red Flag: "Get in now before it explodes!"',
+                '🚩 Red Flag: Promises of guaranteed returns',
+                '🚩 Red Flag: Pressure to buy immediately',
+                '✅ Green Flag: Balanced discussion of risks/rewards',
+                'If it sounds too good to be true, it probably is'
+              ]
+            },
+            {
+              heading: 'How to Use Social Media Wisely',
+              content: 'Social platforms can provide value if used correctly with critical thinking.',
+              bulletPoints: [
+                '✅ DO: Follow credible accounts with track records',
+                '✅ DO: Use social media for ideas, verify independently',
+                '✅ DO: Diversify information sources',
+                '❌ DON\'T: YOLO based on one Reddit post',
+                '❌ DON\'T: Trust anonymous tips',
+                'Learn from community, but make your own decisions'
+              ]
+            }
+          ],
+          examples: [
+            {
+              companyName: 'GameStop (2021)',
+              scenario: 'Reddit\'s WallStreetBets drove GME from $20 to $483 in weeks',
+              metrics: {
+                'Starting Price': '$20',
+                'Peak Price': '$483',
+                'Current': 'Much lower'
+              },
+              outcome: 'Massive gains for early investors, huge losses for latecomers',
+              lesson: 'Social hype can create opportunities but also extreme risk'
+            },
+            {
+              companyName: 'Hertz (2020)',
+              scenario: 'Bankrupt company\'s stock surged on Robinhood trading frenzy',
+              metrics: {
+                'Status': 'Bankruptcy',
+                'Social Hype': 'Massive buy volume'
+              },
+              outcome: 'Stock eventually went to zero',
+              lesson: 'Fundamentals matter: hype can\'t save a fundamentally broken company'
+            }
+          ],
+          interactiveElement: {
+            type: 'game',
+            component: 'SocialSentimentMeter',
+            title: 'Social Sentiment Meter',
+            description: 'Gauge whether social media hype is opportunity or danger'
+          }
+        },
+        quiz: {
+          passingScore: 3,
+          questions: [
+            {
+              id: 'q2-3-1',
+              question: 'What is FOMO in investing?',
+              options: [
+                'A type of stock order',
+                'Fear of Missing Out - emotional urge to buy hyped stocks',
+                'A financial analysis method',
+                'A trading platform'
+              ],
+              correctAnswer: 1,
+              explanation: 'FOMO (Fear of Missing Out) is the emotional pressure to buy a stock because everyone else is, often leading to irrational decisions and buying at peaks.'
+            },
+            {
+              id: 'q2-3-2',
+              question: 'Which is a RED FLAG for a potential pump-and-dump scheme?',
+              options: [
+                'Balanced discussion of pros and cons',
+                'Long-term investment thesis',
+                'Anonymous account promising "guaranteed 1000% gains"',
+                'References to company fundamentals'
+              ],
+              correctAnswer: 2,
+              explanation: 'Promises of guaranteed huge returns from anonymous sources is a classic pump-and-dump warning sign - legitimate investments never guarantee returns.'
+            },
+            {
+              id: 'q2-3-3',
+              question: 'A penny stock is trending on Twitter with 10,000 mentions. What should you do?',
+              options: [
+                'Buy immediately before price goes up',
+                'Research the company fundamentals before considering',
+                'Buy with your entire portfolio',
+                'Tell all your friends to buy'
+              ],
+              correctAnswer: 1,
+              explanation: 'Social media buzz should prompt research, not immediate action. Verify if there\'s a legitimate reason for the attention or if it\'s just hype.'
+            },
+            {
+              id: 'q2-3-4',
+              question: 'What characterizes a "meme stock"?',
+              options: [
+                'Driven by social sentiment more than fundamentals',
+                'Always goes up',
+                'Guaranteed safe investment',
+                'Only tech companies'
+              ],
+              correctAnswer: 0,
+              explanation: 'Meme stocks are driven primarily by social media sentiment and retail coordination rather than traditional fundamental analysis.'
+            },
+            {
+              id: 'q2-3-5',
+              question: 'Best way to use social media for investing?',
+              options: [
+                'Blindly follow every tip you see',
+                'Never use social media at all',
+                'Use for ideas, then verify with your own research',
+                'Only trust anonymous accounts'
+              ],
+              correctAnswer: 2,
+              explanation: 'Social media can surface interesting investment ideas, but you should always verify claims and conduct your own analysis before investing.'
+            }
+          ]
+        },
+        keyTakeaways: [
+          'Social media can move stocks through coordinated retail trading',
+          'FOMO (Fear of Missing Out) drives irrational decisions - stay disciplined',
+          'Meme stocks are high-risk, sentiment-driven, not long-term plays',
+          'Watch for pump-and-dump red flags: anonymous tips, guaranteed returns',
+          'Use social media for ideas, but always verify independently'
+        ]
+      }
+    ]
   },
   {
     id: 'lesson-3-decision',
@@ -601,6 +1114,587 @@ export const evaluationLessons: EvaluationLesson[] = [
       emoji: '🧙',
       description: 'Master decision-maker who combines analysis and judgment'
     },
-    modules: [] // To be implemented in Phase 1B
+    modules: [
+      {
+        id: 'module-3-1',
+        moduleNumber: '3.1',
+        title: 'Creating Your Investment Checklist',
+        description: 'Build a personalized framework for evaluating any company',
+        estimatedTime: '8-10 minutes',
+        objectives: [
+          'Combine numbers and sentiment into one framework',
+          'Create must-have criteria for investment decisions',
+          'Identify deal-breakers and red flags',
+          'Build a repeatable evaluation process'
+        ],
+        content: {
+          introduction: 'Professional investors use checklists to ensure consistency and avoid emotional decisions. Now you\'ll create your own personalized investment checklist combining everything you\'ve learned.',
+          sections: [
+            {
+              heading: 'Why Checklists Matter',
+              content: 'Checklists prevent emotional investing and ensure you evaluate every opportunity consistently.',
+              analogy: '✈️ Like pilots using pre-flight checklists: even experts need systematic processes to avoid mistakes.',
+              bulletPoints: [
+                'Removes emotion from decision-making',
+                'Ensures you don\'t skip important analysis',
+                'Creates discipline and consistency',
+                'Prevents FOMO-driven purchases',
+                'Makes you accountable to your own standards'
+              ]
+            },
+            {
+              heading: 'Must-Have Criteria (The Numbers)',
+              content: 'These are non-negotiable financial metrics every investment should pass.',
+              bulletPoints: [
+                '✅ Revenue growth: At least 10-15% annually',
+                '✅ Profit margins: Above industry average',
+                '✅ P/E ratio: Reasonable relative to growth (not 100+)',
+                '✅ Debt-to-equity: Below 2.0 (manageable debt)',
+                '✅ Positive earnings: Actually making money',
+                'Set your own thresholds based on risk tolerance'
+              ]
+            },
+            {
+              heading: 'Sentiment Check (The Vibes)',
+              content: 'Numbers aren\'t everything - sentiment and momentum matter too.',
+              bulletPoints: [
+                '✅ News: More positive catalysts than negative',
+                '✅ Analyst consensus: Majority BUY or HOLD ratings',
+                '✅ Social sentiment: Positive but not meme-level hype',
+                '⚖️ Balance: Not ignoring risks, but seeing opportunity',
+                'Ask: "What could go wrong?" before investing'
+              ]
+            },
+            {
+              heading: 'Deal-Breakers and Red Flags',
+              content: 'Some issues are automatic "no" - walk away immediately.',
+              bulletPoints: [
+                '🚨 STOP: Consistently declining revenue (3+ years)',
+                '🚨 STOP: Massive debt (5x+ equity) with negative margins',
+                '🚨 STOP: CEO scandal or fraud allegations',
+                '🚨 STOP: Outdated business model (e.g., Blockbuster)',
+                '🚨 STOP: Too good to be true (pump-and-dump schemes)',
+                'When red flags appear, don\'t rationalize - move on'
+              ]
+            },
+            {
+              heading: 'Putting Your Checklist Together',
+              content: 'Combine quantitative metrics and qualitative factors into one decision framework.',
+              bulletPoints: [
+                'STEP 1: Financial health (revenue, margins, debt)',
+                'STEP 2: Valuation (P/E, market cap, vs peers)',
+                'STEP 3: News and sentiment (positive momentum?)',
+                'STEP 4: Risk assessment (what could go wrong?)',
+                'STEP 5: Final decision (pass ALL checks? invest)',
+                'If even one major red flag appears, skip the stock'
+              ]
+            }
+          ],
+          examples: [
+            {
+              companyName: 'Microsoft',
+              scenario: 'Let\'s run Microsoft through a checklist',
+              metrics: {
+                'Revenue Growth': '✅ 12% annually',
+                'Margins': '✅ 35%+ net margin',
+                'P/E Ratio': '✅ 30 (reasonable for tech)',
+                'Debt': '✅ Low debt-to-equity',
+                'Sentiment': '✅ Positive AI momentum'
+              },
+              outcome: 'PASS - Strong fundamentals + positive sentiment',
+              lesson: 'Solid companies check multiple boxes'
+            },
+            {
+              companyName: 'Peloton (2022)',
+              scenario: 'Running through checklist reveals issues',
+              metrics: {
+                'Revenue Growth': '🚨 Declining',
+                'Margins': '🚨 Negative',
+                'Debt': '⚠️ High',
+                'Sentiment': '🚨 Very negative'
+              },
+              outcome: 'FAIL - Multiple red flags, walk away',
+              lesson: 'When several criteria fail, avoid the stock'
+            }
+          ],
+          interactiveElement: {
+            type: 'simulator',
+            component: 'ChecklistBuilderTool',
+            title: 'Build Your Checklist',
+            description: 'Create and prioritize your personalized investment criteria'
+          }
+        },
+        quiz: {
+          passingScore: 3,
+          questions: [
+            {
+              id: 'q3-1-1',
+              question: 'Why should you use an investment checklist?',
+              options: [
+                'To make investing more complicated',
+                'To prevent emotional decisions and ensure consistency',
+                'Because everyone else does',
+                'It guarantees profits'
+              ],
+              correctAnswer: 1,
+              explanation: 'Checklists remove emotion and create discipline, ensuring you evaluate every opportunity with the same rigorous criteria.'
+            },
+            {
+              id: 'q3-1-2',
+              question: 'Which is a reasonable "must-have" criterion for your checklist?',
+              options: [
+                'Stock must double in 1 month',
+                'CEO must be famous',
+                'Profit margins above industry average',
+                'Stock price under $10'
+              ],
+              correctAnswer: 2,
+              explanation: 'Profit margins above industry average indicates a competitive advantage and efficient operations - a solid fundamental criterion.'
+            },
+            {
+              id: 'q3-1-3',
+              question: 'What should you do if a stock fails ONE major criterion on your checklist?',
+              options: [
+                'Buy immediately anyway',
+                'Reconsider - investigate if it\'s truly disqualifying',
+                'Change your checklist to make it pass',
+                'Ignore checklists completely'
+              ],
+              correctAnswer: 1,
+              explanation: 'One failed criterion warrants further investigation - if it\'s a major red flag (like fraud), walk away; if minor, consider context.'
+            },
+            {
+              id: 'q3-1-4',
+              question: 'Which is an automatic DEAL-BREAKER?',
+              options: [
+                'P/E ratio slightly above industry average',
+                'CEO involved in fraud scandal',
+                'Stock price down 5% this week',
+                'Analyst disagreement on rating'
+              ],
+              correctAnswer: 1,
+              explanation: 'CEO fraud is a fundamental breach of trust and typically signals deep company problems - this is an automatic disqualification.'
+            },
+            {
+              id: 'q3-1-5',
+              question: 'Your checklist should combine which two elements?',
+              options: [
+                'Only numbers, sentiment doesn\'t matter',
+                'Only sentiment, numbers don\'t matter',
+                'Financial metrics (numbers) AND market sentiment (vibes)',
+                'Only what your friends recommend'
+              ],
+              correctAnswer: 2,
+              explanation: 'Effective investment analysis combines quantitative data (financials) with qualitative factors (sentiment, news) for a complete picture.'
+            }
+          ]
+        },
+        keyTakeaways: [
+          'Checklists create discipline and prevent emotional investing',
+          'Must-have criteria: strong revenue growth, healthy margins, reasonable valuation',
+          'Deal-breakers: declining revenue, massive debt, fraud scandals',
+          'Combine financial metrics with sentiment analysis',
+          'If major red flags appear, walk away - plenty of other opportunities'
+        ]
+      },
+      {
+        id: 'module-3-2',
+        moduleNumber: '3.2',
+        title: 'Risk Assessment Framework',
+        description: 'Learn to identify and evaluate investment risks',
+        estimatedTime: '8-10 minutes',
+        objectives: [
+          'Understand different types of investment risk',
+          'Learn to spot warning signs before problems emerge',
+          'Apply risk assessment to real companies',
+          'Balance risk vs reward in investment decisions'
+        ],
+        content: {
+          introduction: 'Every investment has risk - the key is understanding and managing it. Great investors don\'t avoid risk; they take calculated risks while protecting themselves from catastrophic losses.',
+          sections: [
+            {
+              heading: 'Types of Investment Risk',
+              content: 'Not all risks are created equal. Recognize different risk categories.',
+              bulletPoints: [
+                '📉 Market Risk: Overall market crash affects all stocks',
+                '🏢 Company Risk: Business-specific problems',
+                '🌍 Industry Risk: Sector-wide challenges',
+                '💵 Liquidity Risk: Can\'t sell when you want',
+                '🌐 Economic Risk: Recession, inflation, interest rates',
+                'You can\'t eliminate risk, but you can understand it'
+              ]
+            },
+            {
+              heading: 'Warning Signs to Watch For',
+              content: 'These red flags often precede major problems.',
+              bulletPoints: [
+                '🚩 Declining revenue for 2+ consecutive quarters',
+                '🚩 CEO or CFO suddenly leaving',
+                '🚩 Missing earnings guidance repeatedly',
+                '🚩 Increasing debt while profits shrink',
+                '🚩 Accounting irregularities or restatements',
+                '🚩 Major customer defection',
+                '🚩 Disruptive technology threatening business model'
+              ]
+            },
+            {
+              heading: 'Risk vs Reward Trade-Off',
+              content: 'Higher potential returns come with higher risk. Your job is finding the right balance.',
+              analogy: '🎰 Like casino odds: higher risk = higher potential reward, but also higher chance of loss.',
+              bulletPoints: [
+                'Startups: High risk, high potential reward',
+                'Blue chips: Lower risk, moderate steady returns',
+                'Penny stocks: Extreme risk, lottery-like odds',
+                'Bonds: Low risk, low returns',
+                'Match risk level to your goals and timeline',
+                'Never risk money you can\'t afford to lose'
+              ]
+            },
+            {
+              heading: 'Diversification: Risk Management 101',
+              content: 'Don\'t put all eggs in one basket - spread risk across multiple investments.',
+              bulletPoints: [
+                'Own 10-20 different stocks minimum',
+                'Spread across different industries',
+                'Mix company sizes (large, mid, small cap)',
+                'Consider different asset types (stocks, bonds)',
+                'If one investment fails, others protect you',
+                '"Diversification is the only free lunch in investing"'
+              ]
+            },
+            {
+              heading: 'Risk Assessment Checklist',
+              content: 'Use this framework to evaluate risk before investing.',
+              bulletPoints: [
+                'What could go wrong? (list specific scenarios)',
+                'How likely is each risk? (probability)',
+                'How bad would it be? (impact)',
+                'Can the company survive worst-case scenario?',
+                'Am I comfortable with this level of uncertainty?',
+                'Is the potential reward worth the risk?'
+              ]
+            }
+          ],
+          examples: [
+            {
+              companyName: 'Zoom (2020-2022)',
+              scenario: 'Pandemic boom followed by return-to-office decline',
+              metrics: {
+                'Peak Risk': 'Overvalued at $550/share',
+                'Warning Sign': 'Revenue growth slowing as offices reopened'
+              },
+              outcome: 'Stock dropped 90% from peak',
+              lesson: 'Identify when growth is temporary vs sustainable'
+            },
+            {
+              companyName: 'Enron',
+              scenario: 'Accounting fraud hidden until collapse',
+              metrics: {
+                'Warning Signs': 'Complex finances, aggressive accounting',
+                'Red Flag': 'CFO selling shares'
+              },
+              outcome: 'Complete bankruptcy',
+              lesson: 'When something seems too good to be true, investigate deeper'
+            },
+            {
+              companyName: 'Apple',
+              scenario: 'Navigated risks by diversifying products',
+              metrics: {
+                'Strategy': 'iPhone + Services + Wearables',
+                'Risk Management': 'Not reliant on one product'
+              },
+              outcome: 'Reduced company-specific risk',
+              lesson: 'Companies that manage risk well are safer investments'
+            }
+          ],
+          interactiveElement: {
+            type: 'game',
+            component: 'RiskRadarGame',
+            title: 'Risk Radar',
+            description: 'Spot warning signs and red flags in company profiles'
+          }
+        },
+        quiz: {
+          passingScore: 3,
+          questions: [
+            {
+              id: 'q3-2-1',
+              question: 'What is "company risk"?',
+              options: [
+                'Risk that the entire market crashes',
+                'Risk specific to one business (management, products, competition)',
+                'Risk of interest rates rising',
+                'Risk of your computer breaking'
+              ],
+              correctAnswer: 1,
+              explanation: 'Company risk refers to problems specific to a particular business, like poor management, product failures, or losing competitive advantage.'
+            },
+            {
+              id: 'q3-2-2',
+              question: 'Which is a major WARNING SIGN?',
+              options: [
+                'Company beats earnings slightly',
+                'CEO suddenly resigns with no explanation',
+                'Stock price fluctuates 2%',
+                'Analyst changes rating from Strong Buy to Buy'
+              ],
+              correctAnswer: 1,
+              explanation: 'Sudden, unexplained CEO departure is a red flag that often signals internal problems investors should investigate immediately.'
+            },
+            {
+              id: 'q3-2-3',
+              question: 'What is diversification?',
+              options: [
+                'Buying one stock with your entire portfolio',
+                'Spreading investments across multiple companies/sectors',
+                'Only buying tech stocks',
+                'Trading frequently'
+              ],
+              correctAnswer: 1,
+              explanation: 'Diversification means spreading your money across different investments to reduce the impact if any single one fails.'
+            },
+            {
+              id: 'q3-2-4',
+              question: 'A startup offers 10x potential return but has 90% chance of failure. What\'s the risk profile?',
+              options: [
+                'Low risk, low reward',
+                'High risk, high reward',
+                'No risk involved',
+                'Guaranteed profit'
+              ],
+              correctAnswer: 1,
+              explanation: 'This is classic high risk/high reward: massive upside potential but very high probability of loss - appropriate only for risk-tolerant investors.'
+            },
+            {
+              id: 'q3-2-5',
+              question: 'Before investing, you should ask:',
+              options: [
+                'How much profit am I guaranteed?',
+                'What could go wrong and can I handle that outcome?',
+                'Will this definitely go up?',
+                'What will my friends think?'
+              ],
+              correctAnswer: 1,
+              explanation: 'Risk assessment requires honestly considering potential downsides and whether you can financially and emotionally handle them.'
+            }
+          ]
+        },
+        keyTakeaways: [
+          'All investments have risk: market, company, industry, economic',
+          'Warning signs: declining revenue, CEO departures, rising debt',
+          'Higher risk = higher potential reward (but also higher loss potential)',
+          'Diversification spreads risk - don\'t put all money in one stock',
+          'Before investing, ask: "What could go wrong and can I handle it?"'
+        ]
+      },
+      {
+        id: 'module-3-3',
+        moduleNumber: '3.3',
+        title: 'Making the Final Decision',
+        description: 'Apply everything you\'ve learned to make investment decisions',
+        estimatedTime: '8-10 minutes',
+        objectives: [
+          'Synthesize financial and sentiment analysis',
+          'Practice making like/dislike decisions',
+          'Learn when to say yes and when to walk away',
+          'Build confidence in your evaluation skills'
+        ],
+        content: {
+          introduction: 'This is it - the moment of truth. You\'ve learned to analyze numbers, read sentiment, assess risk, and create checklists. Now it\'s time to make the final call: invest or pass?',
+          sections: [
+            {
+              heading: 'The Decision Framework',
+              content: 'Follow this systematic approach for every investment decision.',
+              bulletPoints: [
+                'STEP 1: Financial Health Check (revenue, margins, debt)',
+                'STEP 2: Valuation Analysis (P/E, market cap, vs competitors)',
+                'STEP 3: Sentiment Review (news, analysts, social)',
+                'STEP 4: Risk Assessment (warning signs, downside scenarios)',
+                'STEP 5: Checklist Validation (pass all criteria?)',
+                'STEP 6: Final Decision (yes/no/watch list)'
+              ]
+            },
+            {
+              heading: 'When to Say YES (Like)',
+              content: 'These are the qualities of investable companies.',
+              bulletPoints: [
+                '✅ Strong financial fundamentals (all green)',
+                '✅ Reasonable valuation (not overpriced)',
+                '✅ Positive sentiment momentum',
+                '✅ Clear competitive advantage',
+                '✅ Passes your personal checklist',
+                '✅ Risk level matches your comfort zone',
+                'Remember: You don\'t need to invest in everything!'
+              ]
+            },
+            {
+              heading: 'When to Say NO (Pass)',
+              content: 'Walking away is sometimes the best decision.',
+              bulletPoints: [
+                '❌ Multiple red flags present',
+                '❌ Valuation seems too high (FOMO territory)',
+                '❌ Business model you don\'t understand',
+                '❌ Declining fundamentals',
+                '❌ Excessive debt or cash flow problems',
+                '❌ Something "feels off" (trust your gut)',
+                'Saying no is not failure - it\'s discipline'
+              ]
+            },
+            {
+              heading: 'The Watch List Strategy',
+              content: 'Not everything is clear-cut. Some stocks need more time.',
+              bulletPoints: [
+                '👀 WATCH LIST: Interesting but missing key data',
+                '👀 WATCH LIST: Good company but overvalued today',
+                '👀 WATCH LIST: Positive thesis but major risk present',
+                'Set alerts for price targets or news updates',
+                'Revisit watch list monthly',
+                'Many great investments start on the watch list'
+              ]
+            },
+            {
+              heading: 'Building Decision Confidence',
+              content: 'Every decision is a learning experience. Track and reflect.',
+              bulletPoints: [
+                'Keep a decision journal (why you liked/passed)',
+                'Review past decisions: what went right/wrong?',
+                'Learn from mistakes without fear',
+                'Confidence comes from repetition and experience',
+                'Even experts get it wrong sometimes',
+                'Focus on process, not just outcomes'
+              ]
+            },
+            {
+              heading: 'Final Wisdom',
+              content: 'Principles to remember as you start your investment journey.',
+              bulletPoints: [
+                '🧠 Do your own research - don\'t just follow others',
+                '⏰ Be patient - good opportunities come to those who wait',
+                '📊 Prioritize fundamentals over hype',
+                '🎯 Stick to your checklist and risk tolerance',
+                '🌱 Start small, learn, then scale up',
+                '❤️ Only invest in companies you understand and believe in'
+              ]
+            }
+          ],
+          examples: [
+            {
+              companyName: 'NVIDIA (Early 2023)',
+              scenario: 'AI boom created investment opportunity',
+              metrics: {
+                'Fundamentals': '✅ Strong revenue growth',
+                'Valuation': '⚠️ High but justified by AI',
+                'Sentiment': '✅ Extremely positive',
+                'Risk': '⚠️ Volatility risk'
+              },
+              outcome: 'DECISION: YES (despite high P/E, AI thesis justified)',
+              lesson: 'Sometimes high valuation is warranted by exceptional growth'
+            },
+            {
+              companyName: 'Spirit Airlines (2023)',
+              scenario: 'Airline with declining margins and high debt',
+              metrics: {
+                'Fundamentals': '❌ Declining revenue',
+                'Valuation': '❌ Debt concerns',
+                'Sentiment': '❌ Very negative',
+                'Risk': '🚨 Bankruptcy risk'
+              },
+              outcome: 'DECISION: NO (too many red flags)',
+              lesson: 'Multiple red flags = walk away, no matter how "cheap" it looks'
+            },
+            {
+              companyName: 'Shopify (Mid 2022)',
+              scenario: 'Good company but overvalued after correction',
+              metrics: {
+                'Fundamentals': '✅ Good business',
+                'Valuation': '⚠️ Still expensive',
+                'Sentiment': '⚖️ Mixed',
+                'Risk': '⚠️ Market volatility'
+              },
+              outcome: 'DECISION: WATCH LIST (wait for better entry point)',
+              lesson: 'Good companies can be bad investments at wrong price'
+            }
+          ],
+          interactiveElement: {
+            type: 'simulator',
+            component: 'InvestmentDecisionSimulator',
+            title: 'Investment Decision Simulator',
+            description: 'Practice making real investment decisions with full company profiles'
+          }
+        },
+        quiz: {
+          passingScore: 3,
+          questions: [
+            {
+              id: 'q3-3-1',
+              question: 'What should you do BEFORE making any investment decision?',
+              options: [
+                'Buy immediately if friends recommend it',
+                'Follow systematic framework: analyze fundamentals, valuation, sentiment, risk',
+                'Check only the stock price',
+                'Trust your gut feeling alone'
+              ],
+              correctAnswer: 1,
+              explanation: 'Disciplined investing requires following a systematic process that evaluates multiple factors before making a decision.'
+            },
+            {
+              id: 'q3-3-2',
+              question: 'When should you say YES to an investment?',
+              options: [
+                'Whenever a stock is trending on social media',
+                'When fundamentals, valuation, and sentiment all align positively',
+                'Only when guaranteed to make profit',
+                'Never - investing is too risky'
+              ],
+              correctAnswer: 1,
+              explanation: 'Invest when multiple factors align: strong fundamentals, reasonable valuation, positive sentiment, and acceptable risk - this is proper due diligence.'
+            },
+            {
+              id: 'q3-3-3',
+              question: 'A stock has great fundamentals but valuation seems very high. What should you do?',
+              options: [
+                'Buy immediately - great companies are always worth it',
+                'Add to watch list - wait for better price entry point',
+                'Panic sell',
+                'Ignore valuation completely'
+              ],
+              correctAnswer: 1,
+              explanation: 'Good companies can be bad investments at the wrong price. Watch list allows you to monitor for better entry points.'
+            },
+            {
+              id: 'q3-3-4',
+              question: 'What does it mean to "say NO" in investing?',
+              options: [
+                'You failed as an investor',
+                'You\'re being disciplined and protecting your capital',
+                'You\'ll miss out forever',
+                'You should never pass on opportunities'
+              ],
+              correctAnswer: 1,
+              explanation: 'Saying no demonstrates discipline - not every opportunity is right for you, and protecting capital by avoiding bad investments is crucial.'
+            },
+            {
+              id: 'q3-3-5',
+              question: 'How should you build investment confidence?',
+              options: [
+                'Never review past decisions',
+                'Only remember wins, forget losses',
+                'Keep decision journal, learn from experience, focus on process',
+                'Follow others blindly'
+              ],
+              correctAnswer: 2,
+              explanation: 'Confidence grows through deliberate practice: documenting decisions, learning from both wins and losses, and focusing on improving your process.'
+            }
+          ]
+        },
+        keyTakeaways: [
+          'Follow systematic framework: fundamentals → valuation → sentiment → risk → decision',
+          'Say YES when: strong fundamentals, fair valuation, positive sentiment, acceptable risk',
+          'Say NO when: multiple red flags, don\'t understand business, too risky',
+          'Use WATCH LIST for interesting companies at wrong price or needing more research',
+          'Build confidence through practice, reflection, and learning from every decision'
+        ]
+      }
+    ]
   }
 ];

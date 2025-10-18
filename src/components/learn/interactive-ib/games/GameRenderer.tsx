@@ -13,6 +13,15 @@ import UnderwritingChallengeGame from './UnderwritingChallengeGame';
 import MADealArchitectGame from './MADealArchitectGame';
 import CompanyValuationMasterGame from './CompanyValuationMasterGame';
 import FutureBankerGame from './FutureBankerGame';
+import RevenueGrowthCalculator from '../evaluation/interactive/RevenueGrowthCalculator';
+import MarginComparisonTool from '../evaluation/interactive/MarginComparisonTool';
+import CompanyComparisonMatrix from '../evaluation/interactive/CompanyComparisonMatrix';
+import NewsSentimentAnalyzer from '../evaluation/interactive/NewsSentimentAnalyzer';
+import AnalystRatingDecoder from '../evaluation/interactive/AnalystRatingDecoder';
+import SocialSentimentMeter from '../evaluation/interactive/SocialSentimentMeter';
+import ChecklistBuilderTool from '../evaluation/interactive/ChecklistBuilderTool';
+import RiskRadarGame from '../evaluation/interactive/RiskRadarGame';
+import InvestmentDecisionSimulator from '../evaluation/interactive/InvestmentDecisionSimulator';
 
 interface GameRendererProps {
   gameId: string;
