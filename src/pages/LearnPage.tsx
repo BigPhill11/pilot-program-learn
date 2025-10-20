@@ -24,11 +24,8 @@ const LearnPage = () => {
   // Simplified admin check - will be replaced with proper system later
   const isAdmin = false;
 
-  useEffect(() => {
-    if (!loading && !learnTabTutorialCompleted) {
-      setShowTutorial(true);
-    }
-  }, [loading, learnTabTutorialCompleted]);
+  // Don't auto-show tutorial - let user trigger it manually
+  // The tutorial is now completely optional
 
   const handleNavigateToTab = (tabValue: string) => {
     setActiveTab(tabValue);

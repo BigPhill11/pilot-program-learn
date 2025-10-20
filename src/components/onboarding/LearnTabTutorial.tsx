@@ -328,13 +328,21 @@ const LearnTabTutorial: React.FC<LearnTabTutorialProps> = ({ open, onClose }) =>
   }
 
   return (
-    <Dialog open={open} onOpenChange={() => {}}>
+    <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <div className="space-y-6 pt-6">
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm text-muted-foreground">
               <span>Step {currentStep + 1} of {steps.length}</span>
-              <span>~{currentStepData.duration}s</span>
+              <div className="flex items-center gap-4">
+                <span>~{currentStepData.duration}s</span>
+                <button 
+                  onClick={onClose} 
+                  className="text-primary hover:underline font-medium"
+                >
+                  Skip Tutorial
+                </button>
+              </div>
             </div>
             <Progress value={progress} className="h-2" />
           </div>

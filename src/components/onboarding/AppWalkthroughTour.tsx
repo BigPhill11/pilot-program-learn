@@ -202,6 +202,7 @@ const AppWalkthroughTour: React.FC<AppWalkthroughTourProps> = ({ open, onClose }
           size="icon"
           className="absolute top-2 right-2"
           onClick={handleSkip}
+          title="Close tour"
         >
           <X className="h-4 w-4" />
         </Button>
@@ -210,7 +211,12 @@ const AppWalkthroughTour: React.FC<AppWalkthroughTourProps> = ({ open, onClose }
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm text-muted-foreground">
               <span>Step {currentSlide + 1} of {slides.length}</span>
-              <button onClick={handleSkip} className="hover:underline">Skip tour</button>
+              <button 
+                onClick={handleSkip} 
+                className="text-primary hover:underline font-medium"
+              >
+                Skip Tour
+              </button>
             </div>
             <Progress value={progress} className="h-2" />
           </div>

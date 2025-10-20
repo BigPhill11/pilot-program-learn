@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import HeroSection from '@/components/landing/HeroSection';
+import AboutPhilsFinancials from '@/components/landing/AboutPhilsFinancials';
 import MarketIndicatorsSection from '@/components/landing/MarketIndicatorsSection';
 import TabbedContentSection from '@/components/landing/TabbedContentSection';
 import EnhancedHeadlinesSection from '@/components/EnhancedHeadlinesSection';
@@ -19,6 +20,9 @@ const Index = () => {
       
       {/* Welcome Onboarding Banner */}
       <WelcomeOnboardingBanner onStartTour={() => setShowTour(true)} />
+      
+      {/* Overview Landing Page - What is Phil's Financials */}
+      <AboutPhilsFinancials />
       
       {/* Progression Header */}
       <section aria-label="Your Panda Progress" className="container mx-auto px-4 my-6">
