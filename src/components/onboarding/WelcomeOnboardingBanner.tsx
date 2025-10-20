@@ -14,28 +14,19 @@ interface WelcomeOnboardingBannerProps {
 
 const WelcomeOnboardingBanner: React.FC<WelcomeOnboardingBannerProps> = ({ onStartTour }) => {
   const { user, profile } = useAuth();
-  const { appWalkthroughCompleted } = useOnboarding();
+  const { appWalkthroughCompleted, markAppWalkthroughComplete } = useOnboarding();
   const navigate = useNavigate();
-  const [dismissed, setDismissed] = useState(false);
-
-  // Check if banner was dismissed in this session
-  useEffect(() => {
-    const isDismissed = sessionStorage.getItem('welcome-banner-dismissed');
-    if (isDismissed) {
-      setDismissed(true);
-    }
-  }, []);
-
-  const handleDismiss = () => {
-    setDismissed(true);
-    sessionStorage.setItem('welcome-banner-dismissed', 'true');
+  const handleDismiss = async () => {
+    // Mark as complete to never show again
+    await markAppWalkthroughComplete();
   };
 
   const handleStartLearning = () => {
     navigate('/learn');
   };
 
-  if (dismissed) return null;
+  // Only show if app walkthrough not completed
+  if (appWalkthroughCompleted) return null;
 
   const isFirstTime = !appWalkthroughCompleted;
   const currentStreak = profile?.current_streak || 0;

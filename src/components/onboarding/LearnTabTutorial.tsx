@@ -17,7 +17,8 @@ interface LearnTabTutorialProps {
 
 const LearnTabTutorial: React.FC<LearnTabTutorialProps> = ({ open, onClose }) => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [clickedTabs, setClickedTabs] = useState<Set<string>>(new Set());
+  // Companies tab is always unlocked (browse unlocked)
+  const [clickedTabs, setClickedTabs] = useState<Set<string>>(new Set(['companies']));
   const [quizAnswer, setQuizAnswer] = useState<string | null>(null);
   const [budgetAllocated, setBudgetAllocated] = useState(false);
   const [showReward, setShowReward] = useState(false);

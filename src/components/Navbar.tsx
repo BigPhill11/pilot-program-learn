@@ -10,8 +10,9 @@ import { useAuth } from '@/hooks/useAuth';
 import { useProgressTracking } from '@/hooks/useProgressTracking';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { LogOut, User, Flame, Moon, Sun, Menu, X } from 'lucide-react';
+import { LogOut, User, Flame, Moon, Sun, Menu, X, HelpCircle } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import AppWalkthroughTour from '@/components/onboarding/AppWalkthroughTour';
 
 const Navbar = () => {
   const location = useLocation();
@@ -20,6 +21,7 @@ const Navbar = () => {
   const { isDark, toggleTheme } = useTheme();
   const isMobile = useIsMobile();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showTutorialModal, setShowTutorialModal] = useState(false);
 
   const navItems = [
     { label: 'Home', path: '/' },
@@ -101,6 +103,13 @@ const Navbar = () => {
           {/* Actions */}
           <div className="flex flex-col space-y-2 pt-4 border-t">
             <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Tutorial</span>
+              <Button variant="ghost" size="sm" onClick={() => setShowTutorialModal(true)}>
+                <HelpCircle className="h-4 w-4" />
+              </Button>
+            </div>
+            
+            <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Theme</span>
               <Button variant="ghost" size="sm" onClick={toggleTheme}>
                 {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -154,13 +163,14 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center space-x-2">
-            <PandaLogo className="h-8 w-8" />
-            <span className="font-bold text-xl">Phil's Financials</span>
-          </Link>
+    <>
+      <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            <Link to="/" className="flex items-center space-x-2">
+              <PandaLogo className="h-8 w-8" />
+              <span className="font-bold text-xl">Phil's Financials</span>
+            </Link>
           
           <div className="hidden md:flex items-center space-x-6">
             {navItems.map((item) => (
@@ -179,6 +189,16 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center space-x-4">
+            {/* Tutorial Button */}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setShowTutorialModal(true)}
+              title="Restart Tutorial"
+            >
+              <HelpCircle className="h-4 w-4" />
+            </Button>
+
             {/* Theme Toggle */}
             <Button variant="ghost" size="sm" onClick={toggleTheme}>
               {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -232,6 +252,10 @@ const Navbar = () => {
         </div>
       </div>
     </nav>
+    
+    {/* Tutorial Modal */}
+    <AppWalkthroughTour open={showTutorialModal} onClose={() => setShowTutorialModal(false)} />
+    </>
   );
 };
 
