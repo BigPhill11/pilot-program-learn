@@ -25,6 +25,7 @@ const Navbar = () => {
 
   const navItems = [
     { label: 'Home', path: '/' },
+    { label: 'About', path: '/about' },
     { label: 'Learn', path: '/learn' },
     { label: 'Soft Skills', path: '/soft-skills' },
     { label: 'Panda Trading', path: '/paper-trading' },
