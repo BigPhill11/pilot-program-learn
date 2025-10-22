@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ManagementConsultingLevel from './ManagementConsultingLevel';
 import ManagementConsultingJourneyHeader from './ManagementConsultingJourneyHeader';
 import ManagementConsultingJourneyLevelCard from './ManagementConsultingJourneyLevelCard';
 import { managementConsultingLevels } from '@/data/management-consulting-journey-data';
 import { useProgressTracking } from '@/hooks/useProgressTracking';
+import CareerStoriesHub from './career-stories/CareerStoriesHub';
+import { careerStories } from '@/data/career-stories';
 
 interface ManagementConsultingJourneyProps {
   onBack: () => void;
@@ -113,6 +116,8 @@ const ManagementConsultingJourney: React.FC<ManagementConsultingJourneyProps> = 
     }
   }
 
+  const consultingStories = careerStories.filter(story => story.careerType === 'management-consulting');
+
   return (
     <div className="max-w-6xl mx-auto space-y-8">
       <div className="flex items-center gap-4 mb-6">
@@ -133,7 +138,19 @@ const ManagementConsultingJourney: React.FC<ManagementConsultingJourneyProps> = 
         journeyCompleted={journeyCompleted}
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <Tabs defaultValue="lessons" className="mt-8">
+        <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
+          <TabsTrigger value="lessons">
+            <BookOpen className="h-4 w-4 mr-2" />
+            Learning Journey
+          </TabsTrigger>
+          <TabsTrigger value="stories">
+            📖 Interactive Stories
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="lessons" className="space-y-6 mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {managementConsultingLevels.map((level) => (
           <ManagementConsultingJourneyLevelCard
             key={level.id}
@@ -143,18 +160,24 @@ const ManagementConsultingJourney: React.FC<ManagementConsultingJourneyProps> = 
             onSelect={() => handleLevelSelect(level.id)}
           />
         ))}
-      </div>
+          </div>
 
-      {journeyCompleted && (
-        <div className="text-center p-8 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg">
-          <h3 className="text-2xl font-bold text-green-800 mb-2">
-            🎉 Congratulations! Journey Complete! 🎉
-          </h3>
-          <p className="text-green-700">
-            You've mastered all aspects of management consulting. You're ready to tackle real-world business challenges!
-          </p>
-        </div>
-      )}
+          {journeyCompleted && (
+            <div className="text-center p-8 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg">
+              <h3 className="text-2xl font-bold text-green-800 mb-2">
+                🎉 Congratulations! Journey Complete! 🎉
+              </h3>
+              <p className="text-green-700">
+                You've mastered all aspects of management consulting. You're ready to tackle real-world business challenges!
+              </p>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="stories" className="mt-6">
+          <CareerStoriesHub stories={consultingStories} careerName="Management Consulting" />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

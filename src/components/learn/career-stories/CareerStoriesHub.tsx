@@ -2,15 +2,24 @@ import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { careerStories } from '@/data/career-stories';
+import { careerStories as allCareerStories } from '@/data/career-stories';
 import CareerStoryReader from './CareerStoryReader';
 import { Clock, TrendingUp, Star } from 'lucide-react';
+import { CareerStory } from '@/types/career-story';
 
-const CareerStoriesHub = () => {
+interface CareerStoriesHubProps {
+  stories?: CareerStory[];
+  careerName?: string;
+}
+
+const CareerStoriesHub: React.FC<CareerStoriesHubProps> = ({ 
+  stories = allCareerStories, 
+  careerName 
+}) => {
   const [selectedStory, setSelectedStory] = useState<string | null>(null);
 
   if (selectedStory) {
-    const story = careerStories.find(s => s.id === selectedStory);
+    const story = stories.find(s => s.id === selectedStory);
     if (!story) return null;
     
     return (
@@ -24,7 +33,9 @@ const CareerStoriesHub = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold mb-2">Interactive Career Stories</h2>
+        <h2 className="text-3xl font-bold mb-2">
+          {careerName ? `${careerName} Stories` : 'Interactive Career Stories'}
+        </h2>
         <p className="text-muted-foreground">
           Experience real career scenarios through choose-your-own-adventure stories.
           Make decisions, see consequences, and learn what it really takes to succeed.
@@ -32,7 +43,7 @@ const CareerStoriesHub = () => {
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {careerStories.map((story) => {
+        {stories.map((story) => {
           const Icon = story.icon;
           const progress = localStorage.getItem(`story-progress-${story.id}`);
           const savedProgress = progress ? JSON.parse(progress) : null;

@@ -2,12 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Sparkles, Trophy, Clock, BarChart3 } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ArrowLeft, Sparkles, Trophy, Clock, BarChart3, BookOpen } from 'lucide-react';
 import { investmentBankingLessons } from '@/data/investment-banking-lessons';
 import InteractiveIBLesson from './InteractiveIBLesson';
 import { ibDivisions, type IBDivision } from '@/data/ib-divisions';
 import InvestmentBankingJourneyHeader from './InvestmentBankingJourneyHeader';
 import InvestmentBankingJourneyLevelCard from './InvestmentBankingJourneyLevelCard';
+import CareerStoriesHub from './career-stories/CareerStoriesHub';
+import { careerStories } from '@/data/career-stories';
 
 interface InvestmentBankingJourneyProps {
   onBack: () => void;
@@ -83,6 +86,8 @@ const InvestmentBankingJourney: React.FC<InvestmentBankingJourneyProps> = ({ onB
     );
   }
 
+  const ibStories = careerStories.filter(story => story.careerType === 'investment-banking');
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/20 dark:via-indigo-950/20 dark:to-purple-950/20">
       <div className="container mx-auto px-4 py-8">
@@ -97,7 +102,19 @@ const InvestmentBankingJourney: React.FC<InvestmentBankingJourneyProps> = ({ onB
           totalLevels={investmentBankingLessons.length}
         />
 
-        <div className="grid gap-6 mt-8">
+        <Tabs defaultValue="lessons" className="mt-8">
+          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
+            <TabsTrigger value="lessons">
+              <BookOpen className="h-4 w-4 mr-2" />
+              Learning Journey
+            </TabsTrigger>
+            <TabsTrigger value="stories">
+              📖 Interactive Stories
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="lessons" className="space-y-6 mt-6">
+            <div className="grid gap-6">
           {investmentBankingLessons.map(level => (
             <InvestmentBankingJourneyLevelCard
               key={level.level}
@@ -144,9 +161,9 @@ const InvestmentBankingJourney: React.FC<InvestmentBankingJourneyProps> = ({ onB
               </CardContent>
             </Card>
           )}
-        </div>
+            </div>
 
-        <div className="mt-10">
+            <div className="mt-10">
           <div className="text-center mb-6">
             <h3 className="text-2xl font-semibold tracking-tight text-blue-800 dark:text-blue-300">Specialized IB Divisions</h3>
             <p className="text-muted-foreground">Deep dives into M&A, DCM, ECM, LevFin, Sales & Trading, and Restructuring</p>
@@ -195,7 +212,13 @@ const InvestmentBankingJourney: React.FC<InvestmentBankingJourneyProps> = ({ onB
               </Card>
             ))}
           </div>
-        </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="stories" className="mt-6">
+            <CareerStoriesHub stories={ibStories} careerName="Investment Banking" />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

@@ -4,9 +4,12 @@ import PrivateEquityJourneyHeader from './PrivateEquityJourneyHeader';
 import PrivateEquityJourneyLevelCard from './PrivateEquityJourneyLevelCard';
 import PrivateEquityLevel from './PrivateEquityLevel';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Trophy, Sparkles } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ArrowLeft, Trophy, Sparkles, BookOpen } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useProgressTracking } from '@/hooks/useProgressTracking';
+import CareerStoriesHub from './career-stories/CareerStoriesHub';
+import { careerStories } from '@/data/career-stories';
 
 interface PrivateEquityProgress {
   currentLevel: number;
@@ -88,6 +91,8 @@ const PrivateEquityJourney: React.FC<PrivateEquityJourneyProps> = ({ onBack }) =
     }
   }
 
+  const peStories = careerStories.filter(story => story.careerType === 'private-equity');
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-violet-50 to-purple-50 dark:from-purple-950/20 dark:via-violet-950/20 dark:to-purple-950/20">
       <div className="container mx-auto px-4 py-8">
@@ -108,7 +113,19 @@ const PrivateEquityJourney: React.FC<PrivateEquityJourneyProps> = ({ onBack }) =
           totalLevels={privateEquityJourneyData.levels.length}
         />
 
-        <div className="grid gap-6 mt-8">
+        <Tabs defaultValue="lessons" className="mt-8">
+          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
+            <TabsTrigger value="lessons">
+              <BookOpen className="h-4 w-4 mr-2" />
+              Learning Journey
+            </TabsTrigger>
+            <TabsTrigger value="stories">
+              📖 Interactive Stories
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="lessons" className="space-y-6 mt-6">
+            <div className="grid gap-6">
           {privateEquityJourneyData.levels.map((level) => (
             <PrivateEquityJourneyLevelCard
               key={level.id}
@@ -157,7 +174,13 @@ const PrivateEquityJourney: React.FC<PrivateEquityJourneyProps> = ({ onBack }) =
               </CardContent>
             </Card>
           )}
-        </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="stories" className="mt-6">
+            <CareerStoriesHub stories={peStories} careerName="Private Equity" />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
