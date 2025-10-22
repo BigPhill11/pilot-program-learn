@@ -8,6 +8,11 @@ import { CreditLevelStep } from './CreditLevelSteps';
 import CreditFlashcard from './CreditFlashcard';
 import CreditDragDrop from './CreditDragDrop';
 import InteractiveQuiz from '../InteractiveQuiz';
+import { ProTip } from './shared/ProTip';
+import { RealTeenScenario } from './shared/RealTeenScenario';
+import { CheatSheet } from './shared/CheatSheet';
+import { CreditScoreSimulator } from './calculators/CreditScoreSimulator';
+import { creditEnhancedContent } from '@/data/credit-enhanced';
 
 interface CreditLevelContentProps {
   level: CreditLevelType;
@@ -41,6 +46,7 @@ const CreditLevelContent: React.FC<CreditLevelContentProps> = ({
   const renderStepContent = () => {
     switch (currentStep) {
       case 'intro':
+        const enhancedData = creditEnhancedContent[level.id as keyof typeof creditEnhancedContent];
         return (
           <div className="space-y-4">
             <Card className="bg-green-50 border-green-200">
@@ -49,6 +55,38 @@ const CreditLevelContent: React.FC<CreditLevelContentProps> = ({
                 <p className="text-muted-foreground">{level.introCard.content}</p>
               </CardContent>
             </Card>
+            
+            {/* Pro Tips */}
+            {enhancedData?.proTips && (
+              <div className="space-y-3">
+                {enhancedData.proTips.map((tip, idx) => (
+                  <ProTip key={idx} tip={tip} />
+                ))}
+              </div>
+            )}
+            
+            {/* Real Teen Scenarios */}
+            {enhancedData?.realScenarios && enhancedData.realScenarios.map((scenario, idx) => (
+              <RealTeenScenario
+                key={idx}
+                name={scenario.name}
+                age={scenario.age}
+                story={scenario.story}
+                lesson={scenario.lesson}
+              />
+            ))}
+            
+            {/* Interactive Calculator - Credit Score Simulator */}
+            {level.id === 3 && <CreditScoreSimulator />}
+            
+            {/* Myth Busters */}
+            {enhancedData?.mythBusters && (
+              <CheatSheet
+                title="Credit Myths Debunked"
+                items={enhancedData.mythBusters.map(myth => `❌ Myth: ${myth.myth}\n✅ Truth: ${myth.truth}`)}
+              />
+            )}
+            
             <Button onClick={onNext} className="w-full">
               Start Learning <ChevronRight className="h-4 w-4 ml-2" />
             </Button>

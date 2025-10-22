@@ -8,6 +8,10 @@ import FinancialSafetyFlashcard from './FinancialSafetyFlashcard';
 import FinancialSafetyDragDrop from './FinancialSafetyDragDrop';
 import InteractiveQuiz from '@/components/InteractiveQuiz';
 import { FinancialSafetyLevel as FinancialSafetyLevelType } from '@/data/financial-safety-journey-data';
+import { ProTip } from './shared/ProTip';
+import { RealTeenScenario } from './shared/RealTeenScenario';
+import { CheatSheet } from './shared/CheatSheet';
+import { financialSafetyEnhancedContent } from '@/data/financial-safety-enhanced';
 
 interface FinancialSafetyLevelProps {
   level: FinancialSafetyLevelType;
@@ -143,6 +147,38 @@ const FinancialSafetyLevel: React.FC<FinancialSafetyLevelProps> = ({
           <p className="text-lg text-muted-foreground">{level.content.intro}</p>
         </CardContent>
       </Card>
+
+      {/* Enhanced Content */}
+      {(() => {
+        const enhancedData = financialSafetyEnhancedContent[level.id as keyof typeof financialSafetyEnhancedContent];
+        return enhancedData ? (
+          <div className="space-y-4">
+            {/* Pro Tips */}
+            {enhancedData.proTips && enhancedData.proTips.map((tip, idx) => (
+              <ProTip key={idx} tip={tip} />
+            ))}
+            
+            {/* Real Teen Scenarios */}
+            {enhancedData.realScenarios && enhancedData.realScenarios.map((scenario, idx) => (
+              <RealTeenScenario
+                key={idx}
+                name={scenario.name}
+                age={scenario.age}
+                story={scenario.story}
+                lesson={scenario.lesson}
+              />
+            ))}
+            
+            {/* Modern Scams 2024 */}
+            {'modernScams2024' in enhancedData && enhancedData.modernScams2024 && (
+              <CheatSheet
+                title="2024 Scams Targeting Teens"
+                items={enhancedData.modernScams2024}
+              />
+            )}
+          </div>
+        ) : null;
+      })()}
 
       {/* Flashcards Step */}
       {currentStep === 0 && (

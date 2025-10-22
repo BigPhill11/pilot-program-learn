@@ -6,6 +6,11 @@ import { BudgetLevelStep } from './BudgetLevelSteps';
 import InteractiveQuiz from '@/components/InteractiveQuiz';
 import BudgetFlashcard from './BudgetFlashcard';
 import BudgetDragDrop from './BudgetDragDrop';
+import { ProTip } from './shared/ProTip';
+import { RealTeenScenario } from './shared/RealTeenScenario';
+import { CheatSheet } from './shared/CheatSheet';
+import { BudgetRatioCustomizer } from './calculators/BudgetRatioCustomizer';
+import { budgetEnhancedContent } from '@/data/budget-enhanced';
 
 interface BudgetLevelContentProps {
   level: BudgetLevel;
@@ -38,13 +43,47 @@ const BudgetLevelContent: React.FC<BudgetLevelContentProps> = ({
 }) => {
   switch (currentStep) {
     case 'intro':
+      const enhancedData = budgetEnhancedContent[level.id as keyof typeof budgetEnhancedContent];
       return (
-        <Card className="border-l-4 border-l-blue-500">
-          <CardContent className="p-6">
-            <h4 className="font-semibold text-lg mb-3">Welcome to Level {level.id}</h4>
-            <p className="text-muted-foreground leading-relaxed">{level.introCard}</p>
-          </CardContent>
-        </Card>
+        <div className="space-y-4">
+          <Card className="border-l-4 border-l-blue-500">
+            <CardContent className="p-6">
+              <h4 className="font-semibold text-lg mb-3">Welcome to Level {level.id}</h4>
+              <p className="text-muted-foreground leading-relaxed">{level.introCard}</p>
+            </CardContent>
+          </Card>
+          
+          {/* Pro Tips */}
+          {enhancedData?.proTips && (
+            <div className="space-y-3">
+              {enhancedData.proTips.map((tip, idx) => (
+                <ProTip key={idx} tip={tip} />
+              ))}
+            </div>
+          )}
+          
+          {/* Real Teen Scenarios */}
+          {enhancedData?.realScenarios && enhancedData.realScenarios.map((scenario, idx) => (
+            <RealTeenScenario
+              key={idx}
+              name={scenario.name}
+              age={scenario.age}
+              story={scenario.story}
+              lesson={scenario.lesson}
+            />
+          ))}
+          
+          {/* Interactive Calculator */}
+          {level.id === 2 && <BudgetRatioCustomizer />}
+          
+          {/* Cheat Sheet */}
+          {enhancedData?.cheatSheet && (
+            <CheatSheet
+              title={enhancedData.cheatSheet.title}
+              items={enhancedData.cheatSheet.items}
+            />
+          )}
+        </div>
       );
 
     case 'flashcards':

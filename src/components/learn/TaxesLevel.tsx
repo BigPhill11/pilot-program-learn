@@ -9,6 +9,11 @@ import InteractiveQuiz from '@/components/InteractiveQuiz';
 import TaxesFlashcard from './TaxesFlashcard';
 import TaxesDragDrop from './TaxesDragDrop';
 import { TaxLevel } from '@/data/taxes-journey-data';
+import { ProTip } from './shared/ProTip';
+import { RealTeenScenario } from './shared/RealTeenScenario';
+import { CheatSheet } from './shared/CheatSheet';
+import { TaxWithholdingCalculator } from './calculators/TaxWithholdingCalculator';
+import { taxesEnhancedContent } from '@/data/taxes-enhanced';
 
 interface TaxesLevelProps {
   level: TaxLevel;
@@ -105,13 +110,47 @@ const TaxesLevel: React.FC<TaxesLevelProps> = ({
 
     switch (step) {
       case 'intro':
+        const enhancedData = taxesEnhancedContent[level.id as keyof typeof taxesEnhancedContent];
         return (
-          <Card className="border-l-4 border-l-primary">
-            <CardContent className="p-6">
-              <h4 className="font-semibold text-lg mb-3">Welcome to Level {level.id}</h4>
-              <p className="text-muted-foreground leading-relaxed">{level.introCard}</p>
-            </CardContent>
-          </Card>
+          <div className="space-y-4">
+            <Card className="border-l-4 border-l-primary">
+              <CardContent className="p-6">
+                <h4 className="font-semibold text-lg mb-3">Welcome to Level {level.id}</h4>
+                <p className="text-muted-foreground leading-relaxed">{level.introCard}</p>
+              </CardContent>
+            </Card>
+            
+            {/* Pro Tips */}
+            {enhancedData?.proTips && (
+              <div className="space-y-3">
+                {enhancedData.proTips.map((tip, idx) => (
+                  <ProTip key={idx} tip={tip} />
+                ))}
+              </div>
+            )}
+            
+            {/* Real Teen Scenarios */}
+            {enhancedData?.realScenarios && enhancedData.realScenarios.map((scenario, idx) => (
+              <RealTeenScenario
+                key={idx}
+                name={scenario.name}
+                age={scenario.age}
+                story={scenario.story}
+                lesson={scenario.lesson}
+              />
+            ))}
+            
+            {/* Interactive Calculator */}
+            {level.id === 3 && <TaxWithholdingCalculator />}
+            
+            {/* Cheat Sheet */}
+            {enhancedData?.cheatSheet && (
+              <CheatSheet
+                title={enhancedData.cheatSheet.title}
+                items={enhancedData.cheatSheet.items}
+              />
+            )}
+          </div>
         );
 
       case 'flashcards':

@@ -8,6 +8,10 @@ import { BigPurchasesLevel } from '@/data/big-purchases-journey-data';
 import BigPurchasesFlashcard from './BigPurchasesFlashcard';
 import BigPurchasesDragDrop from './BigPurchasesDragDrop';
 import InteractiveQuiz from '../InteractiveQuiz';
+import { ProTip } from './shared/ProTip';
+import { RealTeenScenario } from './shared/RealTeenScenario';
+import { TrueCarCostCalculator } from './calculators/TrueCarCostCalculator';
+import { bigPurchasesEnhancedContent } from '@/data/big-purchases-enhanced';
 
 interface BigPurchasesLevelProps {
   level: BigPurchasesLevel;
@@ -148,6 +152,33 @@ const BigPurchasesLevelComponent: React.FC<BigPurchasesLevelProps> = ({
               isCompleted={quizCompleted}
             />
           </div>
+
+          {/* Enhanced Content */}
+          {(() => {
+            const enhancedData = bigPurchasesEnhancedContent[level.id as keyof typeof bigPurchasesEnhancedContent];
+            return enhancedData ? (
+              <div className="space-y-4">
+                {/* Pro Tips */}
+                {enhancedData.proTips && enhancedData.proTips.map((tip, idx) => (
+                  <ProTip key={idx} tip={tip} />
+                ))}
+                
+                {/* Real Teen Scenarios */}
+                {enhancedData.realScenarios && enhancedData.realScenarios.map((scenario, idx) => (
+                  <RealTeenScenario
+                    key={idx}
+                    name={scenario.name}
+                    age={scenario.age}
+                    story={scenario.story}
+                    lesson={scenario.lesson}
+                  />
+                ))}
+                
+                {/* True Car Cost Calculator */}
+                {level.id === 1 && <TrueCarCostCalculator />}
+              </div>
+            ) : null;
+          })()}
         </CardContent>
       )}
     </Card>

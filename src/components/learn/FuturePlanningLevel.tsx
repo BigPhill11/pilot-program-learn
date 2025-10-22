@@ -8,6 +8,12 @@ import { FuturePlanningLevel } from '@/data/future-planning-journey-data';
 import FuturePlanningFlashcard from './FuturePlanningFlashcard';
 import FuturePlanningDragDrop from './FuturePlanningDragDrop';
 import InteractiveQuiz from '../InteractiveQuiz';
+import { ProTip } from './shared/ProTip';
+import { RealTeenScenario } from './shared/RealTeenScenario';
+import { CheatSheet } from './shared/CheatSheet';
+import { EmergencyFundCalculator } from './calculators/EmergencyFundCalculator';
+import { CompoundInterestVisualizer } from './calculators/CompoundInterestVisualizer';
+import { futurePlanningEnhancedContent } from '@/data/future-planning-enhanced';
 
 interface FuturePlanningLevelProps {
   level: FuturePlanningLevel;
@@ -148,6 +154,42 @@ const FuturePlanningLevelComponent: React.FC<FuturePlanningLevelProps> = ({
               isCompleted={quizCompleted}
             />
           </div>
+
+          {/* Enhanced Content */}
+          {(() => {
+            const enhancedData = futurePlanningEnhancedContent[level.id as keyof typeof futurePlanningEnhancedContent];
+            return enhancedData ? (
+              <div className="space-y-4">
+                {/* Pro Tips */}
+                {enhancedData.proTips && enhancedData.proTips.map((tip, idx) => (
+                  <ProTip key={idx} tip={tip} />
+                ))}
+                
+                {/* Real Teen Scenarios */}
+                {enhancedData.realScenarios && enhancedData.realScenarios.map((scenario, idx) => (
+                  <RealTeenScenario
+                    key={idx}
+                    name={scenario.name}
+                    age={scenario.age}
+                    story={scenario.story}
+                    lesson={scenario.lesson}
+                  />
+                ))}
+                
+                {/* Interactive Calculators */}
+                {level.id === 1 && <EmergencyFundCalculator />}
+                {level.id === 2 && <CompoundInterestVisualizer />}
+                
+                {/* Cheat Sheet */}
+                {'cheatSheet' in enhancedData && enhancedData.cheatSheet && (
+                  <CheatSheet
+                    title={enhancedData.cheatSheet.title}
+                    items={enhancedData.cheatSheet.items}
+                  />
+                )}
+              </div>
+            ) : null;
+          })()}
         </CardContent>
       )}
     </Card>
