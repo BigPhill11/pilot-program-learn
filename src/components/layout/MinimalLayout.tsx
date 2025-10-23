@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import PandaLogo from '@/components/icons/PandaLogo';
 import ProfileSettings from '@/components/profile/ProfileSettings';
 import LevelProgress from '@/components/ui/level-progress';
+import PageNavigationTabs from '@/components/layout/PageNavigationTabs';
 import { useAuth } from '@/hooks/useAuth';
 import { useProgressTracking } from '@/hooks/useProgressTracking';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -103,6 +104,9 @@ const MinimalLayout: React.FC<MinimalLayoutProps> = ({ children }) => {
           </div>
         </div>
       </header>
+
+      {/* Page Navigation Tabs */}
+      <PageNavigationTabs />
 
       {/* Main Content */}
       <main className="flex-1">

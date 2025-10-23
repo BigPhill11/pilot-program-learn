@@ -1,10 +1,6 @@
 
 import React, { useState } from 'react';
 import HeroSection from '@/components/landing/HeroSection';
-import MarketIndicatorsSection from '@/components/landing/MarketIndicatorsSection';
-import TabbedContentSection from '@/components/landing/TabbedContentSection';
-import EnhancedHeadlinesSection from '@/components/EnhancedHeadlinesSection';
-import FeaturesOverviewSection from '@/components/landing/FeaturesOverviewSection';
 import RankBadge from '@/components/progression/RankBadge';
 import XpProgress from '@/components/progression/XpProgress';
 import WelcomeOnboardingBanner from '@/components/onboarding/WelcomeOnboardingBanner';
@@ -31,11 +27,6 @@ const Index = () => {
           </React.Suspense>
         </div>
       </section>
-      
-      <MarketIndicatorsSection />
-      <TabbedContentSection />
-      <EnhancedHeadlinesSection />
-      <FeaturesOverviewSection />
       
       {/* App Walkthrough Tour */}
       <AppWalkthroughTour open={showTour} onClose={() => setShowTour(false)} />

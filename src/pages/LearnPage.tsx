@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import HeroSection from '@/components/landing/HeroSection';
 import PersonalFinanceTab from "@/components/learn/PersonalFinanceTab";
 import CompanyDiscoveryTab from "@/components/learn/CompanyDiscoveryTab";
 import CareersInFinanceTab from "@/components/learn/CareersInFinanceTab";
@@ -36,8 +37,11 @@ const LearnPage = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 relative">
-      <TermOfTheDay />
+    <div className="relative">
+      <HeroSection />
+      
+      <div className="container mx-auto px-4 py-8">
+        <TermOfTheDay />
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className={`grid w-full ${isAdmin ? (isMobile ? 'grid-cols-3' : 'grid-cols-6') : (isMobile ? 'grid-cols-3' : 'grid-cols-5')} ${isMobile ? 'h-auto' : ''}`}>
@@ -93,8 +97,9 @@ const LearnPage = () => {
       {/* Learn Tab Tutorial */}
       <LearnTabTutorial open={showTutorial} onClose={() => setShowTutorial(false)} />
       
-      {/* Help Menu */}
-      {learnTabTutorialCompleted && <LearnTabHelpMenu onRestartTutorial={handleRestartTutorial} />}
+        {/* Help Menu */}
+        {learnTabTutorialCompleted && <LearnTabHelpMenu onRestartTutorial={handleRestartTutorial} />}
+      </div>
     </div>
   );
 };
