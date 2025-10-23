@@ -96,7 +96,7 @@ const WelcomeOnboardingBanner: React.FC<WelcomeOnboardingBannerProps> = ({ onSta
                       animate={{ x: [-100, 200] }}
                       transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
                     />
-                    🚀 Show Me Around (2 min)
+                    Tutorial - Get familiar with the app
                   </Button>
                   <Button
                     onClick={handleStartLearning}
