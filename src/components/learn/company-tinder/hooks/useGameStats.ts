@@ -52,6 +52,97 @@ const ACHIEVEMENTS: Achievement[] = [
     icon: '💯',
     unlocked: false,
   },
+  {
+    id: 'hot_streak_7',
+    name: 'Hot Streak',
+    description: '7-day swipe streak',
+    icon: '🔥',
+    unlocked: false,
+  },
+  {
+    id: 'super_fan',
+    name: 'Super Fan',
+    description: 'Use 10 Super Likes',
+    icon: '⭐',
+    unlocked: false,
+  },
+  {
+    id: 'picky_investor',
+    name: 'Picky Investor',
+    description: 'View 50 companies, like only 10',
+    icon: '🧐',
+    unlocked: false,
+  },
+  {
+    id: 'love_at_first_sight',
+    name: 'Love at First Sight',
+    description: 'Super Like 5 companies',
+    icon: '😍',
+    unlocked: false,
+  },
+  {
+    id: 'explorer',
+    name: 'Explorer',
+    description: 'Swipe on 50 companies',
+    icon: '🗺️',
+    unlocked: false,
+  },
+  {
+    id: 'veteran',
+    name: 'Veteran Swiper',
+    description: 'Swipe on 250 companies',
+    icon: '🎖️',
+    unlocked: false,
+  },
+  {
+    id: 'legend',
+    name: 'Legendary',
+    description: 'Swipe on 500 companies',
+    icon: '👑',
+    unlocked: false,
+  },
+  {
+    id: 'match_maker',
+    name: 'Match Maker',
+    description: 'Like 25 companies',
+    icon: '💚',
+    unlocked: false,
+  },
+  {
+    id: 'portfolio_builder',
+    name: 'Portfolio Builder',
+    description: 'Like 50 companies',
+    icon: '📊',
+    unlocked: false,
+  },
+  {
+    id: 'dedicated',
+    name: 'Dedicated',
+    description: '3-day swipe streak',
+    icon: '🎯',
+    unlocked: false,
+  },
+  {
+    id: 'committed',
+    name: 'Committed',
+    description: '30-day swipe streak',
+    icon: '💎',
+    unlocked: false,
+  },
+  {
+    id: 'challenger',
+    name: 'Challenger',
+    description: 'Complete 5 daily challenges',
+    icon: '🏅',
+    unlocked: false,
+  },
+  {
+    id: 'challenge_master',
+    name: 'Challenge Master',
+    description: 'Complete 25 daily challenges',
+    icon: '🏆',
+    unlocked: false,
+  },
 ];
 
 export const useGameStats = () => {
@@ -81,11 +172,12 @@ export const useGameStats = () => {
     if (!user) return;
 
     try {
-      // Get swipe counts
+      // Get swipe counts with dates
       const { data: interactions, error } = await supabase
         .from('user_company_interactions')
-        .select('interaction_type')
-        .eq('user_id', user.id);
+        .select('interaction_type, created_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
 
@@ -96,20 +188,72 @@ export const useGameStats = () => {
       // Calculate XP based on counts (simplified)
       const totalXP = (likeCount * 10) + (superLikeCount * 25) + (passCount * 5);
 
+      // Calculate streak
+      const currentStreak = calculateStreak(interactions || []);
+
       setStats({
         totalXP,
         swipeCount: interactions?.length || 0,
         likeCount,
         superLikeCount,
         passCount,
-        currentStreak: 0, // TODO: Calculate from dates
+        currentStreak,
         superLikesRemaining: Math.max(0, 5 - superLikeCount),
       });
+
+      // Load achievements
+      const { data: unlockedAchievements } = await supabase
+        .from('user_achievements')
+        .select('achievement_id')
+        .eq('user_id', user.id);
+
+      if (unlockedAchievements) {
+        setAchievements(prev => prev.map(a => ({
+          ...a,
+          unlocked: unlockedAchievements.some(ua => ua.achievement_id === a.id),
+        })));
+      }
     } catch (error) {
       console.error('Error loading stats:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const calculateStreak = (interactions: any[]): number => {
+    if (!interactions.length) return 0;
+
+    let streak = 0;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Get unique dates
+    const dates = [...new Set(interactions.map(i => {
+      const date = new Date(i.created_at);
+      date.setHours(0, 0, 0, 0);
+      return date.getTime();
+    }))].sort((a, b) => b - a);
+
+    // Check if user swiped today or yesterday
+    const latestDate = new Date(dates[0]);
+    const daysDiff = Math.floor((today.getTime() - latestDate.getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (daysDiff > 1) return 0; // Streak broken
+
+    // Count consecutive days
+    for (let i = 0; i < dates.length; i++) {
+      const expectedDate = new Date(today);
+      expectedDate.setDate(today.getDate() - i);
+      expectedDate.setHours(0, 0, 0, 0);
+
+      if (dates[i] === expectedDate.getTime()) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+
+    return streak;
   };
 
   const addXP = (amount: number) => {
@@ -161,9 +305,50 @@ export const useGameStats = () => {
       unlockAchievement('first_swipe');
     }
 
-    // Century Club
+    // Swipe milestones
+    if (stats.swipeCount >= 50 && !achievements.find(a => a.id === 'explorer')?.unlocked) {
+      unlockAchievement('explorer');
+    }
     if (stats.swipeCount >= 100 && !achievements.find(a => a.id === 'century_club')?.unlocked) {
       unlockAchievement('century_club');
+    }
+    if (stats.swipeCount >= 250 && !achievements.find(a => a.id === 'veteran')?.unlocked) {
+      unlockAchievement('veteran');
+    }
+    if (stats.swipeCount >= 500 && !achievements.find(a => a.id === 'legend')?.unlocked) {
+      unlockAchievement('legend');
+    }
+
+    // Like milestones
+    if (stats.likeCount >= 25 && !achievements.find(a => a.id === 'match_maker')?.unlocked) {
+      unlockAchievement('match_maker');
+    }
+    if (stats.likeCount >= 50 && !achievements.find(a => a.id === 'portfolio_builder')?.unlocked) {
+      unlockAchievement('portfolio_builder');
+    }
+
+    // Super like milestones
+    if (stats.superLikeCount >= 5 && !achievements.find(a => a.id === 'love_at_first_sight')?.unlocked) {
+      unlockAchievement('love_at_first_sight');
+    }
+    if (stats.superLikeCount >= 10 && !achievements.find(a => a.id === 'super_fan')?.unlocked) {
+      unlockAchievement('super_fan');
+    }
+
+    // Streak achievements
+    if (stats.currentStreak >= 3 && !achievements.find(a => a.id === 'dedicated')?.unlocked) {
+      unlockAchievement('dedicated');
+    }
+    if (stats.currentStreak >= 7 && !achievements.find(a => a.id === 'hot_streak_7')?.unlocked) {
+      unlockAchievement('hot_streak_7');
+    }
+    if (stats.currentStreak >= 30 && !achievements.find(a => a.id === 'committed')?.unlocked) {
+      unlockAchievement('committed');
+    }
+
+    // Picky investor
+    if (stats.swipeCount >= 50 && stats.likeCount <= 10 && !achievements.find(a => a.id === 'picky_investor')?.unlocked) {
+      unlockAchievement('picky_investor');
     }
   };
 
