@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { ChevronLeft, ChevronRight, RotateCcw, Shuffle, Lightbulb, Globe, Trophy } from 'lucide-react';
+import { getFlashcardsByLevel, type AdaptiveFlashcard } from '@/data/adaptive-learning-flashcards';
 
 interface Flashcard {
   id?: string;
@@ -38,11 +39,39 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ level }) => {
     let cards: Flashcard[] = [];
     
     if (stored) {
-      cards = JSON.parse(stored);
+      // Merge stored progress with pre-loaded cards
+      const storedCards: Flashcard[] = JSON.parse(stored);
+      const preloadedCards = getFlashcardsByLevel(level);
+      
+      // Create a map of stored cards by ID
+      const storedMap = new Map(storedCards.map(card => [card.id || card.term, card]));
+      
+      // Merge: use pre-loaded cards but keep user progress if it exists
+      cards = preloadedCards.map(preloadedCard => {
+        const stored = storedMap.get(preloadedCard.id || preloadedCard.term);
+        if (stored) {
+          return {
+            ...preloadedCard,
+            masteryLevel: stored.masteryLevel,
+            timesShown: stored.timesShown,
+            lastShown: stored.lastShown
+          };
+        }
+        return preloadedCard;
+      });
+      
+      // Add any custom cards that user uploaded
+      storedCards.forEach(storedCard => {
+        const isCustomCard = !preloadedCards.find(
+          pc => (pc.id || pc.term) === (storedCard.id || storedCard.term)
+        );
+        if (isCustomCard) {
+          cards.push(storedCard);
+        }
+      });
     } else {
-      // Default flashcards for demo
-      const defaultCards = getDefaultCards(level);
-      cards = defaultCards;
+      // Use pre-loaded cards for the first time
+      cards = getFlashcardsByLevel(level);
     }
 
     // Initialize mastery levels for new cards

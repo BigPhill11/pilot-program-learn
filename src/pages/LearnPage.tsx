@@ -5,8 +5,8 @@ import HeroSection from '@/components/landing/HeroSection';
 import PersonalFinanceTab from "@/components/learn/PersonalFinanceTab";
 import CompanyDiscoveryTab from "@/components/learn/CompanyDiscoveryTab";
 import CareersInFinanceTab from "@/components/learn/CareersInFinanceTab";
-import AdaptiveLearningContent from "@/components/learning/AdaptiveLearningContent";
-import InteractiveLearningHub from "@/components/learning/InteractiveLearningHub";
+import LearningDashboard from "@/components/learning/LearningDashboard";
+import AdaptiveLearning from "@/components/learning/AdaptiveLearning";
 import TermOfTheDay from "@/components/learn/TermOfTheDay";
 import AdminTab from "@/components/admin/AdminTab";
 import LearnTabTutorial from "@/components/onboarding/LearnTabTutorial";
@@ -52,7 +52,7 @@ const LearnPage = () => {
             {isMobile ? 'Personal' : 'Personal Finance'}
           </TabsTrigger>
           <TabsTrigger value="interactive-hub" className={isMobile ? 'text-xs py-3' : ''}>
-            {isMobile ? 'Games' : 'Interactive Hub'}
+            {isMobile ? 'Dashboard' : 'Learning Dashboard'}
           </TabsTrigger>
           <TabsTrigger value="companies" className={isMobile ? 'text-xs py-3' : ''}>
             {isMobile ? 'Companies' : 'Company Discovery'}
@@ -68,7 +68,7 @@ const LearnPage = () => {
         </TabsList>
         
         <TabsContent value="adaptive" className="mt-6">
-          <AdaptiveLearningContent onNavigateToTab={handleNavigateToTab} />
+          <AdaptiveLearning />
         </TabsContent>
         
         <TabsContent value="personal-finance" className="mt-6">
@@ -76,7 +76,7 @@ const LearnPage = () => {
         </TabsContent>
         
         <TabsContent value="interactive-hub" className="mt-6">
-          <InteractiveLearningHub />
+          <LearningDashboard onNavigateToTab={handleNavigateToTab} />
         </TabsContent>
         
         <TabsContent value="companies" className="mt-6">

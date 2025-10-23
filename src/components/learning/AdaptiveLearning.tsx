@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -8,10 +8,22 @@ import FlashcardsSection from './FlashcardsSection';
 import QuizzesSection from './QuizzesSection';
 import MatchingGameSection from './MatchingGameSection';
 import PandaJumpSection from './PandaJumpSection';
+import AdaptiveLearningTutorial from './AdaptiveLearningTutorial';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useAuth } from '@/hooks/useAuth';
 
-const InteractiveLearningHub: React.FC = () => {
+const AdaptiveLearning: React.FC = () => {
   const isMobile = useIsMobile();
+  const { user } = useAuth();
+  const [showTutorial, setShowTutorial] = useState(false);
+
+  useEffect(() => {
+    // Check if user has completed the tutorial
+    const tutorialCompleted = localStorage.getItem('adaptive_learning_tutorial_completed');
+    if (!tutorialCompleted) {
+      setShowTutorial(true);
+    }
+  }, []);
 
   const sections = [
     {
@@ -44,16 +56,37 @@ const InteractiveLearningHub: React.FC = () => {
     }
   ];
 
+  const handleTutorialComplete = () => {
+    setShowTutorial(false);
+  };
+
+  const handleTutorialClose = () => {
+    setShowTutorial(false);
+  };
+
   return (
-    <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold tracking-tight text-foreground mb-3">
-          Interactive Learning Hub
-        </h2>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Choose your learning style and difficulty level to master financial concepts
-        </p>
-      </div>
+    <>
+      {showTutorial && (
+        <AdaptiveLearningTutorial 
+          onComplete={handleTutorialComplete}
+          onClose={handleTutorialClose}
+        />
+      )}
+      
+      <div className="space-y-6">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold tracking-tight text-foreground mb-3">
+            🧠 Adaptive Learning
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Master financial terms with AI-powered flashcards that adapt to your learning pace
+          </p>
+          <div className="mt-4 flex justify-center gap-4">
+            <Badge variant="outline" className="text-sm">45 Pre-loaded Terms</Badge>
+            <Badge variant="outline" className="text-sm">3 Difficulty Levels</Badge>
+            <Badge variant="outline" className="text-sm">Smart Mastery Tracking</Badge>
+          </div>
+        </div>
 
       <Tabs defaultValue="flashcards" className="w-full">
         <TabsList className={`grid w-full grid-cols-4 ${isMobile ? 'h-auto' : ''}`}>
@@ -82,7 +115,8 @@ const InteractiveLearningHub: React.FC = () => {
         })}
       </Tabs>
     </div>
+    </>
   );
 };
 
-export default InteractiveLearningHub;
+export default AdaptiveLearning;
