@@ -9,6 +9,12 @@ import { useOnboarding } from '@/hooks/useOnboarding';
 import TutorialReward from './TutorialReward';
 import { toast } from 'sonner';
 import { useProgressTracking } from '@/hooks/useProgressTracking';
+import TabPreviewModal from './TabPreviewModal';
+import AdaptivePreview from './preview-content/AdaptivePreview';
+import PersonalFinancePreview from './preview-content/PersonalFinancePreview';
+import GamesPreview from './preview-content/GamesPreview';
+import CompaniesPreview from './preview-content/CompaniesPreview';
+import CareersPreview from './preview-content/CareersPreview';
 
 interface LearnTabTutorialProps {
   open: boolean;
@@ -22,16 +28,45 @@ const LearnTabTutorial: React.FC<LearnTabTutorialProps> = ({ open, onClose }) =>
   const [quizAnswer, setQuizAnswer] = useState<string | null>(null);
   const [budgetAllocated, setBudgetAllocated] = useState(false);
   const [showReward, setShowReward] = useState(false);
+  const [activePreview, setActivePreview] = useState<string | null>(null);
   const { markLearnTabTutorialComplete } = useOnboarding();
   const { updateActivityComplete } = useProgressTracking();
 
   const tabs = [
-    { id: 'adaptive', name: 'Adaptive', tooltip: 'AI picks lessons just for you!' },
-    { id: 'personal', name: 'Personal Finance', tooltip: 'Budgeting, saving, credit basics' },
-    { id: 'games', name: 'Games', tooltip: 'Learn by playing—it\'s fun!' },
-    { id: 'companies', name: 'Companies', tooltip: 'Discover & analyze real stocks' },
-    { id: 'careers', name: 'Careers', tooltip: 'Explore finance career paths' },
+    { id: 'adaptive', name: 'Adaptive', icon: '🎯' },
+    { id: 'personal', name: 'Personal Finance', icon: '💰' },
+    { id: 'games', name: 'Games', icon: '🎮' },
+    { id: 'companies', name: 'Companies', icon: '📈' },
+    { id: 'careers', name: 'Careers', icon: '💼' },
   ];
+
+  const getPreviewContent = (tabId: string) => {
+    switch (tabId) {
+      case 'adaptive':
+        return <AdaptivePreview />;
+      case 'personal':
+        return <PersonalFinancePreview />;
+      case 'games':
+        return <GamesPreview />;
+      case 'companies':
+        return <CompaniesPreview />;
+      case 'careers':
+        return <CareersPreview />;
+      default:
+        return null;
+    }
+  };
+
+  const handleTabClick = (tabId: string) => {
+    setActivePreview(tabId);
+  };
+
+  const handleMarkTabComplete = () => {
+    if (activePreview) {
+      setClickedTabs(new Set(clickedTabs).add(activePreview));
+      toast.success(`${tabs.find(t => t.id === activePreview)?.name} explored! +25 XP`, { duration: 2000 });
+    }
+  };
 
   const steps = [
     {
@@ -47,7 +82,7 @@ const LearnTabTutorial: React.FC<LearnTabTutorialProps> = ({ open, onClose }) =>
               This is where the magic happens! 🎩 You've got 5 learning zones here.
             </p>
             <p className="font-semibold text-primary mt-2">
-              👉 Click each tab below to see what's inside!
+              👉 Click each zone below to learn what it offers!
             </p>
           </div>
 
@@ -57,16 +92,14 @@ const LearnTabTutorial: React.FC<LearnTabTutorialProps> = ({ open, onClose }) =>
                 key={tab.id}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  setClickedTabs(new Set(clickedTabs).add(tab.id));
-                  toast.success(tab.tooltip, { duration: 2000 });
-                }}
+                onClick={() => handleTabClick(tab.id)}
                 className={`p-4 rounded-lg border-2 transition-all ${
                   clickedTabs.has(tab.id)
-                    ? 'bg-primary text-primary-foreground border-primary'
+                    ? 'bg-primary text-primary-foreground border-primary shadow-lg'
                     : 'bg-muted border-muted-foreground/20 hover:border-primary/50'
                 }`}
               >
+                <div className="text-2xl mb-1">{tab.icon}</div>
                 <div className="text-sm font-semibold">{tab.name}</div>
                 {clickedTabs.has(tab.id) && (
                   <CheckCircle2 className="h-5 w-5 mx-auto mt-2" />
@@ -76,9 +109,9 @@ const LearnTabTutorial: React.FC<LearnTabTutorialProps> = ({ open, onClose }) =>
           </div>
 
           <div className="text-center text-sm text-muted-foreground">
-            {clickedTabs.size === 0 && '❌ Not clicked (0/5)'}
-            {clickedTabs.size > 0 && clickedTabs.size < 5 && `✅ Clicked (${clickedTabs.size}/5)`}
-            {clickedTabs.size === 5 && '🎉 All tabs explored! +125 XP'}
+            {clickedTabs.size === 0 && '❌ Not explored (0/5)'}
+            {clickedTabs.size > 0 && clickedTabs.size < 5 && `✅ Explored (${clickedTabs.size}/5)`}
+            {clickedTabs.size === 5 && '🎉 All zones explored! +125 XP'}
           </div>
         </div>
       ),
@@ -328,59 +361,75 @@ const LearnTabTutorial: React.FC<LearnTabTutorialProps> = ({ open, onClose }) =>
   }
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <div className="space-y-6 pt-6">
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <span>Step {currentStep + 1} of {steps.length}</span>
-              <div className="flex items-center gap-4">
-                <span>~{currentStepData.duration}s</span>
-                <button 
-                  onClick={onClose} 
-                  className="text-primary hover:underline font-medium"
-                >
-                  Skip Tutorial
-                </button>
+    <>
+      <Dialog open={open} onOpenChange={onClose}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <div className="space-y-6 pt-6">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm text-muted-foreground">
+                <span>Step {currentStep + 1} of {steps.length}</span>
+                <div className="flex items-center gap-4">
+                  <span>~{currentStepData.duration}s</span>
+                  <button 
+                    onClick={onClose} 
+                    className="text-primary hover:underline font-medium"
+                  >
+                    Skip Tutorial
+                  </button>
+                </div>
               </div>
+              <Progress value={progress} className="h-2" />
             </div>
-            <Progress value={progress} className="h-2" />
-          </div>
 
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentStep}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-              className="space-y-6 min-h-[400px]"
-            >
-              <h2 className="text-3xl font-bold text-center text-primary">
-                {currentStepData.title}
-              </h2>
-              {currentStepData.content}
-            </motion.div>
-          </AnimatePresence>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentStep}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-6 min-h-[400px]"
+              >
+                <h2 className="text-3xl font-bold text-center text-primary">
+                  {currentStepData.title}
+                </h2>
+                {currentStepData.content}
+              </motion.div>
+            </AnimatePresence>
 
-          <div className="flex justify-end pt-4">
-            <Button
-              onClick={handleNext}
-              disabled={!currentStepData.canProceed()}
-              className="bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 disabled:opacity-50"
-            >
-              {currentStep === steps.length - 1 ? (
-                <>🚀 Start Level 1, Lesson 1</>
-              ) : (
-                <>
-                  Next <ArrowRight className="ml-2 h-4 w-4" />
-                </>
-              )}
-            </Button>
+            <div className="flex justify-end pt-4">
+              <Button
+                onClick={handleNext}
+                disabled={!currentStepData.canProceed()}
+                className="bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 disabled:opacity-50"
+              >
+                {currentStep === steps.length - 1 ? (
+                  <>🚀 Start Level 1, Lesson 1</>
+                ) : (
+                  <>
+                    Next <ArrowRight className="ml-2 h-4 w-4" />
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+
+      {/* Tab Preview Modals */}
+      {tabs.map((tab) => (
+        <TabPreviewModal
+          key={tab.id}
+          open={activePreview === tab.id}
+          onClose={() => setActivePreview(null)}
+          onMarkComplete={handleMarkTabComplete}
+          title={tab.name}
+          icon={tab.icon}
+        >
+          {getPreviewContent(tab.id)}
+        </TabPreviewModal>
+      ))}
+    </>
   );
 };
 
