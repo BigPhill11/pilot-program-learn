@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Heart, TrendingUp, Award, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Heart, TrendingUp, Award, ChevronLeft, ChevronRight, Trophy } from 'lucide-react';
 import TinderCard from './TinderCard';
 import SwipeActions from './SwipeActions';
 import TinderTutorial from './TinderTutorial';
 import MatchesCollection from './MatchesCollection';
+import Leaderboard from './Leaderboard';
 import { useTinderSwipe } from './hooks/useTinderSwipe';
 import { useGameStats } from './hooks/useGameStats';
 import { useDailyChallenges } from './hooks/useDailyChallenges';
@@ -26,6 +27,7 @@ const CompanyTinderGame: React.FC<CompanyTinderGameProps> = ({ companies }) => {
   const [tutorialComplete, setTutorialComplete] = useState(false);
   const [showMatches, setShowMatches] = useState(false);
   const [showStats, setShowStats] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [cardKey, setCardKey] = useState(0);
 
   const {
@@ -65,7 +67,16 @@ const CompanyTinderGame: React.FC<CompanyTinderGameProps> = ({ companies }) => {
     } else {
       setTutorialComplete(true);
     }
-  }, []);
+
+    // Listen for touch swipe events
+    const handleSwipeEvent = (e: CustomEvent) => {
+      const action = e.detail as 'like' | 'pass';
+      onSwipe(action);
+    };
+
+    window.addEventListener('tinderSwipe' as any, handleSwipeEvent);
+    return () => window.removeEventListener('tinderSwipe' as any, handleSwipeEvent);
+  }, [currentCompany]);
 
   const handleTutorialComplete = () => {
     localStorage.setItem('tinderTutorialComplete', 'true');
@@ -176,6 +187,10 @@ const CompanyTinderGame: React.FC<CompanyTinderGameProps> = ({ companies }) => {
     );
   }
 
+  if (showLeaderboard) {
+    return <Leaderboard onClose={() => setShowLeaderboard(false)} />;
+  }
+
   if (allSwiped) {
     return (
       <Card className="text-center py-12">
@@ -239,13 +254,21 @@ const CompanyTinderGame: React.FC<CompanyTinderGameProps> = ({ companies }) => {
           )}
         </div>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => setShowStats(true)}
           >
-            View Stats
+            📊 Stats
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowLeaderboard(true)}
+          >
+            <Trophy className="mr-2 h-4 w-4" />
+            Leaderboard
           </Button>
           <Button
             variant="outline"
@@ -308,10 +331,13 @@ const CompanyTinderGame: React.FC<CompanyTinderGameProps> = ({ companies }) => {
         {currentCompany && (
           <motion.div
             key={`${currentCompany.id}-${cardKey}`}
-            initial={{ opacity: 0, scale: 0.8, rotateY: -30 }}
-            animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-            exit={{ opacity: 0, scale: 0.8, rotateY: 30 }}
-            transition={{ duration: 0.3 }}
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: -20 }}
+            transition={{ 
+              duration: 0.4,
+              ease: [0.4, 0, 0.2, 1]
+            }}
           >
             <TinderCard company={currentCompany} />
           </motion.div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +13,11 @@ interface TinderCardProps {
 
 const TinderCard: React.FC<TinderCardProps> = ({ company, onSwipeComplete }) => {
   const [dragStart, setDragStart] = useState(0);
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
+  const [touchEnd, setTouchEnd] = useState<{ x: number; y: number } | null>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const minSwipeDistance = 50;
 
   const handleDragEnd = (event: any, info: any) => {
     if (Math.abs(info.offset.x) > 100) {
@@ -21,14 +26,49 @@ const TinderCard: React.FC<TinderCardProps> = ({ company, onSwipeComplete }) => 
     }
   };
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart({
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY,
+    });
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd({
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY,
+    });
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+
+    const distanceX = touchStart.x - touchEnd.x;
+    const distanceY = touchStart.y - touchEnd.y;
+    const isHorizontalSwipe = Math.abs(distanceX) > Math.abs(distanceY);
+
+    if (isHorizontalSwipe && Math.abs(distanceX) > minSwipeDistance) {
+      if (distanceX > 0) {
+        window.dispatchEvent(new CustomEvent('tinderSwipe', { detail: 'pass' }));
+      } else {
+        window.dispatchEvent(new CustomEvent('tinderSwipe', { detail: 'like' }));
+      }
+    }
+  };
+
   return (
     <motion.div
+      ref={cardRef}
       drag="x"
       dragConstraints={{ left: 0, right: 0 }}
       onDragEnd={handleDragEnd}
       whileDrag={{ scale: 1.05, rotate: dragStart > 0 ? 5 : -5 }}
       onDragStart={(e, info) => setDragStart(info.offset.x)}
-      className="cursor-grab active:cursor-grabbing"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      className="cursor-grab active:cursor-grabbing touch-pan-y select-none"
     >
       <Card className="w-full max-w-2xl mx-auto shadow-2xl border-2">
         <CardHeader className="pb-3">

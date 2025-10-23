@@ -1,12 +1,14 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Trophy, TrendingUp, Target, Award, Flame, Star } from 'lucide-react';
+import { Trophy, TrendingUp, Target, Award, Flame, Star, Share2, Download } from 'lucide-react';
 import { GameStats, Achievement } from './hooks/useGameStats';
 import { DailyChallenge } from './hooks/useDailyChallenges';
 import { getLevelFromTotalXp, getXpToNextLevel, getProgressPercent } from '@/lib/progression';
+import { toast } from 'sonner';
 
 interface StatsPanelProps {
   stats: GameStats;
@@ -34,15 +36,77 @@ const StatsPanel: React.FC<StatsPanelProps> = ({ stats, achievements, challenge,
   const unlockedAchievements = achievements.filter(a => a.unlocked);
   const lockedAchievements = achievements.filter(a => !a.unlocked);
 
+  const handleShare = async () => {
+    const shareText = `🎯 My Company Tinder Stats\n\n💪 Level ${currentLevel} - ${levelName}\n⭐ ${stats.totalXP} XP earned\n📊 ${stats.swipeCount} companies swiped\n💚 ${stats.likeCount} matches made\n🔥 ${stats.currentStreak} day streak\n🏆 ${unlockedAchievements.length} achievements unlocked\n\nPlay Company Tinder and find your investment matches!`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'My Company Tinder Stats',
+          text: shareText,
+        });
+        toast.success('Shared successfully!');
+      } catch (error) {
+        if ((error as Error).name !== 'AbortError') {
+          copyToClipboard(shareText);
+        }
+      }
+    } else {
+      copyToClipboard(shareText);
+    }
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success('Stats copied to clipboard!');
+  };
+
+  const downloadStats = () => {
+    const statsData = {
+      level: currentLevel,
+      levelName,
+      totalXP: stats.totalXP,
+      swipeCount: stats.swipeCount,
+      likeCount: stats.likeCount,
+      superLikeCount: stats.superLikeCount,
+      passCount: stats.passCount,
+      currentStreak: stats.currentStreak,
+      achievements: unlockedAchievements.map(a => a.name),
+    };
+
+    const blob = new Blob([JSON.stringify(statsData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `company-tinder-stats-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success('Stats downloaded!');
+  };
+
   return (
     <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-2xl">Your Stats</CardTitle>
+            <div>
+              <CardTitle className="text-2xl">Your Stats</CardTitle>
+              <div className="flex items-center space-x-2 mt-2">
+                <Button variant="outline" size="sm" onClick={handleShare}>
+                  <Share2 className="mr-2 h-4 w-4" />
+                  Share
+                </Button>
+                <Button variant="outline" size="sm" onClick={downloadStats}>
+                  <Download className="mr-2 h-4 w-4" />
+                  Download
+                </Button>
+              </div>
+            </div>
             <button
               onClick={onClose}
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="text-muted-foreground hover:text-foreground transition-colors text-2xl"
             >
               ✕
             </button>
