@@ -64,7 +64,7 @@ const HeroSection = () => {
           </Button>
           <Button size="lg" variant="outline" asChild className="border-green-600 text-green-600 hover:bg-green-50">
             <Link to="/paper-trading">
-              Try Paper Trading <TrendingUp className="ml-2 h-5 w-5" />
+              Tutorial - Get familiar with the app <TrendingUp className="ml-2 h-5 w-5" />
             </Link>
           </Button>
         </div>
