@@ -38,7 +38,7 @@ const LearnPage = () => {
 
   return (
     <div className="relative">
-      <HeroSection />
+      <HeroSection onStartTutorial={() => setShowTutorial(true)} />
       
       <div className="container mx-auto px-4 py-8">
         <TermOfTheDay />

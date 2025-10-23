@@ -11,7 +11,7 @@ const Index = () => {
 
   return (
     <>
-      <HeroSection />
+      <HeroSection onStartTutorial={() => setShowTour(true)} />
       
       {/* Welcome Onboarding Banner */}
       <WelcomeOnboardingBanner onStartTour={() => setShowTour(true)} />

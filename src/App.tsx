@@ -9,12 +9,7 @@ import { ProgressProvider } from "@/contexts/ProgressContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import MinimalLayout from "@/components/layout/MinimalLayout";
 import Index from "./pages/Index";
-import AboutPage from "./pages/AboutPage";
 import LearnPage from "./pages/LearnPage";
-import SoftSkillsPage from "./pages/SoftSkillsPage";
-import PaperTradingPage from "./pages/PaperTradingPage";
-import PhilsFriendsPage from "./pages/PhilsFriendsPage";
-import AskPhilPage from "./pages/AskPhilPage";
 
 const queryClient = new QueryClient();
 
@@ -31,12 +26,7 @@ function App() {
                 <MinimalLayout>
                   <Routes>
                     <Route path="/" element={<Index />} />
-                    <Route path="/about" element={<AboutPage />} />
                     <Route path="/learn" element={<LearnPage />} />
-                    <Route path="/soft-skills" element={<SoftSkillsPage />} />
-                    <Route path="/paper-trading" element={<PaperTradingPage />} />
-                    <Route path="/phils-friends" element={<PhilsFriendsPage />} />
-                    <Route path="/ask-phil" element={<AskPhilPage />} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
                 </MinimalLayout>

@@ -5,7 +5,11 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, TrendingUp } from 'lucide-react';
 import PandaLogo from '@/components/icons/PandaLogo';
 
-const HeroSection = () => {
+interface HeroSectionProps {
+  onStartTutorial?: () => void;
+}
+
+const HeroSection: React.FC<HeroSectionProps> = ({ onStartTutorial }) => {
   return (
     <section className="py-20 md:py-32 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -62,10 +66,13 @@ const HeroSection = () => {
               Start Learning <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </Button>
-          <Button size="lg" variant="outline" asChild className="border-green-600 text-green-600 hover:bg-green-50">
-            <Link to="/paper-trading">
-              Tutorial - Get familiar with the app <TrendingUp className="ml-2 h-5 w-5" />
-            </Link>
+          <Button 
+            size="lg" 
+            variant="outline" 
+            className="border-green-600 text-green-600 hover:bg-green-50"
+            onClick={onStartTutorial}
+          >
+            Tutorial - Get familiar with the app <TrendingUp className="ml-2 h-5 w-5" />
           </Button>
         </div>
       </div>
