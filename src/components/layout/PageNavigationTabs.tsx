@@ -1,16 +1,25 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Crown } from 'lucide-react';
 
 const PageNavigationTabs: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   
-  const currentTab = location.pathname === '/learn' ? 'learn' : 'home';
+  const getCurrentTab = () => {
+    if (location.pathname === '/learn') return 'learn';
+    if (location.pathname === '/empire') return 'empire';
+    return 'home';
+  };
+  
+  const currentTab = getCurrentTab();
   
   const handleTabChange = (value: string) => {
     if (value === 'home') {
       navigate('/');
+    } else if (value === 'empire') {
+      navigate('/empire');
     } else if (value === 'learn') {
       navigate('/learn');
     }
@@ -26,6 +35,13 @@ const PageNavigationTabs: React.FC = () => {
               className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-6"
             >
               Home
+            </TabsTrigger>
+            <TabsTrigger 
+              value="empire" 
+              className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-6"
+            >
+              <Crown className="h-4 w-4 mr-2" />
+              Empire
             </TabsTrigger>
             <TabsTrigger 
               value="learn" 

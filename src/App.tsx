@@ -10,6 +10,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import MinimalLayout from "@/components/layout/MinimalLayout";
 import Index from "./pages/Index";
 import LearnPage from "./pages/LearnPage";
+import EmpirePage from "./pages/EmpirePage";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ function App() {
                 <MinimalLayout>
                   <Routes>
                     <Route path="/" element={<Index />} />
+                    <Route path="/empire" element={<EmpirePage />} />
                     <Route path="/learn" element={<LearnPage />} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
