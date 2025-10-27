@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useProgressTracking } from '@/hooks/useProgressTracking';
 
 export interface GameStats {
   totalXP: number;
@@ -147,6 +148,7 @@ const ACHIEVEMENTS: Achievement[] = [
 
 export const useGameStats = () => {
   const { user } = useAuth();
+  const { awardPoints } = useProgressTracking();
   const [stats, setStats] = useState<GameStats>(INITIAL_STATS);
   const [achievements, setAchievements] = useState<Achievement[]>(ACHIEVEMENTS);
   const [loading, setLoading] = useState(true);
@@ -264,6 +266,12 @@ export const useGameStats = () => {
       }
       return newStats;
     });
+
+    // Also reflect XP in global progression when authenticated
+    if (user && amount > 0) {
+      // Fire and forget; hook handles toasts and level-up
+      awardPoints(amount, 'Company Tinder');
+    }
   };
 
   const incrementStat = (statKey: keyof GameStats, amount: number = 1) => {

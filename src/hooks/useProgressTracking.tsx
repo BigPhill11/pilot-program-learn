@@ -14,6 +14,21 @@ interface ProgressData {
   completed_activities: string[];
 }
 
+// --- Simple in-module event bus to sync progress across components ---
+let globalProgressState: ProgressData | null = null;
+const progressSubscribers = new Set<(data: ProgressData) => void>();
+
+function notifyProgressUpdate(newData: ProgressData) {
+  globalProgressState = newData;
+  progressSubscribers.forEach((fn) => {
+    try {
+      fn(newData);
+    } catch (_) {
+      // no-op: isolate subscriber errors
+    }
+  });
+}
+
 export const useProgressTracking = () => {
   const { user, profile } = useAuth();
   const [progress, setProgress] = useState<ProgressData>({
@@ -32,6 +47,20 @@ export const useProgressTracking = () => {
       fetchProgress();
     }
   }, [user]);
+
+  // Subscribe to global updates so all hook instances stay in sync
+  useEffect(() => {
+    const subscriber = (data: ProgressData) => setProgress(data);
+    progressSubscribers.add(subscriber);
+    // Initialize from global state if available (helps non-fetching instances)
+    if (globalProgressState) {
+      setProgress(globalProgressState);
+      setLoading(false);
+    }
+    return () => {
+      progressSubscribers.delete(subscriber);
+    };
+  }, []);
 
   // Apply streak multiplier: +5% per day, capped at +50%
   const applyStreakMultiplier = (basePoints: number) => {
@@ -56,15 +85,18 @@ export const useProgressTracking = () => {
       }
 
       if (data) {
-        setProgress({
+        const loaded: ProgressData = {
           quiz_scores: (data.quiz_scores as Record<string, boolean>) || {},
           learning_progress: data.learning_progress || 0,
           engagement_score: data.engagement_score || 0,
           total_points: data.total_points || 0,
           level_progress: data.level_progress || 0,
           achievements: Array.isArray(data.achievements) ? (data.achievements as string[]) : [],
+          // We currently store completed activities in achievements column for simplicity
           completed_activities: Array.isArray(data.achievements) ? (data.achievements as string[]) : []
-        });
+        };
+        setProgress(loaded);
+        notifyProgressUpdate(loaded);
       }
     } catch (error) {
       console.error('Error fetching progress:', error);
@@ -107,6 +139,12 @@ export const useProgressTracking = () => {
         completed_activities: newCompletedActivities,
         total_points: newTotalPoints
       }));
+
+      notifyProgressUpdate({
+        ...progress,
+        completed_activities: newCompletedActivities,
+        total_points: newTotalPoints
+      });
 
       if (!progress.completed_activities.includes(activityId)) {
         if (streakPercent > 0) {
@@ -159,6 +197,13 @@ export const useProgressTracking = () => {
         engagement_score: newEngagementScore
       }));
 
+      notifyProgressUpdate({
+        ...progress,
+        quiz_scores: newQuizScores,
+        total_points: newTotalPoints,
+        engagement_score: newEngagementScore
+      });
+
       if (isCorrect) {
         if (streakPercent > 0) {
           toast.success(`+${earnedPoints} points! Correct! (+${streakPercent}% streak bonus) 🎉`);
@@ -200,6 +245,11 @@ export const useProgressTracking = () => {
         total_points: newTotalPoints
       }));
 
+      notifyProgressUpdate({
+        ...progress,
+        total_points: newTotalPoints
+      });
+
       if (streakPercent > 0) {
         toast.success(`+${earnedPoints} points for market prediction! (+${streakPercent}% streak bonus) 📈`);
       } else {
@@ -210,6 +260,46 @@ export const useProgressTracking = () => {
       await checkLevelUp(newTotalPoints, earnedPoints);
     } catch (error) {
       console.error('Error updating market prediction points:', error);
+    }
+  };
+
+  // Generic points awarder for arbitrary sources (e.g., games)
+  const awardPoints = async (points: number, source?: string) => {
+    if (!user || points <= 0) return;
+
+    const earnedPoints = applyStreakMultiplier(points);
+    const streakPercent = Math.min((profile?.current_streak || 0) * 5, 50);
+    const newTotalPoints = progress.total_points + earnedPoints;
+
+    try {
+      const { error } = await supabase
+        .from('user_progress')
+        .upsert({
+          user_id: user.id,
+          total_points: newTotalPoints,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id'
+        });
+
+      if (error) throw error;
+
+      setProgress(prev => ({
+        ...prev,
+        total_points: newTotalPoints
+      }));
+      notifyProgressUpdate({ ...progress, total_points: newTotalPoints });
+
+      if (streakPercent > 0) {
+        toast.success(`+${earnedPoints} points${source ? ` (${source})` : ''}! (+${streakPercent}% streak bonus) 🎉`);
+      } else {
+        toast.success(`+${earnedPoints} points${source ? ` (${source})` : ''}! 🎉`);
+      }
+
+      await checkLevelUp(newTotalPoints, earnedPoints);
+    } catch (error) {
+      console.error('Error awarding points:', error);
+      toast.error('Failed to update XP');
     }
   };
 
@@ -242,7 +332,7 @@ export const useProgressTracking = () => {
   };
 
 
-  const updateLearningProgress = async (increment: number = 1) => {
+  const updateLearningProgress = async (increment: number = 1, pointsEarned?: number) => {
     if (!user) return;
 
     const newLearningProgress = Math.min(progress.learning_progress + increment, 100);
@@ -253,6 +343,10 @@ export const useProgressTracking = () => {
         .upsert({
           user_id: user.id,
           learning_progress: newLearningProgress,
+          // When awarding learning progress, optionally award XP too
+          total_points: pointsEarned && pointsEarned > 0 
+            ? progress.total_points + applyStreakMultiplier(pointsEarned)
+            : progress.total_points,
           updated_at: new Date().toISOString()
         }, {
           onConflict: 'user_id'
@@ -260,10 +354,26 @@ export const useProgressTracking = () => {
 
       if (error) throw error;
 
-      setProgress(prev => ({
-        ...prev,
-        learning_progress: newLearningProgress
-      }));
+      const updated: ProgressData = {
+        ...progress,
+        learning_progress: newLearningProgress,
+        total_points: pointsEarned && pointsEarned > 0
+          ? progress.total_points + applyStreakMultiplier(pointsEarned)
+          : progress.total_points
+      };
+      setProgress(updated);
+      notifyProgressUpdate(updated);
+
+      if (pointsEarned && pointsEarned > 0) {
+        const earnedPoints = applyStreakMultiplier(pointsEarned);
+        const streakPercent = Math.min((profile?.current_streak || 0) * 5, 50);
+        if (streakPercent > 0) {
+          toast.success(`+${earnedPoints} points for learning progress! (+${streakPercent}% streak bonus) 🎉`);
+        } else {
+          toast.success(`+${earnedPoints} points for learning progress! 🎉`);
+        }
+        await checkLevelUp(updated.total_points, earnedPoints);
+      }
     } catch (error) {
       console.error('Error updating learning progress:', error);
     }
@@ -276,6 +386,7 @@ export const useProgressTracking = () => {
     updateMarketPrediction,
     updateLearningProgress,
     updateActivityComplete,
+    awardPoints,
     refreshProgress: fetchProgress
   };
 };

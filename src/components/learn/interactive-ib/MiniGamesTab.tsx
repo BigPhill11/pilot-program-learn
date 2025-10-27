@@ -19,13 +19,15 @@ const MiniGamesTab: React.FC<MiniGamesTabProps> = ({
   onActivityComplete 
 }) => {
   const [activeGame, setActiveGame] = useState<string | null>(null);
-  const { updateActivityComplete } = useProgressTracking();
+  const { updateActivityComplete, awardPoints } = useProgressTracking();
 
   const handleGameComplete = (gameId: string, score?: number) => {
     console.log(`Game ${gameId} completed with score:`, score);
     const game = filteredMiniGames.find(g => g.id === gameId);
     const xpReward = game?.xpReward || 50;
     updateActivityComplete(gameId, xpReward);
+    // Ensure XP bar updates even if activity already completed previously
+    awardPoints(xpReward, 'Mini-game');
     onActivityComplete(gameId);
     setActiveGame(null);
   };

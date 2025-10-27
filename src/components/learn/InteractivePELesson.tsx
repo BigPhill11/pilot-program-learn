@@ -7,6 +7,7 @@ import { PrivateEquityLessonContent } from '@/data/private-equity-lessons';
 import HighlightableTerm from '@/components/HighlightableTerm';
 import { getPETermsForLevel } from '@/data/private-equity-terms';
 import { useAuth } from '@/hooks/useAuth';
+import { useProgressTracking } from '@/hooks/useProgressTracking';
 import { useLessonProgress } from '@/hooks/useLessonProgress';
 import LessonHeader from './interactive-ib/LessonHeader';
 import ProgressTracker from './interactive-ib/ProgressTracker';
@@ -25,6 +26,7 @@ const InteractivePELesson: React.FC<InteractivePELessonProps> = ({
   onComplete
 }) => {
   const { profile } = useAuth();
+  const { awardPoints } = useProgressTracking();
   const [currentTab, setCurrentTab] = useState('flashcards');
   const { progress, markTermMastered, saveQuizScore, markActivityCompleted, getProgressPercentage } = useLessonProgress(`pe-${lesson.level.toString()}`);
 
@@ -57,6 +59,9 @@ const InteractivePELesson: React.FC<InteractivePELessonProps> = ({
   const handleQuizComplete = (score: number, totalQuestions: number) => {
     saveQuizScore('main_quiz', score);
     markActivityCompleted('quiz');
+    // Award XP based on score (10 per correct)
+    const xp = Math.max(0, score) * Math.max(1, Math.floor(50 / Math.max(totalQuestions, 1)));
+    awardPoints(xp, 'Lesson Quiz');
     
     // Check if lesson is complete
     const progressPercentage = getProgressPercentage(keyTerms.length, 3);

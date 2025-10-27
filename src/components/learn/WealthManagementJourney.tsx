@@ -53,7 +53,7 @@ const WealthManagementJourney: React.FC<WealthManagementJourneyProps> = ({ onBac
     setIsJourneyCompleted(allLevelsCompleted);
     setSelectedLevel(null);
     
-    updateLearningProgress(10);
+    updateLearningProgress(10, 40);
     saveProgress(newCompletedLevels, allLevelsCompleted);
   };
 

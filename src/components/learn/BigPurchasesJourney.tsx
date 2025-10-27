@@ -60,7 +60,7 @@ const BigPurchasesJourney: React.FC<BigPurchasesJourneyProps> = ({ onBack }) => 
     }
 
     saveProgress(newProgress);
-    updateLearningProgress(20); // 20% progress per level
+    updateLearningProgress(20, 30); // 20% progress per level + XP
   };
 
   const handleQuizComplete = (isCorrect: boolean) => {
@@ -74,7 +74,7 @@ const BigPurchasesJourney: React.FC<BigPurchasesJourneyProps> = ({ onBack }) => 
       totalPointsEarned: progress.totalPointsEarned + 15 // Bonus points for completing mini-game
     };
     saveProgress(newProgress);
-    updateLearningProgress(20); // Final 20% for mini-game completion
+    updateLearningProgress(20, 50); // Final 20% + XP for completion
     setShowMiniGame(false);
     setSelectedLevelId(null);
   };

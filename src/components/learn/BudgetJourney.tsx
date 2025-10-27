@@ -65,7 +65,8 @@ const BudgetJourney: React.FC<BudgetJourneyProps> = ({ onBack }) => {
     }
 
     saveProgress(newProgress);
-    updateLearningProgress(20);
+    // Add XP when completing a level to sync with XP bar
+    updateLearningProgress(20, 30);
     setSelectedLevel(null);
   };
 
@@ -80,7 +81,7 @@ const BudgetJourney: React.FC<BudgetJourneyProps> = ({ onBack }) => {
       totalPointsEarned: progress.totalPointsEarned + 15
     };
     saveProgress(newProgress);
-    updateLearningProgress(20);
+    updateLearningProgress(20, 50);
     setShowMiniGame(false);
   };
 

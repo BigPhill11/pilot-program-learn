@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { ModuleProgress } from '@/hooks/useUnifiedProgress';
+import { useProgressTracking } from '@/hooks/useProgressTracking';
 
 interface ProgressContextType {
   allProgress: ModuleProgress[];
@@ -31,6 +32,7 @@ export const ProgressProvider: React.FC<ProgressProviderProps> = ({ children }) 
   const { user } = useAuth();
   const [allProgress, setAllProgress] = useState<ModuleProgress[]>([]);
   const [loading, setLoading] = useState(true);
+  const { progress } = useProgressTracking();
 
   const refreshAllProgress = async () => {
     if (!user) {
@@ -161,6 +163,18 @@ export const ProgressProvider: React.FC<ProgressProviderProps> = ({ children }) 
   useEffect(() => {
     refreshAllProgress();
   }, [user]);
+
+  // When XP changes, consumers of this context often display progress bars nearby.
+  // Trigger a light refresh so dashboards remain up to date without user reload.
+  useEffect(() => {
+    // Only run when authenticated to avoid noisy local-only updates
+    if (user) {
+      // Do not spam the DB; just update state timestamped fields locally
+      // by re-mapping to new objects which will cause re-renders of consumers.
+      setAllProgress(prev => prev.map(p => ({ ...p })));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [progress.total_points]);
 
   const contextValue: ProgressContextType = {
     allProgress,
