@@ -1,18 +1,17 @@
-
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import { Eye, EyeOff, Mail, Lock, UserCheck } from 'lucide-react';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { Eye, EyeOff, Mail, Lock, UserCheck } from "lucide-react";
 
 const AuthPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -28,18 +27,18 @@ const AuthPage = () => {
         options: {
           emailRedirectTo: `${window.location.origin}/`,
           data: {
-            username: username || email.split('@')[0]
-          }
-        }
+            username: username || email.split("@")[0],
+          },
+        },
       });
 
       if (error) {
         toast.error(error.message);
       } else {
-        toast.success('Check your email to confirm your account!');
+        toast.success("Check your email to confirm your account!");
       }
     } catch (error) {
-      toast.error('An unexpected error occurred');
+      toast.error("An unexpected error occurred");
     } finally {
       setLoading(false);
     }
@@ -58,11 +57,11 @@ const AuthPage = () => {
       if (error) {
         toast.error(error.message);
       } else {
-        toast.success('Welcome back!');
-        navigate('/');
+        toast.success("Welcome back!");
+        navigate("/");
       }
     } catch (error) {
-      toast.error('An unexpected error occurred');
+      toast.error("An unexpected error occurred");
     } finally {
       setLoading(false);
     }
@@ -70,45 +69,40 @@ const AuthPage = () => {
 
   const handleGuestSignIn = async () => {
     setLoading(true);
-    
+
     try {
       // Sign in anonymously as guest
       const { data, error } = await supabase.auth.signInAnonymously();
 
       if (error) {
-        toast.error('Failed to sign in as guest: ' + error.message);
+        toast.error("Failed to sign in as guest: " + error.message);
         return;
       }
 
       if (data.user) {
         // Reset profile data for onboarding
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .upsert({ 
-            id: data.user.id,
-            app_version: null,
-            onboarding_completed: false,
-            username: 'Guest User',
-            email: null
-          });
+        const { error: profileError } = await supabase.from("profiles").upsert({
+          id: data.user.id,
+          app_version: null,
+          onboarding_completed: false,
+          username: "Guest User",
+          email: null,
+        });
 
         if (profileError) {
           // Profile error handling without exposing details
-          toast.error('Failed to initialize guest profile');
+          toast.error("Failed to initialize guest profile");
           return;
         }
 
         // Clear any existing assessment data
-        await supabase
-          .from('initial_assessments')
-          .delete()
-          .eq('user_id', data.user.id);
+        await supabase.from("initial_assessments").delete().eq("user_id", data.user.id);
 
-        toast.success('Signed in as guest! Starting onboarding...');
-        navigate('/');
+        toast.success("Signed in as guest! Starting onboarding...");
+        navigate("/");
       }
     } catch (error) {
-      toast.error('An unexpected error occurred');
+      toast.error("An unexpected error occurred");
     } finally {
       setLoading(false);
     }
@@ -118,10 +112,8 @@ const AuthPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Welcome to Phil Finance</CardTitle>
-          <CardDescription>
-            Start your financial learning journey with Phil the Panda!
-          </CardDescription>
+          <CardTitle className="text-2xl font-bold">Welcome to Phil's Financials</CardTitle>
+          <CardDescription>Start your financial learning journey with Phil the Panda!</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="signin" className="w-full">
@@ -129,7 +121,7 @@ const AuthPage = () => {
               <TabsTrigger value="signin">Sign In</TabsTrigger>
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="signin">
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div className="space-y-2">
@@ -147,7 +139,7 @@ const AuthPage = () => {
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
-                      type={showPassword ? 'text' : 'password'}
+                      type={showPassword ? "text" : "password"}
                       placeholder="Password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -166,23 +158,18 @@ const AuthPage = () => {
                   </div>
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? 'Signing In...' : 'Sign In'}
+                  {loading ? "Signing In..." : "Sign In"}
                 </Button>
               </form>
-              
+
               <div className="mt-4 pt-4 border-t">
-                <Button 
-                  variant="outline" 
-                  className="w-full" 
-                  onClick={handleGuestSignIn}
-                  disabled={loading}
-                >
+                <Button variant="outline" className="w-full" onClick={handleGuestSignIn} disabled={loading}>
                   <UserCheck className="h-4 w-4 mr-2" />
-                  {loading ? 'Setting up guest...' : 'Continue as Guest'}
+                  {loading ? "Setting up guest..." : "Continue as Guest"}
                 </Button>
               </div>
             </TabsContent>
-            
+
             <TabsContent value="signup">
               <form onSubmit={handleSignUp} className="space-y-4">
                 <div className="space-y-2">
@@ -206,7 +193,7 @@ const AuthPage = () => {
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
-                      type={showPassword ? 'text' : 'password'}
+                      type={showPassword ? "text" : "password"}
                       placeholder="Password (min 6 characters)"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -226,7 +213,7 @@ const AuthPage = () => {
                   </div>
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? 'Creating Account...' : 'Create Account'}
+                  {loading ? "Creating Account..." : "Create Account"}
                 </Button>
               </form>
             </TabsContent>
