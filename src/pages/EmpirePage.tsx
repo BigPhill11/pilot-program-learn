@@ -3,6 +3,7 @@ import { Crown, Coins, Trophy } from 'lucide-react';
 import CoinTreasury from '@/components/empire/CoinTreasury';
 import ProgressOverview from '@/components/empire/ProgressOverview';
 import LeaderboardPanel from '@/components/empire/LeaderboardPanel';
+import BambooShop from '@/components/empire/BambooShop';
 
 const EmpirePage: React.FC = () => {
   return (
@@ -62,28 +63,18 @@ const EmpirePage: React.FC = () => {
         {/* Progress Overview */}
         <ProgressOverview />
 
-        {/* Coming Soon Sections */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white dark:bg-slate-900 rounded-lg p-8 border-2 border-dashed border-muted text-center space-y-4">
-            <Coins className="h-12 w-12 mx-auto text-amber-500 opacity-50" />
-            <h3 className="text-xl font-bold text-muted-foreground">Bamboo Shop</h3>
-            <p className="text-sm text-muted-foreground">
-              Spend coins on power-ups, cosmetics, and exclusive content!
-            </p>
-            <div className="text-xs bg-amber-100 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 px-3 py-1 rounded-full inline-block">
-              Coming in Phase 3
-            </div>
-          </div>
+        {/* Bamboo Shop */}
+        <BambooShop />
 
-          <div className="bg-white dark:bg-slate-900 rounded-lg p-8 border-2 border-dashed border-muted text-center space-y-4">
-            <Trophy className="h-12 w-12 mx-auto text-green-500 opacity-50" />
-            <h3 className="text-xl font-bold text-muted-foreground">Achievements</h3>
-            <p className="text-sm text-muted-foreground">
-              Unlock badges and earn bonus rewards!
-            </p>
-            <div className="text-xs bg-green-100 dark:bg-green-950/30 text-green-700 dark:text-green-400 px-3 py-1 rounded-full inline-block">
-              Coming in Phase 4
-            </div>
+        {/* Coming Soon: Achievements */}
+        <div className="bg-white dark:bg-slate-900 rounded-lg p-8 border-2 border-dashed border-muted text-center space-y-4">
+          <Trophy className="h-12 w-12 mx-auto text-green-500 opacity-50" />
+          <h3 className="text-xl font-bold text-muted-foreground">Achievement Gallery</h3>
+          <p className="text-sm text-muted-foreground">
+            50+ achievements to unlock with exclusive badges and rewards!
+          </p>
+          <div className="text-xs bg-green-100 dark:bg-green-950/30 text-green-700 dark:text-green-400 px-3 py-1 rounded-full inline-block">
+            Coming in Phase 4
           </div>
         </div>
 
