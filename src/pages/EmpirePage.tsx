@@ -4,6 +4,7 @@ import CoinTreasury from '@/components/empire/CoinTreasury';
 import ProgressOverview from '@/components/empire/ProgressOverview';
 import LeaderboardPanel from '@/components/empire/LeaderboardPanel';
 import BambooShop from '@/components/empire/BambooShop';
+import AchievementGallery from '@/components/empire/AchievementGallery';
 
 const EmpirePage: React.FC = () => {
   return (
@@ -66,17 +67,8 @@ const EmpirePage: React.FC = () => {
         {/* Bamboo Shop */}
         <BambooShop />
 
-        {/* Coming Soon: Achievements */}
-        <div className="bg-white dark:bg-slate-900 rounded-lg p-8 border-2 border-dashed border-muted text-center space-y-4">
-          <Trophy className="h-12 w-12 mx-auto text-green-500 opacity-50" />
-          <h3 className="text-xl font-bold text-muted-foreground">Achievement Gallery</h3>
-          <p className="text-sm text-muted-foreground">
-            50+ achievements to unlock with exclusive badges and rewards!
-          </p>
-          <div className="text-xs bg-green-100 dark:bg-green-950/30 text-green-700 dark:text-green-400 px-3 py-1 rounded-full inline-block">
-            Coming in Phase 4
-          </div>
-        </div>
+        {/* Achievement Gallery */}
+        <AchievementGallery />
 
         {/* How It Works */}
         <div className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20 rounded-lg p-8 border-2 border-blue-200">
