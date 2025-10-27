@@ -64,7 +64,7 @@ const CreditJourney: React.FC<CreditJourneyProps> = ({ onBack }) => {
     }
 
     saveProgress(newProgress);
-    updateLearningProgress(20);
+    updateLearningProgress(20, 30);
     setSelectedLevel(null);
   };
 
@@ -79,7 +79,7 @@ const CreditJourney: React.FC<CreditJourneyProps> = ({ onBack }) => {
       totalPointsEarned: progress.totalPointsEarned + 15
     };
     saveProgress(newProgress);
-    updateLearningProgress(20);
+    updateLearningProgress(20, 50);
     setShowMiniGame(false);
   };
 

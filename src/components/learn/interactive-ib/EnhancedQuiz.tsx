@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useProgressTracking } from '@/hooks/useProgressTracking';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,6 +27,7 @@ const EnhancedQuiz: React.FC<EnhancedQuizProps> = ({ questions, onComplete, onRe
   const [showResults, setShowResults] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
+  const { awardPoints } = useProgressTracking();
 
   // Handle empty questions array
   if (!questions || questions.length === 0) {
@@ -70,6 +72,10 @@ const EnhancedQuiz: React.FC<EnhancedQuizProps> = ({ questions, onComplete, onRe
       setQuizCompleted(true);
       setShowResults(true);
       onComplete(score, questions.length);
+      // Award XP: 10 per correct answer
+      if (score > 0) {
+        awardPoints(score * 10, 'Quiz');
+      }
     } else {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setShowExplanation(false);

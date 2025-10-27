@@ -21,13 +21,14 @@ const MiniGamesTab: React.FC<MiniGamesTabProps> = ({
   onActivityComplete 
 }) => {
   const [activeGame, setActiveGame] = useState<string | null>(null);
-  const { updateActivityComplete } = useProgressTracking();
+  const { updateActivityComplete, awardPoints } = useProgressTracking();
 
   const handleGameComplete = (gameId: string) => {
     console.log(`Game ${gameId} completed`);
     const game = filteredMiniGames.find(g => g.id === gameId);
     const xpReward = game?.xpReward || 50;
     updateActivityComplete(gameId, xpReward);
+    awardPoints(xpReward, 'Mini-game');
     onActivityComplete(gameId);
     setActiveGame(null);
   };

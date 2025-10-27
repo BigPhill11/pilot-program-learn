@@ -13,6 +13,7 @@ import ProgressTracker from './interactive-ib/ProgressTracker';
 import OverviewTab from './interactive-ib/OverviewTab';
 import MiniGamesTab from './interactive-ib/MiniGamesTab';
 import LearnTermsTab from './interactive-ib/LearnTermsTab';
+import { useProgressTracking } from '@/hooks/useProgressTracking';
 
 interface InteractiveIBLessonProps {
   lesson: InteractiveLessonContent;
@@ -26,6 +27,7 @@ const InteractiveIBLesson: React.FC<InteractiveIBLessonProps> = ({
   onComplete
 }) => {
   const { profile } = useAuth();
+  const { awardPoints } = useProgressTracking();
   const [currentTab, setCurrentTab] = useState('overview');
   const [completedActivities, setCompletedActivities] = useState<string[]>([]);
   const [lessonProgress, setLessonProgress] = useState(0);
@@ -42,6 +44,8 @@ const InteractiveIBLesson: React.FC<InteractiveIBLessonProps> = ({
       const totalActivities = lesson.miniGames.length + 1 + 1;
       const progress = (newCompleted.length / totalActivities) * 100;
       setLessonProgress(progress);
+      // Award a flat 25 XP per activity completion
+      awardPoints(25, 'Lesson Activity');
       
       if (progress >= 100) {
         onComplete();

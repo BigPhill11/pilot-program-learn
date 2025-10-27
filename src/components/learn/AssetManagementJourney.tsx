@@ -45,7 +45,7 @@ const AssetManagementJourney: React.FC<AssetManagementJourneyProps> = ({ onBack 
     const allLevelsComplete = newCompletedLevels.size === assetManagementJourneyData.length;
     if (allLevelsComplete && !journeyCompleted) {
       setJourneyCompleted(true);
-      updateLearningProgress(15);
+      updateLearningProgress(15, 40);
       saveProgress(newCompletedLevels, true);
     } else {
       saveProgress(newCompletedLevels, journeyCompleted);

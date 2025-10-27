@@ -46,7 +46,7 @@ const FuturePlanningJourney: React.FC<FuturePlanningJourneyProps> = ({ onBack })
     const allLevelsComplete = newCompletedLevels.size === futurePlanningJourneyData.length;
     if (allLevelsComplete && !journeyCompleted) {
       setJourneyCompleted(true);
-      updateLearningProgress(10);
+      updateLearningProgress(10, 40);
       saveProgress(newCompletedLevels, true);
     } else {
       saveProgress(newCompletedLevels, journeyCompleted);
