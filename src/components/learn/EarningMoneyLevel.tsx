@@ -3,10 +3,13 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle2, Play, ArrowRight } from 'lucide-react';
+import { CheckCircle2, ArrowRight, Award, Lightbulb, Users, BookOpen, AlertTriangle, Target } from 'lucide-react';
 import EarningMoneyFlashcard from './EarningMoneyFlashcard';
 import EarningMoneyDragDrop from './EarningMoneyDragDrop';
 import InteractiveQuiz from '@/components/InteractiveQuiz';
+import { earningMoneyEnhancedContent } from '@/data/earning-money-enhanced';
+import { Badge } from '@/components/ui/badge';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 interface EarningMoneyLevelProps {
   levelNumber: number;
@@ -68,6 +71,7 @@ const EarningMoneyLevel: React.FC<EarningMoneyLevelProps> = ({
   };
 
   const progress = ((currentStep + 1) / steps.length) * 100;
+  const enhancedContent = earningMoneyEnhancedContent[levelNumber];
 
   if (isCompleted) {
     return (
@@ -171,6 +175,129 @@ const EarningMoneyLevel: React.FC<EarningMoneyLevelProps> = ({
           )}
         </Button>
       </div>
+
+      {/* Enhanced Content Section */}
+      {enhancedContent && (
+        <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-green-800">
+              <Award className="h-5 w-5" />
+              Enhanced Learning Resources
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Accordion type="single" collapsible className="w-full space-y-2">
+              <AccordionItem value="tips" className="bg-white rounded-lg border border-green-200 px-4">
+                <AccordionTrigger>
+                  <div className="flex items-center gap-2">
+                    <Lightbulb className="h-5 w-5 text-green-600" />
+                    <span className="font-semibold">Pro Tips</span>
+                    <Badge variant="secondary">{enhancedContent.proTips.length}</Badge>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <ul className="space-y-3">
+                    {enhancedContent.proTips.map((tip, i) => (
+                      <li key={i} className="text-sm">{tip}</li>
+                    ))}
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="scenarios" className="bg-white rounded-lg border border-green-200 px-4">
+                <AccordionTrigger>
+                  <div className="flex items-center gap-2">
+                    <Users className="h-5 w-5 text-green-600" />
+                    <span className="font-semibold">Real Stories</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-4">
+                    {enhancedContent.realScenarios.map((s, i) => (
+                      <div key={i} className="p-4 bg-green-50 rounded-lg">
+                        <p className="font-bold">{s.name}, {s.age}</p>
+                        <p className="text-sm italic mb-2">"{s.story}"</p>
+                        <p className="text-sm"><strong>Lesson:</strong> {s.lesson}</p>
+                        <p className="text-sm"><strong>Outcome:</strong> {s.outcome}</p>
+                      </div>
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="cheatsheet" className="bg-white rounded-lg border border-green-200 px-4">
+                <AccordionTrigger>
+                  <div className="flex items-center gap-2">
+                    <BookOpen className="h-5 w-5 text-green-600" />
+                    <span className="font-semibold">{enhancedContent.cheatSheet.title}</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <ul className="space-y-2">
+                    {enhancedContent.cheatSheet.items.map((item, i) => (
+                      <li key={i} className="text-sm flex gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="mistakes" className="bg-white rounded-lg border border-orange-200 px-4">
+                <AccordionTrigger>
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5 text-orange-600" />
+                    <span className="font-semibold">Common Mistakes</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-4">
+                    {enhancedContent.commonMistakes.map((m, i) => (
+                      <div key={i} className="p-4 bg-orange-50 rounded-lg">
+                        <p className="text-sm mb-1"><strong>❌ Mistake:</strong> {m.mistake}</p>
+                        <p className="text-sm mb-1"><strong>⚠️ Consequence:</strong> {m.consequence}</p>
+                        <p className="text-sm"><strong>✅ Avoid:</strong> {m.avoidanceStrategy}</p>
+                      </div>
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="nextsteps" className="bg-white rounded-lg border border-blue-200 px-4">
+                <AccordionTrigger>
+                  <div className="flex items-center gap-2">
+                    <Target className="h-5 w-5 text-blue-600" />
+                    <span className="font-semibold">Your Action Plan</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-3">
+                    <div>
+                      <h4 className="font-semibold mb-1">🚀 This Week:</h4>
+                      <ul className="text-sm space-y-1">
+                        {enhancedContent.nextSteps.immediate.map((s, i) => <li key={i}>• {s}</li>)}
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-1">📅 This Month:</h4>
+                      <ul className="text-sm space-y-1">
+                        {enhancedContent.nextSteps.shortTerm.map((s, i) => <li key={i}>• {s}</li>)}
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-1">🎯 This Year:</h4>
+                      <ul className="text-sm space-y-1">
+                        {enhancedContent.nextSteps.longTerm.map((s, i) => <li key={i}>• {s}</li>)}
+                      </ul>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
