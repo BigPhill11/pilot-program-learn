@@ -10,6 +10,7 @@ import CreditJourney from './CreditJourney';
 import FuturePlanningJourney from './FuturePlanningJourney';
 import BigPurchasesJourney from './BigPurchasesJourney';
 import FinancialSafetyJourney from './FinancialSafetyJourney';
+import EarningMoneyJourney from './EarningMoneyJourney';
 import PodcastRecommendationsSection from './sections/PodcastRecommendationsSection';
 
 const PersonalFinanceTab = () => {
@@ -19,6 +20,7 @@ const PersonalFinanceTab = () => {
     const [showFuturePlanningJourney, setShowFuturePlanningJourney] = useState(false);
     const [showBigPurchasesJourney, setShowBigPurchasesJourney] = useState(false);
     const [showFinancialSafetyJourney, setShowFinancialSafetyJourney] = useState(false);
+    const [showEarningMoneyJourney, setShowEarningMoneyJourney] = useState(false);
 
     // Helper functions to get progress for each journey
     const getTaxesProgress = () => {
@@ -99,6 +101,19 @@ const PersonalFinanceTab = () => {
         return { completed: false, levelsCompleted: 0, totalLevels: 5 };
     };
 
+    const getEarningMoneyProgress = () => {
+        const saved = localStorage.getItem('earningMoneyJourneyProgress');
+        if (saved) {
+            const progress = JSON.parse(saved);
+            return {
+                completed: progress.journeyCompleted || false,
+                levelsCompleted: progress.completedLevels?.length || 0,
+                totalLevels: 5
+            };
+        }
+        return { completed: false, levelsCompleted: 0, totalLevels: 5 };
+    };
+
     // Render journey components if active
     if (showTaxesJourney) {
         return <TaxesJourney onBack={() => setShowTaxesJourney(false)} />;
@@ -124,7 +139,22 @@ const PersonalFinanceTab = () => {
         return <FinancialSafetyJourney onBack={() => setShowFinancialSafetyJourney(false)} />;
     }
 
+    if (showEarningMoneyJourney) {
+        return <EarningMoneyJourney onBack={() => setShowEarningMoneyJourney(false)} />;
+    }
+
     const journeys = [
+        {
+            id: 'earning-money',
+            title: 'Making Your First Dollar',
+            description: 'Learn how to earn, understand paychecks, and manage your income',
+            emoji: '💵',
+            progress: getEarningMoneyProgress(),
+            onClick: () => setShowEarningMoneyJourney(true),
+            gradient: 'from-green-50 to-emerald-50',
+            borderColor: 'border-green-500/30',
+            buttonColor: 'bg-green-500 hover:bg-green-600'
+        },
         {
             id: 'budgeting',
             title: 'Budgeting 101',
