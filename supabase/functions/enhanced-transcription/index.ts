@@ -123,9 +123,10 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error in enhanced transcription:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to process transcription';
     return new Response(
       JSON.stringify({ 
-        error: error.message || 'Failed to process transcription',
+        error: errorMessage,
         details: error
       }),
       { 

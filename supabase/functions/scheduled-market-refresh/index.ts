@@ -101,10 +101,11 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error in scheduled refresh:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return new Response(
       JSON.stringify({ 
         error: 'Scheduled refresh failed',
-        details: error.message 
+        details: errorMessage 
       }),
       { 
         status: 500,
