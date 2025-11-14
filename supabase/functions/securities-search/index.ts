@@ -78,10 +78,12 @@ serve(async (req) => {
     const quotes = data.quotes || [];
     const transformedData = quotes.slice(0, 20).map((item: any) => {
       // Determine asset type based on quote type
+      const quoteType = (item.quoteType || '').toLowerCase();
       let assetType = 'stock';
-      const quoteType = item.quoteType?.toLowerCase() || '';
-      
-      if (quoteType.includes('etf')) {
+
+      if (quoteType.includes('cryptocurrency')) {
+        assetType = 'crypto';
+      } else if (quoteType.includes('etf')) {
         assetType = 'etf';
       } else if (quoteType.includes('index')) {
         assetType = 'index';
@@ -98,7 +100,7 @@ serve(async (req) => {
         assetType,
         currency: item.currency || 'USD'
       };
-    }).filter(item => item.symbol && item.name); // Filter out items without symbol or name
+    }).filter((item: any) => item.symbol && item.name); // Filter out items without symbol or name
 
     return new Response(
       JSON.stringify(transformedData),

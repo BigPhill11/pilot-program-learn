@@ -275,7 +275,7 @@ function getUserLevelSummary(userLevel: string, topic: string, baseSummary: stri
   switch (userLevel) {
     case 'beginner':
       // Simplified explanation without jargon - always 3 sentences
-      const beginnerExplanations = {
+      const beginnerExplanations: Record<string, string> = {
         ai_finance: "Banks are using computer programs to help them work better and keep money safe. These smart computer systems can spot fraud and help banks make better decisions. This makes banking safer and easier for everyone.",
         ev_market: "Electric cars are becoming more popular, which is good for companies that make them. More people want cars that don't use gas because they're better for the environment. This means electric car companies are selling more cars and making more money.",
         supply_chain: "Companies that make products are getting better at getting the materials they need. They're finding new ways to get supplies closer to home so they don't have to wait as long. This helps them make products faster and cheaper.",
@@ -288,7 +288,7 @@ function getUserLevelSummary(userLevel: string, topic: string, baseSummary: stri
       return beginnerExplanations[topic] || baseSummary;
     case 'intermediate':
       // Enhanced 3-sentence summaries with more technical detail
-      const intermediateExplanations = {
+      const intermediateExplanations: Record<string, string> = {
         ai_finance: "Financial institutions are rapidly implementing artificial intelligence solutions across risk management, fraud detection, and algorithmic trading operations. These AI systems utilize machine learning models to analyze vast datasets and identify patterns that enhance decision-making accuracy and operational efficiency. The integration of AI technology is fundamentally reshaping how financial services firms approach customer service, compliance monitoring, and investment strategies.",
         ev_market: "Electric vehicle manufacturers are experiencing unprecedented growth as global adoption accelerates driven by government incentives and advancing battery technology. Traditional automotive companies are pivoting their production lines while new EV startups are capturing significant market share in the sustainable transportation sector. This transition is creating substantial investment opportunities in the broader clean energy ecosystem including charging infrastructure and renewable energy companies.",
         supply_chain: "Manufacturing companies are strengthening their supply chain resilience through diversification strategies and nearshoring initiatives to reduce disruption risks. These operational improvements are resulting in better profit margins and more predictable revenue streams for companies that have invested in supply chain modernization. The shift toward regional supply networks is creating new investment themes in industrial real estate and logistics technology platforms.",
@@ -301,7 +301,7 @@ function getUserLevelSummary(userLevel: string, topic: string, baseSummary: stri
       return intermediateExplanations[topic] || (baseSummary + " Market analysts are closely monitoring these developments for their impact on sector rotation strategies and portfolio allocation decisions. Institutional demand continues to drive price discovery in these emerging growth narratives.");
     case 'advanced':
       // Professional 3-sentence summaries with sophisticated financial language
-      const advancedExplanations = {
+      const advancedExplanations: Record<string, string> = {
         ai_finance: "Artificial intelligence adoption in financial services is driving systematic alpha generation through enhanced quantitative modeling, alternative data integration, and real-time risk management capabilities. The technology is enabling new factor discovery methodologies and cross-asset correlation analysis that are reshaping portfolio construction frameworks and systematic trading strategies. AI-driven operational efficiency gains are compressing expense ratios while expanding addressable markets for asset managers and investment banks.",
         ev_market: "The electric vehicle sector is experiencing regime change dynamics as traditional automotive OEMs face margin compression while pure-play EV manufacturers demonstrate scalable unit economics and vertical integration advantages. This transition is creating systematic rotation opportunities from legacy automotive exposure toward clean energy infrastructure, battery technology, and autonomous driving platforms. The sector's capital allocation patterns suggest sustained outperformance potential driven by regulatory tailwinds and declining battery cost curves.",
         supply_chain: "Supply chain diversification strategies are creating systematic factor exposure shifts as companies prioritize operational resilience over cost optimization, fundamentally altering working capital dynamics and asset turnover ratios. The nearshoring trend is generating systematic alpha opportunities in industrial real estate, logistics automation, and regional manufacturing capabilities that benefit from shortened supply chains. These structural changes are creating new risk premiums in global trade-sensitive sectors while supporting domestic industrial capacity utilization.",
