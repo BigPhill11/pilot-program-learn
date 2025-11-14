@@ -80,8 +80,7 @@ serve(async (req) => {
     });
   } catch (error) {
     console.error(error);
-    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch market data';
-    return new Response(JSON.stringify({ error: errorMessage }), {
+    return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
     });

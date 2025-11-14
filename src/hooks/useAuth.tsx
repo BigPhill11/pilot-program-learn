@@ -59,7 +59,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const handleDailyLogin = async (userId: string) => {
     try {
       const { data, error } = await supabase.rpc('handle_daily_login', {
-        user_id_param: userId
+        p_user_id: userId
       });
 
       if (error) {

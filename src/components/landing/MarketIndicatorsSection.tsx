@@ -40,15 +40,15 @@ const MarketIndicatorsSection = () => {
   // Function to fetch cached data from database
   const fetchCachedMarketData = async () => {
     const { data, error } = await supabase
-      .from('market_data_cache' as any)
+      .from('market_data_cache')
       .select('*')
-      .order('last_updated', { ascending: false});
+      .order('last_updated', { ascending: false });
     
     if (error) {
       throw new Error(error.message);
     }
     
-    return data.map((item: any) => ({
+    return data.map(item => ({
       title: item.name,
       value: item.asset_type === 'commodity' && !item.name.includes('$') 
         ? `$${(item.price || 0).toFixed(2)}`

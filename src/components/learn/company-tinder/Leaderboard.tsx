@@ -44,7 +44,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ onClose }) => {
       weekAgo.setDate(weekAgo.getDate() - 7);
 
       const { data: weeklyData, error: weeklyError } = await supabase
-        .from('user_company_interactions' as any)
+        .from('user_company_interactions')
         .select('user_id, interaction_type, created_at')
         .gte('created_at', weekAgo.toISOString());
 
@@ -52,7 +52,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ onClose }) => {
 
       // Get all-time stats
       const { data: allTimeData, error: allTimeError } = await supabase
-        .from('user_company_interactions' as any)
+        .from('user_company_interactions')
         .select('user_id, interaction_type, created_at');
 
       if (allTimeError) throw allTimeError;

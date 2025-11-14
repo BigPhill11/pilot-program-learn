@@ -37,14 +37,14 @@ const MatchesCollection: React.FC<MatchesCollectionProps> = ({ onBack, companies
 
     try {
       const { data, error } = await supabase
-        .from('user_company_interactions' as any)
+        .from('user_company_interactions')
         .select('company_id, interaction_type')
         .eq('user_id', user.id)
         .in('interaction_type', ['like', 'super_like']);
 
       if (error) throw error;
 
-      const matchedCompanyIds = data?.map((d: any) => d.company_id) || [];
+      const matchedCompanyIds = data?.map(d => d.company_id) || [];
       const matchedCompanies = companies.filter(c => matchedCompanyIds.includes(c.id));
       setMatches(matchedCompanies);
     } catch (error) {
@@ -59,7 +59,7 @@ const MatchesCollection: React.FC<MatchesCollectionProps> = ({ onBack, companies
     if (user) {
       try {
         await supabase
-          .from('user_company_interactions' as any)
+          .from('user_company_interactions')
           .delete()
           .eq('user_id', user.id)
           .eq('company_id', companyId);

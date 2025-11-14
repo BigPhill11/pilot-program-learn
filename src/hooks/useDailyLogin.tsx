@@ -19,7 +19,7 @@ export const useDailyLogin = () => {
 
       try {
         const { data, error } = await supabase.rpc('handle_daily_login', {
-          user_id_param: user.id
+          p_user_id: user.id
         });
 
         if (error) {

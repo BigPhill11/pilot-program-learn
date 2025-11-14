@@ -3,7 +3,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 
 interface OnboardingState {
-  surveyCompleted: boolean;
   appWalkthroughCompleted: boolean;
   learnTabTutorialCompleted: boolean;
   loading: boolean;
@@ -12,7 +11,6 @@ interface OnboardingState {
 export const useOnboarding = () => {
   const { user, profile } = useAuth();
   const [state, setState] = useState<OnboardingState>({
-    surveyCompleted: false,
     appWalkthroughCompleted: false,
     learnTabTutorialCompleted: false,
     loading: true,
@@ -21,7 +19,6 @@ export const useOnboarding = () => {
   useEffect(() => {
     if (profile) {
       setState({
-        surveyCompleted: (profile as any).survey_completed || false,
         appWalkthroughCompleted: profile.app_walkthrough_completed || false,
         learnTabTutorialCompleted: profile.learn_tab_tutorial_completed || false,
         loading: false,
@@ -71,19 +68,8 @@ export const useOnboarding = () => {
     }
   };
 
-  const markSurveyComplete = async () => {
-    if (!user) return;
-
-    try {
-      setState(prev => ({ ...prev, surveyCompleted: true }));
-    } catch (error) {
-      console.error('Error marking survey complete:', error);
-    }
-  };
-
   return {
     ...state,
-    markSurveyComplete,
     markAppWalkthroughComplete,
     markLearnTabTutorialComplete,
   };
