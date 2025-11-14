@@ -68,7 +68,7 @@ export const useSessionTracking = () => {
 
     try {
       const { data, error } = await supabase
-        .from('user_sessions')
+        .from('user_sessions' as any)
         .insert({
           user_id: user.id,
           session_start: new Date().toISOString(),

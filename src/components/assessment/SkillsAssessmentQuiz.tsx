@@ -169,14 +169,14 @@ const SkillsAssessmentQuiz: React.FC<SkillsAssessmentQuizProps> = ({ onComplete 
           assessment_type: 'skills_assessment',
           score: Math.round(percentage),
           answers: finalAnswers
-        });
+        } as any);
 
       if (assessmentError) throw assessmentError;
 
       // Update user profile
       const { error: profileError } = await supabase
         .from('profiles')
-        .update({ app_version: assignedLevel })
+        .update({ app_version: assignedLevel } as any)
         .eq('id', user.id);
 
       if (profileError) throw profileError;

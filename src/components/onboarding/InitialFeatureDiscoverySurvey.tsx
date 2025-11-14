@@ -120,7 +120,7 @@ export const InitialFeatureDiscoverySurvey = ({ onComplete }: InitialFeatureDisc
           career_interest_level: surveyData.career_interest_level,
           motivation_style: surveyData.motivation_style,
           survey_results: surveyData,
-        })
+        } as any)
         .eq('id', user.id);
 
       // Show confetti

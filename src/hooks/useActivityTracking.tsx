@@ -36,9 +36,9 @@ export const useActivityTracking = () => {
     if (!user || !sessionId) return;
 
     try {
-      const { error } = await supabase
-        .from('user_activity_log')
-        .insert({
+    const { error } = await supabase
+      .from('user_activity_log' as any)
+      .insert({
           user_id: user.id,
           session_id: sessionId,
           activity_type: event.type,
