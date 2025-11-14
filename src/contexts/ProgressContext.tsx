@@ -1,194 +1,38 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
-import { ModuleProgress } from '@/hooks/useUnifiedProgress';
-import { useProgressTracking } from '@/hooks/useProgressTracking';
+import React, { createContext, useContext } from 'react';
 
 interface ProgressContextType {
-  allProgress: ModuleProgress[];
-  loading: boolean;
-  refreshAllProgress: () => Promise<void>;
-  getModuleProgress: (moduleId: string, moduleType: string, courseId?: string) => ModuleProgress | null;
+  getModuleProgress: (moduleId: string) => number;
   getTotalCompletedModules: () => number;
   getOverallProgress: () => number;
-  getStreakData: () => { currentStreak: number; longestStreak: number };
+  updateModuleProgress: (moduleId: string, progress: number) => Promise<void>;
 }
 
 const ProgressContext = createContext<ProgressContextType | undefined>(undefined);
 
-export const useProgressContext = () => {
-  const context = useContext(ProgressContext);
-  if (!context) {
-    throw new Error('useProgressContext must be used within a ProgressProvider');
-  }
-  return context;
-};
-
-interface ProgressProviderProps {
-  children: React.ReactNode;
-}
-
-export const ProgressProvider: React.FC<ProgressProviderProps> = ({ children }) => {
-  const { user } = useAuth();
-  const [allProgress, setAllProgress] = useState<ModuleProgress[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { progress } = useProgressTracking();
-
-  const refreshAllProgress = async () => {
-    if (!user) {
-      // Load from localStorage for non-authenticated users
-      const allLocalProgress: ModuleProgress[] = [];
-      const keys = Object.keys(localStorage).filter(key => key.startsWith('progress_'));
-      
-      keys.forEach(key => {
-        try {
-          const progress = JSON.parse(localStorage.getItem(key) || '{}');
-          if (progress.moduleId) {
-            allLocalProgress.push(progress);
-          }
-        } catch (error) {
-          console.error('Error parsing localStorage progress:', error);
-        }
-      });
-      
-      setAllProgress(allLocalProgress);
-      setLoading(false);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('module_progress')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('last_accessed', { ascending: false });
-
-      if (error) {
-        console.error('Error loading all progress:', error);
-        setAllProgress([]);
-      } else {
-        const formattedProgress: ModuleProgress[] = (data || []).map(item => ({
-          id: item.id,
-          moduleId: item.module_id,
-          moduleType: item.module_type as ModuleProgress['moduleType'],
-          courseId: item.course_id || undefined,
-          progressPercentage: item.progress_percentage,
-          timeSpentMinutes: item.time_spent_minutes,
-          lastAccessed: item.last_accessed,
-          completedAt: item.completed_at || undefined,
-          detailedProgress: (item.detailed_progress as Record<string, any>) || {}
-        }));
-        
-        setAllProgress(formattedProgress);
-      }
-    } catch (error) {
-      console.error('Error in refreshAllProgress:', error);
-      setAllProgress([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getModuleProgress = (moduleId: string, moduleType: string, courseId?: string): ModuleProgress | null => {
-    return allProgress.find(p => 
-      p.moduleId === moduleId && 
-      p.moduleType === moduleType && 
-      p.courseId === courseId
-    ) || null;
-  };
-
-  const getTotalCompletedModules = (): number => {
-    return allProgress.filter(p => p.progressPercentage >= 100).length;
-  };
-
-  const getOverallProgress = (): number => {
-    if (allProgress.length === 0) return 0;
-    const totalProgress = allProgress.reduce((sum, p) => sum + p.progressPercentage, 0);
-    return Math.round(totalProgress / allProgress.length);
-  };
-
-  const getStreakData = (): { currentStreak: number; longestStreak: number } => {
-    const completedModules = allProgress
-      .filter(p => p.completedAt)
-      .sort((a, b) => new Date(a.completedAt!).getTime() - new Date(b.completedAt!).getTime());
-
-    if (completedModules.length === 0) return { currentStreak: 0, longestStreak: 0 };
-
-    let currentStreak = 0;
-    let longestStreak = 0;
-    let tempStreak = 1;
-
-    const today = new Date();
-    const lastCompleted = new Date(completedModules[completedModules.length - 1].completedAt!);
-    const daysDiff = Math.floor((today.getTime() - lastCompleted.getTime()) / (1000 * 60 * 60 * 24));
-    
-    // If last completion was today or yesterday, start counting current streak
-    if (daysDiff <= 1) {
-      currentStreak = 1;
-      
-      // Count consecutive days backward
-      for (let i = completedModules.length - 2; i >= 0; i--) {
-        const current = new Date(completedModules[i + 1].completedAt!);
-        const previous = new Date(completedModules[i].completedAt!);
-        const diff = Math.floor((current.getTime() - previous.getTime()) / (1000 * 60 * 60 * 24));
-        
-        if (diff <= 1) {
-          currentStreak++;
-        } else {
-          break;
-        }
-      }
-    }
-
-    // Calculate longest streak
-    for (let i = 1; i < completedModules.length; i++) {
-      const current = new Date(completedModules[i].completedAt!);
-      const previous = new Date(completedModules[i - 1].completedAt!);
-      const diff = Math.floor((current.getTime() - previous.getTime()) / (1000 * 60 * 60 * 24));
-      
-      if (diff <= 1) {
-        tempStreak++;
-      } else {
-        longestStreak = Math.max(longestStreak, tempStreak);
-        tempStreak = 1;
-      }
-    }
-    
-    longestStreak = Math.max(longestStreak, tempStreak);
-
-    return { currentStreak, longestStreak };
-  };
-
-  useEffect(() => {
-    refreshAllProgress();
-  }, [user]);
-
-  // When XP changes, consumers of this context often display progress bars nearby.
-  // Trigger a light refresh so dashboards remain up to date without user reload.
-  useEffect(() => {
-    // Only run when authenticated to avoid noisy local-only updates
-    if (user) {
-      // Do not spam the DB; just update state timestamped fields locally
-      // by re-mapping to new objects which will cause re-renders of consumers.
-      setAllProgress(prev => prev.map(p => ({ ...p })));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [progress.total_points]);
-
-  const contextValue: ProgressContextType = {
-    allProgress,
-    loading,
-    refreshAllProgress,
-    getModuleProgress,
-    getTotalCompletedModules,
-    getOverallProgress,
-    getStreakData
-  };
+export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const getModuleProgress = () => 0;
+  const getTotalCompletedModules = () => 0;
+  const getOverallProgress = () => 0;
+  const updateModuleProgress = async () => {};
 
   return (
-    <ProgressContext.Provider value={contextValue}>
+    <ProgressContext.Provider
+      value={{
+        getModuleProgress,
+        getTotalCompletedModules,
+        getOverallProgress,
+        updateModuleProgress,
+      }}
+    >
       {children}
     </ProgressContext.Provider>
   );
+};
+
+export const useProgressContext = () => {
+  const context = useContext(ProgressContext);
+  if (!context) {
+    throw new Error('useProgressContext must be used within ProgressProvider');
+  }
+  return context;
 };
