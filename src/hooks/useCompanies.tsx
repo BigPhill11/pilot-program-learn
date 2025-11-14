@@ -16,14 +16,14 @@ export const useCompanies = () => {
   const fetchCompanies = async () => {
     try {
       const { data, error } = await supabase
-        .from('companies')
+        .from('companies' as any)
         .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
       // Convert database companies to CompanyProfile format with proper type casting
-      const dbCompanies: CompanyProfile[] = (data || []).map(company => ({
+      const dbCompanies: CompanyProfile[] = (data || []).map((company: any) => ({
         id: company.id,
         name: company.name,
         ticker: company.ticker,
@@ -36,11 +36,11 @@ export const useCompanies = () => {
         professional: {
           overview: company.overview,
           kpis: Array.isArray(company.kpis) ? 
-            company.kpis.filter((kpi): kpi is { title: string; value: string } => 
+            company.kpis.filter((kpi: any): kpi is { title: string; value: string } => 
               typeof kpi === 'object' && kpi !== null && 'title' in kpi && 'value' in kpi
             ) : [],
           financials: Array.isArray(company.financials) ? 
-            company.financials.filter((fin): fin is { title: string; value: string } => 
+            company.financials.filter((fin: any): fin is { title: string; value: string } => 
               typeof fin === 'object' && fin !== null && 'title' in fin && 'value' in fin
             ) : []
         },

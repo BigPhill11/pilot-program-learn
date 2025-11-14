@@ -56,7 +56,7 @@ const EnhancedCompanySwipeCard: React.FC<EnhancedCompanySwipeCardProps> = ({
 
     try {
       const { data, error } = await supabase
-        .from('user_company_interactions')
+        .from('user_company_interactions' as any)
         .select('*')
         .eq('user_id', user.id)
         .eq('company_id', company.id)
@@ -80,7 +80,7 @@ const EnhancedCompanySwipeCard: React.FC<EnhancedCompanySwipeCardProps> = ({
       if (isHearted) {
         // Remove heart
         const { error } = await supabase
-          .from('user_company_interactions')
+          .from('user_company_interactions' as any)
           .delete()
           .eq('user_id', user.id)
           .eq('company_id', company.id)
@@ -92,12 +92,12 @@ const EnhancedCompanySwipeCard: React.FC<EnhancedCompanySwipeCardProps> = ({
       } else {
         // Add heart
         const { error } = await supabase
-          .from('user_company_interactions')
+          .from('user_company_interactions' as any)
           .insert([{
             user_id: user.id,
             company_id: company.id,
             interaction_type: 'heart'
-          }]);
+          }] as any);
 
         if (error) throw error;
         setIsHearted(true);
