@@ -109,7 +109,7 @@ export const useProfileCompletion = () => {
       try {
         await supabase
           .from('profiles')
-          .update({ profile_completion_score: totalScore })
+          .update({ profile_completion_score: totalScore } as any)
           .eq('id', user.id);
       } catch (error) {
         console.error('Error updating profile completion score:', error);

@@ -36,7 +36,7 @@ export const useBehavioralSegmentation = () => {
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
       const { data: activities, error } = await supabase
-        .from('user_activity_log')
+        .from('user_activity_log' as any)
         .select('activity_category, duration_seconds, engagement_level')
         .eq('user_id', user.id)
         .gte('timestamp', sevenDaysAgo.toISOString());
@@ -68,13 +68,13 @@ export const useBehavioralSegmentation = () => {
       const patterns = analyzeActivityPatterns(activities);
       const segment = determineSegment(patterns, activities.length);
 
-      // Update profile if segment changed
-      if (profile?.behavioral_segment !== segment.segment) {
-        await supabase
-          .from('profiles')
-          .update({ behavioral_segment: segment.segment })
-          .eq('id', user.id);
-      }
+    // Update profile if segment changed
+    if (profile?.behavioral_segment !== segment.segment) {
+      await supabase
+        .from('profiles')
+        .update({ behavioral_segment: segment.segment } as any)
+        .eq('id', user.id);
+    }
 
       setSegmentProfile(segment);
       setLoading(false);
