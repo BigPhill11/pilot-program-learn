@@ -165,7 +165,10 @@ const AdminTranscriptEditor: React.FC<AdminTranscriptEditorProps> = ({
         .order('start_time');
 
       if (error) throw error;
-      setSegments(data || []);
+      setSegments((data || []).map((seg: any) => ({
+        ...seg,
+        keywords: Array.isArray(seg.keywords) ? seg.keywords : []
+      })));
     } catch (error) {
       console.error('Error fetching segments:', error);
     }

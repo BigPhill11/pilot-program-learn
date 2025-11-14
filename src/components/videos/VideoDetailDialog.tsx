@@ -306,10 +306,10 @@ const VideoDetailDialog: React.FC<VideoDetailDialogProps> = ({
       await supabase
         .from('video_points')
         .insert({
-          user_id: user.id,
           video_id: video.id,
-          event_type: eventType,
-          points_earned: points
+          timestamp_sec: 0,
+          point_type: eventType,
+          content: `${points} points earned`
         });
     } catch (_) {
       // ignore
@@ -349,10 +349,10 @@ const VideoDetailDialog: React.FC<VideoDetailDialogProps> = ({
       await supabase
         .from('video_points')
         .insert({
-          user_id: user.id,
           video_id: video.id,
-          event_type: 'VIDEO_STARTED',
-          points_earned: adminSettings?.points?.start ?? 5
+          timestamp_sec: 0,
+          point_type: 'VIDEO_STARTED',
+          content: `${adminSettings?.points?.start ?? 5} points earned for starting video`
         });
 
     } catch (error) {
