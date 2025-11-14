@@ -10,11 +10,12 @@ import { useNavigate } from 'react-router-dom';
 
 interface WelcomeOnboardingBannerProps {
   onStartTour: () => void;
+  onStartSurvey?: () => void;
 }
 
-const WelcomeOnboardingBanner: React.FC<WelcomeOnboardingBannerProps> = ({ onStartTour }) => {
+const WelcomeOnboardingBanner: React.FC<WelcomeOnboardingBannerProps> = ({ onStartTour, onStartSurvey }) => {
   const { user, profile } = useAuth();
-  const { appWalkthroughCompleted, markAppWalkthroughComplete } = useOnboarding();
+  const { surveyCompleted, appWalkthroughCompleted, markAppWalkthroughComplete } = useOnboarding();
   const navigate = useNavigate();
   const handleDismiss = async () => {
     // Mark as complete to never show again
@@ -86,23 +87,43 @@ const WelcomeOnboardingBanner: React.FC<WelcomeOnboardingBannerProps> = ({ onSta
                 </div>
 
                 <div className="flex flex-col gap-3">
+                  {!surveyCompleted && onStartSurvey && (
+                    <Button
+                      onClick={onStartSurvey}
+                      size="lg"
+                      className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white relative overflow-hidden group"
+                    >
+                      <motion.span
+                        className="absolute inset-0 bg-white/20"
+                        animate={{ x: [-100, 200] }}
+                        transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+                      />
+                      <Sparkles className="mr-2 h-4 w-4" />
+                      Personalize My Experience
+                    </Button>
+                  )}
                   <Button
                     onClick={onStartTour}
                     size="lg"
-                    className="bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white relative overflow-hidden group"
+                    variant={!surveyCompleted ? "outline" : "default"}
+                    className={!surveyCompleted 
+                      ? "border-primary/50 hover:bg-primary/10" 
+                      : "bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white relative overflow-hidden group"
+                    }
                   >
-                    <motion.span
-                      className="absolute inset-0 bg-white/20"
-                      animate={{ x: [-100, 200] }}
-                      transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
-                    />
-                    Tutorial - Get familiar with the app
+                    {surveyCompleted && (
+                      <motion.span
+                        className="absolute inset-0 bg-white/20"
+                        animate={{ x: [-100, 200] }}
+                        transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+                      />
+                    )}
+                    App Tour - Learn the features
                   </Button>
                   <Button
                     onClick={handleStartLearning}
-                    variant="outline"
+                    variant="ghost"
                     size="lg"
-                    className="border-primary/50 hover:bg-primary/10"
                   >
                     Skip to Learning →
                   </Button>
