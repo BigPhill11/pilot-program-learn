@@ -48,11 +48,11 @@ export const useTinderSwipe = (companies: CompanyProfile[]) => {
     // Save to database if user is logged in
     if (user) {
       try {
-        await supabase.from('user_company_interactions').insert({
+        await supabase.from('user_company_interactions' as any).insert({
           user_id: user.id,
           company_id: company.id,
           interaction_type: action === 'like' ? 'like' : action === 'super_like' ? 'super_like' : 'dislike',
-        });
+        } as any);
       } catch (error) {
         console.error('Error saving swipe:', error);
       }

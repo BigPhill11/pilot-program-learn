@@ -176,16 +176,16 @@ export const useGameStats = () => {
     try {
       // Get swipe counts with dates
       const { data: interactions, error } = await supabase
-        .from('user_company_interactions')
+        .from('user_company_interactions' as any)
         .select('interaction_type, created_at')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      const likeCount = interactions?.filter(i => i.interaction_type === 'like').length || 0;
-      const superLikeCount = interactions?.filter(i => i.interaction_type === 'super_like').length || 0;
-      const passCount = interactions?.filter(i => i.interaction_type === 'dislike').length || 0;
+      const likeCount = interactions?.filter((i: any) => i.interaction_type === 'like').length || 0;
+      const superLikeCount = interactions?.filter((i: any) => i.interaction_type === 'super_like').length || 0;
+      const passCount = interactions?.filter((i: any) => i.interaction_type === 'dislike').length || 0;
       
       // Calculate XP based on counts (simplified)
       const totalXP = (likeCount * 10) + (superLikeCount * 25) + (passCount * 5);

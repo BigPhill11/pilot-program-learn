@@ -48,7 +48,7 @@ const FavoriteCompanies: React.FC<FavoriteCompaniesProps> = ({ onBack }) => {
 
     try {
       const { data, error } = await supabase
-        .from('user_company_interactions')
+        .from('user_company_interactions' as any)
         .select(`
           company_id,
           companies (
@@ -77,8 +77,8 @@ const FavoriteCompanies: React.FC<FavoriteCompaniesProps> = ({ onBack }) => {
       if (error) throw error;
 
       const favoriteCompanies = data
-        ?.filter(item => item.companies)
-        .map(item => item.companies as FavoriteCompany) || [];
+        ?.filter((item: any) => item.companies)
+        .map((item: any) => item.companies as FavoriteCompany) || [];
 
       setFavorites(favoriteCompanies);
     } catch (error) {
@@ -94,7 +94,7 @@ const FavoriteCompanies: React.FC<FavoriteCompaniesProps> = ({ onBack }) => {
 
     try {
       const { error } = await supabase
-        .from('user_company_interactions')
+        .from('user_company_interactions' as any)
         .delete()
         .eq('user_id', user.id)
         .eq('company_id', companyId)

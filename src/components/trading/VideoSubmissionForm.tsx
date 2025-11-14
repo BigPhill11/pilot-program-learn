@@ -46,7 +46,7 @@ const VideoSubmissionForm = () => {
 
     try {
       const { error } = await supabase
-        .from('trading_videos')
+        .from('trading_videos' as any)
         .insert({
           title: formData.title,
           description: formData.description,
