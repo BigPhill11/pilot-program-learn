@@ -165,10 +165,9 @@ const SkillsAssessmentQuiz: React.FC<SkillsAssessmentQuizProps> = ({ onComplete 
       const { error: assessmentError } = await supabase
         .from('initial_assessments')
         .insert({
-          user_id: user.id,
-          responses: finalAnswers,
-          calculated_score: Math.round(percentage),
-          assigned_version: assignedLevel
+          assessment_type: 'skills_assessment',
+          score: Math.round(percentage),
+          answers: finalAnswers
         });
 
       if (assessmentError) throw assessmentError;
