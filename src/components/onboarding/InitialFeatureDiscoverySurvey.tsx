@@ -97,6 +97,15 @@ export const InitialFeatureDiscoverySurvey = ({ onComplete }: InitialFeatureDisc
       const personalizedRecs = generatePersonalizedRecommendations(surveyData);
       setRecommendations(personalizedRecs);
 
+      // Map learning style to database enum values
+      const learningStyleMap: Record<string, 'interactive' | 'reading' | 'video' | 'visual'> = {
+        'flashcards': 'visual',
+        'videos': 'video',
+        'games': 'interactive',
+        'reading': 'reading',
+        'interactive': 'interactive'
+      };
+
       // Save survey results to database
       await supabase
         .from('profiles')
@@ -106,7 +115,7 @@ export const InitialFeatureDiscoverySurvey = ({ onComplete }: InitialFeatureDisc
           primary_goal: surveyData.primary_goal,
           finance_comfort_level: surveyData.finance_comfort_level,
           primary_finance_interest: surveyData.primary_finance_interest,
-          learning_style: surveyData.learning_style,
+          learning_style: learningStyleMap[surveyData.learning_style] || 'visual',
           daily_time_commitment: surveyData.daily_time_commitment,
           career_interest_level: surveyData.career_interest_level,
           motivation_style: surveyData.motivation_style,
