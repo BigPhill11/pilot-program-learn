@@ -96,7 +96,14 @@ const TradingVideoList: React.FC<TradingVideoListProps> = ({
             .rpc('get_video_average_ratings', { video_id_param: video.id });
           
           if (ratingData && ratingData.length > 0) {
-            ratingsData[video.id] = ratingData[0];
+            const clarity = ratingData[0].avg_clarity || 0;
+            const usefulness = ratingData[0].avg_usefulness || 0;
+            const entertainment = ratingData[0].avg_entertainment || 0;
+            const difficulty = ratingData[0].avg_difficulty || 0;
+            ratingsData[video.id] = {
+              ...ratingData[0],
+              avg_overall: (clarity + usefulness + entertainment + difficulty) / 4
+            };
           }
         }
         setRatings(ratingsData);
