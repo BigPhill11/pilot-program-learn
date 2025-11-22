@@ -130,6 +130,7 @@ export const usePaperTrading = () => {
             .insert({
               portfolio_id: portfolio.id,
               symbol,
+              asset_type: 'stock',
               shares,
               avg_price: price
             });
@@ -185,6 +186,7 @@ export const usePaperTrading = () => {
         .insert({
           portfolio_id: portfolio.id,
           symbol,
+          asset_type: 'stock',
           transaction_type: type,
           shares,
           price,

@@ -87,7 +87,7 @@ export const useProgressTracking = () => {
       if (data) {
         const loaded: ProgressData = {
           quiz_scores: (data.quiz_scores as Record<string, boolean>) || {},
-          learning_progress: data.learning_progress || 0,
+          learning_progress: typeof data.learning_progress === 'number' ? data.learning_progress : 0,
           engagement_score: data.engagement_score || 0,
           total_points: data.total_points || 0,
           level_progress: data.level_progress || 0,
