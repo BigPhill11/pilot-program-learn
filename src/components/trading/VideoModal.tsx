@@ -30,7 +30,7 @@ interface TradingVideo {
   instructor_credentials: string | null;
   topic_category: string;
   difficulty_level: string;
-  duration_minutes: number | null;
+  duration: number | null;
   view_count: number;
 }
 
@@ -285,10 +285,10 @@ const VideoModal: React.FC<VideoModalProps> = ({ video, isOpen, onClose }) => {
                   <Award className="h-3 w-3 text-emerald-600" />
                 )}
               </div>
-              {video.duration_minutes && (
+              {video.duration && (
                 <div className="flex items-center gap-1">
                   <Clock className="h-4 w-4" />
-                  <span>{video.duration_minutes} min</span>
+                  <span>{Math.round(video.duration / 60)} min</span>
                 </div>
               )}
               <div className="flex items-center gap-1">
