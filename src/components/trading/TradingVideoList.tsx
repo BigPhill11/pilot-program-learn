@@ -67,7 +67,6 @@ const TradingVideoList: React.FC<TradingVideoListProps> = ({
       let query = supabase
         .from('trading_videos')
         .select('*')
-        .eq('status', 'approved')
         .order('created_at', { ascending: false });
 
       if (selectedCategory !== 'all') {
@@ -238,7 +237,7 @@ const TradingVideoList: React.FC<TradingVideoListProps> = ({
                 <div className={`flex items-center justify-between ${isMobile ? 'text-xs' : 'text-sm'} text-muted-foreground mb-4`}>
                   <div className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
-                    <span>{video.duration_minutes ? `${video.duration_minutes} min` : 'N/A'}</span>
+                    <span>{video.duration ? `${Math.round(video.duration / 60)} min` : 'N/A'}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Eye className="h-3 w-3" />

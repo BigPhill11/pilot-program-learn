@@ -390,48 +390,87 @@ export type Database = {
       }
       phils_friends_videos: {
         Row: {
+          category: string | null
+          company: string | null
+          course_category: string | null
           created_at: string | null
           created_by: string | null
           description: string | null
+          duration_sec: number | null
           duration_seconds: number | null
           id: string
+          level: string | null
+          name: string | null
           processing_status: string | null
           published: boolean | null
+          role_tier: string | null
+          soft_skills_section: string | null
           source_type: string | null
+          speaker_name: string | null
+          storage_path: string | null
+          tags: string | null
           thumbnail_url: string | null
           title: string
           updated_at: string | null
           video_file_path: string | null
+          video_type: string | null
+          video_url: string | null
           youtube_url: string | null
         }
         Insert: {
+          category?: string | null
+          company?: string | null
+          course_category?: string | null
           created_at?: string | null
           created_by?: string | null
           description?: string | null
+          duration_sec?: number | null
           duration_seconds?: number | null
           id?: string
+          level?: string | null
+          name?: string | null
           processing_status?: string | null
           published?: boolean | null
+          role_tier?: string | null
+          soft_skills_section?: string | null
           source_type?: string | null
+          speaker_name?: string | null
+          storage_path?: string | null
+          tags?: string | null
           thumbnail_url?: string | null
           title: string
           updated_at?: string | null
           video_file_path?: string | null
+          video_type?: string | null
+          video_url?: string | null
           youtube_url?: string | null
         }
         Update: {
+          category?: string | null
+          company?: string | null
+          course_category?: string | null
           created_at?: string | null
           created_by?: string | null
           description?: string | null
+          duration_sec?: number | null
           duration_seconds?: number | null
           id?: string
+          level?: string | null
+          name?: string | null
           processing_status?: string | null
           published?: boolean | null
+          role_tier?: string | null
+          soft_skills_section?: string | null
           source_type?: string | null
+          speaker_name?: string | null
+          storage_path?: string | null
+          tags?: string | null
           thumbnail_url?: string | null
           title?: string
           updated_at?: string | null
           video_file_path?: string | null
+          video_type?: string | null
+          video_url?: string | null
           youtube_url?: string | null
         }
         Relationships: []
