@@ -98,7 +98,7 @@ serve(async (req) => {
         assetType,
         currency: item.currency || 'USD'
       };
-    }).filter(item => item.symbol && item.name); // Filter out items without symbol or name
+    }).filter((item: { symbol: string; name: string }) => item.symbol && item.name); // Filter out items without symbol or name
 
     return new Response(
       JSON.stringify(transformedData),
