@@ -14,6 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
+      companies: {
+        Row: {
+          analyst_sentiment: string | null
+          created_at: string | null
+          created_by: string | null
+          financials: Json | null
+          headquarters: string | null
+          historical_performance: string | null
+          id: string
+          industry: string
+          kpis: Json | null
+          logo_url: string | null
+          market_cap: string | null
+          market_sentiment: string | null
+          name: string
+          overview: string | null
+          pe_ratio: string | null
+          revenue_ttm: string | null
+          sector: string | null
+          sub_sector: string | null
+          ticker: string
+          updated_at: string | null
+        }
+        Insert: {
+          analyst_sentiment?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          financials?: Json | null
+          headquarters?: string | null
+          historical_performance?: string | null
+          id?: string
+          industry: string
+          kpis?: Json | null
+          logo_url?: string | null
+          market_cap?: string | null
+          market_sentiment?: string | null
+          name: string
+          overview?: string | null
+          pe_ratio?: string | null
+          revenue_ttm?: string | null
+          sector?: string | null
+          sub_sector?: string | null
+          ticker: string
+          updated_at?: string | null
+        }
+        Update: {
+          analyst_sentiment?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          financials?: Json | null
+          headquarters?: string | null
+          historical_performance?: string | null
+          id?: string
+          industry?: string
+          kpis?: Json | null
+          logo_url?: string | null
+          market_cap?: string | null
+          market_sentiment?: string | null
+          name?: string
+          overview?: string | null
+          pe_ratio?: string | null
+          revenue_ttm?: string | null
+          sector?: string | null
+          sub_sector?: string | null
+          ticker?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       initial_assessments: {
         Row: {
           answers: Json | null
@@ -89,6 +158,283 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      market_data_cache: {
+        Row: {
+          asset_type: string
+          change_percent: number | null
+          created_at: string | null
+          id: string
+          last_updated: string | null
+          name: string
+          price: number | null
+        }
+        Insert: {
+          asset_type: string
+          change_percent?: number | null
+          created_at?: string | null
+          id?: string
+          last_updated?: string | null
+          name: string
+          price?: number | null
+        }
+        Update: {
+          asset_type?: string
+          change_percent?: number | null
+          created_at?: string | null
+          id?: string
+          last_updated?: string | null
+          name?: string
+          price?: number | null
+        }
+        Relationships: []
+      }
+      market_predictions: {
+        Row: {
+          created_at: string | null
+          id: string
+          points_earned: number | null
+          predicted_price: number | null
+          reasoning: string | null
+          sentiment: string
+          updated_at: string | null
+          user_id: string
+          week_ending: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          points_earned?: number | null
+          predicted_price?: number | null
+          reasoning?: string | null
+          sentiment: string
+          updated_at?: string | null
+          user_id: string
+          week_ending: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          points_earned?: number | null
+          predicted_price?: number | null
+          reasoning?: string | null
+          sentiment?: string
+          updated_at?: string | null
+          user_id?: string
+          week_ending?: string
+        }
+        Relationships: []
+      }
+      module_progress: {
+        Row: {
+          completed_at: string | null
+          course_id: string | null
+          created_at: string | null
+          detailed_progress: Json | null
+          id: string
+          improvement_percentage: number | null
+          last_accessed: string | null
+          module_id: string
+          module_type: string
+          post_test_score: number | null
+          pre_test_score: number | null
+          progress_percentage: number | null
+          time_spent_minutes: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          course_id?: string | null
+          created_at?: string | null
+          detailed_progress?: Json | null
+          id?: string
+          improvement_percentage?: number | null
+          last_accessed?: string | null
+          module_id: string
+          module_type: string
+          post_test_score?: number | null
+          pre_test_score?: number | null
+          progress_percentage?: number | null
+          time_spent_minutes?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          course_id?: string | null
+          created_at?: string | null
+          detailed_progress?: Json | null
+          id?: string
+          improvement_percentage?: number | null
+          last_accessed?: string | null
+          module_id?: string
+          module_type?: string
+          post_test_score?: number | null
+          pre_test_score?: number | null
+          progress_percentage?: number | null
+          time_spent_minutes?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      paper_portfolios: {
+        Row: {
+          cash: number | null
+          created_at: string | null
+          id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          cash?: number | null
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          cash?: number | null
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      paper_positions: {
+        Row: {
+          asset_type: string
+          avg_price: number
+          created_at: string | null
+          id: string
+          portfolio_id: string
+          shares: number
+          symbol: string
+          updated_at: string | null
+        }
+        Insert: {
+          asset_type: string
+          avg_price: number
+          created_at?: string | null
+          id?: string
+          portfolio_id: string
+          shares: number
+          symbol: string
+          updated_at?: string | null
+        }
+        Update: {
+          asset_type?: string
+          avg_price?: number
+          created_at?: string | null
+          id?: string
+          portfolio_id?: string
+          shares?: number
+          symbol?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "paper_positions_portfolio_id_fkey"
+            columns: ["portfolio_id"]
+            isOneToOne: false
+            referencedRelation: "paper_portfolios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      paper_transactions: {
+        Row: {
+          asset_type: string
+          created_at: string | null
+          id: string
+          portfolio_id: string
+          price: number
+          shares: number
+          symbol: string
+          total_amount: number
+          transaction_type: string
+        }
+        Insert: {
+          asset_type: string
+          created_at?: string | null
+          id?: string
+          portfolio_id: string
+          price: number
+          shares: number
+          symbol: string
+          total_amount: number
+          transaction_type: string
+        }
+        Update: {
+          asset_type?: string
+          created_at?: string | null
+          id?: string
+          portfolio_id?: string
+          price?: number
+          shares?: number
+          symbol?: string
+          total_amount?: number
+          transaction_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "paper_transactions_portfolio_id_fkey"
+            columns: ["portfolio_id"]
+            isOneToOne: false
+            referencedRelation: "paper_portfolios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      phils_friends_videos: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          duration_seconds: number | null
+          id: string
+          processing_status: string | null
+          published: boolean | null
+          source_type: string | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string | null
+          video_file_path: string | null
+          youtube_url: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          duration_seconds?: number | null
+          id?: string
+          processing_status?: string | null
+          published?: boolean | null
+          source_type?: string | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string | null
+          video_file_path?: string | null
+          youtube_url?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          duration_seconds?: number | null
+          id?: string
+          processing_status?: string | null
+          published?: boolean | null
+          source_type?: string | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string | null
+          video_file_path?: string | null
+          youtube_url?: string | null
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -189,6 +535,167 @@ export type Database = {
         }
         Relationships: []
       }
+      soft_skills_courses: {
+        Row: {
+          category: string
+          content: Json | null
+          created_at: string | null
+          description: string | null
+          difficulty_level: string | null
+          duration_minutes: number | null
+          id: string
+          thumbnail_url: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          content?: Json | null
+          created_at?: string | null
+          description?: string | null
+          difficulty_level?: string | null
+          duration_minutes?: number | null
+          id?: string
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          content?: Json | null
+          created_at?: string | null
+          description?: string | null
+          difficulty_level?: string | null
+          duration_minutes?: number | null
+          id?: string
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      trading_portfolios: {
+        Row: {
+          cash: number | null
+          created_at: string | null
+          id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          cash?: number | null
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          cash?: number | null
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      trading_positions: {
+        Row: {
+          asset_type: string
+          avg_price: number
+          created_at: string | null
+          id: string
+          portfolio_id: string
+          shares: number
+          symbol: string
+          updated_at: string | null
+        }
+        Insert: {
+          asset_type: string
+          avg_price: number
+          created_at?: string | null
+          id?: string
+          portfolio_id: string
+          shares: number
+          symbol: string
+          updated_at?: string | null
+        }
+        Update: {
+          asset_type?: string
+          avg_price?: number
+          created_at?: string | null
+          id?: string
+          portfolio_id?: string
+          shares?: number
+          symbol?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trading_positions_portfolio_id_fkey"
+            columns: ["portfolio_id"]
+            isOneToOne: false
+            referencedRelation: "trading_portfolios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trading_videos: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          difficulty_level: string | null
+          duration: number | null
+          id: string
+          instructor_bio: string | null
+          instructor_credentials: string | null
+          instructor_name: string | null
+          thumbnail_url: string | null
+          title: string
+          topic_category: string | null
+          topics: string[] | null
+          updated_at: string | null
+          video_url: string
+          view_count: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          difficulty_level?: string | null
+          duration?: number | null
+          id?: string
+          instructor_bio?: string | null
+          instructor_credentials?: string | null
+          instructor_name?: string | null
+          thumbnail_url?: string | null
+          title: string
+          topic_category?: string | null
+          topics?: string[] | null
+          updated_at?: string | null
+          video_url: string
+          view_count?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          difficulty_level?: string | null
+          duration?: number | null
+          id?: string
+          instructor_bio?: string | null
+          instructor_credentials?: string | null
+          instructor_name?: string | null
+          thumbnail_url?: string | null
+          title?: string
+          topic_category?: string | null
+          topics?: string[] | null
+          updated_at?: string | null
+          video_url?: string
+          view_count?: number | null
+        }
+        Relationships: []
+      }
       user_achievements: {
         Row: {
           achievement_id: string
@@ -265,6 +772,77 @@ export type Database = {
           },
         ]
       }
+      user_company_interactions: {
+        Row: {
+          company_id: string
+          created_at: string | null
+          id: string
+          interaction_type: string
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string | null
+          id?: string
+          interaction_type: string
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string | null
+          id?: string
+          interaction_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_company_interactions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_progress: {
+        Row: {
+          achievements: Json | null
+          created_at: string | null
+          engagement_score: number | null
+          id: string
+          learning_progress: Json | null
+          level_progress: number | null
+          quiz_scores: Json | null
+          total_points: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          achievements?: Json | null
+          created_at?: string | null
+          engagement_score?: number | null
+          id?: string
+          learning_progress?: Json | null
+          level_progress?: number | null
+          quiz_scores?: Json | null
+          total_points?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          achievements?: Json | null
+          created_at?: string | null
+          engagement_score?: number | null
+          id?: string
+          learning_progress?: Json | null
+          level_progress?: number | null
+          quiz_scores?: Json | null
+          total_points?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_sessions: {
         Row: {
           created_at: string | null
@@ -304,6 +882,280 @@ export type Database = {
           session_start?: string
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      video_analytics: {
+        Row: {
+          completion_percentage: number | null
+          created_at: string | null
+          id: string
+          last_watched_position: number | null
+          updated_at: string | null
+          user_id: string | null
+          video_id: string
+          watch_duration_seconds: number | null
+        }
+        Insert: {
+          completion_percentage?: number | null
+          created_at?: string | null
+          id?: string
+          last_watched_position?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+          video_id: string
+          watch_duration_seconds?: number | null
+        }
+        Update: {
+          completion_percentage?: number | null
+          created_at?: string | null
+          id?: string
+          last_watched_position?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+          video_id?: string
+          watch_duration_seconds?: number | null
+        }
+        Relationships: []
+      }
+      video_clips: {
+        Row: {
+          clip_order: number | null
+          created_at: string | null
+          end_sec: number
+          excerpt: string | null
+          id: string
+          published: boolean | null
+          start_sec: number
+          thumbnail_url: string | null
+          title: string
+          updated_at: string | null
+          video_id: string
+        }
+        Insert: {
+          clip_order?: number | null
+          created_at?: string | null
+          end_sec: number
+          excerpt?: string | null
+          id?: string
+          published?: boolean | null
+          start_sec: number
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string | null
+          video_id: string
+        }
+        Update: {
+          clip_order?: number | null
+          created_at?: string | null
+          end_sec?: number
+          excerpt?: string | null
+          id?: string
+          published?: boolean | null
+          start_sec?: number
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string | null
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_clips_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "phils_friends_videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      video_comments: {
+        Row: {
+          content: string
+          created_at: string | null
+          helpful_votes: number | null
+          id: string
+          parent_comment_id: string | null
+          user_id: string
+          video_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          helpful_votes?: number | null
+          id?: string
+          parent_comment_id?: string | null
+          user_id: string
+          video_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          helpful_votes?: number | null
+          id?: string
+          parent_comment_id?: string | null
+          user_id?: string
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_comments_parent_comment_id_fkey"
+            columns: ["parent_comment_id"]
+            isOneToOne: false
+            referencedRelation: "video_comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "video_comments_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "trading_videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      video_points: {
+        Row: {
+          created_at: string | null
+          id: string
+          milestone_type: string | null
+          points_earned: number | null
+          user_id: string
+          video_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          milestone_type?: string | null
+          points_earned?: number | null
+          user_id: string
+          video_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          milestone_type?: string | null
+          points_earned?: number | null
+          user_id?: string
+          video_id?: string
+        }
+        Relationships: []
+      }
+      video_ratings: {
+        Row: {
+          clarity_rating: number | null
+          created_at: string | null
+          difficulty_rating: number | null
+          entertainment_rating: number | null
+          id: string
+          usefulness_rating: number | null
+          user_id: string
+          video_id: string
+        }
+        Insert: {
+          clarity_rating?: number | null
+          created_at?: string | null
+          difficulty_rating?: number | null
+          entertainment_rating?: number | null
+          id?: string
+          usefulness_rating?: number | null
+          user_id: string
+          video_id: string
+        }
+        Update: {
+          clarity_rating?: number | null
+          created_at?: string | null
+          difficulty_rating?: number | null
+          entertainment_rating?: number | null
+          id?: string
+          usefulness_rating?: number | null
+          user_id?: string
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_ratings_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "trading_videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      video_segments: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          end_time: number
+          id: string
+          keywords: string[] | null
+          segment_type: string | null
+          start_time: number
+          title: string
+          video_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          end_time: number
+          id?: string
+          keywords?: string[] | null
+          segment_type?: string | null
+          start_time: number
+          title: string
+          video_id: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          end_time?: number
+          id?: string
+          keywords?: string[] | null
+          segment_type?: string | null
+          start_time?: number
+          title?: string
+          video_id?: string
+        }
+        Relationships: []
+      }
+      video_transcripts: {
+        Row: {
+          confidence_score: number | null
+          created_at: string | null
+          id: string
+          language_code: string | null
+          processing_status: string | null
+          raw_content: string
+          searchable_content: string | null
+          transcript_type: string | null
+          updated_at: string | null
+          video_id: string
+          word_timestamps: Json | null
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string | null
+          id?: string
+          language_code?: string | null
+          processing_status?: string | null
+          raw_content: string
+          searchable_content?: string | null
+          transcript_type?: string | null
+          updated_at?: string | null
+          video_id: string
+          word_timestamps?: Json | null
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string | null
+          id?: string
+          language_code?: string | null
+          processing_status?: string | null
+          raw_content?: string
+          searchable_content?: string | null
+          transcript_type?: string | null
+          updated_at?: string | null
+          video_id?: string
+          word_timestamps?: Json | null
         }
         Relationships: []
       }

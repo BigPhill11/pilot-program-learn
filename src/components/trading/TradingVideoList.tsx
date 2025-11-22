@@ -27,7 +27,7 @@ interface TradingVideo {
   instructor_credentials: string | null;
   topic_category: string;
   difficulty_level: string;
-  duration_minutes: number | null;
+  duration: number | null;
   view_count: number;
   created_at: string;
 }
@@ -96,7 +96,10 @@ const TradingVideoList: React.FC<TradingVideoListProps> = ({
             .rpc('get_video_average_ratings', { video_id_param: video.id });
           
           if (ratingData && ratingData.length > 0) {
-            ratingsData[video.id] = ratingData[0];
+            ratingsData[video.id] = {
+              ...ratingData[0],
+              avg_overall: (ratingData[0].avg_clarity + ratingData[0].avg_usefulness + ratingData[0].avg_entertainment + ratingData[0].avg_difficulty) / 4
+            };
           }
         }
         setRatings(ratingsData);

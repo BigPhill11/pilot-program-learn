@@ -166,9 +166,9 @@ const SkillsAssessmentQuiz: React.FC<SkillsAssessmentQuizProps> = ({ onComplete 
         .from('initial_assessments')
         .insert({
           user_id: user.id,
-          responses: finalAnswers,
-          calculated_score: Math.round(percentage),
-          assigned_version: assignedLevel
+          answers: finalAnswers,
+          score: Math.round(percentage),
+          assessment_type: 'skills_assessment'
         });
 
       if (assessmentError) throw assessmentError;
