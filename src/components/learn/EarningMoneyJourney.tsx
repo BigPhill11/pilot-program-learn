@@ -1,8 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, Trophy } from 'lucide-react';
+import { ArrowLeft, Trophy, ClipboardCheck, Lock } from 'lucide-react';
+import { ModulePreTest } from '@/components/assessment/ModulePreTest';
+import { ModulePostTest } from '@/components/assessment/ModulePostTest';
+import { useUnifiedProgress } from '@/hooks/useUnifiedProgress';
 import { earningMoneyJourneyData } from '@/data/earning-money-journey-data';
 import EarningMoneyLevel from './EarningMoneyLevel';
 import EarningMoneyMiniGame from './EarningMoneyMiniGame';
@@ -12,6 +17,14 @@ interface EarningMoneyJourneyProps {
 }
 
 const EarningMoneyJourney: React.FC<EarningMoneyJourneyProps> = ({ onBack }) => {
+  const unifiedProgress = useUnifiedProgress({
+    moduleId: 'earning-money-journey',
+    moduleType: 'personal_finance'
+  });
+  const [showPreTest, setShowPreTest] = useState(false);
+  const [showPostTest, setShowPostTest] = useState(false);
+  const testSummary = unifiedProgress.getTestSummary();
+  
   const [currentLevel, setCurrentLevel] = useState(1);
   const [completedLevels, setCompletedLevels] = useState<number[]>([]);
   const [showMiniGame, setShowMiniGame] = useState(false);
@@ -19,16 +32,21 @@ const EarningMoneyJourney: React.FC<EarningMoneyJourneyProps> = ({ onBack }) => 
 
   const totalLevels = 5;
 
-  // Load progress from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem('earningMoneyJourneyProgress');
-    if (saved) {
-      const progress = JSON.parse(saved);
-      setCompletedLevels(progress.completedLevels || []);
+    const savedProgress = localStorage.getItem('earningMoneyJourneyProgress');
+    if (savedProgress) {
+      const progress = JSON.parse(savedProgress);
       setCurrentLevel(progress.currentLevel || 1);
+      setCompletedLevels(progress.completedLevels || []);
       setJourneyCompleted(progress.journeyCompleted || false);
     }
   }, []);
+
+  useEffect(() => {
+    if (!testSummary.hasPreTest && !showPreTest) {
+      setShowPreTest(true);
+    }
+  }, [testSummary.hasPreTest, showPreTest]);
 
   // Save progress to localStorage
   useEffect(() => {
@@ -59,8 +77,21 @@ const EarningMoneyJourney: React.FC<EarningMoneyJourneyProps> = ({ onBack }) => 
   };
 
   const getLevelData = (level: number) => {
-    const levelKey = `level${level}` as keyof typeof earningMoneyJourneyData;
-    return earningMoneyJourneyData[levelKey];
+    return earningMoneyJourneyData.find(l => l.id === level);
+  };
+
+  const isPostTestUnlocked = () => {
+    return completedLevels.length === earningMoneyJourneyData.length;
+  };
+
+  const handlePreTestComplete = async (results: { score: number; answers: number[]; weakAreas: string[]; strongAreas: string[] }) => {
+    await unifiedProgress.savePreTestResults(results.score, results.answers, results.weakAreas, results.strongAreas);
+    setShowPreTest(false);
+  };
+
+  const handlePostTestComplete = async (results: { score: number; answers: number[]; weakAreas: string[]; strongAreas: string[]; improvement: number }) => {
+    await unifiedProgress.savePostTestResults(results.score, results.answers, results.weakAreas, results.strongAreas);
+    setShowPostTest(false);
   };
 
   const progress = (completedLevels.length / totalLevels) * 100;

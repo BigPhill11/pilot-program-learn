@@ -2,8 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Trophy, Star } from 'lucide-react';
+import { ArrowLeft, Trophy, Star, ClipboardCheck, Lock } from 'lucide-react';
+import { ModulePreTest } from '@/components/assessment/ModulePreTest';
+import { ModulePostTest } from '@/components/assessment/ModulePostTest';
+import { useUnifiedProgress } from '@/hooks/useUnifiedProgress';
 import { futurePlanningJourneyData } from '@/data/future-planning-journey-data';
 import FuturePlanningLevelComponent from './FuturePlanningLevel';
 import FuturePlanningMiniGame from './FuturePlanningMiniGame';
@@ -16,11 +20,19 @@ interface FuturePlanningJourneyProps {
 }
 
 const FuturePlanningJourney: React.FC<FuturePlanningJourneyProps> = ({ onBack }) => {
+  const { updateQuizScore, updateLearningProgress } = useProgressTracking();
+  const unifiedProgress = useUnifiedProgress({
+    moduleId: 'future-planning-journey',
+    moduleType: 'personal_finance'
+  });
+  const [showPreTest, setShowPreTest] = useState(false);
+  const [showPostTest, setShowPostTest] = useState(false);
+  const testSummary = unifiedProgress.getTestSummary();
+  
   const [completedLevels, setCompletedLevels] = useState<Set<number>>(new Set());
   const [journeyCompleted, setJourneyCompleted] = useState(false);
   const [showMiniGame, setShowMiniGame] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
-  const { updateQuizScore, updateLearningProgress } = useProgressTracking();
 
   useEffect(() => {
     const saved = localStorage.getItem('futurePlanningJourneyProgress');
@@ -30,6 +42,12 @@ const FuturePlanningJourney: React.FC<FuturePlanningJourneyProps> = ({ onBack })
       setJourneyCompleted(progress.journeyCompleted || false);
     }
   }, []);
+
+  useEffect(() => {
+    if (!testSummary.hasPreTest && !showPreTest) {
+      setShowPreTest(true);
+    }
+  }, [testSummary.hasPreTest, showPreTest]);
 
   const saveProgress = (newCompletedLevels: Set<number>, completed: boolean) => {
     const progress = {
@@ -70,6 +88,20 @@ const FuturePlanningJourney: React.FC<FuturePlanningJourneyProps> = ({ onBack })
 
   const handleBackToJourney = () => {
     setSelectedLevel(null);
+  };
+
+  const isPostTestUnlocked = () => {
+    return completedLevels.size === futurePlanningJourneyData.length;
+  };
+
+  const handlePreTestComplete = async (results: { score: number; answers: number[]; weakAreas: string[]; strongAreas: string[] }) => {
+    await unifiedProgress.savePreTestResults(results.score, results.answers, results.weakAreas, results.strongAreas);
+    setShowPreTest(false);
+  };
+
+  const handlePostTestComplete = async (results: { score: number; answers: number[]; weakAreas: string[]; strongAreas: string[]; improvement: number }) => {
+    await unifiedProgress.savePostTestResults(results.score, results.answers, results.weakAreas, results.strongAreas);
+    setShowPostTest(false);
   };
 
   // Show individual level view
@@ -115,6 +147,31 @@ const FuturePlanningJourney: React.FC<FuturePlanningJourneyProps> = ({ onBack })
 
   return (
     <div className="space-y-6">
+      <Dialog open={showPreTest} onOpenChange={setShowPreTest}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <ModulePreTest
+            moduleId="future-planning-journey"
+            moduleName="Future Planning Journey"
+            onComplete={handlePreTestComplete}
+            onSkip={() => setShowPreTest(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showPostTest} onOpenChange={setShowPostTest}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <ModulePostTest
+            moduleId="future-planning-journey"
+            moduleName="Future Planning Journey"
+            preTestScore={testSummary.preTestScore}
+            isUnlocked={isPostTestUnlocked()}
+            completedLessons={completedLevels.size}
+            totalLessons={futurePlanningJourneyData.length}
+            onComplete={handlePostTestComplete}
+          />
+        </DialogContent>
+      </Dialog>
+
       <div className="flex items-center gap-4">
         <Button variant="ghost" onClick={onBack}>
           <ArrowLeft className="h-4 w-4 mr-2" />
@@ -126,6 +183,67 @@ const FuturePlanningJourney: React.FC<FuturePlanningJourneyProps> = ({ onBack })
         completedLevels={completedLevels.size}
         totalLevels={futurePlanningJourneyData.length}
       />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <Card className={testSummary.hasPreTest ? 'border-green-500' : 'border-blue-500'}>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <ClipboardCheck className="h-5 w-5" />
+              Pre-Test
+              {testSummary.hasPreTest && <span className="text-sm text-green-600">✓ Completed</span>}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {testSummary.hasPreTest ? (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Score: {testSummary.preTestScore}%</p>
+                <Button variant="outline" size="sm" onClick={() => setShowPreTest(true)}>
+                  Retake Pre-Test
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Test your current knowledge</p>
+                <Button onClick={() => setShowPreTest(true)} size="sm">
+                  Start Pre-Test
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className={!isPostTestUnlocked() ? 'border-muted opacity-60' : testSummary.hasPostTest ? 'border-green-500' : 'border-purple-500'}>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              {!isPostTestUnlocked() && <Lock className="h-5 w-5" />}
+              <ClipboardCheck className="h-5 w-5" />
+              Post-Test
+              {testSummary.hasPostTest && <span className="text-sm text-green-600">✓ Completed</span>}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {!isPostTestUnlocked() ? (
+              <p className="text-sm text-muted-foreground">Complete all lessons to unlock</p>
+            ) : testSummary.hasPostTest ? (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">
+                  Score: {testSummary.postTestScore}% ({testSummary.improvement && testSummary.improvement > 0 ? '+' : ''}{testSummary.improvement}%)
+                </p>
+                <Button variant="outline" size="sm" onClick={() => setShowPostTest(true)}>
+                  Retake Post-Test
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Test what you've learned</p>
+                <Button onClick={() => setShowPostTest(true)} size="sm">
+                  Start Post-Test
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
       {journeyCompleted && (
         <Card className="border border-indigo-200 bg-indigo-50/50">
