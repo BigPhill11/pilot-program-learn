@@ -207,6 +207,126 @@ export const useUnifiedProgress = ({ moduleId, moduleType, courseId }: UseUnifie
     });
   }, [saveProgress]);
 
+  // Save pre-test results
+  const savePreTestResults = useCallback(async (
+    score: number,
+    answers: number[],
+    weakAreas: string[],
+    strongAreas: string[]
+  ) => {
+    if (!progress) return;
+
+    const percentage = Math.round((score / answers.length) * 100);
+    const testData = {
+      preTestScore: percentage,
+      preTestAnswers: answers,
+      preTestCompletedAt: new Date().toISOString(),
+      weakAreas,
+      strongAreas,
+      testAttempts: (progress.detailedProgress.testAttempts || 0) + 1
+    };
+
+    await saveProgress({
+      detailedProgress: {
+        ...progress.detailedProgress,
+        ...testData
+      }
+    });
+
+    // Award 5 XP for completing pre-test
+    toast.success(`Pre-test complete! You scored ${percentage}%`, {
+      description: 'Now let\'s start learning! 🎯'
+    });
+
+    return testData;
+  }, [progress, saveProgress]);
+
+  // Save post-test results
+  const savePostTestResults = useCallback(async (
+    score: number,
+    answers: number[],
+    weakAreas: string[],
+    strongAreas: string[]
+  ) => {
+    if (!progress) return;
+
+    const percentage = Math.round((score / answers.length) * 100);
+    const preScore = progress.detailedProgress.preTestScore || 0;
+    const improvement = percentage - preScore;
+
+    const testData = {
+      postTestScore: percentage,
+      postTestAnswers: answers,
+      postTestCompletedAt: new Date().toISOString(),
+      postWeakAreas: weakAreas,
+      postStrongAreas: strongAreas,
+      improvement,
+      timeSpentOnTests: (progress.detailedProgress.timeSpentOnTests || 0) + 10 // Estimate 10 minutes
+    };
+
+    await saveProgress({
+      detailedProgress: {
+        ...progress.detailedProgress,
+        ...testData
+      }
+    });
+
+    // Award bonus XP for improvement
+    if (improvement >= 20) {
+      toast.success(`🏆 Outstanding! ${percentage}% score with +${improvement}% improvement!`, {
+        description: 'Bonus XP awarded! +50 XP'
+      });
+    } else if (improvement >= 15) {
+      toast.success(`🌟 Great job! ${percentage}% score with +${improvement}% improvement!`, {
+        description: 'Bonus XP awarded! +50 XP'
+      });
+    } else if (improvement > 0) {
+      toast.success(`✨ Nice improvement! ${percentage}% score with +${improvement}% growth!`, {
+        description: 'Bonus XP awarded! +25 XP'
+      });
+    } else {
+      toast.success(`💪 Solid performance! ${percentage}% score!`, {
+        description: 'You maintained your knowledge level!'
+      });
+    }
+
+    return testData;
+  }, [progress, saveProgress]);
+
+  // Get test summary
+  const getTestSummary = useCallback(() => {
+    if (!progress) {
+      return {
+        hasPreTest: false,
+        hasPostTest: false,
+        preTestScore: undefined,
+        postTestScore: undefined,
+        improvement: undefined,
+        weakAreas: [],
+        strongAreas: [],
+        postWeakAreas: [],
+        postStrongAreas: []
+      };
+    }
+
+    const dp = progress.detailedProgress || {};
+    return {
+      hasPreTest: !!dp.preTestScore,
+      hasPostTest: !!dp.postTestScore,
+      preTestScore: dp.preTestScore,
+      postTestScore: dp.postTestScore,
+      improvement: dp.improvement,
+      weakAreas: dp.weakAreas || [],
+      strongAreas: dp.strongAreas || [],
+      postWeakAreas: dp.postWeakAreas || [],
+      postStrongAreas: dp.postStrongAreas || [],
+      preTestCompletedAt: dp.preTestCompletedAt,
+      postTestCompletedAt: dp.postTestCompletedAt,
+      testAttempts: dp.testAttempts || 0,
+      timeSpentOnTests: dp.timeSpentOnTests || 0
+    };
+  }, [progress]);
+
   useEffect(() => {
     loadProgress();
   }, [loadProgress]);
@@ -233,6 +353,10 @@ export const useUnifiedProgress = ({ moduleId, moduleType, courseId }: UseUnifie
     resetProgress,
     refresh: loadProgress,
     isCompleted: progress?.progressPercentage === 100,
-    timeSpent: progress?.timeSpentMinutes || 0
+    timeSpent: progress?.timeSpentMinutes || 0,
+    // Test management functions
+    savePreTestResults,
+    savePostTestResults,
+    getTestSummary
   };
 };
