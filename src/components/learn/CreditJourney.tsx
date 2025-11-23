@@ -2,7 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Trophy, Play } from 'lucide-react';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { ArrowLeft, Trophy, Play, ClipboardCheck, Lock } from 'lucide-react';
+import { ModulePreTest } from '@/components/assessment/ModulePreTest';
+import { ModulePostTest } from '@/components/assessment/ModulePostTest';
+import { useUnifiedProgress } from '@/hooks/useUnifiedProgress';
 import { creditJourneyData } from '@/data/credit-journey-data';
 import CreditLevel from './CreditLevel';
 import CreditMiniGame from './CreditMiniGame';
@@ -24,6 +28,14 @@ interface JourneyProgress {
 
 const CreditJourney: React.FC<CreditJourneyProps> = ({ onBack }) => {
   const { updateQuizScore, updateLearningProgress } = useProgressTracking();
+  const unifiedProgress = useUnifiedProgress({
+    moduleId: 'credit-journey',
+    moduleType: 'personal_finance'
+  });
+  const [showPreTest, setShowPreTest] = useState(false);
+  const [showPostTest, setShowPostTest] = useState(false);
+  const testSummary = unifiedProgress.getTestSummary();
+  
   const [progress, setProgress] = useState<JourneyProgress>({
     completedLevels: [],
     currentLevel: 1,
@@ -39,6 +51,13 @@ const CreditJourney: React.FC<CreditJourneyProps> = ({ onBack }) => {
       setProgress(JSON.parse(saved));
     }
   }, []);
+
+  // Show pre-test on first visit
+  useEffect(() => {
+    if (!testSummary.hasPreTest && !showPreTest) {
+      setShowPreTest(true);
+    }
+  }, [testSummary.hasPreTest, showPreTest]);
 
   const saveProgress = (newProgress: JourneyProgress) => {
     setProgress(newProgress);
@@ -149,18 +168,102 @@ const CreditJourney: React.FC<CreditJourneyProps> = ({ onBack }) => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" onClick={onBack}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Personal Finance
-        </Button>
-      </div>
+    <div className="max-w-4xl mx-auto space-y-6">
+      <Dialog open={showPreTest} onOpenChange={setShowPreTest}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <ModulePreTest
+            moduleId="credit-journey"
+            moduleName="Credit Journey"
+            onComplete={handlePreTestComplete}
+            onSkip={() => setShowPreTest(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showPostTest} onOpenChange={setShowPostTest}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <ModulePostTest
+            moduleId="credit-journey"
+            moduleName="Credit Journey"
+            preTestScore={testSummary.preTestScore}
+            isUnlocked={isPostTestUnlocked()}
+            completedLessons={progress.completedLevels.length}
+            totalLessons={creditJourneyData.length}
+            onComplete={handlePostTestComplete}
+          />
+        </DialogContent>
+      </Dialog>
+
+      <Button variant="ghost" onClick={onBack}>
+        <ArrowLeft className="h-4 w-4 mr-2" />
+        Back to Personal Finance
+      </Button>
 
       <CreditJourneyHeader
         completedLevels={progress.completedLevels.length}
         totalLevels={creditJourneyData.length}
       />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <Card className={testSummary.hasPreTest ? 'border-green-500' : 'border-blue-500'}>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <ClipboardCheck className="h-5 w-5" />
+              Pre-Test
+              {testSummary.hasPreTest && <span className="text-sm text-green-600">✓ Completed</span>}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {testSummary.hasPreTest ? (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Score: {testSummary.preTestScore}%</p>
+                <Button variant="outline" size="sm" onClick={() => setShowPreTest(true)}>
+                  Retake Pre-Test
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Test your current knowledge</p>
+                <Button onClick={() => setShowPreTest(true)} size="sm">
+                  Start Pre-Test
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className={!isPostTestUnlocked() ? 'border-muted opacity-60' : testSummary.hasPostTest ? 'border-green-500' : 'border-purple-500'}>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              {!isPostTestUnlocked() && <Lock className="h-5 w-5" />}
+              <ClipboardCheck className="h-5 w-5" />
+              Post-Test
+              {testSummary.hasPostTest && <span className="text-sm text-green-600">✓ Completed</span>}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {!isPostTestUnlocked() ? (
+              <p className="text-sm text-muted-foreground">Complete all lessons to unlock</p>
+            ) : testSummary.hasPostTest ? (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">
+                  Score: {testSummary.postTestScore}% ({testSummary.improvement && testSummary.improvement > 0 ? '+' : ''}{testSummary.improvement}%)
+                </p>
+                <Button variant="outline" size="sm" onClick={() => setShowPostTest(true)}>
+                  Retake Post-Test
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Test what you've learned</p>
+                <Button onClick={() => setShowPostTest(true)} size="sm">
+                  Start Post-Test
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {creditJourneyData.map((level) => (

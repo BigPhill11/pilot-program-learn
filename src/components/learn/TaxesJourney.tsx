@@ -2,9 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, Trophy, Lock, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Trophy, Lock, CheckCircle2, ClipboardCheck } from 'lucide-react';
+import { ModulePreTest } from '@/components/assessment/ModulePreTest';
+import { ModulePostTest } from '@/components/assessment/ModulePostTest';
+import { useUnifiedProgress } from '@/hooks/useUnifiedProgress';
 import TaxesLevel from './TaxesLevel';
 import TaxesMiniGame from './TaxesMiniGame';
 import { taxesJourneyData } from '@/data/taxes-journey-data';
@@ -15,42 +19,51 @@ interface TaxesJourneyProps {
 }
 
 const TaxesJourney: React.FC<TaxesJourneyProps> = ({ onBack }) => {
+  const unifiedProgress = useUnifiedProgress({
+    moduleId: 'taxes-journey',
+    moduleType: 'personal_finance'
+  });
+  const [showPreTest, setShowPreTest] = useState(false);
+  const [showPostTest, setShowPostTest] = useState(false);
+  const testSummary = unifiedProgress.getTestSummary();
+  
   const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
-  const [completedLevels, setCompletedLevels] = useState<Set<number>>(new Set());
+  const [completedLevels, setCompletedLevels] = useState<number[]>([]);
   const [showMiniGame, setShowMiniGame] = useState(false);
   const [journeyCompleted, setJourneyCompleted] = useState(false);
   const { updateQuizScore } = useProgressTracking();
 
-  // Load progress from localStorage
   useEffect(() => {
     const saved = localStorage.getItem('taxesJourneyProgress');
     if (saved) {
       const progress = JSON.parse(saved);
-      setCompletedLevels(new Set(progress.completedLevels || []));
+      setCompletedLevels(progress.completedLevels || []);
       setJourneyCompleted(progress.journeyCompleted || false);
     }
   }, []);
 
-  // Save progress to localStorage
-  const saveProgress = (levels: Set<number>, completed: boolean = false) => {
+  useEffect(() => {
+    if (!testSummary.hasPreTest && !showPreTest) {
+      setShowPreTest(true);
+    }
+  }, [testSummary.hasPreTest, showPreTest]);
+
+  const saveProgress = (levels: number[], completed: boolean = false) => {
     const progress = {
-      completedLevels: Array.from(levels),
+      completedLevels: levels,
       journeyCompleted: completed
     };
     localStorage.setItem('taxesJourneyProgress', JSON.stringify(progress));
   };
 
   const handleLevelComplete = (levelId: number) => {
-    const newCompleted = new Set(completedLevels);
-    newCompleted.add(levelId);
+    const newCompleted = [...completedLevels, levelId];
     setCompletedLevels(newCompleted);
     saveProgress(newCompleted);
     
-    // Award points for level completion
     updateQuizScore(`tax-level-${levelId}-completion`, true);
     
-    // Check if all levels are completed
-    if (newCompleted.size === taxesJourneyData.length) {
+    if (newCompleted.length === taxesJourneyData.length) {
       setShowMiniGame(true);
     } else {
       setSelectedLevel(null);
@@ -63,16 +76,29 @@ const TaxesJourney: React.FC<TaxesJourneyProps> = ({ onBack }) => {
     setShowMiniGame(false);
     setSelectedLevel(null);
     
-    // Award bonus points for completing the entire journey
     updateQuizScore('taxes-journey-completion', true);
   };
 
-  const isLevelUnlocked = (levelId: number) => {
+  const isLevelUnlocked = (levelId: number): boolean => {
     if (levelId === 1) return true;
-    return completedLevels.has(levelId - 1);
+    return completedLevels.includes(levelId - 1);
   };
 
-  const overallProgress = (completedLevels.size / taxesJourneyData.length) * 100;
+  const isPostTestUnlocked = () => {
+    return completedLevels.length === taxesJourneyData.length;
+  };
+
+  const handlePreTestComplete = async (results: { score: number; answers: number[]; weakAreas: string[]; strongAreas: string[] }) => {
+    await unifiedProgress.savePreTestResults(results.score, results.answers, results.weakAreas, results.strongAreas);
+    setShowPreTest(false);
+  };
+
+  const handlePostTestComplete = async (results: { score: number; answers: number[]; weakAreas: string[]; strongAreas: string[]; improvement: number }) => {
+    await unifiedProgress.savePostTestResults(results.score, results.answers, results.weakAreas, results.strongAreas);
+    setShowPostTest(false);
+  };
+
+  const overallProgress = (completedLevels.length / taxesJourneyData.length) * 100;
 
   // Show mini-game
   if (showMiniGame) {
@@ -109,15 +135,40 @@ const TaxesJourney: React.FC<TaxesJourneyProps> = ({ onBack }) => {
           level={level}
           onComplete={handleLevelComplete}
           isUnlocked={isLevelUnlocked(selectedLevel)}
-          isCompleted={completedLevels.has(selectedLevel)}
+          isCompleted={completedLevels.includes(selectedLevel)}
         />
       </div>
     );
   }
 
-  // Show journey overview
+  // Main journey overview
   return (
-    <div className="space-y-6">
+    <div className="max-w-6xl mx-auto space-y-6">
+      <Dialog open={showPreTest} onOpenChange={setShowPreTest}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <ModulePreTest
+            moduleId="taxes-journey"
+            moduleName="Taxes Journey"
+            onComplete={handlePreTestComplete}
+            onSkip={() => setShowPreTest(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showPostTest} onOpenChange={setShowPostTest}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <ModulePostTest
+            moduleId="taxes-journey"
+            moduleName="Taxes Journey"
+            preTestScore={testSummary.preTestScore}
+            isUnlocked={isPostTestUnlocked()}
+            completedLessons={completedLevels.length}
+            totalLessons={taxesJourneyData.length}
+            onComplete={handlePostTestComplete}
+          />
+        </DialogContent>
+      </Dialog>
+
       <div className="flex items-center justify-between">
         <Button variant="ghost" onClick={onBack}>
           <ArrowLeft className="h-4 w-4 mr-2" />
@@ -142,11 +193,11 @@ const TaxesJourney: React.FC<TaxesJourneyProps> = ({ onBack }) => {
           <div className="space-y-4">
             <div className="flex justify-between text-sm">
               <span>Overall Progress</span>
-              <span>{completedLevels.size}/{taxesJourneyData.length} levels completed</span>
+              <span>{completedLevels.length}/{taxesJourneyData.length} levels completed</span>
             </div>
             <Progress value={overallProgress} className="h-3" />
             
-            {completedLevels.size === taxesJourneyData.length && !journeyCompleted && (
+            {completedLevels.length === taxesJourneyData.length && !journeyCompleted && (
               <div className="text-center p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <Trophy className="h-8 w-8 text-yellow-600 mx-auto mb-2" />
                 <p className="font-semibold text-yellow-800">Ready for the Final Challenge!</p>
@@ -162,10 +213,71 @@ const TaxesJourney: React.FC<TaxesJourneyProps> = ({ onBack }) => {
         </CardContent>
       </Card>
 
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <Card className={testSummary.hasPreTest ? 'border-green-500' : 'border-blue-500'}>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <ClipboardCheck className="h-5 w-5" />
+              Pre-Test
+              {testSummary.hasPreTest && <span className="text-sm text-green-600">✓ Completed</span>}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {testSummary.hasPreTest ? (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Score: {testSummary.preTestScore}%</p>
+                <Button variant="outline" size="sm" onClick={() => setShowPreTest(true)}>
+                  Retake Pre-Test
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Test your current knowledge</p>
+                <Button onClick={() => setShowPreTest(true)} size="sm">
+                  Start Pre-Test
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className={!isPostTestUnlocked() ? 'border-muted opacity-60' : testSummary.hasPostTest ? 'border-green-500' : 'border-purple-500'}>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              {!isPostTestUnlocked() && <Lock className="h-5 w-5" />}
+              <ClipboardCheck className="h-5 w-5" />
+              Post-Test
+              {testSummary.hasPostTest && <span className="text-sm text-green-600">✓ Completed</span>}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {!isPostTestUnlocked() ? (
+              <p className="text-sm text-muted-foreground">Complete all lessons to unlock</p>
+            ) : testSummary.hasPostTest ? (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">
+                  Score: {testSummary.postTestScore}% ({testSummary.improvement && testSummary.improvement > 0 ? '+' : ''}{testSummary.improvement}%)
+                </p>
+                <Button variant="outline" size="sm" onClick={() => setShowPostTest(true)}>
+                  Retake Post-Test
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Test what you've learned</p>
+                <Button onClick={() => setShowPostTest(true)} size="sm">
+                  Start Post-Test
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {taxesJourneyData.map((level) => {
           const isUnlocked = isLevelUnlocked(level.id);
-          const isCompleted = completedLevels.has(level.id);
+          const isCompleted = completedLevels.includes(level.id);
           
           return (
             <Card
