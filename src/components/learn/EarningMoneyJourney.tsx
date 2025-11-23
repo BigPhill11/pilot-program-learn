@@ -77,11 +77,12 @@ const EarningMoneyJourney: React.FC<EarningMoneyJourneyProps> = ({ onBack }) => 
   };
 
   const getLevelData = (level: number) => {
-    return earningMoneyJourneyData.find(l => l.id === level);
+    const levelKey = `level${level}` as keyof typeof earningMoneyJourneyData;
+    return earningMoneyJourneyData[levelKey];
   };
 
   const isPostTestUnlocked = () => {
-    return completedLevels.length === earningMoneyJourneyData.length;
+    return completedLevels.length === totalLevels;
   };
 
   const handlePreTestComplete = async (results: { score: number; answers: number[]; weakAreas: string[]; strongAreas: string[] }) => {
@@ -147,8 +148,34 @@ const EarningMoneyJourney: React.FC<EarningMoneyJourneyProps> = ({ onBack }) => 
     );
   }
 
+  // Main journey view
   return (
-    <div className="space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6">
+      <Dialog open={showPreTest} onOpenChange={setShowPreTest}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <ModulePreTest
+            moduleId="earning-money-journey"
+            moduleName="Earning Money Journey"
+            onComplete={handlePreTestComplete}
+            onSkip={() => setShowPreTest(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showPostTest} onOpenChange={setShowPostTest}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <ModulePostTest
+            moduleId="earning-money-journey"
+            moduleName="Earning Money Journey"
+            preTestScore={testSummary.preTestScore}
+            isUnlocked={isPostTestUnlocked()}
+            completedLessons={completedLevels.length}
+            totalLessons={totalLevels}
+            onComplete={handlePostTestComplete}
+          />
+        </DialogContent>
+      </Dialog>
+
       <div className="flex items-center justify-between">
         <Button variant="ghost" onClick={onBack}>
           <ArrowLeft className="h-4 w-4 mr-2" />
@@ -176,6 +203,67 @@ const EarningMoneyJourney: React.FC<EarningMoneyJourneyProps> = ({ onBack }) => 
           </div>
           <Progress value={progress} className="h-3" />
         </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <Card className={testSummary.hasPreTest ? 'border-green-500' : 'border-blue-500'}>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <ClipboardCheck className="h-5 w-5" />
+              Pre-Test
+              {testSummary.hasPreTest && <span className="text-sm text-green-600">✓ Completed</span>}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {testSummary.hasPreTest ? (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Score: {testSummary.preTestScore}%</p>
+                <Button variant="outline" size="sm" onClick={() => setShowPreTest(true)}>
+                  Retake Pre-Test
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Test your current knowledge</p>
+                <Button onClick={() => setShowPreTest(true)} size="sm">
+                  Start Pre-Test
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className={!isPostTestUnlocked() ? 'border-muted opacity-60' : testSummary.hasPostTest ? 'border-green-500' : 'border-purple-500'}>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              {!isPostTestUnlocked() && <Lock className="h-5 w-5" />}
+              <ClipboardCheck className="h-5 w-5" />
+              Post-Test
+              {testSummary.hasPostTest && <span className="text-sm text-green-600">✓ Completed</span>}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {!isPostTestUnlocked() ? (
+              <p className="text-sm text-muted-foreground">Complete all lessons to unlock</p>
+            ) : testSummary.hasPostTest ? (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">
+                  Score: {testSummary.postTestScore}% ({testSummary.improvement && testSummary.improvement > 0 ? '+' : ''}{testSummary.improvement}%)
+                </p>
+                <Button variant="outline" size="sm" onClick={() => setShowPostTest(true)}>
+                  Retake Post-Test
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Test what you've learned</p>
+                <Button onClick={() => setShowPostTest(true)} size="sm">
+                  Start Post-Test
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       <EarningMoneyLevel

@@ -110,6 +110,20 @@ const CreditJourney: React.FC<CreditJourneyProps> = ({ onBack }) => {
     return progress.completedLevels.includes(levelId);
   };
 
+  const isPostTestUnlocked = () => {
+    return progress.completedLevels.length === creditJourneyData.length;
+  };
+
+  const handlePreTestComplete = async (results: { score: number; answers: number[]; weakAreas: string[]; strongAreas: string[] }) => {
+    await unifiedProgress.savePreTestResults(results.score, results.answers, results.weakAreas, results.strongAreas);
+    setShowPreTest(false);
+  };
+
+  const handlePostTestComplete = async (results: { score: number; answers: number[]; weakAreas: string[]; strongAreas: string[]; improvement: number }) => {
+    await unifiedProgress.savePostTestResults(results.score, results.answers, results.weakAreas, results.strongAreas);
+    setShowPostTest(false);
+  };
+
   if (showMiniGame) {
     return (
       <div className="space-y-6">
