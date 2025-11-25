@@ -58,6 +58,12 @@ export interface FlashcardProgress {
   lastConfidence: number;
   totalReviews: number;
   streakContributions: number;
+  // Spaced repetition fields
+  easinessFactor: number; // 1.3 to 2.5
+  interval: number; // Days until next review
+  repetitions: number;
+  nextReviewDate: string;
+  lastReviewDate: string;
 }
 
 export const MASTERY_TIERS = {
