@@ -11,7 +11,9 @@ import {
   Trophy,
   Target,
   Play,
-  Brain
+  Brain,
+  HelpCircle,
+  ChevronLeft
 } from "lucide-react";
 import { StreakTracker } from "./StreakTracker";
 import { SpeedChallenge } from "./SpeedChallenge";
@@ -23,6 +25,7 @@ import { ReviewDashboard } from "./ReviewDashboard";
 import { ReviewScheduleCard } from "./ReviewScheduleCard";
 import { SmartReviewMode } from "./SmartReviewMode";
 import { CategoryBrowser } from "./CategoryBrowser";
+import { FlashcardTutorial } from "./FlashcardTutorial";
 import { useFlashcardGamification } from "@/hooks/useFlashcardGamification";
 import { 
   getAllFlashcards, 
@@ -41,6 +44,8 @@ export const GamifiedFlashcardHub = () => {
   const [dailyChallengeComplete, setDailyChallengeComplete] = useState(false);
   const [selectedCards, setSelectedCards] = useState<CategorizedFlashcard[]>([]);
   const [selectedDeckTitle, setSelectedDeckTitle] = useState<string>("");
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [navigationHistory, setNavigationHistory] = useState<Array<{ mode: typeof mode; title: string }>>([]);
   
   const {
     streakData,
@@ -166,6 +171,7 @@ export const GamifiedFlashcardHub = () => {
   };
 
   const handleCardSelection = (cards: CategorizedFlashcard[], title: string) => {
+    setNavigationHistory([...navigationHistory, { mode: 'browse', title: 'Categories' }]);
     setSelectedCards(cards);
     setSelectedDeckTitle(title);
     setMode('normal');
@@ -178,13 +184,88 @@ export const GamifiedFlashcardHub = () => {
     }
   };
 
+  const handleModeChange = (newMode: typeof mode, title: string) => {
+    setNavigationHistory([...navigationHistory, { mode, title: getModeTitle() }]);
+    setMode(newMode);
+    if (newMode !== 'browse') {
+      loadNextCard();
+    }
+  };
+
+  const handleBack = () => {
+    if (navigationHistory.length > 0) {
+      const previous = navigationHistory[navigationHistory.length - 1];
+      setMode(previous.mode);
+      setNavigationHistory(navigationHistory.slice(0, -1));
+      if (previous.mode === 'browse') {
+        setSelectedCards([]);
+        setSelectedDeckTitle('');
+        setCurrentCard(null);
+      }
+    } else {
+      // Default back to browse
+      setMode('browse');
+      setSelectedCards([]);
+      setSelectedDeckTitle('');
+      setCurrentCard(null);
+    }
+  };
+
+  const getModeTitle = (): string => {
+    if (mode === 'browse') return 'Categories';
+    if (mode === 'normal' && selectedDeckTitle) return selectedDeckTitle;
+    if (mode === 'speed') return 'Speed Challenge';
+    if (mode === 'daily') return 'Daily Challenge';
+    if (mode === 'review') return 'Smart Review';
+    return 'Study';
+  };
+
   if (!currentCard && mode === 'normal') {
     loadNextCard();
     return <div>Loading...</div>;
   }
 
+  if (showTutorial) {
+    return <FlashcardTutorial onClose={() => setShowTutorial(false)} />;
+  }
+
   return (
     <div className="max-w-4xl mx-auto space-y-6 p-6">
+      {/* Navigation & Tutorial Header */}
+      <Card className="p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {mode !== 'browse' && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleBack}
+              >
+                <ChevronLeft className="h-4 w-4 mr-1" />
+                Back
+              </Button>
+            )}
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>Flashcards</span>
+              {mode !== 'browse' && (
+                <>
+                  <span>/</span>
+                  <span className="font-medium text-foreground">{getModeTitle()}</span>
+                </>
+              )}
+            </div>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowTutorial(true)}
+          >
+            <HelpCircle className="h-4 w-4 mr-2" />
+            Tutorial
+          </Button>
+        </div>
+      </Card>
+
       {/* Category Browser Mode */}
       {mode === 'browse' && (
         <CategoryBrowser onSelectCards={handleCardSelection} />
@@ -192,27 +273,12 @@ export const GamifiedFlashcardHub = () => {
 
       {mode !== 'browse' && (
         <>
-          {/* Header with Back Button */}
+          {/* Deck Info for Normal Mode */}
           {selectedDeckTitle && mode === 'normal' && (
             <Card className="p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setMode('browse');
-                      setSelectedCards([]);
-                      setSelectedDeckTitle('');
-                      setCurrentCard(null);
-                    }}
-                  >
-                    ← Back to Categories
-                  </Button>
-                  <div className="h-4 w-px bg-border" />
-                  <span className="font-semibold">{selectedDeckTitle}</span>
-                  <Badge variant="secondary">{selectedCards.length} cards</Badge>
-                </div>
+              <div className="flex items-center gap-3">
+                <span className="font-semibold">{selectedDeckTitle}</span>
+                <Badge variant="secondary">{selectedCards.length} cards</Badge>
               </div>
             </Card>
           )}
@@ -252,10 +318,7 @@ export const GamifiedFlashcardHub = () => {
           <Button
             variant={mode === 'normal' ? 'default' : 'outline'}
             className="h-auto flex-col gap-2 p-4"
-            onClick={() => {
-              setMode('normal');
-              loadNextCard();
-            }}
+            onClick={() => handleModeChange('normal', 'Regular Study')}
           >
             <BookOpen className="h-6 w-6" />
             <span>Regular Study</span>
@@ -264,7 +327,7 @@ export const GamifiedFlashcardHub = () => {
           <Button
             variant={mode === 'speed' ? 'default' : 'outline'}
             className="h-auto flex-col gap-2 p-4"
-            onClick={() => setMode('speed')}
+            onClick={() => handleModeChange('speed', 'Speed Challenge')}
           >
             <Zap className="h-6 w-6" />
             <span>Speed Challenge</span>
@@ -274,7 +337,7 @@ export const GamifiedFlashcardHub = () => {
           <Button
             variant={mode === 'daily' ? 'default' : 'outline'}
             className="h-auto flex-col gap-2 p-4"
-            onClick={() => setMode('daily')}
+            onClick={() => handleModeChange('daily', 'Daily Challenge')}
             disabled={dailyChallengeComplete}
           >
             <Calendar className="h-6 w-6" />
@@ -291,10 +354,7 @@ export const GamifiedFlashcardHub = () => {
           <Button
             variant="outline"
             className="h-auto flex-col gap-2 p-4"
-            onClick={() => {
-              setMode('review');
-              loadNextCard();
-            }}
+            onClick={() => handleModeChange('review', 'Smart Review')}
           >
             <Brain className="h-6 w-6" />
             <span>Smart Review</span>
