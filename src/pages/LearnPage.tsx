@@ -11,6 +11,7 @@ import TermOfTheDay from "@/components/learn/TermOfTheDay";
 import AdminTab from "@/components/admin/AdminTab";
 import LearnTabTutorial from "@/components/onboarding/LearnTabTutorial";
 import LearnTabHelpMenu from "@/components/learn/LearnTabHelpMenu";
+import { GamifiedFlashcardHub } from "@/components/learning/flashcards/GamifiedFlashcardHub";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/hooks/useAuth";
 import { useOnboarding } from "@/hooks/useOnboarding";
@@ -44,9 +45,12 @@ const LearnPage = () => {
         <TermOfTheDay />
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className={`grid w-full ${isAdmin ? (isMobile ? 'grid-cols-3' : 'grid-cols-6') : (isMobile ? 'grid-cols-3' : 'grid-cols-5')} ${isMobile ? 'h-auto' : ''}`}>
+        <TabsList className={`grid w-full ${isAdmin ? (isMobile ? 'grid-cols-3' : 'grid-cols-7') : (isMobile ? 'grid-cols-3' : 'grid-cols-6')} ${isMobile ? 'h-auto' : ''}`}>
           <TabsTrigger value="adaptive" className={isMobile ? 'text-xs py-3' : ''}>
             {isMobile ? 'Adaptive' : 'Adaptive Learning'}
+          </TabsTrigger>
+          <TabsTrigger value="flashcards" className={isMobile ? 'text-xs py-3' : ''}>
+            {isMobile ? 'Cards' : 'Flashcards'}
           </TabsTrigger>
           <TabsTrigger value="personal-finance" className={isMobile ? 'text-xs py-3' : ''}>
             {isMobile ? 'Personal' : 'Personal Finance'}
@@ -69,6 +73,10 @@ const LearnPage = () => {
         
         <TabsContent value="adaptive" className="mt-6">
           <AdaptiveLearning />
+        </TabsContent>
+        
+        <TabsContent value="flashcards" className="mt-6">
+          <GamifiedFlashcardHub />
         </TabsContent>
         
         <TabsContent value="personal-finance" className="mt-6">

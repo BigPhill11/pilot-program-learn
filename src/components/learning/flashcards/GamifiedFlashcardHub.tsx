@@ -22,6 +22,7 @@ import { ConfidenceSlider } from "./ConfidenceSlider";
 import { ReviewDashboard } from "./ReviewDashboard";
 import { ReviewScheduleCard } from "./ReviewScheduleCard";
 import { SmartReviewMode } from "./SmartReviewMode";
+import { CategoryBrowser } from "./CategoryBrowser";
 import { useFlashcardGamification } from "@/hooks/useFlashcardGamification";
 import { 
   getAllFlashcards, 
@@ -32,12 +33,14 @@ import { useToast } from "@/hooks/use-toast";
 
 export const GamifiedFlashcardHub = () => {
   const { toast } = useToast();
-  const [mode, setMode] = useState<'normal' | 'speed' | 'daily' | 'review'>('normal');
+  const [mode, setMode] = useState<'normal' | 'speed' | 'daily' | 'review' | 'browse'>('browse');
   const [currentCard, setCurrentCard] = useState<CategorizedFlashcard | null>(null);
   const [showAnswer, setShowAnswer] = useState(false);
   const [showConfidence, setShowConfidence] = useState(false);
   const [lastAnswer, setLastAnswer] = useState<boolean | null>(null);
   const [dailyChallengeComplete, setDailyChallengeComplete] = useState(false);
+  const [selectedCards, setSelectedCards] = useState<CategorizedFlashcard[]>([]);
+  const [selectedDeckTitle, setSelectedDeckTitle] = useState<string>("");
   
   const {
     streakData,
@@ -71,7 +74,7 @@ export const GamifiedFlashcardHub = () => {
   }, []);
 
   const loadNextCard = () => {
-    const allCards = getAllFlashcards();
+    const cardsToUse = selectedCards.length > 0 ? selectedCards : getAllFlashcards();
     
     // In review mode, prioritize due cards
     if (mode === 'review') {
@@ -79,7 +82,7 @@ export const GamifiedFlashcardHub = () => {
       const prioritizedIds = getCardsByPriority(dueCardIds);
       
       if (prioritizedIds.length > 0) {
-        const dueCard = allCards.find(c => c.id === prioritizedIds[0]);
+        const dueCard = cardsToUse.find(c => c.id === prioritizedIds[0]);
         if (dueCard) {
           setCurrentCard(dueCard);
           setShowAnswer(false);
@@ -90,8 +93,8 @@ export const GamifiedFlashcardHub = () => {
       }
     }
     
-    // Fallback to random card
-    const randomCard = allCards[Math.floor(Math.random() * allCards.length)];
+    // Fallback to random card from selected deck or all cards
+    const randomCard = cardsToUse[Math.floor(Math.random() * cardsToUse.length)];
     setCurrentCard(randomCard);
     setShowAnswer(false);
     setShowConfidence(false);
@@ -162,6 +165,19 @@ export const GamifiedFlashcardHub = () => {
     return shuffled.slice(0, 15);
   };
 
+  const handleCardSelection = (cards: CategorizedFlashcard[], title: string) => {
+    setSelectedCards(cards);
+    setSelectedDeckTitle(title);
+    setMode('normal');
+    // Load first card from selected deck
+    if (cards.length > 0) {
+      setCurrentCard(cards[Math.floor(Math.random() * cards.length)]);
+      setShowAnswer(false);
+      setShowConfidence(false);
+      setLastAnswer(null);
+    }
+  };
+
   if (!currentCard && mode === 'normal') {
     loadNextCard();
     return <div>Loading...</div>;
@@ -169,7 +185,39 @@ export const GamifiedFlashcardHub = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 p-6">
-      {/* Header Stats */}
+      {/* Category Browser Mode */}
+      {mode === 'browse' && (
+        <CategoryBrowser onSelectCards={handleCardSelection} />
+      )}
+
+      {mode !== 'browse' && (
+        <>
+          {/* Header with Back Button */}
+          {selectedDeckTitle && mode === 'normal' && (
+            <Card className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setMode('browse');
+                      setSelectedCards([]);
+                      setSelectedDeckTitle('');
+                      setCurrentCard(null);
+                    }}
+                  >
+                    ← Back to Categories
+                  </Button>
+                  <div className="h-4 w-px bg-border" />
+                  <span className="font-semibold">{selectedDeckTitle}</span>
+                  <Badge variant="secondary">{selectedCards.length} cards</Badge>
+                </div>
+              </div>
+            </Card>
+          )}
+
+          {/* Header Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <StreakTracker 
           streakData={streakData}
@@ -381,6 +429,8 @@ export const GamifiedFlashcardHub = () => {
       )}
         </>
       )}
+      </>
+    )}
     </div>
   );
 };
