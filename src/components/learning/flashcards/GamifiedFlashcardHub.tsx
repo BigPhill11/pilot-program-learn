@@ -10,7 +10,8 @@ import {
   BookOpen, 
   Trophy,
   Target,
-  Play
+  Play,
+  Brain
 } from "lucide-react";
 import { StreakTracker } from "./StreakTracker";
 import { SpeedChallenge } from "./SpeedChallenge";
@@ -18,6 +19,9 @@ import { DailyChallenge } from "./DailyChallenge";
 import { StudySessionTracker } from "./StudySessionTracker";
 import { MasteryBadge } from "./MasteryBadge";
 import { ConfidenceSlider } from "./ConfidenceSlider";
+import { ReviewDashboard } from "./ReviewDashboard";
+import { ReviewScheduleCard } from "./ReviewScheduleCard";
+import { SmartReviewMode } from "./SmartReviewMode";
 import { useFlashcardGamification } from "@/hooks/useFlashcardGamification";
 import { 
   getAllFlashcards, 
@@ -28,7 +32,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export const GamifiedFlashcardHub = () => {
   const { toast } = useToast();
-  const [mode, setMode] = useState<'normal' | 'speed' | 'daily'>('normal');
+  const [mode, setMode] = useState<'normal' | 'speed' | 'daily' | 'review'>('normal');
   const [currentCard, setCurrentCard] = useState<CategorizedFlashcard | null>(null);
   const [showAnswer, setShowAnswer] = useState(false);
   const [showConfidence, setShowConfidence] = useState(false);
@@ -38,12 +42,17 @@ export const GamifiedFlashcardHub = () => {
   const {
     streakData,
     masteryData,
+    sm2Progress,
     currentSession,
     recordCardReview,
     startSession,
     endSession,
     useStreakFreeze,
     getMasteryForCard,
+    getSM2Progress,
+    getAllSM2Progress,
+    getDueCardsForReview,
+    getCardsByPriority,
     updateStreak
   } = useFlashcardGamification();
 
@@ -63,6 +72,25 @@ export const GamifiedFlashcardHub = () => {
 
   const loadNextCard = () => {
     const allCards = getAllFlashcards();
+    
+    // In review mode, prioritize due cards
+    if (mode === 'review') {
+      const dueCardIds = getDueCardsForReview();
+      const prioritizedIds = getCardsByPriority(dueCardIds);
+      
+      if (prioritizedIds.length > 0) {
+        const dueCard = allCards.find(c => c.id === prioritizedIds[0]);
+        if (dueCard) {
+          setCurrentCard(dueCard);
+          setShowAnswer(false);
+          setShowConfidence(false);
+          setLastAnswer(null);
+          return;
+        }
+      }
+    }
+    
+    // Fallback to random card
     const randomCard = allCards[Math.floor(Math.random() * allCards.length)];
     setCurrentCard(randomCard);
     setShowAnswer(false);
@@ -87,9 +115,14 @@ export const GamifiedFlashcardHub = () => {
       updateStreak(streakData.currentStreak + 1);
     }
 
+    const sm2Data = getSM2Progress(currentCard.id);
+    const nextReviewText = sm2Data 
+      ? `Next review in ${result.nextReviewDays} day${result.nextReviewDays !== 1 ? 's' : ''}`
+      : '';
+    
     toast({
       title: lastAnswer ? "Correct! 🎉" : "Keep Learning! 💪",
-      description: `+${result.xpEarned} XP${result.tierUpgrade ? ' • Tier upgraded!' : ''}`,
+      description: `+${result.xpEarned} XP${result.tierUpgrade ? ' • Tier upgraded!' : ''} • ${nextReviewText}`,
     });
 
     loadNextCard();
@@ -148,10 +181,26 @@ export const GamifiedFlashcardHub = () => {
         />
       </div>
 
-      {/* Mode Selection */}
+      {/* Review Stats Dashboard */}
+      {mode === 'review' && (
+        <SmartReviewMode
+          allSM2Progress={getAllSM2Progress()}
+          onStartReview={() => loadNextCard()}
+          onCardClick={(card) => {
+            setCurrentCard(card);
+            setShowAnswer(false);
+            setShowConfidence(false);
+            setLastAnswer(null);
+          }}
+        />
+      )}
+
+      {mode !== 'review' && (
+        <>
+          {/* Mode Selection */}
       <Card className="p-6">
         <h2 className="text-2xl font-bold mb-4">Study Modes</h2>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-4 gap-4">
           <Button
             variant={mode === 'normal' ? 'default' : 'outline'}
             className="h-auto flex-col gap-2 p-4"
@@ -190,6 +239,21 @@ export const GamifiedFlashcardHub = () => {
               <Badge variant="secondary" className="text-xs">+30 XP</Badge>
             )}
           </Button>
+
+          <Button
+            variant="outline"
+            className="h-auto flex-col gap-2 p-4"
+            onClick={() => {
+              setMode('review');
+              loadNextCard();
+            }}
+          >
+            <Brain className="h-6 w-6" />
+            <span>Smart Review</span>
+            <Badge variant="secondary" className="text-xs">
+              {getDueCardsForReview().length} due
+            </Badge>
+          </Button>
         </div>
       </Card>
 
@@ -213,7 +277,7 @@ export const GamifiedFlashcardHub = () => {
         />
       )}
 
-      {mode === 'normal' && currentCard && (
+      {(mode === 'normal') && currentCard && (
         <div className="space-y-4">
           {/* Flashcard */}
           <Card className="p-8">
@@ -228,6 +292,12 @@ export const GamifiedFlashcardHub = () => {
                   />
                 )}
               </div>
+              {mode === 'normal' && getSM2Progress(currentCard.id) && (
+                <div className="text-right text-sm">
+                  <div className="text-muted-foreground">Interval</div>
+                  <div className="font-bold">{getSM2Progress(currentCard.id)!.interval} days</div>
+                </div>
+              )}
             </div>
 
             <div className="min-h-[300px] flex flex-col justify-center">
@@ -308,6 +378,8 @@ export const GamifiedFlashcardHub = () => {
             </div>
           </Card>
         </div>
+      )}
+        </>
       )}
     </div>
   );
