@@ -1,0 +1,314 @@
+import { useState, useEffect } from "react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { 
+  Flame, 
+  Zap, 
+  Calendar, 
+  BookOpen, 
+  Trophy,
+  Target,
+  Play
+} from "lucide-react";
+import { StreakTracker } from "./StreakTracker";
+import { SpeedChallenge } from "./SpeedChallenge";
+import { DailyChallenge } from "./DailyChallenge";
+import { StudySessionTracker } from "./StudySessionTracker";
+import { MasteryBadge } from "./MasteryBadge";
+import { ConfidenceSlider } from "./ConfidenceSlider";
+import { useFlashcardGamification } from "@/hooks/useFlashcardGamification";
+import { 
+  getAllFlashcards, 
+  getFlashcardsByLevel,
+  CategorizedFlashcard 
+} from "@/data/flashcard-categories";
+import { useToast } from "@/hooks/use-toast";
+
+export const GamifiedFlashcardHub = () => {
+  const { toast } = useToast();
+  const [mode, setMode] = useState<'normal' | 'speed' | 'daily'>('normal');
+  const [currentCard, setCurrentCard] = useState<CategorizedFlashcard | null>(null);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [showConfidence, setShowConfidence] = useState(false);
+  const [lastAnswer, setLastAnswer] = useState<boolean | null>(null);
+  const [dailyChallengeComplete, setDailyChallengeComplete] = useState(false);
+  
+  const {
+    streakData,
+    masteryData,
+    currentSession,
+    recordCardReview,
+    startSession,
+    endSession,
+    useStreakFreeze,
+    getMasteryForCard,
+    updateStreak
+  } = useFlashcardGamification();
+
+  useEffect(() => {
+    // Start a normal study session
+    if (!currentSession && mode === 'normal') {
+      startSession(['personal-finance'], []);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Check if today's challenge was completed
+    const lastChallenge = localStorage.getItem('last_daily_challenge');
+    const today = new Date().toISOString().split('T')[0];
+    setDailyChallengeComplete(lastChallenge === today);
+  }, []);
+
+  const loadNextCard = () => {
+    const allCards = getAllFlashcards();
+    const randomCard = allCards[Math.floor(Math.random() * allCards.length)];
+    setCurrentCard(randomCard);
+    setShowAnswer(false);
+    setShowConfidence(false);
+    setLastAnswer(null);
+  };
+
+  const handleAnswer = (isCorrect: boolean) => {
+    setLastAnswer(isCorrect);
+    setShowConfidence(true);
+  };
+
+  const handleConfidenceSubmit = (confidence: number) => {
+    if (!currentCard || lastAnswer === null) return;
+
+    const result = recordCardReview(currentCard.id, lastAnswer, confidence);
+    
+    // Update streak on first card of the day
+    const today = new Date().toISOString().split('T')[0];
+    const lastDate = streakData.lastStudyDate.split('T')[0];
+    if (lastDate !== today) {
+      updateStreak(streakData.currentStreak + 1);
+    }
+
+    toast({
+      title: lastAnswer ? "Correct! 🎉" : "Keep Learning! 💪",
+      description: `+${result.xpEarned} XP${result.tierUpgrade ? ' • Tier upgraded!' : ''}`,
+    });
+
+    loadNextCard();
+  };
+
+  const handleSpeedChallengeComplete = (score: number, accuracy: number, xpEarned: number) => {
+    toast({
+      title: "Speed Challenge Complete!",
+      description: `Score: ${score} • Accuracy: ${accuracy}% • +${xpEarned} XP`,
+    });
+    setMode('normal');
+    loadNextCard();
+  };
+
+  const handleDailyChallengeComplete = (score: number, xpEarned: number) => {
+    const today = new Date().toISOString().split('T')[0];
+    localStorage.setItem('last_daily_challenge', today);
+    setDailyChallengeComplete(true);
+    
+    toast({
+      title: "Daily Challenge Complete! 🎊",
+      description: `Score: ${score}% • +${xpEarned} XP`,
+    });
+    setMode('normal');
+    loadNextCard();
+  };
+
+  const getDailyChallengeCards = (): CategorizedFlashcard[] => {
+    const allCards = getAllFlashcards();
+    const shuffled = [...allCards].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 5);
+  };
+
+  const getSpeedChallengeCards = (): CategorizedFlashcard[] => {
+    const allCards = getAllFlashcards();
+    const shuffled = [...allCards].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 15);
+  };
+
+  if (!currentCard && mode === 'normal') {
+    loadNextCard();
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto space-y-6 p-6">
+      {/* Header Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <StreakTracker 
+          streakData={streakData}
+          onUseFreeze={useStreakFreeze}
+        />
+        <StudySessionTracker 
+          session={currentSession}
+          isActive={mode === 'normal'}
+        />
+      </div>
+
+      {/* Mode Selection */}
+      <Card className="p-6">
+        <h2 className="text-2xl font-bold mb-4">Study Modes</h2>
+        <div className="grid grid-cols-3 gap-4">
+          <Button
+            variant={mode === 'normal' ? 'default' : 'outline'}
+            className="h-auto flex-col gap-2 p-4"
+            onClick={() => {
+              setMode('normal');
+              loadNextCard();
+            }}
+          >
+            <BookOpen className="h-6 w-6" />
+            <span>Regular Study</span>
+          </Button>
+
+          <Button
+            variant={mode === 'speed' ? 'default' : 'outline'}
+            className="h-auto flex-col gap-2 p-4"
+            onClick={() => setMode('speed')}
+          >
+            <Zap className="h-6 w-6" />
+            <span>Speed Challenge</span>
+            <Badge variant="secondary" className="text-xs">+25 XP</Badge>
+          </Button>
+
+          <Button
+            variant={mode === 'daily' ? 'default' : 'outline'}
+            className="h-auto flex-col gap-2 p-4"
+            onClick={() => setMode('daily')}
+            disabled={dailyChallengeComplete}
+          >
+            <Calendar className="h-6 w-6" />
+            <span>Daily Challenge</span>
+            {dailyChallengeComplete ? (
+              <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">
+                Complete ✓
+              </Badge>
+            ) : (
+              <Badge variant="secondary" className="text-xs">+30 XP</Badge>
+            )}
+          </Button>
+        </div>
+      </Card>
+
+      {/* Main Study Area */}
+      {mode === 'speed' && (
+        <SpeedChallenge
+          cards={getSpeedChallengeCards()}
+          onComplete={handleSpeedChallengeComplete}
+          onCancel={() => {
+            setMode('normal');
+            loadNextCard();
+          }}
+        />
+      )}
+
+      {mode === 'daily' && (
+        <DailyChallenge
+          cards={getDailyChallengeCards()}
+          onComplete={handleDailyChallengeComplete}
+          isCompleted={dailyChallengeComplete}
+        />
+      )}
+
+      {mode === 'normal' && currentCard && (
+        <div className="space-y-4">
+          {/* Flashcard */}
+          <Card className="p-8">
+            <div className="flex items-start justify-between mb-6">
+              <div className="flex gap-2">
+                <Badge>{currentCard.level}</Badge>
+                {getMasteryForCard(currentCard.id) && (
+                  <MasteryBadge
+                    tier={getMasteryForCard(currentCard.id)!.tier}
+                    correctCount={getMasteryForCard(currentCard.id)!.correctCount}
+                    showProgress
+                  />
+                )}
+              </div>
+            </div>
+
+            <div className="min-h-[300px] flex flex-col justify-center">
+              <div className="text-center mb-8">
+                <h3 className="text-3xl font-bold mb-6">{currentCard.term}</h3>
+                
+                {showAnswer && (
+                  <div className="space-y-4 animate-fade-in">
+                    <p className="text-xl mb-4">{currentCard.definition}</p>
+                    
+                    {currentCard.philExample && (
+                      <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-950/20 text-left">
+                        <p className="font-semibold text-sm mb-1">Phil's Example:</p>
+                        <p className="text-sm">{currentCard.philExample}</p>
+                      </div>
+                    )}
+                    
+                    {currentCard.realWorldExample && (
+                      <div className="p-4 rounded-lg bg-purple-50 dark:bg-purple-950/20 text-left">
+                        <p className="font-semibold text-sm mb-1">Real World:</p>
+                        <p className="text-sm">{currentCard.realWorldExample}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {!showAnswer && (
+                <Button onClick={() => setShowAnswer(true)} size="lg" className="w-full">
+                  Show Answer
+                </Button>
+              )}
+
+              {showAnswer && !showConfidence && (
+                <div className="flex gap-3">
+                  <Button 
+                    onClick={() => handleAnswer(false)} 
+                    variant="outline" 
+                    size="lg" 
+                    className="flex-1"
+                  >
+                    ❌ Incorrect
+                  </Button>
+                  <Button 
+                    onClick={() => handleAnswer(true)} 
+                    size="lg" 
+                    className="flex-1"
+                  >
+                    ✅ Correct
+                  </Button>
+                </div>
+              )}
+            </div>
+          </Card>
+
+          {/* Confidence Slider */}
+          {showConfidence && (
+            <div className="animate-scale-in">
+              <ConfidenceSlider onSubmit={handleConfidenceSubmit} />
+            </div>
+          )}
+
+          {/* Quick Stats */}
+          <Card className="p-4">
+            <div className="flex justify-between items-center text-sm">
+              <div className="flex items-center gap-2">
+                <Target className="h-4 w-4 text-green-600" />
+                <span>
+                  Accuracy: {currentSession ? 
+                    ((currentSession.correctAnswers / currentSession.cardsReviewed) * 100).toFixed(0) 
+                    : 0}%
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Trophy className="h-4 w-4 text-yellow-600" />
+                <span>Cards Mastered: {Array.from(masteryData.values()).filter(m => m.tier === 'diamond').length}</span>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
+    </div>
+  );
+};
