@@ -194,7 +194,19 @@ export function ModulePreTest({ moduleId, moduleName, onComplete, onSkip }: Modu
   }
 
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen py-8 relative">
+      {onSkip && (
+        <div className="absolute top-4 right-4 z-10">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onSkip}
+            className="rounded-full hover:bg-muted"
+          >
+            <X className="w-5 h-5" />
+          </Button>
+        </div>
+      )}
       <AnimatePresence mode="wait">
         <TestQuestion
           key={currentQuestionIndex}

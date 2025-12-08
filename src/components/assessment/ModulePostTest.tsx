@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Lock, Trophy, TrendingUp, Target, ArrowRight, CheckCircle } from 'lucide-react';
+import { Lock, Trophy, TrendingUp, Target, ArrowRight, CheckCircle, X } from 'lucide-react';
 import { TestQuestion } from './TestQuestion';
 import { TestResults } from './TestResults';
 import { getAssessmentByModuleId, calculateWeakAreas, calculateStrongAreas } from '@/data/personal-finance-assessments';
@@ -280,7 +280,19 @@ export function ModulePostTest({
   }
 
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen py-8 relative">
+      {onClose && (
+        <div className="absolute top-4 right-4 z-10">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className="rounded-full hover:bg-muted"
+          >
+            <X className="w-5 h-5" />
+          </Button>
+        </div>
+      )}
       <AnimatePresence mode="wait">
         <TestQuestion
           key={currentQuestionIndex}
