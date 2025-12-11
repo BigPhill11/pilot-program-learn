@@ -123,7 +123,7 @@ export const useBambooEmpireProgress = (gameLevel: 'beginner' | 'intermediate' |
         user_id: user.id,
         module_id: getModuleId(),
         module_type: 'personal_finance',
-        course_id: '',
+        course_id: '', // Empty string for consistency with upsert constraint
         progress_percentage: progressPercentage,
         time_spent_minutes: 0, // Could track this if needed
         last_accessed: new Date().toISOString(),

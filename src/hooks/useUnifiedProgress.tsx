@@ -192,6 +192,7 @@ export const useUnifiedProgress = ({ moduleId, moduleType, courseId }: UseUnifie
   // Mark module as complete
   const completeModule = useCallback(async () => {
     const timeSpent = Math.round((Date.now() - startTime) / (1000 * 60));
+    const wasAlreadyCompleted = progress?.completedAt !== undefined;
     
     await saveProgress({
       progressPercentage: 100,
@@ -199,8 +200,8 @@ export const useUnifiedProgress = ({ moduleId, moduleType, courseId }: UseUnifie
       completedAt: new Date().toISOString()
     });
 
-    // Award XP for completing the module (only if authenticated)
-    if (user) {
+    // Award XP for completing the module (only if not already completed and authenticated)
+    if (user && !wasAlreadyCompleted) {
       const gamificationService = await createGamificationService(user.id);
       await gamificationService.awardXp(
         50, // Base XP for module completion

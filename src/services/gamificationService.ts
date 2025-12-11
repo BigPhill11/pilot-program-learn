@@ -106,15 +106,13 @@ export class GamificationService {
       const achievementsUnlocked = await this.checkAchievements();
 
       // Show toast notification
-      if (streakBonus > 0) {
-        toast.success(\`+\${xpAwarded} XP earned! (+\${streakBonus}% streak bonus) 🎉\`, {
-          description: \`\${coinsAwarded} Bamboo Coins awarded!\`
-        });
-      } else {
-        toast.success(\`+\${xpAwarded} XP earned! 🎉\`, {
-          description: \`\${coinsAwarded} Bamboo Coins awarded!\`
-        });
-      }
+      const message = streakBonus > 0 
+        ? `+${xpAwarded} XP earned! (+${streakBonus}% streak bonus) 🎉`
+        : `+${xpAwarded} XP earned! 🎉`;
+      
+      toast.success(message, {
+        description: `${coinsAwarded} Bamboo Coins awarded!`
+      });
 
       return {
         xpAwarded,
@@ -244,19 +242,13 @@ export class GamificationService {
 
   /**
    * Check and unlock new achievements
+   * Note: This is a placeholder for future implementation.
+   * Achievement checking is currently handled by the useAchievements hook.
    */
   private async checkAchievements(): Promise<string[]> {
-    if (!this.userId) return [];
-
-    try {
-      // This is a simplified check - full implementation would check all achievement criteria
-      // For now, we just return empty array and rely on the existing useAchievements hook
-      // which has more comprehensive achievement tracking
-      return [];
-    } catch (error) {
-      console.error('Error checking achievements:', error);
-      return [];
-    }
+    // TODO: Implement achievement checking logic here
+    // For now, achievements are tracked by the existing useAchievements hook
+    return [];
   }
 
   /**
@@ -298,20 +290,18 @@ export class GamificationService {
   private mapSourceToXpSource(source: GamificationSource): XpSource {
     switch (source) {
       case GamificationSource.MODULE_COMPLETION:
-        return XpSource.MODULE;
+        return XpSource.MODULE_COMPLETE;
       case GamificationSource.QUIZ:
-        return XpSource.QUIZ;
-      case GamificationSource.ACTIVITY:
-        return XpSource.ACTIVITY;
-      case GamificationSource.LESSON:
-        return XpSource.LESSON;
-      case GamificationSource.STORY:
-        return XpSource.STORY;
+        return XpSource.QUIZ_CORRECT;
       case GamificationSource.MARKET_PREDICTION:
-        return XpSource.MARKET;
+        return XpSource.MARKET_PREDICTION;
       case GamificationSource.ACHIEVEMENT:
         return XpSource.ACHIEVEMENT;
       case GamificationSource.BAMBOO_EMPIRE:
+        return XpSource.GAME_LEVEL_UP;
+      case GamificationSource.ACTIVITY:
+      case GamificationSource.LESSON:
+      case GamificationSource.STORY:
       case GamificationSource.OTHER:
       default:
         return XpSource.OTHER;
