@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { createGamificationService, GamificationSource } from '@/services/gamificationService';
 
 export interface ModuleProgress {
   id?: string;
@@ -48,14 +49,23 @@ export const useUnifiedProgress = ({ moduleId, moduleType, courseId }: UseUnifie
     }
 
     try {
-      const { data, error } = await supabase
+      // Build query with proper NULL handling for course_id
+      let query = supabase
         .from('module_progress')
         .select('*')
         .eq('user_id', user.id)
         .eq('module_id', moduleId)
-        .eq('module_type', moduleType)
-        .eq('course_id', courseId || '')
-        .maybeSingle();
+        .eq('module_type', moduleType);
+
+      // Handle course_id: match both NULL and empty string, or specific value
+      if (courseId) {
+        query = query.eq('course_id', courseId);
+      } else {
+        // Match either NULL or empty string for backwards compatibility
+        query = query.or(`course_id.is.null,course_id.eq.`);
+      }
+
+      const { data, error } = await query.maybeSingle();
 
       if (error) {
         console.error('Error loading progress:', error);
@@ -188,7 +198,17 @@ export const useUnifiedProgress = ({ moduleId, moduleType, courseId }: UseUnifie
       timeSpentMinutes: (progress?.timeSpentMinutes || 0) + timeSpent,
       completedAt: new Date().toISOString()
     });
-  }, [saveProgress, startTime, progress]);
+
+    // Award XP for completing the module (only if authenticated)
+    if (user) {
+      const gamificationService = await createGamificationService(user.id);
+      await gamificationService.awardXp(
+        50, // Base XP for module completion
+        GamificationSource.MODULE_COMPLETION,
+        `${moduleType}:${moduleId}`
+      );
+    }
+  }, [saveProgress, startTime, progress, user, moduleType, moduleId]);
 
   // Add time spent
   const addTimeSpent = useCallback(async (minutes: number) => {
