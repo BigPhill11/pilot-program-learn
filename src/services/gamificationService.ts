@@ -163,24 +163,27 @@ export class GamificationService {
         console.error('Error logging XP transaction:', txError);
       }
 
-      // Fetch current coin balance
+      // Fetch current coin balance from user_progress (using total_points as coins proxy)
       const { data: balanceData } = await supabase
-        .from('user_bamboo_coins' as any)
-        .select('total_coins, lifetime_earned')
+        .from('user_progress')
+        .select('total_points')
         .eq('user_id', this.userId)
         .maybeSingle();
 
-      const currentBalance = balanceData?.total_coins || 0;
-      const lifetimeEarned = balanceData?.lifetime_earned || 0;
+      const currentBalance = (balanceData?.total_points || 0);
+      const lifetimeEarned = currentBalance;
 
-      // Update coin balance
+      // Log coin award (coins are tracked via XP in user_progress)
+      console.log(`Awarded ${coinsAwarded} coins to user ${this.userId}`);
+
+      // Note: In a production system, you'd have a separate coins table
+      // For now, coins are derived from XP
       const { error: coinError } = await supabase
-        .from('user_bamboo_coins' as any)
+        .from('user_progress')
         .upsert({
           user_id: this.userId,
-          total_coins: currentBalance + coinsAwarded,
-          lifetime_earned: lifetimeEarned + coinsAwarded,
-          last_updated: new Date().toISOString()
+          total_points: currentBalance + coinsAwarded,
+          updated_at: new Date().toISOString()
         }, {
           onConflict: 'user_id'
         });
@@ -227,7 +230,7 @@ export class GamificationService {
 
       // Check if leveled up
       if (currentLevel > previousLevel) {
-        toast.success(\`🎉 Level Up! You're now Level \${currentLevel}! 🎉\`, {
+        toast.success(`Level Up! You're now Level ${currentLevel}!`, {
           duration: 5000
         });
         return { leveledUp: true, newLevel: currentLevel };
