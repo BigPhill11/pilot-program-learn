@@ -7,6 +7,7 @@ import { Crown, Zap, Heart, TreePine, Coins, Star, ChevronRight, RotateCcw, Shie
 import { useIsMobile } from '@/hooks/use-mobile';
 import PandaLogo from '@/components/icons/PandaLogo';
 import { toast } from 'sonner';
+import { useBambooEmpireProgress } from '@/hooks/useBambooEmpireProgress';
 
 interface Flashcard {
   id: string;
@@ -45,18 +46,7 @@ interface BambooEmpireGameProps {
 
 const BambooEmpireGame: React.FC<BambooEmpireGameProps> = ({ level }) => {
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
-  const [gameState, setGameState] = useState<GameState>({
-    level: 1,
-    experience: 0,
-    bambooCoins: 100,
-    energy: 100,
-    territories: 1,
-    answeredQuestions: [],
-    achievements: [],
-    powerUps: {},
-    streak: 0,
-    totalAnswered: 0
-  });
+  const { gameState, saveGameState, awardAnswerXp, awardLevelUpXp } = useBambooEmpireProgress(level);
   const [currentQuestion, setCurrentQuestion] = useState<Flashcard | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string>('');
   const [showAnswer, setShowAnswer] = useState(false);
@@ -91,7 +81,6 @@ const BambooEmpireGame: React.FC<BambooEmpireGameProps> = ({ level }) => {
 
   useEffect(() => {
     loadFlashcards();
-    loadGameState();
     
     const handleFlashcardsUpdate = (event: CustomEvent) => {
       if (event.detail.level === level) {
@@ -111,22 +100,8 @@ const BambooEmpireGame: React.FC<BambooEmpireGameProps> = ({ level }) => {
     }
   };
 
-  const loadGameState = () => {
-    const storageKey = `bamboo_empire_${level}`;
-    const stored = localStorage.getItem(storageKey);
-    if (stored) {
-      setGameState(JSON.parse(stored));
-    }
-  };
-
-  const saveGameState = (newState: GameState) => {
-    const storageKey = `bamboo_empire_${level}`;
-    localStorage.setItem(storageKey, JSON.stringify(newState));
-    setGameState(newState);
-  };
-
-  const resetGame = () => {
-    const newState: GameState = {
+  const resetGame = async () => {
+    const newState = {
       level: 1,
       experience: 0,
       bambooCoins: 100,
@@ -138,12 +113,12 @@ const BambooEmpireGame: React.FC<BambooEmpireGameProps> = ({ level }) => {
       streak: 0,
       totalAnswered: 0
     };
-    saveGameState(newState);
+    await saveGameState(newState);
     setGamePhase('exploration');
     toast.success("Game reset! Phil starts his adventure anew!");
   };
 
-  const usePowerUp = (powerUpId: string) => {
+  const usePowerUp = async (powerUpId: string) => {
     const owned = gameState.powerUps[powerUpId] || 0;
     if (owned <= 0) return;
 
@@ -164,10 +139,10 @@ const BambooEmpireGame: React.FC<BambooEmpireGameProps> = ({ level }) => {
         break;
     }
 
-    saveGameState(newState);
+    await saveGameState(newState);
   };
 
-  const buyPowerUp = (powerUp: PowerUp) => {
+  const buyPowerUp = async (powerUp: PowerUp) => {
     if (gameState.bambooCoins < powerUp.cost) {
       toast.error("Not enough bamboo coins!");
       return;
@@ -182,7 +157,7 @@ const BambooEmpireGame: React.FC<BambooEmpireGameProps> = ({ level }) => {
       }
     };
 
-    saveGameState(newState);
+    await saveGameState(newState);
     toast.success(`${powerUp.name} purchased!`);
   };
 
@@ -226,7 +201,7 @@ const BambooEmpireGame: React.FC<BambooEmpireGameProps> = ({ level }) => {
     setMultipleChoiceOptions(options);
   };
 
-  const handleAnswer = (answer: string) => {
+  const handleAnswer = async (answer: string) => {
     if (!currentQuestion) return;
     
     setSelectedAnswer(answer);
@@ -257,20 +232,28 @@ const BambooEmpireGame: React.FC<BambooEmpireGameProps> = ({ level }) => {
     
     // Level up check
     const expRequired = newState.level * 100;
-    if (newState.experience >= expRequired) {
+    const didLevelUp = newState.experience >= expRequired;
+    if (didLevelUp) {
       newState.level += 1;
       newState.territories += 1;
       newState.energy = 100;
       toast.success(`Level up! You're now level ${newState.level}!`);
+      // Award bonus XP for leveling up
+      await awardLevelUpXp(newState.level);
     }
     
-    saveGameState(newState);
+    // Save game state to Supabase and localStorage
+    await saveGameState(newState);
+    
+    // Award XP through gamification service (for global XP tracking)
+    await awardAnswerXp(isCorrect, coinGain);
+    
     setGamePhase('result');
     
     if (isCorrect) {
-      toast.success(`Correct! +${expGain} XP, +${coinGain} bamboo coins!`);
+      toast.success(`Correct! +${expGain} game XP, +${coinGain} bamboo coins!`);
     } else {
-      toast.error(`Wrong answer. +${expGain} XP for trying!`);
+      toast.error(`Wrong answer. +${expGain} game XP for trying!`);
     }
   };
 
@@ -279,12 +262,12 @@ const BambooEmpireGame: React.FC<BambooEmpireGameProps> = ({ level }) => {
     setCurrentQuestion(null);
   };
 
-  const restAndRecover = () => {
+  const restAndRecover = async () => {
     const newState = {
       ...gameState,
       energy: Math.min(100, gameState.energy + 30)
     };
-    saveGameState(newState);
+    await saveGameState(newState);
     toast.success("You rest by the bamboo grove and recover energy!");
   };
 
