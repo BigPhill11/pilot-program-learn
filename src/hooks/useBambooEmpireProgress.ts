@@ -127,12 +127,12 @@ export const useBambooEmpireProgress = (gameLevel: 'beginner' | 'intermediate' |
         progress_percentage: progressPercentage,
         time_spent_minutes: 0, // Could track this if needed
         last_accessed: new Date().toISOString(),
-        detailed_progress: newState
+        detailed_progress: JSON.parse(JSON.stringify(newState))
       };
 
       const { error } = await supabase
         .from('module_progress')
-        .upsert(dataToSave, {
+        .upsert([dataToSave], {
           onConflict: 'user_id,module_id,module_type,course_id'
         });
 
