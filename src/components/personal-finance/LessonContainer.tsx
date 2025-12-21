@@ -55,8 +55,13 @@ const LessonContainer: React.FC<LessonContainerProps> = ({
     const prevIndex = currentStepIndex - 1;
     if (prevIndex >= 0) {
       setCurrentStep(STEPS[prevIndex]);
+    } else {
+      onBack(); // Go back to module view if at first step
     }
   };
+
+  const canGoBack = currentStepIndex > 0;
+  const canGoForward = stepCompleted[currentStep] && currentStepIndex < STEPS.length - 1;
 
   const renderStep = () => {
     switch (currentStep) {
@@ -253,19 +258,49 @@ const LessonContainer: React.FC<LessonContainerProps> = ({
         )}
       </div>
 
-      {/* Step navigation dots */}
-      <div className="flex items-center justify-center gap-2 mb-6">
-        {STEPS.slice(0, -1).map((step, index) => (
-          <div
-            key={step}
-            className={cn(
-              "w-2 h-2 rounded-full transition-all",
-              index < currentStepIndex && "bg-primary",
-              index === currentStepIndex && "w-4 bg-primary",
-              index > currentStepIndex && "bg-muted"
-            )}
-          />
-        ))}
+      {/* Step navigation with back/forward */}
+      <div className="flex items-center justify-between mb-6">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={goToPrevStep}
+          disabled={currentStep === 'intro'}
+          className="opacity-70 hover:opacity-100"
+        >
+          <ArrowLeft className="w-4 h-4 mr-1" />
+          Back
+        </Button>
+
+        <div className="flex items-center gap-2">
+          {STEPS.slice(0, -1).map((step, index) => (
+            <div
+              key={step}
+              className={cn(
+                "w-2 h-2 rounded-full transition-all cursor-pointer",
+                index < currentStepIndex && "bg-primary hover:scale-125",
+                index === currentStepIndex && "w-4 bg-primary",
+                index > currentStepIndex && "bg-muted"
+              )}
+              onClick={() => {
+                // Allow clicking on completed steps to go back
+                if (index < currentStepIndex) {
+                  setCurrentStep(STEPS[index]);
+                }
+              }}
+            />
+          ))}
+        </div>
+
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={goToNextStep}
+          disabled={!canGoForward}
+          className="opacity-70 hover:opacity-100"
+        >
+          Skip
+          <ArrowRight className="w-4 h-4 ml-1" />
+        </Button>
       </div>
 
       {/* Content */}

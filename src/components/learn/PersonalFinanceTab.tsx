@@ -2,18 +2,27 @@ import React, { useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import BambooSkillTree from '@/components/personal-finance/BambooSkillTree';
 import LessonContainer from '@/components/personal-finance/LessonContainer';
+import ModuleLessonsView from '@/components/personal-finance/ModuleLessonsView';
 import { usePersonalFinanceProgress } from '@/hooks/usePersonalFinanceProgress';
 import { getModuleById } from '@/data/personal-finance/modules';
 import { Loader2 } from 'lucide-react';
 
+type ViewState = 'tree' | 'module' | 'lesson';
+
 const PersonalFinanceTab: React.FC = () => {
   const { moduleProgress, loading, completeLesson, handleTestOut } = usePersonalFinanceProgress();
+  const [viewState, setViewState] = useState<ViewState>('tree');
   const [activeModuleId, setActiveModuleId] = useState<string | null>(null);
   const [activeLessonIndex, setActiveLessonIndex] = useState(0);
 
   const handleModuleClick = (moduleId: string) => {
     setActiveModuleId(moduleId);
-    setActiveLessonIndex(0);
+    setViewState('module');
+  };
+
+  const handleLessonClick = (lessonIndex: number) => {
+    setActiveLessonIndex(lessonIndex);
+    setViewState('lesson');
   };
 
   const handleLessonComplete = (xpEarned: number, coinsEarned: number) => {
@@ -24,11 +33,17 @@ const PersonalFinanceTab: React.FC = () => {
         completeLesson(activeModuleId, lesson.id, xpEarned, coinsEarned);
       }
     }
-    setActiveModuleId(null);
+    // Go back to module view after completing lesson
+    setViewState('module');
   };
 
-  const handleBack = () => {
+  const handleBackToModules = () => {
+    setViewState('module');
+  };
+
+  const handleBackToTree = () => {
     setActiveModuleId(null);
+    setViewState('tree');
   };
 
   if (loading) {
@@ -41,16 +56,27 @@ const PersonalFinanceTab: React.FC = () => {
 
   const activeModule = activeModuleId ? getModuleById(activeModuleId) : null;
   const activeLesson = activeModule?.lessons[activeLessonIndex];
+  const currentModuleProgress = activeModuleId 
+    ? moduleProgress[activeModuleId]
+    : undefined;
 
   return (
     <div className="space-y-6">
       <AnimatePresence mode="wait">
-        {activeLesson ? (
+        {viewState === 'lesson' && activeLesson ? (
           <LessonContainer
             key="lesson"
             lesson={activeLesson}
             onComplete={handleLessonComplete}
-            onBack={handleBack}
+            onBack={handleBackToModules}
+          />
+        ) : viewState === 'module' && activeModule ? (
+          <ModuleLessonsView
+            key="module"
+            module={activeModule}
+            progress={currentModuleProgress}
+            onLessonClick={handleLessonClick}
+            onBack={handleBackToTree}
           />
         ) : (
           <div key="tree">
