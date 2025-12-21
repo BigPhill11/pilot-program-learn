@@ -102,6 +102,8 @@ export interface ModuleProgress {
   completedAt?: string;
   xpEarned: number;
   coinsEarned: number;
+  bossGameCompleted?: boolean;
+  bossGamePlayCount?: number;
 }
 
 export interface PersonalFinanceProgress {

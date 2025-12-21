@@ -3,14 +3,15 @@ import { AnimatePresence } from 'framer-motion';
 import BambooSkillTree from '@/components/personal-finance/BambooSkillTree';
 import LessonContainer from '@/components/personal-finance/LessonContainer';
 import ModuleLessonsView from '@/components/personal-finance/ModuleLessonsView';
+import PandasFirstPaycheck from '@/components/personal-finance/boss-game/PandasFirstPaycheck';
 import { usePersonalFinanceProgress } from '@/hooks/usePersonalFinanceProgress';
 import { getModuleById } from '@/data/personal-finance/modules';
 import { Loader2 } from 'lucide-react';
 
-type ViewState = 'tree' | 'module' | 'lesson';
+type ViewState = 'tree' | 'module' | 'lesson' | 'boss-game';
 
 const PersonalFinanceTab: React.FC = () => {
-  const { moduleProgress, loading, completeLesson, handleTestOut } = usePersonalFinanceProgress();
+  const { moduleProgress, loading, completeLesson, handleTestOut, completeBossGame } = usePersonalFinanceProgress();
   const [viewState, setViewState] = useState<ViewState>('tree');
   const [activeModuleId, setActiveModuleId] = useState<string | null>(null);
   const [activeLessonIndex, setActiveLessonIndex] = useState(0);
@@ -25,6 +26,16 @@ const PersonalFinanceTab: React.FC = () => {
     setViewState('lesson');
   };
 
+  const handleBossGameClick = () => {
+    setViewState('boss-game');
+  };
+
+  const handleBossGameComplete = (xpEarned: number, coinsEarned: number) => {
+    if (activeModuleId) {
+      completeBossGame(activeModuleId, xpEarned, coinsEarned);
+    }
+  };
+
   const handleLessonComplete = (xpEarned: number, coinsEarned: number) => {
     if (activeModuleId) {
       const module = getModuleById(activeModuleId);
@@ -33,7 +44,6 @@ const PersonalFinanceTab: React.FC = () => {
         completeLesson(activeModuleId, lesson.id, xpEarned, coinsEarned);
       }
     }
-    // Go back to module view after completing lesson
     setViewState('module');
   };
 
@@ -63,7 +73,13 @@ const PersonalFinanceTab: React.FC = () => {
   return (
     <div className="space-y-6">
       <AnimatePresence mode="wait">
-        {viewState === 'lesson' && activeLesson ? (
+        {viewState === 'boss-game' && activeModuleId === 'income' ? (
+          <PandasFirstPaycheck
+            key="boss-game"
+            onComplete={handleBossGameComplete}
+            onBack={handleBackToModules}
+          />
+        ) : viewState === 'lesson' && activeLesson ? (
           <LessonContainer
             key="lesson"
             lesson={activeLesson}
@@ -77,6 +93,7 @@ const PersonalFinanceTab: React.FC = () => {
             progress={currentModuleProgress}
             onLessonClick={handleLessonClick}
             onBack={handleBackToTree}
+            onBossGameClick={handleBossGameClick}
           />
         ) : (
           <div key="tree">
