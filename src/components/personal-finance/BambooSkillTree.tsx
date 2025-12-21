@@ -54,90 +54,149 @@ const BambooSkillTree: React.FC<BambooSkillTreeProps> = ({
   };
 
   return (
-    <div className="relative w-full max-w-lg mx-auto py-8">
-      {/* Background bamboo stalk */}
-      <div className="absolute left-1/2 top-0 bottom-0 w-4 -translate-x-1/2">
-        <div className="absolute inset-0 bg-gradient-to-b from-amber-800/80 via-amber-700/90 to-amber-800/80 rounded-full" />
-        {/* Bamboo segments/joints */}
+    <div className="relative w-full max-w-2xl mx-auto py-12 px-4">
+      {/* Background bamboo stalk - centered */}
+      <div className="absolute left-1/2 top-8 bottom-8 w-3 -translate-x-1/2">
+        {/* Main stalk gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-emerald-800 via-emerald-700 to-emerald-800 rounded-full shadow-inner" />
+        
+        {/* Stalk highlight */}
+        <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-emerald-600/50 via-emerald-500/30 to-emerald-600/50 rounded-full" />
+        
+        {/* Bamboo segment joints */}
         {modules.map((_, idx) => (
           <div
             key={`joint-${idx}`}
-            className="absolute left-1/2 -translate-x-1/2 w-6 h-2 bg-amber-900/60 rounded-full"
-            style={{ top: `${(idx + 1) * (100 / (modules.length + 1))}%` }}
-          />
+            className="absolute left-1/2 -translate-x-1/2 w-5 h-2.5 rounded-full overflow-hidden"
+            style={{ top: `${(idx + 0.5) * (100 / modules.length)}%` }}
+          >
+            <div className="absolute inset-0 bg-emerald-900/80" />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-600/30 to-transparent" />
+          </div>
         ))}
       </div>
 
-      {/* Module nodes */}
-      <div className="relative flex flex-col gap-8 items-center">
+      {/* Module nodes - leaves branching from stalk */}
+      <div className="relative flex flex-col gap-6">
         {modules.map((module, index) => {
           const status = getModuleStatus(module.id, index);
           const progress = moduleProgress[module.id];
           const completedLessons = progress?.completedLessons?.length || 0;
-          const totalLessons = 5; // 5 lessons per module
+          const totalLessons = 5;
+          const isLeft = index % 2 === 0;
 
           return (
             <motion.div
               key={module.id}
-              initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+              initial={{ opacity: 0, x: isLeft ? -30 : 30 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.1, duration: 0.5 }}
+              transition={{ delay: index * 0.08, duration: 0.4, ease: 'easeOut' }}
               className={cn(
-                "relative w-full flex",
-                index % 2 === 0 ? "justify-start pl-8" : "justify-end pr-8"
+                "relative flex items-center",
+                isLeft ? "justify-start" : "justify-end"
               )}
             >
-              {/* Connecting branch to stalk */}
+              {/* Branch/stem connecting leaf to main stalk */}
               <div
                 className={cn(
-                  "absolute top-1/2 h-1 -translate-y-1/2",
-                  index % 2 === 0 ? "left-8 right-1/2" : "right-8 left-1/2",
-                  status === 'locked' ? "bg-muted/40" : "bg-emerald-600/60"
+                  "absolute top-1/2 -translate-y-1/2 h-1",
+                  isLeft ? "right-1/2 left-4" : "left-1/2 right-4"
                 )}
-                style={{
-                  background: status === 'locked' 
-                    ? 'linear-gradient(90deg, hsl(var(--muted)) 0%, transparent 100%)'
-                    : index % 2 === 0
-                    ? 'linear-gradient(90deg, hsl(142 76% 36%) 0%, hsl(45 93% 47% / 0.6) 100%)'
-                    : 'linear-gradient(270deg, hsl(142 76% 36%) 0%, hsl(45 93% 47% / 0.6) 100%)',
-                }}
-              />
-
-              {/* Bamboo leaves decoration for unlocked modules */}
-              {status !== 'locked' && (
-                <motion.div
-                  initial={{ scale: 0, rotate: index % 2 === 0 ? -45 : 45 }}
-                  animate={{ scale: 1, rotate: index % 2 === 0 ? -15 : 15 }}
-                  transition={{ delay: index * 0.1 + 0.3, type: 'spring' }}
+              >
+                {/* Branch background */}
+                <div 
                   className={cn(
-                    "absolute top-1/2 -translate-y-1/2 w-8 h-12",
-                    index % 2 === 0 ? "left-[45%]" : "right-[45%]"
+                    "absolute inset-0 rounded-full",
+                    status === 'locked' 
+                      ? 'bg-muted/50' 
+                      : status === 'completed'
+                      ? 'bg-gradient-to-r from-amber-600/60 to-emerald-700/80'
+                      : 'bg-gradient-to-r from-emerald-600/60 to-emerald-700/80'
                   )}
-                >
-                  <div className="relative w-full h-full">
-                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full transform rotate-45 scale-x-50" />
-                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-full transform -rotate-12 scale-x-50 translate-x-1" />
-                  </div>
-                </motion.div>
+                  style={{
+                    background: isLeft
+                      ? status === 'locked'
+                        ? 'linear-gradient(90deg, transparent 0%, hsl(var(--muted) / 0.5) 100%)'
+                        : status === 'completed'
+                        ? 'linear-gradient(90deg, hsl(45 93% 47% / 0.4) 0%, hsl(152 76% 30%) 100%)'
+                        : 'linear-gradient(90deg, hsl(152 76% 36% / 0.4) 0%, hsl(152 76% 30%) 100%)'
+                      : status === 'locked'
+                        ? 'linear-gradient(270deg, transparent 0%, hsl(var(--muted) / 0.5) 100%)'
+                        : status === 'completed'
+                        ? 'linear-gradient(270deg, hsl(45 93% 47% / 0.4) 0%, hsl(152 76% 30%) 100%)'
+                        : 'linear-gradient(270deg, hsl(152 76% 36% / 0.4) 0%, hsl(152 76% 30%) 100%)'
+                  }}
+                />
+              </div>
+
+              {/* Small decorative leaves near the stalk */}
+              {status !== 'locked' && (
+                <>
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: index * 0.1 + 0.3, type: 'spring', stiffness: 200 }}
+                    className={cn(
+                      "absolute top-1/2 -translate-y-1/2 w-4 h-6",
+                      isLeft ? "right-[48%]" : "left-[48%]"
+                    )}
+                  >
+                    <div 
+                      className={cn(
+                        "absolute inset-0 rounded-full",
+                        status === 'completed' 
+                          ? 'bg-gradient-to-br from-amber-400/60 to-amber-600/40'
+                          : 'bg-gradient-to-br from-emerald-400/60 to-emerald-600/40'
+                      )}
+                      style={{
+                        transform: isLeft ? 'rotate(-30deg) scaleX(0.4)' : 'rotate(30deg) scaleX(0.4)',
+                      }}
+                    />
+                  </motion.div>
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: index * 0.1 + 0.4, type: 'spring', stiffness: 200 }}
+                    className={cn(
+                      "absolute top-1/2 w-3 h-5",
+                      isLeft ? "right-[46%] -translate-y-[80%]" : "left-[46%] -translate-y-[80%]"
+                    )}
+                  >
+                    <div 
+                      className={cn(
+                        "absolute inset-0 rounded-full",
+                        status === 'completed' 
+                          ? 'bg-gradient-to-br from-amber-300/50 to-amber-500/30'
+                          : 'bg-gradient-to-br from-emerald-300/50 to-emerald-500/30'
+                      )}
+                      style={{
+                        transform: isLeft ? 'rotate(-50deg) scaleX(0.35)' : 'rotate(50deg) scaleX(0.35)',
+                      }}
+                    />
+                  </motion.div>
+                </>
               )}
 
-              <BambooNode
-                module={module}
-                status={status}
-                completedLessons={completedLessons}
-                totalLessons={totalLessons}
-                onClick={() => handleNodeClick(module.id, status)}
-                alternatePosition={index % 2 !== 0}
-              />
+              {/* The main leaf node */}
+              <div className={cn(isLeft ? "mr-auto ml-0" : "ml-auto mr-0")}>
+                <BambooNode
+                  module={module}
+                  status={status}
+                  completedLessons={completedLessons}
+                  totalLessons={totalLessons}
+                  onClick={() => handleNodeClick(module.id, status)}
+                  alternatePosition={!isLeft}
+                />
+              </div>
             </motion.div>
           );
         })}
       </div>
 
-      {/* Ground decoration */}
-      <div className="absolute bottom-0 left-0 right-0 h-16">
-        <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-amber-900/30 to-transparent rounded-full blur-xl" />
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-32 h-4 bg-gradient-to-t from-emerald-900/40 to-transparent rounded-full blur-lg" />
+      {/* Ground/pot decoration */}
+      <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-40 h-8">
+        <div className="absolute inset-x-4 bottom-0 h-6 bg-gradient-to-t from-amber-900/50 via-amber-800/30 to-transparent rounded-t-full blur-sm" />
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-20 h-4 bg-gradient-to-t from-amber-950/60 to-transparent rounded-full" />
       </div>
 
       {/* Test Out Modal */}
