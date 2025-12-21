@@ -230,7 +230,7 @@ const PersonalFinanceTab = () => {
   }];
   return <div className="space-y-12">
             <div>
-                <h2 className="text-3xl font-bold tracking-tight journey-header text-center mb-8">Personal Wealth Creatio Essentials</h2>
+                <h2 className="text-3xl font-bold tracking-tight journey-header text-center mb-8">Personal Wealth Creation Essentials</h2>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 max-w-6xl mx-auto">
                     {journeys.map(journey => <Card key={journey.id} className={`cursor-pointer transition-all hover:shadow-lg ${journey.borderColor} ${journey.progress.completed ? 'border-2' : 'border'}`} onClick={journey.onClick}>
