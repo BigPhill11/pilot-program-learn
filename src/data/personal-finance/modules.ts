@@ -1,6 +1,10 @@
 // Personal Finance Module Registry
 import { PersonalFinanceModule } from '@/types/personal-finance';
 import { activeIncomeBasicsLesson } from './income/lesson-1-active-income';
+import { lesson2ControllingPay } from './lessons/lesson-2-controlling-pay';
+import { lesson3Negotiation } from './lessons/lesson-3-negotiation';
+import { lesson4EnergyBurnout } from './lessons/lesson-4-energy-burnout';
+import { lesson5Launchpad } from './lessons/lesson-5-launchpad';
 
 // Module definitions with metadata
 export const PERSONAL_FINANCE_MODULES: Omit<PersonalFinanceModule, 'lessons' | 'testOutQuestions'>[] = [
@@ -134,7 +138,13 @@ export const PERSONAL_FINANCE_MODULES: Omit<PersonalFinanceModule, 'lessons' | '
 // Full module with lessons (Income module)
 export const incomeModule: PersonalFinanceModule = {
   ...PERSONAL_FINANCE_MODULES[0],
-  lessons: [activeIncomeBasicsLesson],
+  lessons: [
+    activeIncomeBasicsLesson,
+    lesson2ControllingPay,
+    lesson3Negotiation,
+    lesson4EnergyBurnout,
+    lesson5Launchpad,
+  ],
   testOutQuestions: [
     // 15 questions for test-out assessment
     {
