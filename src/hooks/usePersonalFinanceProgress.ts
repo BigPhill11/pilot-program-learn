@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { ModuleProgress, ModuleStatus } from '@/types/personal-finance';
+import type { Json } from '@/integrations/supabase/types';
 
 const STORAGE_KEY = 'personal-finance-progress';
 
@@ -69,14 +70,34 @@ export const usePersonalFinanceProgress = () => {
     if (user) {
       try {
         for (const [moduleId, progress] of Object.entries(newProgress)) {
-          await supabase.from('module_progress').upsert({
-            user_id: user.id,
-            module_id: moduleId,
-            module_type: 'personal-finance',
-            progress_percentage: progress.status === 'completed' ? 100 : (progress.completedLessons.length / 5) * 100,
-            detailed_progress: progress,
+          // Check if record exists
+          const { data: existing } = await supabase
+            .from('module_progress')
+            .select('id')
+            .eq('user_id', user.id)
+            .eq('module_id', moduleId)
+            .maybeSingle();
+
+          const detailedJson = JSON.parse(JSON.stringify(progress)) as Json;
+          const progressData = {
+            progress_percentage: progress.status === 'completed' ? 100 : Math.round((progress.completedLessons.length / 5) * 100),
+            detailed_progress: detailedJson,
             completed_at: progress.status === 'completed' ? new Date().toISOString() : null,
-          }, { onConflict: 'user_id,module_id' });
+            last_accessed: new Date().toISOString(),
+          };
+
+          if (existing) {
+            await supabase.from('module_progress')
+              .update(progressData)
+              .eq('id', existing.id);
+          } else {
+            await supabase.from('module_progress').insert([{
+              user_id: user.id,
+              module_id: moduleId,
+              module_type: 'personal-finance',
+              ...progressData,
+            }]);
+          }
         }
       } catch (error) {
         console.error('Error saving progress:', error);
