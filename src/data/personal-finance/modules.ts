@@ -5,6 +5,13 @@ import { lesson2ControllingPay } from './lessons/lesson-2-controlling-pay';
 import { lesson3Negotiation } from './lessons/lesson-3-negotiation';
 import { lesson4EnergyBurnout } from './lessons/lesson-4-energy-burnout';
 import { lesson5Launchpad } from './lessons/lesson-5-launchpad';
+import { 
+  lesson1DirectionBeforeSpeed,
+  lesson2TimeHorizons,
+  lesson3WantsNeedsTargets,
+  lesson4PriorityStacking,
+  lesson5ProgressMeasurement 
+} from './financial-planning';
 
 // Module definitions with metadata
 export const PERSONAL_FINANCE_MODULES: Omit<PersonalFinanceModule, 'lessons' | 'testOutQuestions'>[] = [
