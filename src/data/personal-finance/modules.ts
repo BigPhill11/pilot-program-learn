@@ -29,6 +29,20 @@ export const PERSONAL_FINANCE_MODULES: Omit<PersonalFinanceModule, 'lessons' | '
     coinReward: 50,
   },
   {
+    id: 'financial-planning',
+    name: 'Financial Planning',
+    pillar: 'Foundation',
+    icon: '🎯',
+    description: 'Set clear financial goals and learn to measure progress without comparison.',
+    level: 'beginner',
+    unlockRequirements: {
+      previousModuleId: 'income',
+      orTestOutScore: 85,
+    },
+    xpReward: 500,
+    coinReward: 50,
+  },
+  {
     id: 'saving',
     name: 'Saving',
     pillar: 'Foundation',
@@ -36,7 +50,7 @@ export const PERSONAL_FINANCE_MODULES: Omit<PersonalFinanceModule, 'lessons' | '
     description: 'Learn strategies to keep more of what you earn and build your financial cushion.',
     level: 'beginner',
     unlockRequirements: {
-      previousModuleId: 'income',
+      previousModuleId: 'financial-planning',
       orTestOutScore: 85,
     },
     xpReward: 500,
@@ -126,20 +140,6 @@ export const PERSONAL_FINANCE_MODULES: Omit<PersonalFinanceModule, 'lessons' | '
     xpReward: 750,
     coinReward: 75,
   },
-  {
-    id: 'financial-planning',
-    name: 'Financial Planning',
-    pillar: 'Mastery',
-    icon: '🎯',
-    description: 'Create a comprehensive plan for long-term financial success and freedom.',
-    level: 'advanced',
-    unlockRequirements: {
-      previousModuleId: 'taxes',
-      orTestOutScore: 85,
-    },
-    xpReward: 1000,
-    coinReward: 100,
-  },
 ];
 
 // Full module with lessons (Income module)
@@ -153,7 +153,6 @@ export const incomeModule: PersonalFinanceModule = {
     lesson5Launchpad,
   ],
   testOutQuestions: [
-    // 15 questions for test-out assessment
     {
       question: 'What is active income?',
       options: [
@@ -204,103 +203,117 @@ export const incomeModule: PersonalFinanceModule = {
       ],
       correctIndex: 1,
     },
+  ],
+};
+
+// Full module with lessons (Financial Planning module)
+export const financialPlanningModule: PersonalFinanceModule = {
+  ...PERSONAL_FINANCE_MODULES[1],
+  lessons: [
+    lesson1DirectionBeforeSpeed,
+    lesson2TimeHorizons,
+    lesson3WantsNeedsTargets,
+    lesson4PriorityStacking,
+    lesson5ProgressMeasurement,
+  ],
+  testOutQuestions: [
     {
-      question: 'Overtime is best described as:',
+      question: 'Why do clear goals reduce stress?',
       options: [
-        'A long-term income strategy',
-        'A way to increase hourly wage',
-        'Short-term income boost requiring extra time',
-        'Passive income generation',
+        'They increase income',
+        'They remove unnecessary choices',
+        'They guarantee success',
+        'They increase motivation',
+      ],
+      correctIndex: 1,
+    },
+    {
+      question: 'What is a time horizon?',
+      options: [
+        'How much time you have to work',
+        'The length of time before a goal needs to be achieved',
+        'Your daily schedule',
+        'The time it takes to earn money',
+      ],
+      correctIndex: 1,
+    },
+    {
+      question: 'Wants differ from needs because:',
+      options: [
+        'Wants cost more money',
+        'Wants are non-essential but improve comfort',
+        'Needs are always expensive',
+        'Wants are bad and should be avoided',
+      ],
+      correctIndex: 1,
+    },
+    {
+      question: 'Priority stacking helps because:',
+      options: [
+        'It lets you achieve all goals at once',
+        'It focuses resources on one goal at a time',
+        'It removes the need for goals',
+        'It increases your income automatically',
+      ],
+      correctIndex: 1,
+    },
+    {
+      question: 'The comparison trap occurs when:',
+      options: [
+        'You compare prices before buying',
+        'You evaluate progress using others\' outcomes',
+        'You track your own goals',
+        'You measure alignment scores',
+      ],
+      correctIndex: 1,
+    },
+    {
+      question: 'Opportunity cost refers to:',
+      options: [
+        'The price of an item',
+        'The best alternative given up when deciding',
+        'Taxes you pay',
+        'Interest on savings',
+      ],
+      correctIndex: 1,
+    },
+    {
+      question: 'Alignment measures:',
+      options: [
+        'How much you earn',
+        'How fast you save',
+        'How well actions match goals',
+        'How others are doing',
       ],
       correctIndex: 2,
     },
     {
-      question: 'Which metaphor best describes hourly wage?',
+      question: 'Short-term goals usually require:',
       options: [
-        'The size of your gas tank',
-        'How far one pedal stroke moves you',
-        'The speed of your engine',
-        'The number of wheels on your vehicle',
-      ],
-      correctIndex: 1,
-    },
-    {
-      question: 'Schedule constraints affect income by:',
-      options: [
-        'Increasing your hourly rate',
-        'Limiting when and how long you can work',
-        'Improving work-life balance',
-        'Reducing tax obligations',
-      ],
-      correctIndex: 1,
-    },
-    {
-      question: 'The main advantage of focusing on skill improvement over hours is:',
-      options: [
-        'Less stress at work',
-        'More vacation time',
-        'Higher pay without more time spent',
-        'Better relationships with coworkers',
+        'Maximum growth potential',
+        'High risk investments',
+        'Accessibility and stability',
+        'Long holding periods',
       ],
       correctIndex: 2,
     },
     {
-      question: 'Active income is like pedaling a bike because:',
+      question: 'Goal dilution happens when:',
       options: [
-        'It gets easier over time',
-        'You can coast indefinitely',
-        'It requires continuous effort to maintain',
-        'The terrain doesn\'t matter',
-      ],
-      correctIndex: 2,
-    },
-    {
-      question: 'What is the primary risk of relying solely on active income?',
-      options: [
-        'Too much money saved',
-        'Income stops when work stops',
-        'Skills become outdated',
-        'Too many job opportunities',
+        'Goals become clearer',
+        'Resources are spread too thin across goals',
+        'You focus on one goal',
+        'You complete a goal',
       ],
       correctIndex: 1,
     },
     {
-      question: 'Which action would NOT increase active income?',
+      question: 'Intentional spending means:',
       options: [
-        'Learning a new skill',
-        'Working additional hours',
-        'Putting money in a savings account',
-        'Negotiating a higher wage',
-      ],
-      correctIndex: 2,
-    },
-    {
-      question: 'The two main levers of active income are:',
-      options: [
-        'Location and timing',
-        'Hours worked and hourly wage',
-        'Education and networking',
-        'Experience and references',
-      ],
-      correctIndex: 1,
-    },
-    {
-      question: 'Why do most people initially try to increase income by adding hours?',
-      options: [
-        'It requires less planning',
-        'It feels straightforward',
-        'It\'s more effective long-term',
-        'Skills don\'t affect income',
-      ],
-      correctIndex: 1,
-    },
-    {
-      question: 'Active income should be viewed as:',
-      options: [
-        'The only income source needed',
-        'A trap to avoid',
-        'A foundation and launch point for wealth',
-        'Irrelevant to financial success',
+        'Spending as little as possible',
+        'Never buying wants',
+        'Assigning money a purpose before spending',
+        'Only buying needs',
       ],
       correctIndex: 2,
     },
@@ -313,6 +326,6 @@ export const getAllModules = () => PERSONAL_FINANCE_MODULES;
 // Get full module by ID
 export const getModuleById = (id: string): PersonalFinanceModule | undefined => {
   if (id === 'income') return incomeModule;
-  // Add other modules as they're built
+  if (id === 'financial-planning') return financialPlanningModule;
   return undefined;
 };

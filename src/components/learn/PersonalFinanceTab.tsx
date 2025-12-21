@@ -4,6 +4,7 @@ import BambooSkillTree from '@/components/personal-finance/BambooSkillTree';
 import LessonContainer from '@/components/personal-finance/LessonContainer';
 import ModuleLessonsView from '@/components/personal-finance/ModuleLessonsView';
 import PandasFirstPaycheck from '@/components/personal-finance/boss-game/PandasFirstPaycheck';
+import PandasGoalCompass from '@/components/personal-finance/boss-game/PandasGoalCompass';
 import { usePersonalFinanceProgress } from '@/hooks/usePersonalFinanceProgress';
 import { getModuleById } from '@/data/personal-finance/modules';
 import { Loader2 } from 'lucide-react';
@@ -70,15 +71,41 @@ const PersonalFinanceTab: React.FC = () => {
     ? moduleProgress[activeModuleId]
     : undefined;
 
+  // Render the appropriate boss game based on module
+  const renderBossGame = () => {
+    if (activeModuleId === 'income') {
+      return (
+        <PandasFirstPaycheck
+          key="boss-game-income"
+          onComplete={handleBossGameComplete}
+          onBack={handleBackToModules}
+        />
+      );
+    }
+    if (activeModuleId === 'financial-planning') {
+      return (
+        <PandasGoalCompass
+          key="boss-game-financial-planning"
+          onComplete={handleBossGameComplete}
+          onBack={handleBackToModules}
+        />
+      );
+    }
+    // Default fallback
+    return (
+      <PandasFirstPaycheck
+        key="boss-game-default"
+        onComplete={handleBossGameComplete}
+        onBack={handleBackToModules}
+      />
+    );
+  };
+
   return (
     <div className="space-y-6">
       <AnimatePresence mode="wait">
         {viewState === 'boss-game' && activeModuleId ? (
-          <PandasFirstPaycheck
-            key="boss-game"
-            onComplete={handleBossGameComplete}
-            onBack={handleBackToModules}
-          />
+          renderBossGame()
         ) : viewState === 'lesson' && activeLesson ? (
           <LessonContainer
             key="lesson"
