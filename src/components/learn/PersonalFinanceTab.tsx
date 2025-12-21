@@ -73,7 +73,7 @@ const PersonalFinanceTab: React.FC = () => {
   return (
     <div className="space-y-6">
       <AnimatePresence mode="wait">
-        {viewState === 'boss-game' && activeModuleId === 'income' ? (
+        {viewState === 'boss-game' && activeModuleId ? (
           <PandasFirstPaycheck
             key="boss-game"
             onComplete={handleBossGameComplete}
