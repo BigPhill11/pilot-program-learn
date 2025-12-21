@@ -165,6 +165,24 @@ export const usePersonalFinanceProgress = () => {
     }
   }, [moduleProgress, saveProgress]);
 
+  const completeBossGame = useCallback((moduleId: string, xp: number, coins: number) => {
+    const current = moduleProgress[moduleId];
+    if (!current) return;
+
+    const newProgress = {
+      ...moduleProgress,
+      [moduleId]: {
+        ...current,
+        bossGameCompleted: true,
+        bossGamePlayCount: (current.bossGamePlayCount || 0) + 1,
+        xpEarned: current.xpEarned + xp,
+        coinsEarned: current.coinsEarned + coins,
+      },
+    };
+
+    saveProgress(newProgress);
+  }, [moduleProgress, saveProgress]);
+
   useEffect(() => {
     loadProgress();
   }, [loadProgress]);
@@ -175,6 +193,7 @@ export const usePersonalFinanceProgress = () => {
     updateModuleStatus,
     completeLesson,
     handleTestOut,
+    completeBossGame,
     refresh: loadProgress,
   };
 };
