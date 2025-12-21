@@ -20,23 +20,6 @@ export interface LearningModule {
 
 export const moduleRegistry: LearningModule[] = [
   {
-    id: 'personal-finance',
-    name: 'Personal Finance',
-    description: 'Master budgeting, taxes, and financial planning',
-    category: 'personal-finance',
-    icon: 'Target',
-    color: 'purple',
-    targetTab: 'personal-finance',
-    levels: [
-      { id: 1, title: 'Taxes', description: 'Understanding tax fundamentals', activities: 5, estimatedTime: '30 min' },
-      { id: 2, title: 'Budget', description: 'Creating effective budgets', activities: 6, estimatedTime: '45 min', prerequisites: [1] },
-      { id: 3, title: 'Credit', description: 'Credit scores and management', activities: 4, estimatedTime: '25 min', prerequisites: [2] },
-      { id: 4, title: 'Future Planning', description: 'Retirement and investments', activities: 7, estimatedTime: '50 min', prerequisites: [3] },
-      { id: 5, title: 'Big Purchases', description: 'Planning major expenses', activities: 5, estimatedTime: '35 min', prerequisites: [4] },
-      { id: 6, title: 'Financial Safety', description: 'Emergency funds and insurance', activities: 6, estimatedTime: '40 min', prerequisites: [5] }
-    ]
-  },
-  {
     id: 'investment-banking',
     name: 'Investment Banking',
     description: 'Explore careers in investment banking',
