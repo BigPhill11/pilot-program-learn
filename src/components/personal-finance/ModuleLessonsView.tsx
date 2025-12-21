@@ -135,8 +135,8 @@ const ModuleLessonsView: React.FC<ModuleLessonsViewProps> = ({
         className="mt-6"
       >
         <button
-          onClick={() => allLessonsCompleted && onBossGameClick?.()}
-          disabled={!allLessonsCompleted}
+          onClick={() => onBossGameClick?.()}
+          disabled={!allLessonsCompleted || !onBossGameClick}
           className={cn(
             "w-full text-left p-5 rounded-xl border-2 transition-all relative overflow-hidden",
             !allLessonsCompleted && "opacity-50 cursor-not-allowed bg-muted/30 border-border",
