@@ -11,6 +11,8 @@ import MinimalLayout from "@/components/layout/MinimalLayout";
 import Index from "./pages/Index";
 import LearnPage from "./pages/LearnPage";
 import EmpirePage from "./pages/EmpirePage";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +24,8 @@ function App() {
           <ProgressProvider>
           <TooltipProvider>
             <Toaster />
+            <Analytics />
+            <SpeedInsights />
             <BrowserRouter>
               <ProtectedRoute>
                 <MinimalLayout>
