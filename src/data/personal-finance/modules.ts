@@ -33,6 +33,13 @@ import {
   lesson4LegalBasicsLiabilityProtection,
   lesson5DigitalSecurityProtectionHabits
 } from './insurance';
+import {
+  lesson1UnderstandingTaxes,
+  lesson2IncomeTypesTaxation,
+  lesson3DeductionsCredits,
+  lesson4TaxAdvantagedAccounts,
+  lesson5TaxPlanningMindset
+} from './taxes';
 
 // Module definitions with metadata
 export const PERSONAL_FINANCE_MODULES: Omit<PersonalFinanceModule, 'lessons' | 'testOutQuestions'>[] = [
@@ -106,6 +113,20 @@ export const PERSONAL_FINANCE_MODULES: Omit<PersonalFinanceModule, 'lessons' | '
     coinReward: 60,
   },
   {
+    id: 'taxes',
+    name: 'Taxes',
+    pillar: 'Growth',
+    icon: '📋',
+    description: 'Navigate the tax system and optimize your financial decisions.',
+    level: 'intermediate',
+    unlockRequirements: {
+      previousModuleId: 'insurance',
+      orTestOutScore: 85,
+    },
+    xpReward: 600,
+    coinReward: 60,
+  },
+  {
     id: 'credit',
     name: 'Credit',
     pillar: 'Protection',
@@ -113,7 +134,7 @@ export const PERSONAL_FINANCE_MODULES: Omit<PersonalFinanceModule, 'lessons' | '
     description: 'Build and maintain excellent credit to unlock financial opportunities.',
     level: 'intermediate',
     unlockRequirements: {
-      previousModuleId: 'insurance',
+      previousModuleId: 'taxes',
       orTestOutScore: 85,
     },
     xpReward: 600,
@@ -132,20 +153,6 @@ export const PERSONAL_FINANCE_MODULES: Omit<PersonalFinanceModule, 'lessons' | '
     },
     xpReward: 600,
     coinReward: 60,
-  },
-  {
-    id: 'taxes',
-    name: 'Taxes',
-    pillar: 'Growth',
-    icon: '📋',
-    description: 'Navigate the tax system and optimize your financial decisions.',
-    level: 'advanced',
-    unlockRequirements: {
-      previousModuleId: 'investing',
-      orTestOutScore: 85,
-    },
-    xpReward: 750,
-    coinReward: 75,
   },
 ];
 
@@ -619,6 +626,70 @@ export const insuranceModule: PersonalFinanceModule = {
   ],
 };
 
+// Full module with lessons (Taxes module)
+export const taxesModule: PersonalFinanceModule = {
+  ...PERSONAL_FINANCE_MODULES[5],
+  lessons: [
+    lesson1UnderstandingTaxes,
+    lesson2IncomeTypesTaxation,
+    lesson3DeductionsCredits,
+    lesson4TaxAdvantagedAccounts,
+    lesson5TaxPlanningMindset,
+  ],
+  testOutQuestions: [
+    {
+      question: 'Taxes mainly exist to:',
+      options: ['Punish workers', 'Fund public systems', 'Reduce income', 'Control spending'],
+      correctIndex: 1,
+    },
+    {
+      question: 'Take-home pay refers to:',
+      options: ['Total earnings', 'Pre-tax income', 'Money after taxes', 'Hourly wages'],
+      correctIndex: 2,
+    },
+    {
+      question: 'Wages are taxed mainly through:',
+      options: ['Automatic withholding', 'End of year bills', 'Voluntary payments', 'Market rules'],
+      correctIndex: 0,
+    },
+    {
+      question: 'Self-employment income requires:',
+      options: ['No planning', 'Automatic withholding', 'Lower rates', 'Setting aside taxes'],
+      correctIndex: 3,
+    },
+    {
+      question: 'Deductions reduce:',
+      options: ['Taxes owed', 'Taxable income', 'Tax rates', 'Spending'],
+      correctIndex: 1,
+    },
+    {
+      question: 'Credits are powerful because:',
+      options: ['They reduce income', 'They change rates', 'They avoid filing', 'They reduce taxes directly'],
+      correctIndex: 3,
+    },
+    {
+      question: 'Tax-advantaged accounts help by:',
+      options: ['Increasing income', 'Delaying or removing taxes', 'Eliminating risk', 'Speeding returns'],
+      correctIndex: 1,
+    },
+    {
+      question: 'Tax deferral helps because:',
+      options: ['Taxes disappear', 'Growth increases before taxes', 'Rates drop', 'Income rises'],
+      correctIndex: 1,
+    },
+    {
+      question: 'Tax planning focuses on:',
+      options: ['Breaking rules', 'Avoiding income', 'Legal structure', 'Guessing rates'],
+      correctIndex: 2,
+    },
+    {
+      question: 'Long-term tax impact grows because:',
+      options: ['Income rises', 'Time compounds decisions', 'Taxes vanish', 'Spending stops'],
+      correctIndex: 1,
+    },
+  ],
+};
+
 // Get all modules for display
 export const getAllModules = () => PERSONAL_FINANCE_MODULES;
 
@@ -629,5 +700,6 @@ export const getModuleById = (id: string): PersonalFinanceModule | undefined => 
   if (id === 'saving') return savingModule;
   if (id === 'investing') return investingModule;
   if (id === 'insurance') return insuranceModule;
+  if (id === 'taxes') return taxesModule;
   return undefined;
 };
