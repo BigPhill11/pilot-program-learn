@@ -26,6 +26,13 @@ import {
   lesson4DiversificationRiskControl,
   lesson5LongTermStrategy
 } from './investing';
+import {
+  lesson1ProtectingYourAssets,
+  lesson2InsuranceBasicsRiskTransfer,
+  lesson3FraudScamsIdentityProtection,
+  lesson4LegalBasicsLiabilityProtection,
+  lesson5DigitalSecurityProtectionHabits
+} from './insurance';
 
 // Module definitions with metadata
 export const PERSONAL_FINANCE_MODULES: Omit<PersonalFinanceModule, 'lessons' | 'testOutQuestions'>[] = [
@@ -85,11 +92,11 @@ export const PERSONAL_FINANCE_MODULES: Omit<PersonalFinanceModule, 'lessons' | '
     coinReward: 50,
   },
   {
-    id: 'debt',
-    name: 'Debt',
+    id: 'insurance',
+    name: 'Insurance',
     pillar: 'Protection',
-    icon: '⚖️',
-    description: 'Understand different types of debt and strategies to manage or eliminate it.',
+    icon: '🛡️',
+    description: 'Protect yourself and your assets from unexpected financial setbacks.',
     level: 'intermediate',
     unlockRequirements: {
       previousModuleId: 'investing',
@@ -106,18 +113,18 @@ export const PERSONAL_FINANCE_MODULES: Omit<PersonalFinanceModule, 'lessons' | '
     description: 'Build and maintain excellent credit to unlock financial opportunities.',
     level: 'intermediate',
     unlockRequirements: {
-      previousModuleId: 'debt',
+      previousModuleId: 'insurance',
       orTestOutScore: 85,
     },
     xpReward: 600,
     coinReward: 60,
   },
   {
-    id: 'insurance',
-    name: 'Insurance',
+    id: 'debt',
+    name: 'Debt',
     pillar: 'Protection',
-    icon: '🛡️',
-    description: 'Protect yourself and your assets from unexpected financial setbacks.',
+    icon: '⚖️',
+    description: 'Understand different types of debt and strategies to manage or eliminate it.',
     level: 'intermediate',
     unlockRequirements: {
       previousModuleId: 'credit',
@@ -548,6 +555,70 @@ export const investingModule: PersonalFinanceModule = {
   ],
 };
 
+// Full module with lessons (Insurance module)
+export const insuranceModule: PersonalFinanceModule = {
+  ...PERSONAL_FINANCE_MODULES[4],
+  lessons: [
+    lesson1ProtectingYourAssets,
+    lesson2InsuranceBasicsRiskTransfer,
+    lesson3FraudScamsIdentityProtection,
+    lesson4LegalBasicsLiabilityProtection,
+    lesson5DigitalSecurityProtectionHabits,
+  ],
+  testOutQuestions: [
+    {
+      question: 'Asset protection mainly exists to:',
+      options: ['Increase returns', 'Prevent all risk', 'Limit damage from unexpected events', 'Speed up wealth growth'],
+      correctIndex: 2,
+    },
+    {
+      question: 'Insurance works best for risks that are:',
+      options: ['Small and frequent', 'Large and rare', 'Predictable and regular', 'Guaranteed to happen'],
+      correctIndex: 1,
+    },
+    {
+      question: 'A premium is:',
+      options: ['The amount you pay before insurance kicks in', 'The regular payment to keep coverage active', 'The maximum coverage amount', 'The interest on claims'],
+      correctIndex: 1,
+    },
+    {
+      question: 'Scammers use urgency because:',
+      options: ['It builds trust', 'It prevents you from thinking clearly', 'It improves security', 'It helps victims decide'],
+      correctIndex: 1,
+    },
+    {
+      question: 'Identity theft is serious because:',
+      options: ['It only affects money', 'Recovery takes time and affects many life areas', 'Insurance always covers it', 'It happens rarely'],
+      correctIndex: 1,
+    },
+    {
+      question: 'Liability means:',
+      options: ['Owning assets', 'Legal responsibility for harm or damage', 'Avoiding all risk', 'Insurance coverage limits'],
+      correctIndex: 1,
+    },
+    {
+      question: 'Negligence increases liability when:',
+      options: ['You have insurance', 'You fail to act with reasonable care', 'You sign contracts', 'You follow rules'],
+      correctIndex: 1,
+    },
+    {
+      question: 'Two-factor authentication helps because:',
+      options: ['It speeds up logins', 'It adds another barrier to unauthorized access', 'It removes the need for passwords', 'It looks professional'],
+      correctIndex: 1,
+    },
+    {
+      question: 'Digital security fails most often due to:',
+      options: ['Technology failures', 'Poor habits and human error', 'Law changes', 'Market conditions'],
+      correctIndex: 1,
+    },
+    {
+      question: 'Long-term protection works best when habits are:',
+      options: ['Occasional', 'Perfect', 'Consistent', 'Complex'],
+      correctIndex: 2,
+    },
+  ],
+};
+
 // Get all modules for display
 export const getAllModules = () => PERSONAL_FINANCE_MODULES;
 
@@ -557,5 +628,6 @@ export const getModuleById = (id: string): PersonalFinanceModule | undefined => 
   if (id === 'financial-planning') return financialPlanningModule;
   if (id === 'saving') return savingModule;
   if (id === 'investing') return investingModule;
+  if (id === 'insurance') return insuranceModule;
   return undefined;
 };
