@@ -448,6 +448,120 @@ export const savingModule: PersonalFinanceModule = {
   ],
 };
 
+// Full module with lessons (Investing module)
+export const investingModule: PersonalFinanceModule = {
+  ...PERSONAL_FINANCE_MODULES[7],
+  lessons: [
+    lesson1OwnershipTimeConsistency,
+    lesson2WhatYouBuyWhenInvesting,
+    lesson3RiskVolatilityPriceMovement,
+    lesson4DiversificationRiskControl,
+    lesson5LongTermStrategy,
+  ],
+  testOutQuestions: [
+    {
+      question: 'Investing is best described as',
+      options: [
+        'Betting on prices',
+        'Buying ownership in value creation',
+        'Saving with risk',
+        'Fast money',
+      ],
+      correctIndex: 1,
+    },
+    {
+      question: 'A longer time horizon does what to risk?',
+      options: [
+        'Increases it',
+        'Removes it',
+        'Changes its shape',
+        'Makes losses impossible',
+      ],
+      correctIndex: 2,
+    },
+    {
+      question: 'Stock returns mainly come from',
+      options: [
+        'Headlines',
+        'Trading speed',
+        'Business performance',
+        'Market timing',
+      ],
+      correctIndex: 2,
+    },
+    {
+      question: 'Volatility refers to',
+      options: [
+        'Permanent loss',
+        'Business failure',
+        'Price movement',
+        'Market collapse',
+      ],
+      correctIndex: 2,
+    },
+    {
+      question: 'Diversification is best described as',
+      options: [
+        'Avoiding risk',
+        'Spreading exposure',
+        'Chasing stability',
+        'Limiting growth',
+      ],
+      correctIndex: 1,
+    },
+    {
+      question: 'The biggest cost of leaving the market is',
+      options: [
+        'Taxes',
+        'Fees',
+        'Missed growth periods',
+        'Stress',
+      ],
+      correctIndex: 2,
+    },
+    {
+      question: 'Consistency matters because',
+      options: [
+        'Markets reward effort',
+        'Timing is easy',
+        'Emotion hurts decisions',
+        'Cash loses value instantly',
+      ],
+      correctIndex: 2,
+    },
+    {
+      question: 'Risk control exists to',
+      options: [
+        'Increase returns',
+        'Predict markets',
+        'Avoid volatility',
+        'Prevent ruin',
+      ],
+      correctIndex: 3,
+    },
+    {
+      question: 'Long-term strategies should be',
+      options: [
+        'Complex',
+        'Flexible daily',
+        'Rule-based',
+        'Reaction-driven',
+      ],
+      correctIndex: 2,
+    },
+    {
+      question: 'Staying invested works because',
+      options: [
+        'Markets never fall',
+        'Volatility disappears',
+        'Time compounds growth',
+        'Rules guarantee profits',
+      ],
+      correctIndex: 2,
+    },
+  ],
+};
+
 // Get all modules for display
 export const getAllModules = () => PERSONAL_FINANCE_MODULES;
 
@@ -456,5 +570,6 @@ export const getModuleById = (id: string): PersonalFinanceModule | undefined => 
   if (id === 'income') return incomeModule;
   if (id === 'financial-planning') return financialPlanningModule;
   if (id === 'saving') return savingModule;
+  if (id === 'investing') return investingModule;
   return undefined;
 };
