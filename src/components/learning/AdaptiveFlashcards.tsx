@@ -101,7 +101,7 @@ const AdaptiveFlashcards: React.FC = () => {
   // Handle speed challenge complete
   const handleSpeedComplete = (score: number, accuracy: number, xpEarned: number) => {
     setStudyMode('browse');
-    updateStreak();
+    recordActivity();
   };
 
   // Handle daily challenge complete
@@ -110,7 +110,7 @@ const AdaptiveFlashcards: React.FC = () => {
     localStorage.setItem('last_daily_challenge', today);
     setDailyChallengeComplete(true);
     setStudyMode('browse');
-    updateStreak();
+    recordActivity();
   };
 
   // Handle flashcard upload
@@ -268,7 +268,6 @@ const AdaptiveFlashcards: React.FC = () => {
             <FlashcardDeck 
               key={refreshKey} 
               level={selectedLevel}
-              customCards={selectedCards.length > 0 ? selectedCards : undefined}
             />
           </div>
         );

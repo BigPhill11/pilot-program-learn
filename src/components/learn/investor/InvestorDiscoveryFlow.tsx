@@ -59,7 +59,7 @@ const InvestorDiscoveryFlow: React.FC = () => {
     }
     
     // Market cap preference
-    const marketCapValue = parseFloat(company.marketCap.replace(/[^0-9.]/g, ''));
+    const marketCapValue = parseFloat(String(company.marketCap).replace(/[^0-9.]/g, ''));
     if (prefs.marketCapPreference === 'any' || 
         (prefs.marketCapPreference === 'mega' && marketCapValue >= 200) ||
         (prefs.marketCapPreference === 'large' && marketCapValue >= 10 && marketCapValue < 200)) {

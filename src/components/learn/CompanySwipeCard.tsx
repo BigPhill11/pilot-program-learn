@@ -11,6 +11,7 @@ export interface CompanyProfile {
   ticker: string;
   logoUrl?: string;
   industry: string;
+  sector?: string;
   professional: {
     overview: string;
     kpis: { title: string; value: string }[];
@@ -21,7 +22,7 @@ export interface CompanyProfile {
     analystSentiment: string;
     historicalPerformance: string;
   };
-  marketCap: string;
+  marketCap: string | number;
   revenueTTM: string;
   peRatio: string;
   headquarters: string;
