@@ -19,6 +19,13 @@ import {
   lesson4SavingTradeoffsAndOpportunityCost,
   lesson5WhenToIncreaseSavings
 } from './saving';
+import {
+  lesson1OwnershipTimeConsistency,
+  lesson2WhatYouBuyWhenInvesting,
+  lesson3RiskVolatilityPriceMovement,
+  lesson4DiversificationRiskControl,
+  lesson5LongTermStrategy
+} from './investing';
 
 // Module definitions with metadata
 export const PERSONAL_FINANCE_MODULES: Omit<PersonalFinanceModule, 'lessons' | 'testOutQuestions'>[] = [
