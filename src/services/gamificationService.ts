@@ -26,6 +26,7 @@ export enum GamificationSource {
   MARKET_PREDICTION = 'market_prediction',
   ACHIEVEMENT = 'achievement',
   DAILY_LOGIN = 'daily_login',
+  BAMBOO_EMPIRE = 'bamboo_empire',
   OTHER = 'other'
 }
 
@@ -56,6 +57,8 @@ function mapToPlatformSource(source: GamificationSource): PlatformActivitySource
       return 'achievement';
     case GamificationSource.DAILY_LOGIN:
       return 'daily_login';
+    case GamificationSource.BAMBOO_EMPIRE:
+      return 'game_completion';
     case GamificationSource.ACTIVITY:
     case GamificationSource.OTHER:
     default:

@@ -165,9 +165,12 @@ const CompanyTinderGame: React.FC<CompanyTinderGameProps> = ({
     
     if (mode === 'challenge-run') {
       // Track challenge run progress
+      const marketCapNum = typeof currentCompany?.marketCap === 'number' 
+        ? currentCompany.marketCap 
+        : parseFloat(String(currentCompany?.marketCap || '0').replace(/[^0-9.]/g, '')) * 1000000000;
       const isGoodDecision = currentCompany && (
-        (action === 'like' && (currentCompany.marketCap || 0) > 10000000000) ||
-        (action === 'pass' && (currentCompany.marketCap || 0) < 1000000000)
+        (action === 'like' && marketCapNum > 10000000000) ||
+        (action === 'pass' && marketCapNum < 1000000000)
       );
       if (isGoodDecision) {
         setChallengeRunScore(prev => prev + 10);
