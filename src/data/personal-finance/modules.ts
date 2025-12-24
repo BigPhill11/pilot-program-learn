@@ -71,11 +71,11 @@ export const PERSONAL_FINANCE_MODULES: Omit<PersonalFinanceModule, 'lessons' | '
     coinReward: 50,
   },
   {
-    id: 'budgeting',
-    name: 'Budgeting',
+    id: 'investing',
+    name: 'Investing',
     pillar: 'Foundation',
-    icon: '📊',
-    description: 'Create and maintain a budget that aligns with your goals and lifestyle.',
+    icon: '📈',
+    description: 'Grow your wealth through smart investment strategies and compound growth.',
     level: 'beginner',
     unlockRequirements: {
       previousModuleId: 'saving',
@@ -92,7 +92,7 @@ export const PERSONAL_FINANCE_MODULES: Omit<PersonalFinanceModule, 'lessons' | '
     description: 'Understand different types of debt and strategies to manage or eliminate it.',
     level: 'intermediate',
     unlockRequirements: {
-      previousModuleId: 'budgeting',
+      previousModuleId: 'investing',
       orTestOutScore: 85,
     },
     xpReward: 600,
@@ -125,20 +125,6 @@ export const PERSONAL_FINANCE_MODULES: Omit<PersonalFinanceModule, 'lessons' | '
     },
     xpReward: 600,
     coinReward: 60,
-  },
-  {
-    id: 'investing',
-    name: 'Investing',
-    pillar: 'Growth',
-    icon: '📈',
-    description: 'Grow your wealth through smart investment strategies and compound growth.',
-    level: 'advanced',
-    unlockRequirements: {
-      previousModuleId: 'insurance',
-      orTestOutScore: 85,
-    },
-    xpReward: 750,
-    coinReward: 75,
   },
   {
     id: 'taxes',
@@ -450,7 +436,7 @@ export const savingModule: PersonalFinanceModule = {
 
 // Full module with lessons (Investing module)
 export const investingModule: PersonalFinanceModule = {
-  ...PERSONAL_FINANCE_MODULES[7],
+  ...PERSONAL_FINANCE_MODULES[3],
   lessons: [
     lesson1OwnershipTimeConsistency,
     lesson2WhatYouBuyWhenInvesting,
