@@ -47,6 +47,13 @@ import {
   lesson4PayingDownDebt,
   lesson5BuildingCreditResponsibly
 } from './credit-debt';
+import {
+  lesson1CareerInvestment,
+  lesson2MarketValue,
+  lesson3SkillsThatPay,
+  lesson4NegotiationAdvancement,
+  lesson5MultipleIncomeStreams
+} from './career-income';
 
 // Module definitions with metadata
 export const PERSONAL_FINANCE_MODULES: Omit<PersonalFinanceModule, 'lessons' | 'testOutQuestions'>[] = [
@@ -146,6 +153,20 @@ export const PERSONAL_FINANCE_MODULES: Omit<PersonalFinanceModule, 'lessons' | '
     },
     xpReward: 600,
     coinReward: 60,
+  },
+  {
+    id: 'career-income',
+    name: 'Growing Income & Career Strategy',
+    pillar: 'Growth',
+    icon: '📈',
+    description: 'Maximize your career, build multiple income streams, and achieve financial freedom.',
+    level: 'advanced',
+    unlockRequirements: {
+      previousModuleId: 'credit-debt',
+      orTestOutScore: 85,
+    },
+    xpReward: 800,
+    coinReward: 80,
   },
 ];
 
@@ -707,6 +728,30 @@ export const creditDebtModule: PersonalFinanceModule = {
   ],
 };
 
+// Full module with lessons (Career Income module)
+export const careerIncomeModule: PersonalFinanceModule = {
+  ...PERSONAL_FINANCE_MODULES[7],
+  lessons: [
+    lesson1CareerInvestment,
+    lesson2MarketValue,
+    lesson3SkillsThatPay,
+    lesson4NegotiationAdvancement,
+    lesson5MultipleIncomeStreams,
+  ],
+  testOutQuestions: [
+    { question: 'Human capital refers to:', options: ['Cash savings', 'Investment portfolio', 'Future earning potential', 'Physical assets'], correctIndex: 2 },
+    { question: 'Career compounding means:', options: ['Earning interest on savings', 'Raises building on raises over time', 'Working longer hours', 'Getting promoted yearly'], correctIndex: 1 },
+    { question: 'Market value is primarily determined by:', options: ['Years of experience', 'Educational degrees', 'Supply and demand for your skills', 'Company loyalty'], correctIndex: 2 },
+    { question: 'Skill stacking helps because:', options: ['One skill is enough', 'Combining skills creates unique value', 'Stacking certifications impresses employers', 'More skills mean more work'], correctIndex: 1 },
+    { question: 'Multiplier skills include:', options: ['Specific software tools', 'Leadership and communication', 'Industry certifications', 'Technical specialties only'], correctIndex: 1 },
+    { question: 'BATNA stands for:', options: ['Best Alternative To Negotiated Agreement', 'Business And Technical Negotiation Approach', 'Baseline Annual Target Negotiation Amount', 'Benefits And Total Net Amount'], correctIndex: 0 },
+    { question: 'Visibility matters because:', options: ['Good work speaks for itself', 'Leaders are too busy to notice everyone', 'It makes coworkers jealous', 'It replaces actual performance'], correctIndex: 1 },
+    { question: 'Passive income requires:', options: ['No work at all', 'Massive upfront investment', 'Luck and timing', 'Quitting your job first'], correctIndex: 1 },
+    { question: 'Financial freedom is achieved when:', options: ['You earn $1 million', 'Passive income exceeds expenses', 'You retire at 65', 'You have zero debt'], correctIndex: 1 },
+    { question: 'The best first step to build income streams is:', options: ['Quit your job immediately', 'Join a get-rich-quick scheme', 'Maximize your primary career income', 'Start 5 businesses at once'], correctIndex: 2 },
+  ],
+};
+
 // Get all modules for display
 export const getAllModules = () => PERSONAL_FINANCE_MODULES;
 
@@ -719,5 +764,6 @@ export const getModuleById = (id: string): PersonalFinanceModule | undefined => 
   if (id === 'insurance') return insuranceModule;
   if (id === 'taxes') return taxesModule;
   if (id === 'credit-debt') return creditDebtModule;
+  if (id === 'career-income') return careerIncomeModule;
   return undefined;
 };
