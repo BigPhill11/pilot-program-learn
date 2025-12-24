@@ -3,12 +3,11 @@ import { AnimatePresence } from 'framer-motion';
 import BambooSkillTree from '@/components/personal-finance/BambooSkillTree';
 import LessonContainer from '@/components/personal-finance/LessonContainer';
 import ModuleLessonsView from '@/components/personal-finance/ModuleLessonsView';
-import PandasFirstPaycheck from '@/components/personal-finance/boss-game/PandasFirstPaycheck';
-import PandasGoalCompass from '@/components/personal-finance/boss-game/PandasGoalCompass';
-import CashFlowStressTest from '@/components/personal-finance/boss-game/CashFlowStressTest';
+import BossGamePlayer from '@/components/personal-finance/boss-game/BossGamePlayer';
 import { usePersonalFinanceProgress } from '@/hooks/usePersonalFinanceProgress';
 import { usePlatformIntegration } from '@/hooks/usePlatformIntegration';
 import { getModuleById } from '@/data/personal-finance/modules';
+import { getBossGameForModule } from '@/data/personal-finance/boss-games';
 import { recordPathTouched } from '@/hooks/useDashboardProgress';
 import { Loader2 } from 'lucide-react';
 
@@ -92,41 +91,25 @@ const PersonalFinanceTab: React.FC = () => {
 
   // Render the appropriate boss game based on module
   const renderBossGame = () => {
-    if (activeModuleId === 'income') {
+    if (!activeModuleId) return null;
+    
+    const bossGameInfo = getBossGameForModule(activeModuleId);
+    
+    // Use the unified BossGamePlayer for all boss games
+    if (bossGameInfo) {
       return (
-        <PandasFirstPaycheck
-          key="boss-game-income"
+        <BossGamePlayer
+          key={`boss-game-${activeModuleId}`}
+          game={bossGameInfo.config}
           onComplete={handleBossGameComplete}
           onBack={handleBackToModules}
+          xpReward={bossGameInfo.xpReward}
+          coinReward={bossGameInfo.coinReward}
         />
       );
     }
-    if (activeModuleId === 'financial-planning') {
-      return (
-        <PandasGoalCompass
-          key="boss-game-financial-planning"
-          onComplete={handleBossGameComplete}
-          onBack={handleBackToModules}
-        />
-      );
-    }
-    if (activeModuleId === 'saving') {
-      return (
-        <CashFlowStressTest
-          key="boss-game-saving"
-          onComplete={handleBossGameComplete}
-          onBack={handleBackToModules}
-        />
-      );
-    }
-    // Default fallback
-    return (
-      <PandasFirstPaycheck
-        key="boss-game-default"
-        onComplete={handleBossGameComplete}
-        onBack={handleBackToModules}
-      />
-    );
+    
+    return null;
   };
 
   return (

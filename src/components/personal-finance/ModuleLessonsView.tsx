@@ -4,6 +4,7 @@ import { ArrowLeft, Clock, Lock, CheckCircle2, PlayCircle, Gamepad2, Trophy, Rot
 import { Button } from '@/components/ui/button';
 import { PersonalFinanceModule, ModuleProgress } from '@/types/personal-finance';
 import { cn } from '@/lib/utils';
+import { getBossGameForModule } from '@/data/personal-finance/boss-games';
 
 interface ModuleLessonsViewProps {
   module: PersonalFinanceModule;
@@ -24,6 +25,9 @@ const ModuleLessonsView: React.FC<ModuleLessonsViewProps> = ({
   const allLessonsCompleted = completedLessons.length === module.lessons.length;
   const bossGameCompleted = progress?.bossGameCompleted || false;
   const bossGamePlayCount = progress?.bossGamePlayCount || 0;
+  
+  // Get the boss game info for this module
+  const bossGameInfo = getBossGameForModule(module.id);
 
   const getLessonStatus = (lessonId: string, index: number) => {
     if (completedLessons.includes(lessonId)) return 'completed';
@@ -183,7 +187,7 @@ const ModuleLessonsView: React.FC<ModuleLessonsViewProps> = ({
                 "font-bold text-lg",
                 !allLessonsCompleted && "text-muted-foreground"
               )}>
-                🐼 Panda's First Paycheck
+                {bossGameInfo?.emoji || '🎮'} {bossGameInfo?.title || 'Boss Game'}
               </h3>
               <p className={cn(
                 "text-sm mt-1",
@@ -191,7 +195,7 @@ const ModuleLessonsView: React.FC<ModuleLessonsViewProps> = ({
               )}>
                 {!allLessonsCompleted 
                   ? `Complete all ${module.lessons.length} lessons to unlock`
-                  : "Interactive 6-month story simulator • Branching decisions"}
+                  : bossGameInfo?.description || 'Interactive story simulator • Branching decisions'}
               </p>
             </div>
 
