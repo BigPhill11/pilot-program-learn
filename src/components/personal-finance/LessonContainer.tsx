@@ -96,7 +96,7 @@ const LessonContainer: React.FC<LessonContainerProps> = ({
               <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{lesson.moduleOverview}</p>
             </div>
 
-            <Button onClick={goToNextStep} className="w-full">
+            <Button onClick={goToNextStep} className="w-full h-12 text-base">
               Start Learning
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
@@ -216,11 +216,11 @@ const LessonContainer: React.FC<LessonContainerProps> = ({
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto px-4 sm:px-0">
       {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <Button variant="ghost" size="sm" onClick={onBack}>
+      <div className="mb-4 sm:mb-6">
+        <div className="flex items-center justify-between mb-3 sm:mb-4">
+          <Button variant="ghost" size="sm" onClick={onBack} className="h-10 px-3">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
@@ -230,7 +230,7 @@ const LessonContainer: React.FC<LessonContainerProps> = ({
           </div>
         </div>
 
-        <h1 className="text-2xl font-bold mb-2">{lesson.title}</h1>
+        <h1 className="text-xl sm:text-2xl font-bold mb-2">{lesson.title}</h1>
         
         {/* Progress bar */}
         <div className="flex items-center gap-3">
@@ -258,27 +258,30 @@ const LessonContainer: React.FC<LessonContainerProps> = ({
         )}
       </div>
 
-      {/* Step navigation with back/forward */}
-      <div className="flex items-center justify-between mb-6">
+      {/* Step navigation with larger touch targets */}
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
         <Button
           variant="ghost"
           size="sm"
           onClick={goToPrevStep}
           disabled={currentStep === 'intro'}
-          className="opacity-70 hover:opacity-100"
+          className="h-10 px-3 opacity-70 hover:opacity-100"
         >
           <ArrowLeft className="w-4 h-4 mr-1" />
           Back
         </Button>
 
-        <div className="flex items-center gap-2">
+        {/* Progress dots - larger on mobile */}
+        <div className="flex items-center gap-2 sm:gap-2">
           {STEPS.slice(0, -1).map((step, index) => (
             <div
               key={step}
               className={cn(
-                "w-2 h-2 rounded-full transition-all cursor-pointer",
+                "rounded-full transition-all cursor-pointer",
+                // Larger touch targets on all devices
+                "w-3 h-3 sm:w-2 sm:h-2",
                 index < currentStepIndex && "bg-primary hover:scale-125",
-                index === currentStepIndex && "w-4 bg-primary",
+                index === currentStepIndex && "w-5 sm:w-4 bg-primary",
                 index > currentStepIndex && "bg-muted"
               )}
               onClick={() => {
@@ -296,7 +299,7 @@ const LessonContainer: React.FC<LessonContainerProps> = ({
           size="sm"
           onClick={goToNextStep}
           disabled={!canGoForward}
-          className="opacity-70 hover:opacity-100"
+          className="h-10 px-3 opacity-70 hover:opacity-100"
         >
           Skip
           <ArrowRight className="w-4 h-4 ml-1" />

@@ -5,6 +5,7 @@ import BambooNode from './BambooNode';
 import TestOutModal from './TestOutModal';
 import { ModuleStatus } from '@/types/personal-finance';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface BambooSkillTreeProps {
   moduleProgress: Record<string, { status: ModuleStatus; completedLessons: string[]; testedOut: boolean }>;
@@ -20,6 +21,7 @@ const BambooSkillTree: React.FC<BambooSkillTreeProps> = ({
   const [selectedModule, setSelectedModule] = useState<string | null>(null);
   const [showTestOut, setShowTestOut] = useState(false);
   const modules = getAllModules();
+  const isMobile = useIsMobile();
 
   const getModuleStatus = (moduleId: string, index: number): ModuleStatus => {
     const progress = moduleProgress[moduleId];
@@ -53,6 +55,79 @@ const BambooSkillTree: React.FC<BambooSkillTreeProps> = ({
     setSelectedModule(null);
   };
 
+  // Mobile layout - vertical stacked cards
+  if (isMobile) {
+    return (
+      <div className="relative w-full px-2 py-6">
+        {/* Vertical bamboo line on the left */}
+        <div className="absolute left-6 top-8 bottom-8 w-1.5 bg-gradient-to-b from-emerald-700 via-emerald-600 to-emerald-700 rounded-full" />
+        
+        {/* Module cards stacked vertically */}
+        <div className="relative flex flex-col gap-4 pl-10">
+          {modules.map((module, index) => {
+            const status = getModuleStatus(module.id, index);
+            const progress = moduleProgress[module.id];
+            const completedLessons = progress?.completedLessons?.length || 0;
+            const totalLessons = 5;
+
+            return (
+              <motion.div
+                key={module.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.08, duration: 0.3 }}
+                className="relative"
+              >
+                {/* Horizontal connector to stalk */}
+                <div 
+                  className={cn(
+                    "absolute left-0 top-1/2 -translate-y-1/2 w-4 h-0.5 -ml-4",
+                    status === 'locked' ? 'bg-muted' : 
+                    status === 'completed' ? 'bg-amber-500' : 'bg-emerald-500'
+                  )}
+                />
+                
+                {/* Node dot on the stalk */}
+                <div 
+                  className={cn(
+                    "absolute -left-6 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2",
+                    status === 'locked' ? 'bg-muted border-muted-foreground/30' : 
+                    status === 'completed' ? 'bg-amber-500 border-amber-400' : 'bg-emerald-500 border-emerald-400'
+                  )}
+                />
+
+                <BambooNode
+                  module={module}
+                  status={status}
+                  completedLessons={completedLessons}
+                  totalLessons={totalLessons}
+                  onClick={() => handleNodeClick(module.id, status)}
+                  alternatePosition={false}
+                  isMobile={true}
+                />
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Test Out Modal */}
+        <AnimatePresence>
+          {showTestOut && selectedModule && (
+            <TestOutModal
+              moduleId={selectedModule}
+              onClose={() => {
+                setShowTestOut(false);
+                setSelectedModule(null);
+              }}
+              onComplete={handleTestOutComplete}
+            />
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  }
+
+  // Desktop layout - alternating left/right
   return (
     <div className="relative w-full max-w-2xl mx-auto py-12 px-4">
       {/* Background bamboo stalk - centered */}

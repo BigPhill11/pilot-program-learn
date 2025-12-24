@@ -33,7 +33,7 @@ export function GameEndingScreen({ ending, meters, onReplay, onExit, playerName 
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-[80vh] flex flex-col items-center justify-center p-6"
+      className="min-h-[70vh] flex flex-col items-center justify-center p-4 sm:p-6"
     >
       {/* Sunset scene */}
       <motion.div
@@ -115,13 +115,13 @@ export function GameEndingScreen({ ending, meters, onReplay, onExit, playerName 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.5 }}
-        className="flex gap-3 mt-8"
+        className="flex flex-col sm:flex-row gap-3 mt-8 w-full max-w-xs"
       >
-        <Button variant="outline" onClick={onExit} className="gap-2">
+        <Button variant="outline" onClick={onExit} className="gap-2 h-12 flex-1">
           <Home className="w-4 h-4" />
-          Exit to Module
+          Exit
         </Button>
-        <Button onClick={onReplay} className="gap-2">
+        <Button onClick={onReplay} className="gap-2 h-12 flex-1">
           <RotateCcw className="w-4 h-4" />
           Play Again
         </Button>
