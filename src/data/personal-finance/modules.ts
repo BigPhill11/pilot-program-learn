@@ -40,6 +40,13 @@ import {
   lesson4TaxAdvantagedAccounts,
   lesson5TaxPlanningMindset
 } from './taxes';
+import {
+  lesson1ManagingDebtUnderstandingCredit,
+  lesson2TypesOfDebt,
+  lesson3CreditScores,
+  lesson4PayingDownDebt,
+  lesson5BuildingCreditResponsibly
+} from './credit-debt';
 
 // Module definitions with metadata
 export const PERSONAL_FINANCE_MODULES: Omit<PersonalFinanceModule, 'lessons' | 'testOutQuestions'>[] = [
@@ -127,28 +134,14 @@ export const PERSONAL_FINANCE_MODULES: Omit<PersonalFinanceModule, 'lessons' | '
     coinReward: 60,
   },
   {
-    id: 'credit',
-    name: 'Credit',
+    id: 'credit-debt',
+    name: 'Credit & Debt',
     pillar: 'Protection',
     icon: '💳',
-    description: 'Build and maintain excellent credit to unlock financial opportunities.',
+    description: 'Master credit building, debt management, and financial responsibility.',
     level: 'intermediate',
     unlockRequirements: {
       previousModuleId: 'taxes',
-      orTestOutScore: 85,
-    },
-    xpReward: 600,
-    coinReward: 60,
-  },
-  {
-    id: 'debt',
-    name: 'Debt',
-    pillar: 'Protection',
-    icon: '⚖️',
-    description: 'Understand different types of debt and strategies to manage or eliminate it.',
-    level: 'intermediate',
-    unlockRequirements: {
-      previousModuleId: 'credit',
       orTestOutScore: 85,
     },
     xpReward: 600,
@@ -690,6 +683,30 @@ export const taxesModule: PersonalFinanceModule = {
   ],
 };
 
+// Full module with lessons (Credit & Debt module)
+export const creditDebtModule: PersonalFinanceModule = {
+  ...PERSONAL_FINANCE_MODULES[6],
+  lessons: [
+    lesson1ManagingDebtUnderstandingCredit,
+    lesson2TypesOfDebt,
+    lesson3CreditScores,
+    lesson4PayingDownDebt,
+    lesson5BuildingCreditResponsibly,
+  ],
+  testOutQuestions: [
+    { question: 'Debt becomes harmful when:', options: ['It is borrowed', 'It supports growth', 'It is unmanaged', 'It is short term'], correctIndex: 2 },
+    { question: 'Credit mainly measures:', options: ['Spending style', 'Job stability', 'Repayment behavior', 'Account balances'], correctIndex: 2 },
+    { question: 'Productive debt usually helps by:', options: ['Increasing comfort', 'Funding impulse spending', 'Reducing responsibility', 'Supporting long-term growth'], correctIndex: 3 },
+    { question: 'High interest debt is dangerous because:', options: ['It grows quickly over time', 'It lowers credit scores instantly', 'It removes income', 'It guarantees loss'], correctIndex: 0 },
+    { question: 'Credit scores affect:', options: ['Only banks', 'Only investments', 'Daily spending', 'Many life decisions'], correctIndex: 3 },
+    { question: 'Payment history matters most because:', options: ['It shows consistency', 'It predicts income', 'It measures spending', 'It increases limits'], correctIndex: 0 },
+    { question: 'The avalanche method helps by:', options: ['Increasing motivation only', 'Reducing total interest', 'Paying smallest balances', 'Avoiding planning'], correctIndex: 1 },
+    { question: 'The snowball method helps by:', options: ['Lowering rates', 'Removing fees', 'Ending interest', 'Building momentum'], correctIndex: 3 },
+    { question: 'Responsible credit use means:', options: ['Spending often', 'Borrowing maximum amounts', 'Paying late occasionally', 'Using credit lightly'], correctIndex: 3 },
+    { question: 'Building credit works best when you:', options: ['Rush decisions', 'Chase rewards', 'Follow simple rules', 'Avoid planning'], correctIndex: 2 },
+  ],
+};
+
 // Get all modules for display
 export const getAllModules = () => PERSONAL_FINANCE_MODULES;
 
@@ -701,5 +718,6 @@ export const getModuleById = (id: string): PersonalFinanceModule | undefined => 
   if (id === 'investing') return investingModule;
   if (id === 'insurance') return insuranceModule;
   if (id === 'taxes') return taxesModule;
+  if (id === 'credit-debt') return creditDebtModule;
   return undefined;
 };
