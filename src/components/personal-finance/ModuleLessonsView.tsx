@@ -39,11 +39,11 @@ const ModuleLessonsView: React.FC<ModuleLessonsViewProps> = ({
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="max-w-2xl mx-auto"
+      className="max-w-2xl mx-auto px-4 sm:px-0"
     >
       {/* Header */}
       <div className="mb-8">
-        <Button variant="ghost" size="sm" onClick={onBack} className="mb-4">
+        <Button variant="ghost" size="sm" onClick={onBack} className="mb-4 h-10 px-3">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Modules
         </Button>
@@ -82,7 +82,8 @@ const ModuleLessonsView: React.FC<ModuleLessonsViewProps> = ({
               onClick={() => !isLocked && onLessonClick(index)}
               disabled={isLocked}
               className={cn(
-                "w-full text-left p-4 rounded-xl border transition-all",
+                "w-full text-left p-4 rounded-xl border transition-all min-h-[72px]",
+                "active:scale-[0.99] touch-manipulation",
                 isLocked && "opacity-50 cursor-not-allowed bg-muted/30 border-border",
                 isCompleted && "bg-primary/5 border-primary/20 hover:bg-primary/10",
                 !isLocked && !isCompleted && "bg-card border-border hover:border-primary/50 hover:shadow-md"

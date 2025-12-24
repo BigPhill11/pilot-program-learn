@@ -87,7 +87,8 @@ export function MonthDecisions({ decision, meters, unlocks, onSelect, selectedOp
                 onClick={() => available && !isSelected && onSelect(option)}
                 disabled={!available || isSelected}
                 className={cn(
-                  "w-full text-left p-3 rounded-lg border transition-all",
+                  "w-full text-left p-4 rounded-lg border transition-all min-h-[64px]",
+                  "active:scale-[0.99] touch-manipulation",
                   isSelected
                     ? "bg-primary/20 border-primary ring-2 ring-primary/30"
                     : available
@@ -95,10 +96,10 @@ export function MonthDecisions({ decision, meters, unlocks, onSelect, selectedOp
                     : "bg-muted/30 border-border/20 opacity-50 cursor-not-allowed"
                 )}
               >
-                <div className="flex justify-between items-start gap-2">
-                  <div>
-                    <p className="font-medium text-sm">{option.label}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">{option.description}</p>
+                <div className="flex flex-col sm:flex-row justify-between items-start gap-2">
+                  <div className="flex-1">
+                    <p className="font-medium text-sm sm:text-base">{option.label}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">{option.description}</p>
                     {!available && option.requires && (
                       <p className="text-xs text-amber-500 mt-1">
                         Requires: {option.requires.join(', ')}

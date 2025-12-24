@@ -18,6 +18,7 @@ interface BambooNodeProps {
   totalLessons: number;
   onClick: () => void;
   alternatePosition: boolean;
+  isMobile?: boolean;
 }
 
 const BambooNode: React.FC<BambooNodeProps> = ({
@@ -27,6 +28,7 @@ const BambooNode: React.FC<BambooNodeProps> = ({
   totalLessons,
   onClick,
   alternatePosition,
+  isMobile = false,
 }) => {
   const progressPercent = totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
 
@@ -63,6 +65,93 @@ const BambooNode: React.FC<BambooNodeProps> = ({
 
   const config = statusConfig[status];
 
+  // Mobile-optimized card layout
+  if (isMobile) {
+    return (
+      <motion.button
+        onClick={onClick}
+        whileTap={status !== 'locked' ? { scale: 0.98 } : {}}
+        className={cn(
+          "relative w-full touch-manipulation",
+          status === 'locked' ? 'cursor-pointer' : 'cursor-pointer'
+        )}
+      >
+        <div
+          className={cn(
+            "relative w-full p-4 transition-all duration-300 rounded-xl",
+            config.leafBg,
+            "border",
+            config.leafBorder,
+            status === 'locked' && 'opacity-60',
+            status !== 'locked' && 'shadow-md',
+            status === 'active' && 'shadow-emerald-500/20 ring-1 ring-emerald-400/30',
+            status === 'completed' && 'shadow-amber-500/20'
+          )}
+        >
+          <div className="flex items-center gap-4">
+            {/* Icon */}
+            <div
+              className={cn(
+                "flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center text-2xl",
+                config.iconBg
+              )}
+            >
+              {module.icon}
+            </div>
+
+            {/* Text content */}
+            <div className="flex-1 min-w-0 text-left">
+              <div className="flex items-center gap-2">
+                <h3 className={cn("font-semibold text-base", config.text)}>
+                  {module.name}
+                </h3>
+                {config.icon}
+              </div>
+              
+              {/* Progress for non-locked */}
+              {status !== 'locked' && (
+                <div className="mt-2">
+                  <div className="flex items-center justify-between text-xs mb-1">
+                    <span className="text-muted-foreground">
+                      {completedLessons}/{totalLessons} lessons
+                    </span>
+                    {status === 'completed' && (
+                      <span className="text-amber-400 font-medium">✓ Complete</span>
+                    )}
+                  </div>
+                  <Progress 
+                    value={progressPercent} 
+                    className={cn(
+                      "h-2",
+                      status === 'completed' ? '[&>div]:bg-amber-400' : '[&>div]:bg-emerald-500'
+                    )}
+                  />
+                </div>
+              )}
+
+              {/* Locked hint */}
+              {status === 'locked' && (
+                <p className="text-xs text-muted-foreground/60 mt-1">
+                  Tap to test out
+                </p>
+              )}
+            </div>
+
+            {/* Level badge */}
+            <div className={cn(
+              "flex-shrink-0 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider",
+              status === 'locked' ? 'bg-muted/80 text-muted-foreground' : 'bg-emerald-600/90 text-white',
+              status === 'completed' && 'bg-amber-500/90'
+            )}>
+              {module.level.charAt(0)}
+            </div>
+          </div>
+        </div>
+      </motion.button>
+    );
+  }
+
+  // Desktop leaf-shaped layout
   return (
     <motion.button
       onClick={onClick}
