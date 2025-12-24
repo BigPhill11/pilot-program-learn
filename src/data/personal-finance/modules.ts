@@ -54,6 +54,11 @@ import {
   lesson4NegotiationAdvancement,
   lesson5MultipleIncomeStreams
 } from './career-income';
+import {
+  lesson1WhatWealthIs,
+  lesson2SystemsCompounding,
+  lesson3RiskLifeStages
+} from './wealth-fundamentals';
 
 // Module definitions with metadata
 export const PERSONAL_FINANCE_MODULES: Omit<PersonalFinanceModule, 'lessons' | 'testOutQuestions'>[] = [
@@ -167,6 +172,20 @@ export const PERSONAL_FINANCE_MODULES: Omit<PersonalFinanceModule, 'lessons' | '
     },
     xpReward: 800,
     coinReward: 80,
+  },
+  {
+    id: 'wealth-fundamentals',
+    name: 'Wealth Fundamentals',
+    pillar: 'Mastery',
+    icon: '💎',
+    description: 'Master the fundamental principles of wealth: what it is, how systems build it, and how risk evolves through life.',
+    level: 'advanced',
+    unlockRequirements: {
+      previousModuleId: 'career-income',
+      orTestOutScore: 85,
+    },
+    xpReward: 480,
+    coinReward: 48,
   },
 ];
 
@@ -752,6 +771,24 @@ export const careerIncomeModule: PersonalFinanceModule = {
   ],
 };
 
+// Full module with lessons (Wealth Fundamentals module)
+export const wealthFundamentalsModule: PersonalFinanceModule = {
+  ...PERSONAL_FINANCE_MODULES[8],
+  lessons: [
+    lesson1WhatWealthIs,
+    lesson2SystemsCompounding,
+    lesson3RiskLifeStages,
+  ],
+  testOutQuestions: [
+    { question: 'Net worth equals:', options: ['Income minus taxes', 'Assets minus liabilities', 'Spending minus saving', 'Cash minus bills'], correctIndex: 1 },
+    { question: 'Wealth differs from income because:', options: ['Income is taxed more', 'Wealth represents ownership that grows', 'Income is more valuable', 'Wealth requires more work'], correctIndex: 1 },
+    { question: 'Systems beat motivation because:', options: ['They require less effort', 'They run automatically regardless of mood', 'They guarantee success', 'They increase income'], correctIndex: 1 },
+    { question: 'Compounding requires:', options: ['Large initial investments', 'Perfect timing', 'Consistent repetition over time', 'High risk tolerance'], correctIndex: 2 },
+    { question: 'Risk capacity is highest when:', options: ['Income is highest', 'Responsibilities are lowest', 'Age is advanced', 'Markets are stable'], correctIndex: 1 },
+    { question: 'Smart investors adjust risk by:', options: ['Following market trends', 'Copying experts', 'Matching their life stage', 'Avoiding all risk'], correctIndex: 2 },
+  ],
+};
+
 // Get all modules for display
 export const getAllModules = () => PERSONAL_FINANCE_MODULES;
 
@@ -765,5 +802,6 @@ export const getModuleById = (id: string): PersonalFinanceModule | undefined => 
   if (id === 'taxes') return taxesModule;
   if (id === 'credit-debt') return creditDebtModule;
   if (id === 'career-income') return careerIncomeModule;
+  if (id === 'wealth-fundamentals') return wealthFundamentalsModule;
   return undefined;
 };
