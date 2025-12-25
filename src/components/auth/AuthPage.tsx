@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Eye, EyeOff, Mail, Lock, UserCheck } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 
 const AuthPage = () => {
   const [email, setEmail] = useState("");
@@ -82,43 +82,6 @@ const AuthPage = () => {
     }
   };
 
-  const handleGuestSignIn = async () => {
-    setLoading(true);
-
-    try {
-      const { data, error } = await supabase.auth.signInAnonymously();
-
-      if (error) {
-        toast.error("Failed to sign in as guest: " + error.message);
-        return;
-      }
-
-      if (data.user) {
-        const { error: profileError } = await supabase.from("profiles").upsert({
-          id: data.user.id,
-          placement_track: null,
-          placement_score: null,
-          app_tour_completed: false,
-          onboarding_completed: false,
-          username: "Guest User",
-          email: null,
-          age_confirmed: true, // Guests implicitly confirm by continuing
-        });
-
-        if (profileError) {
-          toast.error("Failed to initialize guest profile");
-          return;
-        }
-
-        toast.success("Welcome, Guest! Let's get started!");
-        navigate("/");
-      }
-    } catch (error) {
-      toast.error("An unexpected error occurred");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10 p-4">
@@ -174,12 +137,6 @@ const AuthPage = () => {
                 </Button>
               </form>
 
-              <div className="mt-4 pt-4 border-t">
-                <Button variant="outline" className="w-full" onClick={handleGuestSignIn} disabled={loading}>
-                  <UserCheck className="h-4 w-4 mr-2" />
-                  {loading ? "Setting up guest..." : "Continue as Guest"}
-                </Button>
-              </div>
             </TabsContent>
 
             <TabsContent value="signup">
