@@ -11,7 +11,7 @@ import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
 interface LearnTabHelpMenuProps {
-  onRestartTutorial: () => void;
+  onRestartTutorial?: () => void;
 }
 
 const quickTips = [
@@ -71,7 +71,7 @@ const LearnTabHelpMenu: React.FC<LearnTabHelpMenuProps> = ({ onRestartTutorial }
           </motion.div>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuItem onClick={onRestartTutorial}>
+          <DropdownMenuItem onClick={() => onRestartTutorial?.()}>
             <RotateCcw className="mr-2 h-4 w-4" />
             Restart Tutorial
           </DropdownMenuItem>

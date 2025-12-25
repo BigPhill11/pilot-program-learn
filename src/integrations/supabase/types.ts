@@ -477,6 +477,8 @@ export type Database = {
       }
       profiles: {
         Row: {
+          age_confirmed: boolean | null
+          app_tour_completed: boolean | null
           app_version: string | null
           average_session_duration: number | null
           behavioral_segment:
@@ -499,6 +501,8 @@ export type Database = {
             | Database["public"]["Enums"]["learning_style_enum"]
             | null
           onboarding_completed: boolean | null
+          placement_score: number | null
+          placement_track: string | null
           preferred_content_types: string[] | null
           profile_completion_score: number | null
           survey_completed: boolean | null
@@ -509,6 +513,8 @@ export type Database = {
           username: string | null
         }
         Insert: {
+          age_confirmed?: boolean | null
+          app_tour_completed?: boolean | null
           app_version?: string | null
           average_session_duration?: number | null
           behavioral_segment?:
@@ -531,6 +537,8 @@ export type Database = {
             | Database["public"]["Enums"]["learning_style_enum"]
             | null
           onboarding_completed?: boolean | null
+          placement_score?: number | null
+          placement_track?: string | null
           preferred_content_types?: string[] | null
           profile_completion_score?: number | null
           survey_completed?: boolean | null
@@ -541,6 +549,8 @@ export type Database = {
           username?: string | null
         }
         Update: {
+          age_confirmed?: boolean | null
+          app_tour_completed?: boolean | null
           app_version?: string | null
           average_session_duration?: number | null
           behavioral_segment?:
@@ -563,6 +573,8 @@ export type Database = {
             | Database["public"]["Enums"]["learning_style_enum"]
             | null
           onboarding_completed?: boolean | null
+          placement_score?: number | null
+          placement_track?: string | null
           preferred_content_types?: string[] | null
           profile_completion_score?: number | null
           survey_completed?: boolean | null
