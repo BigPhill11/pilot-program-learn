@@ -37,9 +37,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const [pendingPlacement, setPendingPlacement] = React.useState<{track: string, score: number} | null>(null);
   const [tourCompleted, setTourCompleted] = React.useState(false);
 
-  // Check if user needs placement quiz - if no placement_track set
+  // Skip onboarding for existing users who already completed it
+  const onboardingAlreadyCompleted = (profile as any).onboarding_completed;
+  
+  // Check if user needs placement quiz - if no placement_track set AND not already onboarded
   const placementTrack = pendingPlacement?.track || (profile as any).placement_track;
-  if (!placementTrack) {
+  if (!placementTrack && !onboardingAlreadyCompleted) {
     return (
       <PlacementQuiz 
         onComplete={async (track, score) => {
@@ -66,8 +69,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     );
   }
 
-  // Check if user needs app tour
-  const appTourCompleted = tourCompleted || (profile as any).app_tour_completed;
+  // Check if user needs app tour - skip if already onboarded
+  const appTourCompleted = tourCompleted || (profile as any).app_tour_completed || onboardingAlreadyCompleted;
   if (!appTourCompleted) {
     return (
       <PandaPhilTour 
