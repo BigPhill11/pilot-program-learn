@@ -3,74 +3,103 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 
 interface OnboardingState {
-  appWalkthroughCompleted: boolean;
-  learnTabTutorialCompleted: boolean;
+  placementTrack: string | null;
+  placementScore: number | null;
+  appTourCompleted: boolean;
   loading: boolean;
 }
 
 export const useOnboarding = () => {
   const { user, profile } = useAuth();
   const [state, setState] = useState<OnboardingState>({
-    appWalkthroughCompleted: false,
-    learnTabTutorialCompleted: false,
+    placementTrack: null,
+    placementScore: null,
+    appTourCompleted: false,
     loading: true,
   });
 
   useEffect(() => {
     if (profile) {
       setState({
-        appWalkthroughCompleted: profile.app_walkthrough_completed || false,
-        learnTabTutorialCompleted: profile.learn_tab_tutorial_completed || false,
+        placementTrack: (profile as any).placement_track || null,
+        placementScore: (profile as any).placement_score || null,
+        appTourCompleted: (profile as any).app_tour_completed || false,
         loading: false,
       });
     }
   }, [profile]);
 
-  const markAppWalkthroughComplete = async () => {
+  const markPlacementComplete = async (track: string, score: number) => {
     if (!user) return;
 
     try {
       const { error } = await supabase
         .from('profiles')
         .update({
-          app_walkthrough_completed: true,
+          placement_track: track,
+          placement_score: score,
+          app_version: track, // Also set app_version for compatibility
           updated_at: new Date().toISOString()
         })
         .eq('id', user.id);
 
       if (error) throw error;
 
-      setState(prev => ({ ...prev, appWalkthroughCompleted: true }));
+      setState(prev => ({ 
+        ...prev, 
+        placementTrack: track,
+        placementScore: score 
+      }));
     } catch (error) {
-      console.error('Error marking app walkthrough complete:', error);
+      console.error('Error marking placement complete:', error);
     }
   };
 
-  const markLearnTabTutorialComplete = async (xpEarned: number = 300) => {
+  const markTourComplete = async () => {
     if (!user) return;
 
     try {
       const { error } = await supabase
         .from('profiles')
         .update({
-          learn_tab_tutorial_completed: true,
-          learn_tab_tutorial_completed_at: new Date().toISOString(),
-          tutorial_xp_earned: xpEarned,
+          app_tour_completed: true,
+          onboarding_completed: true, // Also mark general onboarding complete
           updated_at: new Date().toISOString()
         })
         .eq('id', user.id);
 
       if (error) throw error;
 
-      setState(prev => ({ ...prev, learnTabTutorialCompleted: true }));
+      setState(prev => ({ ...prev, appTourCompleted: true }));
     } catch (error) {
-      console.error('Error marking learn tab tutorial complete:', error);
+      console.error('Error marking tour complete:', error);
+    }
+  };
+
+  const resetTour = async () => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          app_tour_completed: false,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      setState(prev => ({ ...prev, appTourCompleted: false }));
+    } catch (error) {
+      console.error('Error resetting tour:', error);
     }
   };
 
   return {
     ...state,
-    markAppWalkthroughComplete,
-    markLearnTabTutorialComplete,
+    markPlacementComplete,
+    markTourComplete,
+    resetTour,
   };
 };

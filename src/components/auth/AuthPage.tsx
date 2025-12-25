@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Eye, EyeOff, Mail, Lock, UserCheck } from "lucide-react";
@@ -14,14 +15,21 @@ const AuthPage = () => {
   const [username, setUsername] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [ageConfirmed, setAgeConfirmed] = useState(false);
   const navigate = useNavigate();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!ageConfirmed) {
+      toast.error("Please confirm you are 13 years or older to continue");
+      return;
+    }
+    
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -34,8 +42,15 @@ const AuthPage = () => {
 
       if (error) {
         toast.error(error.message);
-      } else {
-        toast.success("Check your email to confirm your account!");
+      } else if (data.user) {
+        // Update profile with age confirmation
+        await supabase
+          .from('profiles')
+          .update({ age_confirmed: true })
+          .eq('id', data.user.id);
+          
+        toast.success("Account created! Let's get started!");
+        navigate("/");
       }
     } catch (error) {
       toast.error("An unexpected error occurred");
@@ -71,7 +86,6 @@ const AuthPage = () => {
     setLoading(true);
 
     try {
-      // Sign in anonymously as guest
       const { data, error } = await supabase.auth.signInAnonymously();
 
       if (error) {
@@ -80,25 +94,23 @@ const AuthPage = () => {
       }
 
       if (data.user) {
-        // Reset profile data for onboarding
         const { error: profileError } = await supabase.from("profiles").upsert({
           id: data.user.id,
-          app_version: null,
+          placement_track: null,
+          placement_score: null,
+          app_tour_completed: false,
           onboarding_completed: false,
           username: "Guest User",
           email: null,
+          age_confirmed: true, // Guests implicitly confirm by continuing
         });
 
         if (profileError) {
-          // Profile error handling without exposing details
           toast.error("Failed to initialize guest profile");
           return;
         }
 
-        // Clear any existing assessment data
-        await supabase.from("initial_assessments").delete().eq("user_id", data.user.id);
-
-        toast.success("Signed in as guest! Starting onboarding...");
+        toast.success("Welcome, Guest! Let's get started!");
         navigate("/");
       }
     } catch (error) {
@@ -212,7 +224,31 @@ const AuthPage = () => {
                     </Button>
                   </div>
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
+                
+                {/* Age Confirmation Checkbox */}
+                <div className="flex items-start space-x-2">
+                  <Checkbox 
+                    id="age-confirm" 
+                    checked={ageConfirmed}
+                    onCheckedChange={(checked) => setAgeConfirmed(checked as boolean)}
+                    className="mt-1"
+                  />
+                  <label 
+                    htmlFor="age-confirm" 
+                    className="text-sm text-muted-foreground leading-relaxed cursor-pointer"
+                  >
+                    I confirm that I am 13 years of age or older and agree to the{' '}
+                    <a href="/terms" className="text-primary underline hover:no-underline">
+                      Terms of Service
+                    </a>{' '}
+                    and{' '}
+                    <a href="/privacy" className="text-primary underline hover:no-underline">
+                      Privacy Policy
+                    </a>
+                  </label>
+                </div>
+                
+                <Button type="submit" className="w-full" disabled={loading || !ageConfirmed}>
                   {loading ? "Creating Account..." : "Create Account"}
                 </Button>
               </form>

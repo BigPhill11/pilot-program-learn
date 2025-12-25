@@ -6,15 +6,12 @@ import CareersInFinanceTab from "@/components/learn/CareersInFinanceTab";
 import LearningDashboard from "@/components/learning/LearningDashboard";
 import AdaptiveFlashcards from "@/components/learning/AdaptiveFlashcards";
 import AdminTab from "@/components/admin/AdminTab";
-import LearnTabTutorial from "@/components/onboarding/LearnTabTutorial";
 import LearnTabHelpMenu from "@/components/learn/LearnTabHelpMenu";
 import { MobileTabNav } from "@/components/ui/mobile-nav";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/hooks/useAuth";
-import { useOnboarding } from "@/hooks/useOnboarding";
 import { 
   LayoutDashboard, 
-  BookOpen, 
   Wallet, 
   TrendingUp, 
   Briefcase,
@@ -25,18 +22,12 @@ const LearnPage = () => {
   const isMobile = useIsMobile();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('interactive-hub');
-  const { learnTabTutorialCompleted, loading } = useOnboarding();
-  const [showTutorial, setShowTutorial] = useState(false);
   
   // Simplified admin check - will be replaced with proper system later
   const isAdmin = false;
 
   const handleNavigateToTab = (tabValue: string) => {
     setActiveTab(tabValue);
-  };
-
-  const handleRestartTutorial = () => {
-    setShowTutorial(true);
   };
 
   // Mobile navigation items
@@ -105,11 +96,8 @@ const LearnPage = () => {
           )}
         </Tabs>
         
-        {/* Learn Tab Tutorial */}
-        <LearnTabTutorial open={showTutorial} onClose={() => setShowTutorial(false)} />
-        
         {/* Help Menu */}
-        {learnTabTutorialCompleted && <LearnTabHelpMenu onRestartTutorial={handleRestartTutorial} />}
+        <LearnTabHelpMenu />
       </div>
 
       {/* Mobile Bottom Navigation */}
