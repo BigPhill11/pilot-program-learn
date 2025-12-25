@@ -33,45 +33,49 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     );
   }
 
+  // Local state to track placement progress within session
+  const [pendingPlacement, setPendingPlacement] = React.useState<{track: string, score: number} | null>(null);
+  const [tourCompleted, setTourCompleted] = React.useState(false);
+
   // Check if user needs placement quiz - if no placement_track set
-  const placementTrack = (profile as any).placement_track;
+  const placementTrack = pendingPlacement?.track || (profile as any).placement_track;
   if (!placementTrack) {
     return (
       <PlacementQuiz 
         onComplete={async (track, score) => {
+          // Try to save, but proceed regardless
           try {
-            const { error } = await supabase
+            await supabase
               .from('profiles')
               .update({
                 placement_track: track,
                 placement_score: score,
-                app_version: track, // Set app_version for compatibility
+                app_version: track,
                 updated_at: new Date().toISOString()
               })
               .eq('id', user.id);
-
-            if (error) throw error;
-
-            toast.success(`Welcome to the ${track.replace('-', ' ')} track!`);
-            window.location.reload();
           } catch (error) {
             console.error('Error saving placement:', error);
-            toast.error('Failed to save placement');
           }
+          
+          // Always proceed to tour
+          toast.success(`Welcome to the ${track.replace('-', ' ')} track!`);
+          setPendingPlacement({ track, score });
         }} 
       />
     );
   }
 
   // Check if user needs app tour
-  const appTourCompleted = (profile as any).app_tour_completed;
+  const appTourCompleted = tourCompleted || (profile as any).app_tour_completed;
   if (!appTourCompleted) {
     return (
       <PandaPhilTour 
         placementTrack={placementTrack}
         onComplete={async () => {
+          // Try to save, but proceed regardless
           try {
-            const { error } = await supabase
+            await supabase
               .from('profiles')
               .update({
                 app_tour_completed: true,
@@ -79,15 +83,13 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
                 updated_at: new Date().toISOString()
               })
               .eq('id', user.id);
-
-            if (error) throw error;
-
-            toast.success("You're all set! Let's start learning!");
-            window.location.reload();
           } catch (error) {
             console.error('Error completing tour:', error);
-            toast.error('Failed to complete tour');
           }
+          
+          // Always proceed to app
+          toast.success("You're all set! Let's start learning!");
+          setTourCompleted(true);
         }} 
       />
     );
