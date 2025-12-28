@@ -1,55 +1,112 @@
 /**
- * UnifiedCategoryBrowser - Browse flashcard categories from unified source
+ * UnifiedCategoryBrowser - Large category navigation for flashcards
  * 
  * Features:
- * - Categories pulled from unified flashcard data
- * - Filter by source (Personal Finance, Careers, Market Intel)
- * - Filter by difficulty
- * - Mobile-friendly grid layout
+ * - Three main categories: Personal Finance, Market Intel, Careers
+ * - Large, prominent navigation cards
+ * - Drill down into subcategories
+ * - Back navigation
  */
 
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   getAllUnifiedFlashcards, 
-  getFlashcardsBySource, 
-  getFlashcardsByDifficulty,
-  getFlashcardsByCategory,
-  getFlashcardCategories,
   UnifiedFlashcard 
 } from '@/data/unified-flashcards';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { BookOpen, Briefcase, TrendingUp, Filter } from 'lucide-react';
+import { 
+  BookOpen, 
+  Briefcase, 
+  TrendingUp, 
+  ChevronLeft, 
+  Play,
+  ChevronRight,
+  Sparkles
+} from 'lucide-react';
 
 interface UnifiedCategoryBrowserProps {
   onSelectCards: (cards: UnifiedFlashcard[], title: string) => void;
 }
 
-type SourceFilter = 'all' | 'personal-finance' | 'careers' | 'market-intelligence';
+type SourceType = 'personal-finance' | 'careers' | 'market-intelligence';
 type DifficultyFilter = 'all' | 'beginner' | 'intermediate' | 'advanced';
+
+interface MainCategory {
+  id: SourceType;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  gradient: string;
+  borderColor: string;
+}
+
+const MAIN_CATEGORIES: MainCategory[] = [
+  {
+    id: 'personal-finance',
+    title: 'Personal Finance',
+    description: 'Build your financial foundation with budgeting, saving, and investing concepts',
+    icon: <BookOpen className="h-8 w-8" />,
+    gradient: 'from-emerald-500/20 to-teal-500/10',
+    borderColor: 'border-emerald-500/30 hover:border-emerald-500/60',
+  },
+  {
+    id: 'market-intelligence',
+    title: 'Market Intelligence',
+    description: 'Master market analysis, trading concepts, and investment strategies',
+    icon: <TrendingUp className="h-8 w-8" />,
+    gradient: 'from-blue-500/20 to-indigo-500/10',
+    borderColor: 'border-blue-500/30 hover:border-blue-500/60',
+  },
+  {
+    id: 'careers',
+    title: 'Careers in Finance',
+    description: 'Explore finance career paths and industry knowledge',
+    icon: <Briefcase className="h-8 w-8" />,
+    gradient: 'from-purple-500/20 to-pink-500/10',
+    borderColor: 'border-purple-500/30 hover:border-purple-500/60',
+  },
+];
 
 const UnifiedCategoryBrowser: React.FC<UnifiedCategoryBrowserProps> = ({ onSelectCards }) => {
   const isMobile = useIsMobile();
-  const [sourceFilter, setSourceFilter] = useState<SourceFilter>('all');
+  const [selectedSource, setSelectedSource] = useState<SourceType | null>(null);
   const [difficultyFilter, setDifficultyFilter] = useState<DifficultyFilter>('all');
 
-  const categories = useMemo(() => {
-    let cards = getAllUnifiedFlashcards();
+  // Get all cards
+  const allCards = useMemo(() => getAllUnifiedFlashcards(), []);
+
+  // Get cards for each main category
+  const categoryStats = useMemo(() => {
+    const stats: Record<SourceType, { count: number; difficulties: Record<string, number> }> = {
+      'personal-finance': { count: 0, difficulties: {} },
+      'market-intelligence': { count: 0, difficulties: {} },
+      'careers': { count: 0, difficulties: {} },
+    };
+
+    allCards.forEach(card => {
+      const source = card.sourceModule as SourceType;
+      if (stats[source]) {
+        stats[source].count++;
+        stats[source].difficulties[card.difficulty] = (stats[source].difficulties[card.difficulty] || 0) + 1;
+      }
+    });
+
+    return stats;
+  }, [allCards]);
+
+  // Get subcategories for selected source
+  const subcategories = useMemo(() => {
+    if (!selectedSource) return [];
+
+    let cards = allCards.filter(c => c.sourceModule === selectedSource);
     
-    // Apply source filter
-    if (sourceFilter !== 'all') {
-      cards = cards.filter(c => c.sourceModule === sourceFilter);
-    }
-    
-    // Apply difficulty filter
     if (difficultyFilter !== 'all') {
       cards = cards.filter(c => c.difficulty === difficultyFilter);
     }
-    
-    // Group by category
+
     const categoryMap = new Map<string, { cards: UnifiedFlashcard[], icon: string }>();
     cards.forEach(card => {
       const existing = categoryMap.get(card.category);
@@ -59,29 +116,26 @@ const UnifiedCategoryBrowser: React.FC<UnifiedCategoryBrowserProps> = ({ onSelec
         categoryMap.set(card.category, { cards: [card], icon: card.icon });
       }
     });
-    
+
     return Array.from(categoryMap.entries()).map(([title, { cards, icon }]) => ({
       title,
       icon,
       cards,
       cardCount: cards.length,
     }));
-  }, [sourceFilter, difficultyFilter]);
+  }, [selectedSource, allCards, difficultyFilter]);
 
-  const totalCards = useMemo(() => {
-    return categories.reduce((sum, cat) => sum + cat.cardCount, 0);
-  }, [categories]);
-
-  const handleSelectCategory = (category: typeof categories[0]) => {
+  const handleSelectCategory = (category: typeof subcategories[0]) => {
     onSelectCards(category.cards, category.title);
   };
 
-  const handleStudyAll = () => {
-    const allCards = categories.flatMap(c => c.cards);
-    const filterName = sourceFilter === 'all' ? 'All Cards' : 
-      sourceFilter === 'personal-finance' ? 'Personal Finance' :
-      sourceFilter === 'careers' ? 'Careers in Finance' : 'Market Intelligence';
-    onSelectCards(allCards, filterName);
+  const handleStudyAll = (source: SourceType) => {
+    let cards = allCards.filter(c => c.sourceModule === source);
+    if (difficultyFilter !== 'all') {
+      cards = cards.filter(c => c.difficulty === difficultyFilter);
+    }
+    const category = MAIN_CATEGORIES.find(c => c.id === source);
+    onSelectCards(cards, category?.title || 'All Cards');
   };
 
   const getDifficultyColor = (difficulty: string) => {
@@ -93,47 +147,127 @@ const UnifiedCategoryBrowser: React.FC<UnifiedCategoryBrowserProps> = ({ onSelec
     }
   };
 
+  // Main category view
+  if (!selectedSource) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold text-foreground mb-2">Choose a Topic</h2>
+          <p className="text-muted-foreground">Select a category to start studying flashcards</p>
+        </div>
+
+        <div className="space-y-4">
+          {MAIN_CATEGORIES.map((category) => {
+            const stats = categoryStats[category.id];
+            return (
+              <Card
+                key={category.id}
+                className={`cursor-pointer transition-all duration-300 border-2 ${category.borderColor} bg-gradient-to-r ${category.gradient} hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]`}
+                onClick={() => setSelectedSource(category.id)}
+              >
+                <CardContent className="p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 rounded-xl bg-background/50 backdrop-blur">
+                      {category.icon}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <h3 className="text-xl font-bold text-foreground">
+                          {category.title}
+                        </h3>
+                        <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                        {category.description}
+                      </p>
+                      <div className="flex items-center gap-3">
+                        <Badge variant="secondary" className="font-semibold">
+                          {stats.count} cards
+                        </Badge>
+                        <div className="flex gap-1">
+                          {['beginner', 'intermediate', 'advanced'].map(diff => {
+                            const count = stats.difficulties[diff] || 0;
+                            if (count === 0) return null;
+                            return (
+                              <Badge 
+                                key={diff} 
+                                className={`text-[10px] ${getDifficultyColor(diff)}`}
+                              >
+                                {count}
+                              </Badge>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        {/* Study All Option */}
+        <Card className="bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20 mt-8">
+          <CardContent className="p-6 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Sparkles className="h-6 w-6 text-primary" />
+              <div>
+                <h3 className="font-bold text-lg">Study Everything</h3>
+                <p className="text-sm text-muted-foreground">
+                  {allCards.length} cards across all categories
+                </p>
+              </div>
+            </div>
+            <Button 
+              size="lg"
+              onClick={() => onSelectCards(allCards, 'All Flashcards')}
+            >
+              <Play className="h-4 w-4 mr-2" />
+              Start
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Subcategory view
+  const currentMainCategory = MAIN_CATEGORIES.find(c => c.id === selectedSource);
+  const totalFilteredCards = subcategories.reduce((sum, cat) => sum + cat.cardCount, 0);
+
   return (
     <div className="space-y-6">
-      {/* Source Filter */}
-      <div className="space-y-3">
-        <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-          <Filter className="h-4 w-4" />
-          Filter by Source
-        </h3>
-        <Tabs value={sourceFilter} onValueChange={(v) => setSourceFilter(v as SourceFilter)}>
-          <TabsList className={`grid w-full ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-1`}>
-            <TabsTrigger value="all" className="text-xs sm:text-sm">
-              All
-            </TabsTrigger>
-            <TabsTrigger value="personal-finance" className="text-xs sm:text-sm gap-1">
-              <BookOpen className="h-3 w-3 sm:h-4 sm:w-4" />
-              {isMobile ? 'Finance' : 'Personal Finance'}
-            </TabsTrigger>
-            <TabsTrigger value="careers" className="text-xs sm:text-sm gap-1">
-              <Briefcase className="h-3 w-3 sm:h-4 sm:w-4" />
-              Careers
-            </TabsTrigger>
-            <TabsTrigger value="market-intelligence" className="text-xs sm:text-sm gap-1">
-              <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" />
-              {isMobile ? 'Markets' : 'Market Intel'}
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
+      {/* Header with back button */}
+      <div className="flex items-center gap-3">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={() => setSelectedSource(null)}
+          className="shrink-0"
+        >
+          <ChevronLeft className="h-4 w-4 mr-1" />
+          Back
+        </Button>
+        <div className="flex-1 min-w-0">
+          <h2 className="text-xl font-bold text-foreground truncate">
+            {currentMainCategory?.title}
+          </h2>
+        </div>
       </div>
 
       {/* Difficulty Filter */}
       <div className="flex flex-wrap gap-2">
-        <span className="text-sm text-muted-foreground">Difficulty:</span>
+        <span className="text-sm text-muted-foreground self-center">Difficulty:</span>
         {(['all', 'beginner', 'intermediate', 'advanced'] as const).map((diff) => (
           <Badge
             key={diff}
             variant={difficultyFilter === diff ? 'default' : 'outline'}
             className={`cursor-pointer transition-all ${
               difficultyFilter === diff 
-                ? diff === 'beginner' ? 'bg-green-500' 
-                  : diff === 'intermediate' ? 'bg-yellow-500' 
-                  : diff === 'advanced' ? 'bg-red-500' 
+                ? diff === 'beginner' ? 'bg-green-500 hover:bg-green-600' 
+                  : diff === 'intermediate' ? 'bg-yellow-500 hover:bg-yellow-600' 
+                  : diff === 'advanced' ? 'bg-red-500 hover:bg-red-600' 
                   : '' 
                 : 'hover:bg-muted'
             }`}
@@ -144,24 +278,28 @@ const UnifiedCategoryBrowser: React.FC<UnifiedCategoryBrowserProps> = ({ onSelec
         ))}
       </div>
 
-      {/* Study All Button */}
-      <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
+      {/* Study All in Category */}
+      <Card className={`bg-gradient-to-r ${currentMainCategory?.gradient} border-2 ${currentMainCategory?.borderColor?.replace('hover:', '')}`}>
         <CardContent className="p-4 flex items-center justify-between">
           <div>
-            <h3 className="font-semibold">Study All ({totalCards} cards)</h3>
+            <h3 className="font-semibold">Study All ({totalFilteredCards} cards)</h3>
             <p className="text-sm text-muted-foreground">
-              Review all cards matching your filters
+              Review all {currentMainCategory?.title} cards
             </p>
           </div>
-          <Button onClick={handleStudyAll} disabled={totalCards === 0}>
+          <Button 
+            onClick={() => handleStudyAll(selectedSource)}
+            disabled={totalFilteredCards === 0}
+          >
+            <Play className="h-4 w-4 mr-2" />
             Start
           </Button>
         </CardContent>
       </Card>
 
-      {/* Category Grid */}
-      <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-3'} gap-4`}>
-        {categories.map((category) => (
+      {/* Subcategory Grid */}
+      <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2'} gap-4`}>
+        {subcategories.map((category) => (
           <Card 
             key={category.title}
             className="cursor-pointer hover:shadow-md hover:border-primary/30 transition-all group"
@@ -180,7 +318,6 @@ const UnifiedCategoryBrowser: React.FC<UnifiedCategoryBrowserProps> = ({ onSelec
                 {category.title}
               </h3>
               <div className="flex flex-wrap gap-1 mt-2">
-                {/* Show difficulty distribution */}
                 {['beginner', 'intermediate', 'advanced'].map(diff => {
                   const count = category.cards.filter(c => c.difficulty === diff).length;
                   if (count === 0) return null;
@@ -199,14 +336,11 @@ const UnifiedCategoryBrowser: React.FC<UnifiedCategoryBrowserProps> = ({ onSelec
         ))}
       </div>
 
-      {categories.length === 0 && (
+      {subcategories.length === 0 && (
         <div className="text-center py-12 text-muted-foreground">
-          <p>No flashcards match your current filters.</p>
-          <Button variant="link" onClick={() => {
-            setSourceFilter('all');
-            setDifficultyFilter('all');
-          }}>
-            Clear filters
+          <p>No flashcards match your current filter.</p>
+          <Button variant="link" onClick={() => setDifficultyFilter('all')}>
+            Clear filter
           </Button>
         </div>
       )}

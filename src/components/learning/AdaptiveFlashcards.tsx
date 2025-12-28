@@ -262,6 +262,7 @@ const AdaptiveFlashcards: React.FC = () => {
             title={selectedDeckTitle}
             onComplete={(stats) => {
               recordActivity();
+              // Rewards are awarded by SwipeableStudyDeck via usePlatformIntegration
               handleBackToBrowse();
             }}
             onBack={handleBackToBrowse}

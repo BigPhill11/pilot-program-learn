@@ -218,17 +218,39 @@ const SwipeableFlashcard: React.FC<SwipeableFlashcardProps> = ({
         )}
       </AnimatePresence>
 
-      {/* Swipe instruction */}
-      <div className="mt-6 flex justify-between items-center px-4 text-sm text-muted-foreground">
-        <div className="flex items-center gap-2">
-          <X className="h-5 w-5 text-red-500" />
-          <span>Review</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span>Got it!</span>
-          <Check className="h-5 w-5 text-green-500" />
-        </div>
+      {/* Action Buttons */}
+      <div className="mt-6 flex gap-4 px-4">
+        <Button
+          variant="outline"
+          size="lg"
+          className="flex-1 h-14 border-2 border-red-500/30 bg-red-500/5 hover:bg-red-500/20 hover:border-red-500/50 text-red-600 dark:text-red-400 font-semibold"
+          onClick={(e) => {
+            e.stopPropagation();
+            setExitDirection('left');
+            setTimeout(onSwipeLeft, 200);
+          }}
+        >
+          <X className="h-5 w-5 mr-2" />
+          Review
+        </Button>
+        <Button
+          size="lg"
+          className="flex-1 h-14 bg-green-500 hover:bg-green-600 text-white font-semibold"
+          onClick={(e) => {
+            e.stopPropagation();
+            setExitDirection('right');
+            setTimeout(onSwipeRight, 200);
+          }}
+        >
+          <Check className="h-5 w-5 mr-2" />
+          Got It!
+        </Button>
       </div>
+
+      {/* Swipe hint */}
+      <p className="text-center text-xs text-muted-foreground mt-3">
+        or swipe the card left/right
+      </p>
     </div>
   );
 };
