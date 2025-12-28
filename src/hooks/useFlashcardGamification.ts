@@ -7,7 +7,10 @@ import {
   MASTERY_TIERS,
   XP_REWARDS
 } from "@/types/flashcard-gamification";
-import { CategorizedFlashcard } from "@/data/flashcard-categories";
+import { UnifiedFlashcard } from "@/data/unified-flashcards";
+
+// Compatibility type alias
+type CategorizedFlashcard = UnifiedFlashcard;
 import { 
   SM2Progress, 
   calculateSM2, 

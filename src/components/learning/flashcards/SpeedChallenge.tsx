@@ -4,10 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Zap, Clock, Target, Trophy, X } from "lucide-react";
-import { CategorizedFlashcard } from "@/data/flashcard-categories";
+import { UnifiedFlashcard } from "@/data/unified-flashcards";
 import { SPEED_CHALLENGE_CONFIG, XP_REWARDS } from "@/types/flashcard-gamification";
 import { usePlatformIntegration } from "@/hooks/usePlatformIntegration";
 import { PLATFORM_REWARDS } from "@/config/gameConfig";
+
+// Compatibility type alias
+type CategorizedFlashcard = UnifiedFlashcard;
 
 interface SpeedChallengeProps {
   cards: CategorizedFlashcard[];

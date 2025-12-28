@@ -122,7 +122,7 @@ const AdaptiveFlashcards: React.FC = () => {
 
   // Get daily challenge cards
   const getDailyChallengeCards = (): CategorizedFlashcard[] => {
-    const allCards = getAllFlashcards();
+    const allCards = getAllUnifiedFlashcards();
     const shuffled = [...allCards].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, 10);
   };
@@ -156,7 +156,7 @@ const AdaptiveFlashcards: React.FC = () => {
               <Card 
                 className="cursor-pointer hover:shadow-md transition-all border-2 border-transparent hover:border-primary/20"
                 onClick={() => {
-                  const cards = getAllFlashcards().slice(0, 15);
+                  const cards = getAllUnifiedFlashcards().slice(0, 15);
                   setSelectedCards(cards);
                   setStudyMode('speed');
                 }}
@@ -209,14 +209,14 @@ const AdaptiveFlashcards: React.FC = () => {
             </Card>
 
             {/* Category Browser */}
-            <CategoryBrowser onSelectCards={handleSelectCards} />
+            <UnifiedCategoryBrowser onSelectCards={handleSelectCards} />
           </div>
         );
 
       case 'speed':
         return (
           <SpeedChallenge
-            cards={selectedCards.length > 0 ? selectedCards : getAllFlashcards().slice(0, 15)}
+            cards={selectedCards.length > 0 ? selectedCards : getAllUnifiedFlashcards().slice(0, 15)}
             onComplete={handleSpeedComplete}
             onCancel={handleBackToBrowse}
           />
@@ -247,7 +247,7 @@ const AdaptiveFlashcards: React.FC = () => {
             <SmartReviewMode
               allSM2Progress={getAllSM2Progress()}
               onStartReview={() => {
-                const allCards = getAllFlashcards();
+                const allCards = getAllUnifiedFlashcards();
                 setSelectedCards(allCards);
                 setStudyMode('deck');
               }}
@@ -257,21 +257,15 @@ const AdaptiveFlashcards: React.FC = () => {
 
       case 'deck':
         return (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Button variant="ghost" onClick={handleBackToBrowse}>
-                <ChevronLeft className="h-4 w-4 mr-2" />
-                Back to Browse
-              </Button>
-              {selectedDeckTitle && (
-                <Badge variant="outline">{selectedDeckTitle}</Badge>
-              )}
-            </div>
-            <FlashcardDeck 
-              key={refreshKey} 
-              level={selectedLevel}
-            />
-          </div>
+          <SwipeableStudyDeck
+            cards={selectedCards}
+            title={selectedDeckTitle}
+            onComplete={(stats) => {
+              recordActivity();
+              handleBackToBrowse();
+            }}
+            onBack={handleBackToBrowse}
+          />
         );
 
       default:
