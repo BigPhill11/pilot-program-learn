@@ -46,22 +46,22 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     return (
       <PlacementQuiz 
         onComplete={async (track, score) => {
-          // Try to save, but proceed regardless
-          try {
-            await supabase
-              .from('profiles')
-              .update({
-                placement_track: track,
-                placement_score: score,
-                app_version: track,
-                updated_at: new Date().toISOString()
-              })
-              .eq('id', user.id);
-          } catch (error) {
+          // Use upsert to ensure save works even if profile was just created
+          const { error } = await supabase
+            .from('profiles')
+            .upsert({
+              id: user.id,
+              placement_track: track,
+              placement_score: score,
+              app_version: track,
+              updated_at: new Date().toISOString()
+            }, { onConflict: 'id' });
+          
+          if (error) {
             console.error('Error saving placement:', error);
+            toast.error('Failed to save progress, but continuing...');
           }
           
-          // Always proceed to tour
           toast.success(`Welcome to the ${track.replace('-', ' ')} track!`);
           setPendingPlacement({ track, score });
         }} 
@@ -76,21 +76,21 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
       <PandaPhilTour 
         placementTrack={placementTrack}
         onComplete={async () => {
-          // Try to save, but proceed regardless
-          try {
-            await supabase
-              .from('profiles')
-              .update({
-                app_tour_completed: true,
-                onboarding_completed: true,
-                updated_at: new Date().toISOString()
-              })
-              .eq('id', user.id);
-          } catch (error) {
+          // Use upsert to ensure save works
+          const { error } = await supabase
+            .from('profiles')
+            .upsert({
+              id: user.id,
+              app_tour_completed: true,
+              onboarding_completed: true,
+              updated_at: new Date().toISOString()
+            }, { onConflict: 'id' });
+          
+          if (error) {
             console.error('Error completing tour:', error);
+            toast.error('Failed to save progress, but continuing...');
           }
           
-          // Always proceed to app
           toast.success("You're all set! Let's start learning!");
           setTourCompleted(true);
         }} 

@@ -5,7 +5,7 @@
  * - Loading saved state and calculating offline progress
  * - Game tick loop (updates every second)
  * - Event triggering (based on XP-tier driven hourly cadence)
- * - Auto-saving state
+ * - Auto-saving state (to cloud for logged-in users)
  */
 
 import React, { useEffect, useRef, useCallback } from 'react';
@@ -26,8 +26,12 @@ import BaseView from '@/components/empire/BaseView';
 import { toast } from 'sonner';
 import { empireClasses } from '@/config/empireTheme';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/useAuth';
 
 const EmpirePage: React.FC = () => {
+  const { user } = useAuth();
+  const userId = user?.id;
+  
   const initialized = useGameStore(state => state.initialized);
   const loadState = useGameStore(state => state.loadState);
   const tick = useGameStore(state => state.tick);
@@ -38,10 +42,11 @@ const EmpirePage: React.FC = () => {
   const tickIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const saveIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const eventCheckIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const userIdRef = useRef<string | undefined>(userId);
 
   // Initialize game state
-  const initializeGame = useCallback(() => {
-    const savedState = loadGameState();
+  const initializeGame = useCallback(async (currentUserId?: string) => {
+    const savedState = await loadGameState(currentUserId);
     
     if (savedState) {
       // Calculate offline progress
@@ -130,15 +135,20 @@ const EmpirePage: React.FC = () => {
   const saveGame = useCallback(() => {
     const state = useGameStore.getState();
     const persistable = extractPersistableState(state);
-    saveGameState(persistable);
+    saveGameState(persistable, userIdRef.current);
   }, []);
 
-  // Initialize game on mount
+  // Keep userIdRef in sync
   useEffect(() => {
-    if (!initialized) {
-      initializeGame();
+    userIdRef.current = userId;
+  }, [userId]);
+
+  // Initialize game on mount or when user changes
+  useEffect(() => {
+    if (!initialized || (userId && userIdRef.current !== userId)) {
+      initializeGame(userId);
     }
-  }, [initialized, initializeGame]);
+  }, [initialized, userId, initializeGame]);
 
   // Set up game loops
   useEffect(() => {
