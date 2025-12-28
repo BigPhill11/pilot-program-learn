@@ -3,10 +3,13 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Star, Gift, Trophy } from "lucide-react";
-import { CategorizedFlashcard } from "@/data/flashcard-categories";
+import { UnifiedFlashcard } from "@/data/unified-flashcards";
 import { XP_REWARDS } from "@/types/flashcard-gamification";
 import { usePlatformIntegration } from "@/hooks/usePlatformIntegration";
 import { PLATFORM_REWARDS } from "@/config/gameConfig";
+
+// Compatibility type alias
+type CategorizedFlashcard = UnifiedFlashcard;
 
 interface DailyChallengeProps {
   cards: CategorizedFlashcard[];
@@ -133,7 +136,7 @@ export const DailyChallenge = ({ cards, onComplete, isCompleted }: DailyChalleng
       </div>
 
       <div className="min-h-[300px] flex flex-col justify-center">
-        <Badge className="mb-3 w-fit">{currentCard.level}</Badge>
+        <Badge className="mb-3 w-fit">{currentCard.difficulty}</Badge>
         
         <div className="text-center mb-6">
           <h3 className="text-2xl font-bold mb-4">{currentCard.term}</h3>

@@ -7,8 +7,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Brain, Calendar, AlertCircle, CheckCircle } from "lucide-react";
 import { ReviewScheduleCard } from "./ReviewScheduleCard";
 import { ReviewDashboard } from "./ReviewDashboard";
-import { getAllFlashcards, CategorizedFlashcard } from "@/data/flashcard-categories";
+import { getAllUnifiedFlashcards, UnifiedFlashcard } from "@/data/unified-flashcards";
 import { SM2Progress, isDueForReview, getDaysUntilReview, sortCardsByPriority } from "@/utils/spaced-repetition";
+
+// Compatibility type alias
+type CategorizedFlashcard = UnifiedFlashcard;
 
 interface SmartReviewModeProps {
   allSM2Progress: Map<string, SM2Progress>;
@@ -18,7 +21,7 @@ interface SmartReviewModeProps {
 
 export const SmartReviewMode = ({ allSM2Progress, onStartReview, onCardClick }: SmartReviewModeProps) => {
   const [viewMode, setViewMode] = useState<'dashboard' | 'schedule'>('dashboard');
-  const allCards = getAllFlashcards();
+  const allCards = getAllUnifiedFlashcards();
 
   const getDueCards = () => {
     return Array.from(allSM2Progress.values())

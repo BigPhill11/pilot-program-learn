@@ -25,15 +25,18 @@ import { ConfidenceSlider } from "./ConfidenceSlider";
 import { ReviewDashboard } from "./ReviewDashboard";
 import { ReviewScheduleCard } from "./ReviewScheduleCard";
 import { SmartReviewMode } from "./SmartReviewMode";
-import { CategoryBrowser } from "./CategoryBrowser";
+import UnifiedCategoryBrowser from "./UnifiedCategoryBrowser";
 import { FlashcardTutorial } from "./FlashcardTutorial";
 import { useFlashcardGamification } from "@/hooks/useFlashcardGamification";
 import { 
-  getAllFlashcards, 
-  getFlashcardsByLevel,
-  CategorizedFlashcard 
-} from "@/data/flashcard-categories";
+  getAllUnifiedFlashcards, 
+  getFlashcardsByDifficulty,
+  UnifiedFlashcard 
+} from "@/data/unified-flashcards";
 import { useToast } from "@/hooks/use-toast";
+
+// Compatibility type alias
+type CategorizedFlashcard = UnifiedFlashcard;
 
 export const GamifiedFlashcardHub = () => {
   const { toast } = useToast();
@@ -81,7 +84,7 @@ export const GamifiedFlashcardHub = () => {
   }, []);
 
   const loadNextCard = () => {
-    const cardsToUse = selectedCards.length > 0 ? selectedCards : getAllFlashcards();
+    const cardsToUse = selectedCards.length > 0 ? selectedCards : getAllUnifiedFlashcards();
     
     // In review mode, prioritize due cards
     if (mode === 'review') {
@@ -157,13 +160,13 @@ export const GamifiedFlashcardHub = () => {
   };
 
   const getDailyChallengeCards = (): CategorizedFlashcard[] => {
-    const allCards = getAllFlashcards();
+    const allCards = getAllUnifiedFlashcards();
     const shuffled = [...allCards].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, 5);
   };
 
   const getSpeedChallengeCards = (): CategorizedFlashcard[] => {
-    const allCards = getAllFlashcards();
+    const allCards = getAllUnifiedFlashcards();
     const shuffled = [...allCards].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, 15);
   };
@@ -266,7 +269,7 @@ export const GamifiedFlashcardHub = () => {
 
       {/* Category Browser Mode */}
       {mode === 'browse' && (
-        <CategoryBrowser onSelectCards={handleCardSelection} />
+        <UnifiedCategoryBrowser onSelectCards={handleCardSelection} />
       )}
 
       {mode !== 'browse' && (
@@ -395,7 +398,7 @@ export const GamifiedFlashcardHub = () => {
           <Card className="p-8">
             <div className="flex items-start justify-between mb-6">
               <div className="flex gap-2">
-                <Badge>{currentCard.level}</Badge>
+                <Badge>{currentCard.difficulty}</Badge>
                 {getMasteryForCard(currentCard.id) && (
                   <MasteryBadge
                     tier={getMasteryForCard(currentCard.id)!.tier}
