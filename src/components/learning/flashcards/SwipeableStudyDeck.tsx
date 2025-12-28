@@ -3,7 +3,7 @@
  * 
  * Features:
  * - Swipeable cards with progress tracking
- * - XP/coin rewards for mastery
+ * - XP/coin rewards for mastery via Bamboo Empire
  * - Session summary on completion
  * - Mobile-optimized
  */
@@ -18,6 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ChevronLeft, RotateCcw, Trophy, Sparkles, Coins, ArrowRight } from 'lucide-react';
 import { useUnifiedStreak } from '@/hooks/useUnifiedStreak';
+import { usePlatformIntegration } from '@/hooks/usePlatformIntegration';
 import confetti from 'canvas-confetti';
 
 interface SwipeableStudyDeckProps {
@@ -27,7 +28,7 @@ interface SwipeableStudyDeckProps {
   onBack: () => void;
 }
 
-interface SessionStats {
+export interface SessionStats {
   totalCards: number;
   masteredCount: number;
   reviewCount: number;
@@ -50,6 +51,7 @@ const SwipeableStudyDeck: React.FC<SwipeableStudyDeckProps> = ({
   const [coinsEarned, setCoinsEarned] = useState(0);
   
   const { currentStreak, recordActivity } = useUnifiedStreak();
+  const { awardActivityCompletion } = usePlatformIntegration();
 
   // Calculate XP based on difficulty
   const calculateRewards = (card: UnifiedFlashcard, mastered: boolean): { xp: number; coins: number } => {
@@ -65,12 +67,15 @@ const SwipeableStudyDeck: React.FC<SwipeableStudyDeckProps> = ({
     const card = cards[currentIndex];
     const rewards = calculateRewards(card, true);
     
+    // Award to Bamboo Empire
+    awardActivityCompletion('flashcard_mastery', undefined, false);
+    
     setMasteredCount(prev => prev + 1);
     setXpEarned(prev => prev + rewards.xp);
     setCoinsEarned(prev => prev + rewards.coins);
     
     moveToNextCard();
-  }, [currentIndex, cards]);
+  }, [currentIndex, cards, awardActivityCompletion]);
 
   const handleSwipeLeft = useCallback(() => {
     const card = cards[currentIndex];
