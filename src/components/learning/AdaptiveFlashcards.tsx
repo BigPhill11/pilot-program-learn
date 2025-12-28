@@ -29,15 +29,14 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/hooks/useAuth';
 
 // Flashcard components
-import { CategoryBrowser } from './flashcards/CategoryBrowser';
+import UnifiedCategoryBrowser from './flashcards/UnifiedCategoryBrowser';
 import { SpeedChallenge } from './flashcards/SpeedChallenge';
 import { DailyChallenge } from './flashcards/DailyChallenge';
 import { SmartReviewMode } from './flashcards/SmartReviewMode';
-// StreakTracker removed - now using unified streak system
 import { useUnifiedStreak } from '@/hooks/useUnifiedStreak';
 import FlashcardUploader from './flashcards/FlashcardUploader';
 import FlashcardManager from './flashcards/FlashcardManager';
-import FlashcardDeck from './flashcards/FlashcardDeck';
+import SwipeableStudyDeck from './flashcards/SwipeableStudyDeck';
 
 // Game components
 import QuizzesSection from './QuizzesSection';
@@ -46,7 +45,10 @@ import PandaJumpSection from './PandaJumpSection';
 
 // Hooks
 import { useFlashcardGamification } from '@/hooks/useFlashcardGamification';
-import { CategorizedFlashcard, getAllFlashcards } from '@/data/flashcard-categories';
+import { getAllUnifiedFlashcards, UnifiedFlashcard } from '@/data/unified-flashcards';
+
+// Compatibility type
+type CategorizedFlashcard = UnifiedFlashcard;
 
 type MainSection = 'study' | 'games' | 'manage';
 type StudyMode = 'browse' | 'speed' | 'daily' | 'smart' | 'deck';
