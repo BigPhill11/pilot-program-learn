@@ -4,7 +4,27 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { ChevronLeft, ChevronRight, RotateCcw, Shuffle, Lightbulb, Globe, Trophy } from 'lucide-react';
-import { getFlashcardsByLevel, type AdaptiveFlashcard } from '@/data/adaptive-learning-flashcards';
+import { getFlashcardsByDifficulty, UnifiedFlashcard } from '@/data/unified-flashcards';
+
+// Map old level names to new difficulty names
+const levelToDifficulty = (level: 'beginner' | 'intermediate' | 'pro'): 'beginner' | 'intermediate' | 'advanced' => {
+  if (level === 'pro') return 'advanced';
+  return level;
+};
+
+// Get flashcards by level (wrapper for compatibility)
+const getFlashcardsByLevel = (level: 'beginner' | 'intermediate' | 'pro') => {
+  const difficulty = levelToDifficulty(level);
+  return getFlashcardsByDifficulty(difficulty).map(card => ({
+    id: card.id,
+    term: card.term,
+    definition: card.definition,
+    philExample: card.philExample,
+    realWorldExample: card.realWorldExample,
+    level: card.difficulty,
+    category: card.category,
+  }));
+};
 
 interface Flashcard {
   id?: string;
