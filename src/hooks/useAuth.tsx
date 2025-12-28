@@ -37,16 +37,43 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any | null>(null);
 
-  const fetchProfile = async (userId: string) => {
+  const fetchProfile = async (userId: string, userEmail?: string) => {
     try {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
       
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         console.error('Error fetching profile:', error);
+        return;
+      }
+      
+      // If no profile exists, create one
+      if (!data) {
+        const newProfile = {
+          id: userId,
+          email: userEmail || null,
+          username: userEmail ? userEmail.split('@')[0] : null,
+          onboarding_completed: false,
+          app_tour_completed: false,
+          placement_track: null,
+          placement_score: null,
+        };
+        
+        const { data: upsertedProfile, error: upsertError } = await supabase
+          .from('profiles')
+          .upsert(newProfile, { onConflict: 'id' })
+          .select()
+          .single();
+        
+        if (upsertError) {
+          console.error('Error creating profile:', upsertError);
+          return;
+        }
+        
+        setProfile(upsertedProfile);
         return;
       }
       
@@ -104,7 +131,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           // Use setTimeout to prevent potential deadlock
           setTimeout(async () => {
             if (mounted) {
-              await fetchProfile(session.user.id);
+              await fetchProfile(session.user.id, session.user.email);
               await handleDailyLogin(session.user.id);
             }
           }, 0);
@@ -126,7 +153,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (session?.user) {
         setTimeout(async () => {
           if (mounted) {
-            await fetchProfile(session.user.id);
+            await fetchProfile(session.user.id, session.user.email);
             await handleDailyLogin(session.user.id);
           }
         }, 0);
