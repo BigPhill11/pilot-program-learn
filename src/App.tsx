@@ -11,6 +11,7 @@ import MinimalLayout from "@/components/layout/MinimalLayout";
 import Index from "./pages/Index";
 import LearnPage from "./pages/LearnPage";
 import EmpirePage from "./pages/EmpirePage";
+import { Analytics } from "@vercel/analytics/react";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ function App() {
           </ProgressProvider>
         </AuthProvider>
       </ThemeProvider>
+      <Analytics />
     </QueryClientProvider>
   );
 }
