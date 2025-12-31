@@ -188,9 +188,10 @@ const encouragements = [
 
 interface PlacementQuizProps {
   onComplete: (track: string, score: number) => void;
+  onSkip?: () => void;
 }
 
-const PlacementQuiz: React.FC<PlacementQuizProps> = ({ onComplete }) => {
+const PlacementQuiz: React.FC<PlacementQuizProps> = ({ onComplete, onSkip }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [showResult, setShowResult] = useState(false);
@@ -294,6 +295,9 @@ const PlacementQuiz: React.FC<PlacementQuizProps> = ({ onComplete }) => {
             <PandaLogo className="h-12 w-12" />
             <CardTitle className="text-xl">Placement Quiz</CardTitle>
           </div>
+          <p className="text-sm text-muted-foreground mb-2">
+            This quiz helps personalize your learning path, but it's optional!
+          </p>
           <div className="space-y-2">
             <div className="flex justify-between text-sm text-muted-foreground">
               <span>Question {currentQuestion + 1} of {questions.length}</span>
@@ -347,6 +351,21 @@ const PlacementQuiz: React.FC<PlacementQuizProps> = ({ onComplete }) => {
               </div>
             </motion.div>
           </AnimatePresence>
+
+          {/* Skip Quiz Button */}
+          {onSkip && (
+            <div className="pt-4 border-t border-border">
+              <Button
+                variant="ghost"
+                size="lg"
+                className="w-full h-14 text-base font-medium text-muted-foreground hover:text-foreground"
+                onClick={onSkip}
+              >
+                Skip Quiz & Start Learning →
+                <span className="block text-xs opacity-70 ml-2">(Start with Personal Finance)</span>
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

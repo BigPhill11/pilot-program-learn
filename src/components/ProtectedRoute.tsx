@@ -43,28 +43,51 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   // Check if user needs placement quiz - if no placement_track set AND not already onboarded
   const placementTrack = pendingPlacement?.track || (profile as any).placement_track;
   if (!placementTrack && !onboardingAlreadyCompleted) {
+    const handlePlacementComplete = async (track: string, score: number) => {
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({
+          id: user.id,
+          placement_track: track,
+          placement_score: score,
+          app_version: track,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'id' });
+      
+      if (error) {
+        console.error('Error saving placement:', error);
+        toast.error('Failed to save progress, but continuing...');
+      }
+      
+      toast.success(`Welcome to the ${track.replace('-', ' ')} track!`);
+      setPendingPlacement({ track, score });
+    };
+
+    const handleSkipQuiz = async () => {
+      const defaultTrack = 'personal-finance';
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({
+          id: user.id,
+          placement_track: defaultTrack,
+          placement_score: 0,
+          app_version: defaultTrack,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'id' });
+      
+      if (error) {
+        console.error('Error saving placement:', error);
+        toast.error('Failed to save progress, but continuing...');
+      }
+      
+      toast.success("Starting with Personal Finance track!");
+      setPendingPlacement({ track: defaultTrack, score: 0 });
+    };
+
     return (
       <PlacementQuiz 
-        onComplete={async (track, score) => {
-          // Use upsert to ensure save works even if profile was just created
-          const { error } = await supabase
-            .from('profiles')
-            .upsert({
-              id: user.id,
-              placement_track: track,
-              placement_score: score,
-              app_version: track,
-              updated_at: new Date().toISOString()
-            }, { onConflict: 'id' });
-          
-          if (error) {
-            console.error('Error saving placement:', error);
-            toast.error('Failed to save progress, but continuing...');
-          }
-          
-          toast.success(`Welcome to the ${track.replace('-', ' ')} track!`);
-          setPendingPlacement({ track, score });
-        }} 
+        onComplete={handlePlacementComplete}
+        onSkip={handleSkipQuiz}
       />
     );
   }
