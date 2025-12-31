@@ -6,7 +6,7 @@
  * Theme: Green palette matching Phil's Financials panda logo
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -19,11 +19,11 @@ import {
   PlayCircle, 
   Clock, 
   Zap, 
-  TrendingUp, 
   Lightbulb,
   Flame,
   CheckCircle2,
-  ArrowRight
+  ArrowRight,
+  Lock
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -33,6 +33,7 @@ import { useUnifiedStreak } from '@/hooks/useUnifiedStreak';
 import { useGameStore } from '@/store/useGameStore';
 import PandaLogo from '@/components/icons/PandaLogo';
 import TermOfTheDay from '@/components/learn/TermOfTheDay';
+import ComingSoonDialog from '@/components/ui/ComingSoonDialog';
 
 interface LearningDashboardProps {
   onNavigateToTab?: (tabValue: string) => void;
@@ -45,7 +46,22 @@ const LearningDashboard: React.FC<LearningDashboardProps> = ({ onNavigateToTab }
   const { goals, completedCount, loading: goalsLoading } = useDailyGoals();
   const { currentStreak, streakLevel, streakMultiplier, nextMilestone } = useUnifiedStreak();
   const xp = useGameStore(state => state.xp);
+  const [showComingSoon, setShowComingSoon] = useState(false);
+  const [comingSoonFeature, setComingSoonFeature] = useState('');
 
+  // Beta-locked features
+  const isFeatureLocked = (targetTab: string) => {
+    return targetTab === 'companies' || targetTab === 'careers';
+  };
+
+  const handlePathClick = (targetTab: string, featureName: string) => {
+    if (isFeatureLocked(targetTab)) {
+      setComingSoonFeature(featureName);
+      setShowComingSoon(true);
+      return;
+    }
+    onNavigateToTab?.(targetTab);
+  };
   // Green theme color classes for learning paths
   const getColorClasses = (index: number) => {
     const colors = [
@@ -151,17 +167,24 @@ const LearningDashboard: React.FC<LearningDashboardProps> = ({ onNavigateToTab }
               </Card>
             ))
           ) : (
-            paths.map((path, index) => (
+            paths.map((path, index) => {
+              const locked = isFeatureLocked(path.targetTab);
+              return (
               <Card 
                 key={path.id}
-                className={`${getColorClasses(index)} cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02]`}
-                onClick={() => onNavigateToTab?.(path.targetTab)}
+                className={`${getColorClasses(index)} cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] ${locked ? 'opacity-70' : ''}`}
+                onClick={() => handlePathClick(path.targetTab, path.title)}
               >
+                {locked && (
+                  <div className="absolute top-2 right-2">
+                    <Lock className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                )}
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <span className="text-3xl">{path.icon}</span>
                     <Badge variant="outline" className="text-xs border-green-400 text-green-700">
-                      {path.lessonsCompleted}/{path.totalLessons} lessons
+                      {locked ? 'Coming Soon' : `${path.lessonsCompleted}/${path.totalLessons} lessons`}
                     </Badge>
                   </div>
                   <CardTitle className="text-lg text-green-800">{path.title}</CardTitle>
@@ -173,12 +196,12 @@ const LearningDashboard: React.FC<LearningDashboardProps> = ({ onNavigateToTab }
                   <div>
                     <div className="flex justify-between text-sm mb-1 text-green-700">
                       <span>Progress</span>
-                      <span className="font-medium">{path.progressPct}%</span>
+                      <span className="font-medium">{locked ? '🔒' : `${path.progressPct}%`}</span>
                     </div>
                     <div className="h-2 bg-green-100 rounded-full overflow-hidden">
                       <div 
                         className={`h-full ${getProgressColor(index)} transition-all duration-500`}
-                        style={{ width: `${path.progressPct}%` }}
+                        style={{ width: locked ? '0%' : `${path.progressPct}%` }}
                       />
                     </div>
                   </div>
@@ -188,18 +211,19 @@ const LearningDashboard: React.FC<LearningDashboardProps> = ({ onNavigateToTab }
                       <span>{path.estimatedTime}</span>
                     </div>
                     <Button size="sm" className="h-7 text-xs gap-1 bg-green-600 hover:bg-green-700 text-white">
-                      {path.progressPct === 0 ? 'Start' : 'Continue'}
+                      {locked ? 'Coming Soon' : path.progressPct === 0 ? 'Start' : 'Continue'}
                       <ArrowRight className="h-3 w-3" />
                     </Button>
                   </div>
-                  {path.progressPct > 0 && path.progressPct < 100 && (
+                  {!locked && path.progressPct > 0 && path.progressPct < 100 && (
                     <p className="text-xs text-green-600/70 italic">
                       Next: {path.nextActionLabel}
                     </p>
                   )}
                 </CardContent>
               </Card>
-            ))
+            );
+          })
           )}
         </div>
       </div>
@@ -317,16 +341,23 @@ const LearningDashboard: React.FC<LearningDashboardProps> = ({ onNavigateToTab }
           </div>
         </Button>
         <Button 
-          onClick={() => onNavigateToTab?.('companies')}
+          onClick={() => handlePathClick('companies', 'Market Intelligence')}
           variant="outline"
-          className="h-20 border-2 border-teal-400 text-teal-700 hover:bg-teal-50 hover:border-teal-500"
+          className="h-20 border-2 border-gray-300 text-gray-500 hover:bg-gray-50 hover:border-gray-400 opacity-70"
         >
           <div className="text-center">
-            <TrendingUp className="h-8 w-8 mx-auto mb-1" />
-            <div>Market Intelligence</div>
+            <Lock className="h-8 w-8 mx-auto mb-1" />
+            <div>Market Intel (Soon)</div>
           </div>
         </Button>
       </div>
+
+      {/* Coming Soon Dialog */}
+      <ComingSoonDialog
+        isOpen={showComingSoon}
+        onClose={() => setShowComingSoon(false)}
+        featureName={comingSoonFeature}
+      />
     </div>
   );
 };

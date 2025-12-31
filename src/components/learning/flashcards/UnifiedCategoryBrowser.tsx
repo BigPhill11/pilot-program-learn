@@ -6,6 +6,7 @@
  * - Large, prominent navigation cards
  * - Drill down into subcategories
  * - Back navigation
+ * - Beta lock for Market Intel and Careers
  */
 
 import React, { useState, useMemo } from 'react';
@@ -17,6 +18,7 @@ import {
   UnifiedFlashcard 
 } from '@/data/unified-flashcards';
 import { useIsMobile } from '@/hooks/use-mobile';
+import ComingSoonDialog from '@/components/ui/ComingSoonDialog';
 import { 
   BookOpen, 
   Briefcase, 
@@ -24,7 +26,8 @@ import {
   ChevronLeft, 
   Play,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  Lock
 } from 'lucide-react';
 
 interface UnifiedCategoryBrowserProps {
@@ -41,6 +44,7 @@ interface MainCategory {
   icon: React.ReactNode;
   gradient: string;
   borderColor: string;
+  locked?: boolean;
 }
 
 const MAIN_CATEGORIES: MainCategory[] = [
@@ -51,22 +55,25 @@ const MAIN_CATEGORIES: MainCategory[] = [
     icon: <BookOpen className="h-8 w-8" />,
     gradient: 'from-emerald-500/20 to-teal-500/10',
     borderColor: 'border-emerald-500/30 hover:border-emerald-500/60',
+    locked: false,
   },
   {
     id: 'market-intelligence',
     title: 'Market Intelligence',
     description: 'Master market analysis, trading concepts, and investment strategies',
     icon: <TrendingUp className="h-8 w-8" />,
-    gradient: 'from-blue-500/20 to-indigo-500/10',
-    borderColor: 'border-blue-500/30 hover:border-blue-500/60',
+    gradient: 'from-gray-500/20 to-gray-500/10',
+    borderColor: 'border-gray-400/30 hover:border-gray-400/60',
+    locked: true,
   },
   {
     id: 'careers',
     title: 'Careers in Finance',
     description: 'Explore finance career paths and industry knowledge',
     icon: <Briefcase className="h-8 w-8" />,
-    gradient: 'from-purple-500/20 to-pink-500/10',
-    borderColor: 'border-purple-500/30 hover:border-purple-500/60',
+    gradient: 'from-gray-500/20 to-gray-500/10',
+    borderColor: 'border-gray-400/30 hover:border-gray-400/60',
+    locked: true,
   },
 ];
 
@@ -74,9 +81,15 @@ const UnifiedCategoryBrowser: React.FC<UnifiedCategoryBrowserProps> = ({ onSelec
   const isMobile = useIsMobile();
   const [selectedSource, setSelectedSource] = useState<SourceType | null>(null);
   const [difficultyFilter, setDifficultyFilter] = useState<DifficultyFilter>('all');
+  const [showComingSoon, setShowComingSoon] = useState(false);
+  const [comingSoonFeature, setComingSoonFeature] = useState('');
 
-  // Get all cards
+  // Get all cards - only personal finance for now
   const allCards = useMemo(() => getAllUnifiedFlashcards(), []);
+  const availableCards = useMemo(() => 
+    allCards.filter(c => c.sourceModule === 'personal-finance'), 
+    [allCards]
+  );
 
   // Get cards for each main category
   const categoryStats = useMemo(() => {
@@ -125,6 +138,15 @@ const UnifiedCategoryBrowser: React.FC<UnifiedCategoryBrowserProps> = ({ onSelec
     }));
   }, [selectedSource, allCards, difficultyFilter]);
 
+  const handleCategoryClick = (category: MainCategory) => {
+    if (category.locked) {
+      setComingSoonFeature(category.title);
+      setShowComingSoon(true);
+      return;
+    }
+    setSelectedSource(category.id);
+  };
+
   const handleSelectCategory = (category: typeof subcategories[0]) => {
     onSelectCards(category.cards, category.title);
   };
@@ -162,42 +184,56 @@ const UnifiedCategoryBrowser: React.FC<UnifiedCategoryBrowserProps> = ({ onSelec
             return (
               <Card
                 key={category.id}
-                className={`cursor-pointer transition-all duration-300 border-2 ${category.borderColor} bg-gradient-to-r ${category.gradient} hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]`}
-                onClick={() => setSelectedSource(category.id)}
+                className={`cursor-pointer transition-all duration-300 border-2 ${category.borderColor} bg-gradient-to-r ${category.gradient} hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] ${category.locked ? 'opacity-70' : ''}`}
+                onClick={() => handleCategoryClick(category)}
               >
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-xl bg-background/50 backdrop-blur">
+                    <div className="p-3 rounded-xl bg-background/50 backdrop-blur relative">
                       {category.icon}
+                      {category.locked && (
+                        <Lock className="h-4 w-4 absolute -top-1 -right-1 text-muted-foreground" />
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
-                        <h3 className="text-xl font-bold text-foreground">
+                        <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
                           {category.title}
+                          {category.locked && (
+                            <Badge variant="outline" className="text-xs text-muted-foreground">
+                              Coming Soon
+                            </Badge>
+                          )}
                         </h3>
-                        <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                        {category.locked ? (
+                          <Lock className="h-5 w-5 text-muted-foreground" />
+                        ) : (
+                          <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                        )}
                       </div>
                       <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                         {category.description}
                       </p>
                       <div className="flex items-center gap-3">
                         <Badge variant="secondary" className="font-semibold">
-                          {stats.count} cards
+                          {category.locked ? '🔒' : `${stats.count} cards`}
                         </Badge>
-                        <div className="flex gap-1">
-                          {['beginner', 'intermediate', 'advanced'].map(diff => {
-                            const count = stats.difficulties[diff] || 0;
-                            if (count === 0) return null;
-                            return (
-                              <Badge 
-                                key={diff} 
-                                className={`text-[10px] ${getDifficultyColor(diff)}`}
-                              >
-                                {count}
-                              </Badge>
-                            );
-                          })}
-                        </div>
+                        {!category.locked && (
+                          <div className="flex gap-1">
+                            {['beginner', 'intermediate', 'advanced'].map(diff => {
+                              const count = stats.difficulties[diff] || 0;
+                              if (count === 0) return null;
+                              return (
+                                <Badge 
+                                  key={diff} 
+                                  className={`text-[10px] ${getDifficultyColor(diff)}`}
+                                >
+                                  {count}
+                                </Badge>
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -207,27 +243,34 @@ const UnifiedCategoryBrowser: React.FC<UnifiedCategoryBrowserProps> = ({ onSelec
           })}
         </div>
 
-        {/* Study All Option */}
+        {/* Study All Option - Only Personal Finance cards */}
         <Card className="bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20 mt-8">
           <CardContent className="p-6 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Sparkles className="h-6 w-6 text-primary" />
               <div>
-                <h3 className="font-bold text-lg">Study Everything</h3>
+                <h3 className="font-bold text-lg">Study Personal Finance</h3>
                 <p className="text-sm text-muted-foreground">
-                  {allCards.length} cards across all categories
+                  {availableCards.length} cards available
                 </p>
               </div>
             </div>
             <Button 
               size="lg"
-              onClick={() => onSelectCards(allCards, 'All Flashcards')}
+              onClick={() => onSelectCards(availableCards, 'Personal Finance Flashcards')}
             >
               <Play className="h-4 w-4 mr-2" />
               Start
             </Button>
           </CardContent>
         </Card>
+
+        {/* Coming Soon Dialog */}
+        <ComingSoonDialog
+          isOpen={showComingSoon}
+          onClose={() => setShowComingSoon(false)}
+          featureName={comingSoonFeature}
+        />
       </div>
     );
   }
