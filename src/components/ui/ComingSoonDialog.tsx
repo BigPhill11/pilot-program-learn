@@ -7,6 +7,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import PandaLogo from '@/components/icons/PandaLogo';
 
 interface ComingSoonDialogProps {
   isOpen: boolean;
@@ -23,8 +24,10 @@ const ComingSoonDialog: React.FC<ComingSoonDialogProps> = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md text-center">
         <DialogHeader className="space-y-4">
-          <div className="text-6xl mx-auto">🐼</div>
-          <div className="text-3xl">🚧</div>
+          <div className="mx-auto">
+            <PandaLogo className="h-20 w-20" />
+          </div>
+          <div className="text-2xl">🚧</div>
           <DialogTitle className="text-xl font-bold text-foreground">
             Under Construction
           </DialogTitle>
