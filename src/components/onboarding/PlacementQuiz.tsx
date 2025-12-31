@@ -288,18 +288,18 @@ const PlacementQuiz: React.FC<PlacementQuizProps> = ({ onComplete, onSkip }) => 
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10 p-4">
-      <Card className="w-full max-w-2xl">
-        <CardHeader className="text-center">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <PandaLogo className="h-12 w-12" />
-            <CardTitle className="text-xl">Placement Quiz</CardTitle>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10 p-2 sm:p-4">
+      <Card className="w-full max-w-2xl mx-2 sm:mx-4">
+        <CardHeader className="text-center px-3 sm:px-6">
+          <div className="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+            <PandaLogo className="h-10 w-10 sm:h-12 sm:w-12" />
+            <CardTitle className="text-lg sm:text-xl">Placement Quiz</CardTitle>
           </div>
-          <p className="text-sm text-muted-foreground mb-2">
+          <p className="text-xs sm:text-sm text-muted-foreground mb-2">
             This quiz helps personalize your learning path, but it's optional!
           </p>
           <div className="space-y-2">
-            <div className="flex justify-between text-sm text-muted-foreground">
+            <div className="flex justify-between text-xs sm:text-sm text-muted-foreground">
               <span>Question {currentQuestion + 1} of {questions.length}</span>
               <span>{Math.round(progress)}% Complete</span>
             </div>
@@ -307,7 +307,7 @@ const PlacementQuiz: React.FC<PlacementQuizProps> = ({ onComplete, onSkip }) => 
           </div>
         </CardHeader>
         
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4 sm:space-y-6 px-3 sm:px-6">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentQuestion}
@@ -315,36 +315,38 @@ const PlacementQuiz: React.FC<PlacementQuizProps> = ({ onComplete, onSkip }) => 
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -50, opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="space-y-6"
+              className="space-y-4 sm:space-y-6"
             >
               {/* Encouragement */}
-              <p className="text-center text-sm text-muted-foreground italic">
+              <p className="text-center text-xs sm:text-sm text-muted-foreground italic">
                 {encouragements[currentQuestion]}
               </p>
               
               {/* Question */}
-              <h3 className="text-lg font-semibold text-center">
+              <h3 className="text-base sm:text-lg font-semibold text-center px-1">
                 {questions[currentQuestion].text}
               </h3>
               
               {/* Options */}
-              <div className="grid gap-3">
+              <div className="grid gap-2 sm:gap-3">
                 {questions[currentQuestion].options.map((option, index) => (
                   <motion.div
                     key={index}
-                    whileHover={{ scale: 1.02 }}
+                    whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.98 }}
                   >
                     <Button
                       variant={selectedAnswer === index ? "default" : "outline"}
-                      className="w-full h-auto py-4 text-left justify-start"
+                      className="w-full h-auto min-h-[48px] py-3 sm:py-4 px-3 sm:px-4 text-left justify-start whitespace-normal"
                       onClick={() => handleAnswer(option.points, index)}
                       disabled={selectedAnswer !== null}
                     >
-                      <span className="font-medium mr-3 text-muted-foreground">
+                      <span className="font-medium mr-2 sm:mr-3 text-muted-foreground shrink-0">
                         {String.fromCharCode(65 + index)}.
                       </span>
-                      {option.label}
+                      <span className="break-words leading-relaxed text-sm sm:text-base">
+                        {option.label}
+                      </span>
                     </Button>
                   </motion.div>
                 ))}
@@ -354,15 +356,15 @@ const PlacementQuiz: React.FC<PlacementQuizProps> = ({ onComplete, onSkip }) => 
 
           {/* Skip Quiz Button */}
           {onSkip && (
-            <div className="pt-4 border-t border-border">
+            <div className="pt-3 sm:pt-4 border-t border-border">
               <Button
                 variant="ghost"
                 size="lg"
-                className="w-full h-14 text-base font-medium text-muted-foreground hover:text-foreground"
+                className="w-full h-auto min-h-[56px] py-3 text-sm sm:text-base font-medium text-muted-foreground hover:text-foreground flex flex-col sm:flex-row items-center justify-center gap-1"
                 onClick={onSkip}
               >
-                Skip Quiz & Start Learning →
-                <span className="block text-xs opacity-70 ml-2">(Start with Personal Finance)</span>
+                <span>Skip Quiz & Start Learning →</span>
+                <span className="text-xs opacity-70">(Start with Personal Finance)</span>
               </Button>
             </div>
           )}

@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ProgressProvider } from "@/contexts/ProgressContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import MinimalLayout from "@/components/layout/MinimalLayout";
+import GameStateInitializer from "@/components/game/GameStateInitializer";
 import Index from "./pages/Index";
 import LearnPage from "./pages/LearnPage";
 import EmpirePage from "./pages/EmpirePage";
@@ -22,6 +23,7 @@ function App() {
         <AuthProvider>
           <ProgressProvider>
           <TooltipProvider>
+            <GameStateInitializer />
             <Toaster />
             <BrowserRouter>
               <ProtectedRoute>
