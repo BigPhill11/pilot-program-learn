@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PersonalFinanceTab from "@/components/learn/PersonalFinanceTab";
 import LearningDashboard from "@/components/learning/LearningDashboard";
 import AdaptiveFlashcards from "@/components/learning/AdaptiveFlashcards";
-import LearnTabHelpMenu from "@/components/learn/LearnTabHelpMenu";
+
 import { MobileTabNav } from "@/components/ui/mobile-nav";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ComingSoonDialog from "@/components/ui/ComingSoonDialog";
@@ -91,9 +91,6 @@ const LearnPage = () => {
             <LearningDashboard onNavigateToTab={handleNavigateToTab} />
           </TabsContent>
         </Tabs>
-        
-        {/* Help Menu */}
-        <LearnTabHelpMenu />
       </div>
 
       {/* Mobile Bottom Navigation */}
