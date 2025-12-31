@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import PandaLogo from '@/components/icons/PandaLogo';
 import ProfileSettings from '@/components/profile/ProfileSettings';
-import GameProgressBadge from '@/components/ui/game-progress-badge';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useUnifiedStreak } from '@/hooks/useUnifiedStreak';
 import { useOnboarding } from '@/hooks/useOnboarding';
-import { LogOut, User, Flame, Moon, Sun, Menu, RotateCcw } from 'lucide-react';
+import { useGameStore } from '@/store/useGameStore';
+import { LogOut, User, Flame, Moon, Sun, Menu, RotateCcw, Leaf, Sparkles } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 
 const Navbar = () => {
@@ -23,6 +23,11 @@ const Navbar = () => {
   const { resetTour } = useOnboarding();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  // Bamboo Empire game state
+  const bamboo = useGameStore(state => state.bamboo);
+  const xp = useGameStore(state => state.xp);
+  const initialized = useGameStore(state => state.initialized);
+
   const navItems = [
     { label: 'Home', path: '/' },
     { label: 'About', path: '/about' },
@@ -32,32 +37,11 @@ const Navbar = () => {
     { label: 'Ask Phil', path: '/ask-phil' },
   ];
 
-  const getLevelBadgeColor = (level: string) => {
-    switch (level) {
-      case 'personal-finance': return 'bg-green-500 hover:bg-green-600';
-      case 'market-intelligence': return 'bg-yellow-500 hover:bg-yellow-600'; 
-      case 'careers-in-finance': return 'bg-red-500 hover:bg-red-600';
-      default: return 'bg-gray-500 hover:bg-gray-600';
-    }
-  };
-
-  const formatLevel = (level: string) => {
-    if (!level) return 'New Phil';
-    const trackNames: Record<string, string> = {
-      'personal-finance': 'Finance Phil',
-      'market-intelligence': 'Market Phil',
-      'careers-in-finance': 'Pro Phil'
-    };
-    return trackNames[level] || level.charAt(0).toUpperCase() + level.slice(1);
-  };
-
   const handleRestartTour = async () => {
     await resetTour();
     toast.success('Tour reset! Refresh the page to restart.');
     setIsMenuOpen(false);
   };
-
-  const placementTrack = profile ? (profile as any).placement_track : null;
 
   const MobileMenu = () => (
     <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
@@ -76,16 +60,19 @@ const Navbar = () => {
                 <span className="font-medium">{profile.username || 'User'}</span>
               </div>
               
-              {placementTrack && (
-                <Badge 
-                  className={`${getLevelBadgeColor(placementTrack)} text-white px-3 py-1 w-fit`}
-                  variant="secondary"
-                >
-                  {formatLevel(placementTrack)}
-                </Badge>
+              {/* Bamboo Empire Stats */}
+              {initialized && (
+                <Link to="/empire" className="flex items-center gap-4 p-3 rounded-lg bg-gradient-to-r from-emerald-500/10 to-purple-500/10 border border-emerald-500/20">
+                  <div className="flex items-center gap-1.5">
+                    <Leaf className="h-4 w-4 text-emerald-500" />
+                    <span className="font-medium text-sm">{Math.floor(bamboo).toLocaleString()}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Sparkles className="h-4 w-4 text-purple-500" />
+                    <span className="font-medium text-sm">{Math.floor(xp).toLocaleString()} XP</span>
+                  </div>
+                </Link>
               )}
-              
-              <GameProgressBadge />
               
               <div className="flex items-center space-x-1 text-sm">
                 <Flame className="h-4 w-4 text-orange-500" />
@@ -165,13 +152,19 @@ const Navbar = () => {
             </Link>
             
             <div className="flex items-center space-x-2">
+              {user && profile && initialized && (
+                <Link 
+                  to="/empire"
+                  className="flex items-center gap-2 px-2 py-1 rounded-md bg-emerald-500/10 hover:bg-emerald-500/20 transition-colors"
+                >
+                  <Leaf className="h-4 w-4 text-emerald-500" />
+                  <span className="font-medium text-sm">{Math.floor(bamboo).toLocaleString()}</span>
+                </Link>
+              )}
               {user && profile && (
                 <div className="flex items-center space-x-1 text-sm">
                   <Flame className="h-4 w-4 text-orange-500" />
                   <span className="font-medium">{currentStreak}</span>
-                  {streakMultiplier > 1 && (
-                    <span className="text-xs text-orange-600">({streakMultiplier.toFixed(1)}x)</span>
-                  )}
                 </div>
               )}
               <MobileMenu />
@@ -208,16 +201,6 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center space-x-4">
-          {/* Restart Tour Button */}
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={handleRestartTour}
-            title="Restart Tour"
-          >
-            <RotateCcw className="h-4 w-4" />
-          </Button>
-
           {/* Theme Toggle */}
           <Button variant="ghost" size="sm" onClick={toggleTheme}>
             {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -225,19 +208,6 @@ const Navbar = () => {
 
           {user && profile && (
             <>
-              {/* User Level Badge */}
-              {placementTrack && (
-                <Badge 
-                  className={`${getLevelBadgeColor(placementTrack)} text-white px-3 py-1`}
-                  variant="secondary"
-                >
-                  {formatLevel(placementTrack)}
-                </Badge>
-              )}
-
-              {/* Game Progress Badge - links to Bamboo Empire */}
-              <GameProgressBadge compact />
-
               {/* Streak Display */}
               <div className="flex items-center space-x-1 text-sm">
                 <Flame className="h-4 w-4 text-orange-500" />
@@ -246,6 +216,23 @@ const Navbar = () => {
                   <span className="text-xs text-orange-600">({streakMultiplier.toFixed(1)}x)</span>
                 )}
               </div>
+
+              {/* Bamboo Empire Stats - XP and Bamboo Coins */}
+              {initialized && (
+                <Link 
+                  to="/empire" 
+                  className="flex items-center gap-3 px-3 py-1.5 rounded-lg bg-gradient-to-r from-emerald-500/10 to-purple-500/10 hover:from-emerald-500/20 hover:to-purple-500/20 border border-emerald-500/20 transition-all"
+                >
+                  <div className="flex items-center gap-1">
+                    <Leaf className="h-4 w-4 text-emerald-500" />
+                    <span className="font-medium text-sm">{Math.floor(bamboo).toLocaleString()}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Sparkles className="h-4 w-4 text-purple-500" />
+                    <span className="font-medium text-sm">{Math.floor(xp).toLocaleString()}</span>
+                  </div>
+                </Link>
+              )}
 
               {/* User Menu */}
               <div className="flex items-center space-x-2">
