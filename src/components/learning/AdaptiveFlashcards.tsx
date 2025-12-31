@@ -1,27 +1,19 @@
 /**
  * AdaptiveFlashcards - Unified flashcard learning hub
  * 
- * Combines Adaptive Learning and Flashcards into a single tab with:
+ * Study-only mode with:
  * - Study Modes: Browse & Study, Speed Challenge, Daily Challenge, Smart Review
- * - Games: Quizzes, Matching Game, Panda Jump
- * - Manage: Upload and manage custom flashcards
  */
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { 
   BookOpen, 
-  Brain, 
-  Gamepad2, 
-  Settings,
   Zap,
   Calendar,
   Target,
-  Shuffle,
-  Upload,
   ChevronLeft,
   Flame
 } from 'lucide-react';
@@ -34,14 +26,7 @@ import { SpeedChallenge } from './flashcards/SpeedChallenge';
 import { DailyChallenge } from './flashcards/DailyChallenge';
 import { SmartReviewMode } from './flashcards/SmartReviewMode';
 import { useUnifiedStreak } from '@/hooks/useUnifiedStreak';
-import FlashcardUploader from './flashcards/FlashcardUploader';
-import FlashcardManager from './flashcards/FlashcardManager';
 import SwipeableStudyDeck from './flashcards/SwipeableStudyDeck';
-
-// Game components
-import QuizzesSection from './QuizzesSection';
-import MatchingGameSection from './MatchingGameSection';
-import PandaJumpSection from './PandaJumpSection';
 
 // Hooks
 import { useFlashcardGamification } from '@/hooks/useFlashcardGamification';
@@ -50,10 +35,7 @@ import { getAllUnifiedFlashcards, UnifiedFlashcard } from '@/data/unified-flashc
 // Compatibility type
 type CategorizedFlashcard = UnifiedFlashcard;
 
-type MainSection = 'study' | 'games' | 'manage';
 type StudyMode = 'browse' | 'speed' | 'daily' | 'smart' | 'deck';
-type GameMode = 'quizzes' | 'matching' | 'panda-jump';
-type ManageMode = 'upload' | 'my-cards';
 
 const AdaptiveFlashcards: React.FC = () => {
   const isMobile = useIsMobile();
@@ -63,17 +45,12 @@ const AdaptiveFlashcards: React.FC = () => {
   const { currentStreak, streakLevel, recordActivity } = useUnifiedStreak();
   
   // State
-  const [mainSection, setMainSection] = useState<MainSection>('study');
   const [studyMode, setStudyMode] = useState<StudyMode>('browse');
-  const [gameMode, setGameMode] = useState<GameMode>('quizzes');
-  const [manageMode, setManageMode] = useState<ManageMode>('upload');
   
   // Flashcard state
   const [selectedCards, setSelectedCards] = useState<CategorizedFlashcard[]>([]);
   const [selectedDeckTitle, setSelectedDeckTitle] = useState<string>('');
   const [dailyChallengeComplete, setDailyChallengeComplete] = useState(false);
-  const [selectedLevel, setSelectedLevel] = useState<'beginner' | 'intermediate' | 'pro'>('beginner');
-  const [refreshKey, setRefreshKey] = useState(0);
 
   // Gamification hook (for SM2 progress, not streaks)
   const {
@@ -113,11 +90,6 @@ const AdaptiveFlashcards: React.FC = () => {
     setDailyChallengeComplete(true);
     setStudyMode('browse');
     recordActivity();
-  };
-
-  // Handle flashcard upload
-  const handleUploadComplete = () => {
-    setRefreshKey(prev => prev + 1);
   };
 
   // Get daily challenge cards
@@ -274,136 +246,6 @@ const AdaptiveFlashcards: React.FC = () => {
     }
   };
 
-  // Render games content
-  const renderGamesContent = () => {
-    return (
-      <div className="space-y-6">
-        {/* Game Mode Selection */}
-        <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-3'} gap-4`}>
-          <Card 
-            className={`cursor-pointer transition-all ${
-              gameMode === 'quizzes' ? 'ring-2 ring-primary' : 'hover:shadow-md'
-            }`}
-            onClick={() => setGameMode('quizzes')}
-          >
-            <CardContent className="p-4 text-center">
-              <Brain className="h-8 w-8 mx-auto mb-2 text-blue-500" />
-              <h3 className="font-semibold">Quizzes</h3>
-              <p className="text-xs text-muted-foreground">Test your knowledge</p>
-            </CardContent>
-          </Card>
-          
-          <Card 
-            className={`cursor-pointer transition-all ${
-              gameMode === 'matching' ? 'ring-2 ring-primary' : 'hover:shadow-md'
-            }`}
-            onClick={() => setGameMode('matching')}
-          >
-            <CardContent className="p-4 text-center">
-              <Shuffle className="h-8 w-8 mx-auto mb-2 text-purple-500" />
-              <h3 className="font-semibold">Matching Game</h3>
-              <p className="text-xs text-muted-foreground">Match terms & definitions</p>
-            </CardContent>
-          </Card>
-          
-          <Card 
-            className={`cursor-pointer transition-all ${
-              gameMode === 'panda-jump' ? 'ring-2 ring-primary' : 'hover:shadow-md'
-            }`}
-            onClick={() => setGameMode('panda-jump')}
-          >
-            <CardContent className="p-4 text-center">
-              <Gamepad2 className="h-8 w-8 mx-auto mb-2 text-green-500" />
-              <h3 className="font-semibold">Panda Jump</h3>
-              <p className="text-xs text-muted-foreground">Jump with Phil!</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Game Content */}
-        {gameMode === 'quizzes' && <QuizzesSection />}
-        {gameMode === 'matching' && <MatchingGameSection />}
-        {gameMode === 'panda-jump' && <PandaJumpSection />}
-      </div>
-    );
-  };
-
-  // Render manage content
-  const renderManageContent = () => {
-    return (
-      <div className="space-y-6">
-        {/* Manage Mode Selection */}
-        <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2'} gap-4`}>
-          <Card 
-            className={`cursor-pointer transition-all ${
-              manageMode === 'upload' ? 'ring-2 ring-primary' : 'hover:shadow-md'
-            }`}
-            onClick={() => setManageMode('upload')}
-          >
-            <CardContent className="p-4 text-center">
-              <Upload className="h-8 w-8 mx-auto mb-2 text-blue-500" />
-              <h3 className="font-semibold">Upload Flashcards</h3>
-              <p className="text-xs text-muted-foreground">Add new cards via CSV or manually</p>
-            </CardContent>
-          </Card>
-          
-          <Card 
-            className={`cursor-pointer transition-all ${
-              manageMode === 'my-cards' ? 'ring-2 ring-primary' : 'hover:shadow-md'
-            }`}
-            onClick={() => setManageMode('my-cards')}
-          >
-            <CardContent className="p-4 text-center">
-              <Settings className="h-8 w-8 mx-auto mb-2 text-gray-500" />
-              <h3 className="font-semibold">My Flashcards</h3>
-              <p className="text-xs text-muted-foreground">Edit and manage your cards</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Level Selection for Management */}
-        <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-3'} gap-4`}>
-          {(['beginner', 'intermediate', 'pro'] as const).map((level) => (
-            <Card 
-              key={level}
-              className={`cursor-pointer transition-all ${
-                selectedLevel === level ? 'ring-2 ring-primary' : 'hover:shadow-md'
-              }`}
-              onClick={() => setSelectedLevel(level)}
-            >
-              <CardContent className="p-4 text-center">
-                <Badge className={`mb-2 ${
-                  level === 'beginner' ? 'bg-green-500' :
-                  level === 'intermediate' ? 'bg-yellow-500' : 'bg-red-500'
-                } text-white`}>
-                  {level.charAt(0).toUpperCase() + level.slice(1)}
-                </Badge>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Manage Content */}
-        {manageMode === 'upload' && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Upload Flashcards</CardTitle>
-              <p className="text-muted-foreground">
-                Add new flashcards via CSV upload or create individual cards
-              </p>
-            </CardHeader>
-            <CardContent>
-              <FlashcardUploader onUploadComplete={handleUploadComplete} />
-            </CardContent>
-          </Card>
-        )}
-        {manageMode === 'my-cards' && (
-          <FlashcardManager level={selectedLevel} onUpdate={handleUploadComplete} />
-        )}
-      </div>
-    );
-  };
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -412,7 +254,7 @@ const AdaptiveFlashcards: React.FC = () => {
           🎯 Adaptive Flashcards
         </h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Master financial terms with smart study modes, challenging games, and personalized review
+          Master financial terms with smart study modes and personalized review
         </p>
         <div className="mt-4 flex justify-center gap-4 flex-wrap">
           <Badge variant="outline" className="text-sm">
@@ -424,38 +266,10 @@ const AdaptiveFlashcards: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Section Tabs */}
-      <Tabs value={mainSection} onValueChange={(v) => setMainSection(v as MainSection)} className="w-full">
-        <TabsList className={`grid w-full grid-cols-3 ${isMobile ? 'h-auto' : ''}`}>
-          <TabsTrigger value="study" className={isMobile ? 'text-xs py-3' : ''}>
-            <BookOpen className="h-4 w-4 mr-1" />
-            {isMobile ? 'Study' : 'Study Modes'}
-          </TabsTrigger>
-          <TabsTrigger value="games" className={isMobile ? 'text-xs py-3' : ''}>
-            <Gamepad2 className="h-4 w-4 mr-1" />
-            Games
-          </TabsTrigger>
-          <TabsTrigger value="manage" className={isMobile ? 'text-xs py-3' : ''}>
-            <Settings className="h-4 w-4 mr-1" />
-            Manage
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="study" className="mt-6">
-          {renderStudyContent()}
-        </TabsContent>
-
-        <TabsContent value="games" className="mt-6">
-          {renderGamesContent()}
-        </TabsContent>
-
-        <TabsContent value="manage" className="mt-6">
-          {renderManageContent()}
-        </TabsContent>
-      </Tabs>
+      {/* Study Content - No tabs needed, show directly */}
+      {renderStudyContent()}
     </div>
   );
 };
 
 export default AdaptiveFlashcards;
-

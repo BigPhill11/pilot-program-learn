@@ -486,17 +486,6 @@ export const PLATFORM_REWARDS = {
   smartReviewSession: 15,
   smartReviewXp: 3,
 
-  /** Quiz game correct answer */
-  quizGameCorrect: 10,
-  quizGameXp: 2,
-
-  /** Matching game completion */
-  matchingGameComplete: 25,
-  matchingGameXp: 5,
-
-  /** Panda Jump game completion */
-  pandaJumpComplete: 30,
-  pandaJumpXp: 8,
 
   /** Flashcard mastered */
   cardMastered: 5,
