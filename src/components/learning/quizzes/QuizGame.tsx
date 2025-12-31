@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { X, CheckCircle, XCircle } from 'lucide-react';
 import { usePlatformIntegration } from '@/hooks/usePlatformIntegration';
 import { PLATFORM_REWARDS } from '@/config/gameConfig';
+import { getFlashcardsByCategory } from '@/data/flashcard-categories';
 
 interface QuizGameProps {
   level: 'beginner' | 'intermediate' | 'pro';
@@ -40,91 +41,76 @@ const QuizGame: React.FC<QuizGameProps> = ({ level, questionCount, onComplete, o
   }, [level, questionCount]);
 
   const generateQuestions = () => {
-    const storageKey = `flashcards_${level}`;
-    const flashcards = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    // Get Personal Finance flashcards from the unified system
+    const flashcards = getFlashcardsByCategory('personal-finance');
     
-    if (flashcards.length === 0) {
-      // Default questions for demo
-      const defaultQuestions: Record<string, QuizQuestion[]> = {
-        beginner: [
-          {
-            question: "What is a stock?",
-            options: ["A type of bond", "A share of ownership in a company", "A savings account", "A loan"],
-            correctAnswer: 1,
-            explanation: "A stock represents partial ownership in a company."
-          },
-          {
-            question: "What is a dividend?",
-            options: ["A fee for trading", "A payment to shareholders", "A type of stock", "A market index"],
-            correctAnswer: 1,
-            explanation: "Dividends are payments made by companies to their shareholders."
-          },
-          {
-            question: "What is compound interest?",
-            options: ["Simple interest", "Interest earned on both principal and previously earned interest", "A loan fee", "A bank charge"],
-            correctAnswer: 1,
-            explanation: "Compound interest is interest calculated on the initial principal and accumulated interest."
-          }
-        ],
-        intermediate: [
-          {
-            question: "What does P/E ratio measure?",
-            options: ["Company's debt", "Stock's valuation relative to earnings", "Dividend yield", "Market volatility"],
-            correctAnswer: 1,
-            explanation: "P/E ratio compares a company's stock price to its earnings per share."
-          }
-        ],
-        pro: [
-          {
-            question: "What is Beta coefficient?",
-            options: ["Dividend rate", "Stock's volatility compared to market", "Profit margin", "Interest rate"],
-            correctAnswer: 1,
-            explanation: "Beta measures how much a stock's price moves relative to the overall market."
-          }
-        ]
-      };
+    // Filter by difficulty level
+    const filteredCards = flashcards.filter(card => card.level === level);
+    
+    // Use all cards if not enough at the specific level
+    const availableCards = filteredCards.length >= 4 ? filteredCards : flashcards;
+    
+    if (availableCards.length < 4) {
+      // Fallback to default questions if no flashcards available
+      const defaultQuestions: QuizQuestion[] = [
+        {
+          question: "What is a budget?",
+          options: ["A type of investment", "A plan for managing income and expenses", "A savings account", "A credit card"],
+          correctAnswer: 1,
+          explanation: "A budget is a financial plan that helps you track and manage your income and expenses."
+        },
+        {
+          question: "What is compound interest?",
+          options: ["Simple interest", "Interest earned on both principal and previously earned interest", "A loan fee", "A bank charge"],
+          correctAnswer: 1,
+          explanation: "Compound interest is interest calculated on the initial principal and accumulated interest."
+        },
+        {
+          question: "What is an emergency fund?",
+          options: ["Money for vacations", "Savings for unexpected expenses", "Investment portfolio", "Credit line"],
+          correctAnswer: 1,
+          explanation: "An emergency fund is savings set aside to cover unexpected expenses like medical bills or car repairs."
+        }
+      ];
       
-      const availableQuestions = defaultQuestions[level] || [];
       const repeatedQuestions = [];
-      
-      // Repeat questions if we need more than available
       for (let i = 0; i < questionCount; i++) {
-        repeatedQuestions.push(availableQuestions[i % availableQuestions.length]);
+        repeatedQuestions.push(defaultQuestions[i % defaultQuestions.length]);
       }
-      
       setQuestions(repeatedQuestions);
-    } else {
-      // Generate questions from uploaded flashcards
-      const shuffledCards = [...flashcards].sort(() => Math.random() - 0.5);
-      const selectedCards = shuffledCards.slice(0, Math.min(questionCount, flashcards.length));
-      
-      // If we need more questions than available cards, repeat some
-      const repeatedCards = [];
-      for (let i = 0; i < questionCount; i++) {
-        repeatedCards.push(selectedCards[i % selectedCards.length]);
-      }
-      
-      const generatedQuestions = repeatedCards.map((card: any) => {
-        // Generate wrong answers from other cards
-        const wrongOptions = flashcards
-          .filter((c: any) => c.id !== card.id)
-          .map((c: any) => c.definition)
-          .sort(() => Math.random() - 0.5)
-          .slice(0, 3);
-        
-        const allOptions = [card.definition, ...wrongOptions].sort(() => Math.random() - 0.5);
-        const correctIndex = allOptions.findIndex(option => option === card.definition);
-        
-        return {
-          question: `What is the definition of "${card.term}"?`,
-          options: allOptions,
-          correctAnswer: correctIndex,
-          explanation: `${card.term}: ${card.definition}${card.philExample ? `\n\n💡 Phil's Example: ${card.philExample}` : ''}`
-        };
-      });
-      
-      setQuestions(generatedQuestions);
+      return;
     }
+
+    // Shuffle and select cards
+    const shuffledCards = [...availableCards].sort(() => Math.random() - 0.5);
+    const selectedCards = shuffledCards.slice(0, Math.min(questionCount, availableCards.length));
+    
+    // Repeat cards if we need more questions than available
+    const repeatedCards = [];
+    for (let i = 0; i < questionCount; i++) {
+      repeatedCards.push(selectedCards[i % selectedCards.length]);
+    }
+    
+    const generatedQuestions = repeatedCards.map((card) => {
+      // Generate wrong answers from other cards
+      const wrongOptions = availableCards
+        .filter((c) => c.id !== card.id)
+        .map((c) => c.definition)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3);
+      
+      const allOptions = [card.definition, ...wrongOptions].sort(() => Math.random() - 0.5);
+      const correctIndex = allOptions.findIndex(option => option === card.definition);
+      
+      return {
+        question: `What is the definition of "${card.term}"?`,
+        options: allOptions,
+        correctAnswer: correctIndex,
+        explanation: `${card.term}: ${card.definition}`
+      };
+    });
+    
+    setQuestions(generatedQuestions);
   };
 
   const handleAnswerSelect = (answerIndex: number) => {
@@ -174,7 +160,7 @@ const QuizGame: React.FC<QuizGameProps> = ({ level, questionCount, onComplete, o
       <Card>
         <CardContent className="p-8 text-center">
           <p className="text-muted-foreground mb-4">
-            No questions available for {level} level. Upload some flashcards first!
+            Loading questions for {level} level...
           </p>
           <Button onClick={onExit}>Go Back</Button>
         </CardContent>

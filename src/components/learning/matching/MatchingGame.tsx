@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { X, Timer, CheckCircle } from 'lucide-react';
 import { usePlatformIntegration } from '@/hooks/usePlatformIntegration';
 import { PLATFORM_REWARDS } from '@/config/gameConfig';
+import { getFlashcardsByCategory } from '@/data/flashcard-categories';
 
 interface MatchingGameProps {
   level: 'beginner' | 'intermediate' | 'pro';
@@ -37,7 +38,7 @@ const MatchingGame: React.FC<MatchingGameProps> = ({ level, onComplete, onExit }
   const shuffledDefinitions = useMemo(() => {
     if (pairs.length === 0) return [];
     return [...pairs].sort(() => Math.random() - 0.5);
-  }, [pairs.length]); // Only re-shuffle when pairs length changes, not on every render
+  }, [pairs.length]);
 
   useEffect(() => {
     initializeGame();
@@ -57,52 +58,60 @@ const MatchingGame: React.FC<MatchingGameProps> = ({ level, onComplete, onExit }
     const pairCounts = { beginner: 6, intermediate: 8, pro: 12 };
     const pairCount = pairCounts[level];
 
-    // Load from flashcards or use defaults
-    const storageKey = `flashcards_${level}`;
-    const flashcards = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    // Get Personal Finance flashcards from the unified system
+    const flashcards = getFlashcardsByCategory('personal-finance');
+    
+    // Filter by difficulty level
+    const filteredCards = flashcards.filter(card => card.level === level);
+    
+    // Use all cards if not enough at the specific level
+    const availableCards = filteredCards.length >= pairCount ? filteredCards : flashcards;
     
     let gamePairs: MatchingPair[];
-    if (flashcards.length >= pairCount) {
-      gamePairs = flashcards.slice(0, pairCount).map((card: any, index: number) => ({
+    
+    if (availableCards.length >= pairCount) {
+      // Shuffle and select cards
+      const shuffledCards = [...availableCards].sort(() => Math.random() - 0.5);
+      gamePairs = shuffledCards.slice(0, pairCount).map((card, index) => ({
         id: `pair-${index}`,
         term: card.term,
         definition: card.definition,
         matched: false
       }));
     } else {
-      // Default pairs for demo
+      // Fallback to default pairs
       const defaultPairs: Record<string, MatchingPair[]> = {
         beginner: [
-          { id: '1', term: 'Stock', definition: 'Share of ownership in a company', matched: false },
-          { id: '2', term: 'Bond', definition: 'Loan to company/government', matched: false },
-          { id: '3', term: 'Dividend', definition: 'Payment to shareholders', matched: false },
-          { id: '4', term: 'Portfolio', definition: 'Collection of investments', matched: false },
-          { id: '5', term: 'Bull Market', definition: 'Rising market prices', matched: false },
-          { id: '6', term: 'Bear Market', definition: 'Falling market prices', matched: false }
+          { id: '1', term: 'Budget', definition: 'A plan for managing income and expenses', matched: false },
+          { id: '2', term: 'Savings', definition: 'Money set aside for future use', matched: false },
+          { id: '3', term: 'Income', definition: 'Money received from work or investments', matched: false },
+          { id: '4', term: 'Expense', definition: 'Money spent on goods or services', matched: false },
+          { id: '5', term: 'Interest', definition: 'Cost of borrowing or reward for saving', matched: false },
+          { id: '6', term: 'Credit Score', definition: 'Number representing creditworthiness', matched: false }
         ],
         intermediate: [
-          { id: '1', term: 'P/E Ratio', definition: 'Price-to-earnings valuation metric', matched: false },
-          { id: '2', term: 'Market Cap', definition: 'Total value of company shares', matched: false },
-          { id: '3', term: 'Volatility', definition: 'Measure of price variation', matched: false },
-          { id: '4', term: 'ROI', definition: 'Return on investment', matched: false },
-          { id: '5', term: 'IPO', definition: 'Initial public offering', matched: false },
-          { id: '6', term: 'Yield', definition: 'Annual dividend percentage', matched: false },
-          { id: '7', term: 'Beta', definition: 'Stock volatility vs market', matched: false },
-          { id: '8', term: 'EPS', definition: 'Earnings per share', matched: false }
+          { id: '1', term: 'Emergency Fund', definition: 'Savings for unexpected expenses', matched: false },
+          { id: '2', term: 'Net Worth', definition: 'Assets minus liabilities', matched: false },
+          { id: '3', term: 'Compound Interest', definition: 'Interest on interest earned', matched: false },
+          { id: '4', term: 'Debt-to-Income', definition: 'Ratio of debt payments to income', matched: false },
+          { id: '5', term: 'Tax Deduction', definition: 'Expense that reduces taxable income', matched: false },
+          { id: '6', term: 'Retirement Account', definition: 'Tax-advantaged savings for retirement', matched: false },
+          { id: '7', term: 'Insurance Premium', definition: 'Regular payment for coverage', matched: false },
+          { id: '8', term: 'Investment Return', definition: 'Profit or loss from an investment', matched: false }
         ],
         pro: [
-          { id: '1', term: 'EBITDA', definition: 'Earnings before interest, taxes, depreciation, amortization', matched: false },
-          { id: '2', term: 'Free Cash Flow', definition: 'Cash after capital expenditures', matched: false },
-          { id: '3', term: 'Sharpe Ratio', definition: 'Risk-adjusted return measure', matched: false },
-          { id: '4', term: 'Alpha', definition: 'Excess return vs benchmark', matched: false },
-          { id: '5', term: 'VaR', definition: 'Value at Risk measurement', matched: false },
-          { id: '6', term: 'WACC', definition: 'Weighted average cost of capital', matched: false },
-          { id: '7', term: 'DCF', definition: 'Discounted cash flow valuation', matched: false },
-          { id: '8', term: 'ROIC', definition: 'Return on invested capital', matched: false },
-          { id: '9', term: 'PEG Ratio', definition: 'P/E ratio adjusted for growth', matched: false },
-          { id: '10', term: 'Duration', definition: 'Bond price sensitivity to rates', matched: false },
-          { id: '11', term: 'Convexity', definition: 'Bond duration change rate', matched: false },
-          { id: '12', term: 'Basis Point', definition: 'One hundredth of a percent', matched: false }
+          { id: '1', term: 'Asset Allocation', definition: 'Distribution of investments across categories', matched: false },
+          { id: '2', term: 'Tax-Loss Harvesting', definition: 'Selling losses to offset gains', matched: false },
+          { id: '3', term: 'Rebalancing', definition: 'Adjusting portfolio to target allocation', matched: false },
+          { id: '4', term: 'Dollar-Cost Averaging', definition: 'Investing fixed amounts regularly', matched: false },
+          { id: '5', term: 'Marginal Tax Rate', definition: 'Tax rate on last dollar earned', matched: false },
+          { id: '6', term: 'Capital Gains', definition: 'Profit from selling an asset', matched: false },
+          { id: '7', term: 'Liquidity', definition: 'Ease of converting asset to cash', matched: false },
+          { id: '8', term: 'Diversification', definition: 'Spreading risk across investments', matched: false },
+          { id: '9', term: 'Inflation', definition: 'General increase in prices over time', matched: false },
+          { id: '10', term: 'Opportunity Cost', definition: 'Value of next best alternative', matched: false },
+          { id: '11', term: 'Time Value of Money', definition: 'Money today worth more than later', matched: false },
+          { id: '12', term: 'Risk Tolerance', definition: 'Ability to handle investment volatility', matched: false }
         ]
       };
       gamePairs = defaultPairs[level] || [];
