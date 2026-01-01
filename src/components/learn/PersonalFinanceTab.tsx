@@ -99,7 +99,7 @@ const PersonalFinanceTab: React.FC = () => {
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold mb-2">Personal Finance Journey</h1>
               <p className="text-muted-foreground">Master your money, one module at a time</p>
-              <p className="text-sm text-primary/80 mt-2">New Personal Finance Videos coming soon!  Phil will help you grasp each lesson in 90 seconds or less with engaging Tik-Tok style content.</p>
+              <p className="text-sm text-primary/80 mt-2">New Personal Finance Videos coming soon! Phil will help you grasp each lesson in 90 seconds or less with engaging Tik-Tok style content.</p>
             </div>
             <BambooSkillTree moduleProgress={moduleProgress} onModuleClick={handleModuleClick} onTestOut={handleTestOut} />
           </div>}
