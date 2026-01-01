@@ -21,6 +21,8 @@ const MinimalLayout: React.FC<MinimalLayoutProps> = ({ children }) => {
   const isMobile = useIsMobile();
   const { currentStreak, streakMultiplier } = useUnifiedStreak();
 
+  const isGuest = !user;
+
   const getLevelBadgeColor = (level: string) => {
     switch (level) {
       case 'beginner': return 'bg-green-500 hover:bg-green-600';
@@ -43,7 +45,7 @@ const MinimalLayout: React.FC<MinimalLayoutProps> = ({ children }) => {
             {/* Logo and Title */}
             <div className="flex items-center space-x-2">
               <PandaLogo className="h-8 w-8" />
-              <span className="font-bold text-xl">Learning Hub</span>
+              <span className="font-bold text-xl">Phil</span>
             </div>
             
             {/* User Info and Actions */}
@@ -53,6 +55,12 @@ const MinimalLayout: React.FC<MinimalLayoutProps> = ({ children }) => {
                 {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </Button>
 
+              {/* Guest Mode - Just settings with notification */}
+              {isGuest && (
+                <ProfileSettings isGuest />
+              )}
+
+              {/* Authenticated User */}
               {user && profile && (
                 <>
                   {/* Streak Display */}

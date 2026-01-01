@@ -8,15 +8,21 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Settings, User, RotateCcw } from 'lucide-react';
+import { Settings, User, RotateCcw, UserPlus, Sparkles } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { toast } from 'sonner';
+import AuthModal from '@/components/auth/AuthModal';
 
-const ProfileSettings = () => {
+interface ProfileSettingsProps {
+  isGuest?: boolean;
+}
+
+const ProfileSettings: React.FC<ProfileSettingsProps> = ({ isGuest = false }) => {
   const { profile } = useAuth();
   const { resetTour } = useOnboarding();
   const [isOpen, setIsOpen] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const handleRestartTour = async () => {
     await resetTour();
@@ -24,6 +30,81 @@ const ProfileSettings = () => {
     setIsOpen(false);
   };
 
+  // Guest mode - show create profile prompt
+  if (isGuest) {
+    return (
+      <>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+          <DialogTrigger asChild>
+            <Button variant="ghost" size="sm" className="relative flex items-center space-x-1">
+              <Settings className="h-4 w-4" />
+              {/* Notification dot */}
+              <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 bg-primary rounded-full animate-pulse" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center space-x-2">
+                <Sparkles className="h-5 w-5 text-primary" />
+                <span>Save Your Progress!</span>
+              </DialogTitle>
+              <DialogDescription>
+                Create a profile to save your XP, coins, and learning progress.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4 py-4">
+              {/* Create Profile CTA */}
+              <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
+                <div className="flex items-start space-x-3">
+                  <div className="p-2 rounded-full bg-primary/20">
+                    <UserPlus className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-sm">Create Your Profile</h3>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Keep your progress, compete on leaderboards, and unlock achievements!
+                    </p>
+                  </div>
+                </div>
+                <Button 
+                  className="w-full mt-3" 
+                  onClick={() => {
+                    setIsOpen(false);
+                    setShowAuthModal(true);
+                  }}
+                >
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Create Profile
+                </Button>
+              </div>
+
+              <div className="text-center text-xs text-muted-foreground">
+                Already have an account?{' '}
+                <button 
+                  className="text-primary hover:underline"
+                  onClick={() => {
+                    setIsOpen(false);
+                    setShowAuthModal(true);
+                  }}
+                >
+                  Sign in
+                </button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        <AuthModal 
+          open={showAuthModal} 
+          onOpenChange={setShowAuthModal}
+          onSuccess={() => window.location.reload()}
+        />
+      </>
+    );
+  }
+
+  // Authenticated user - show profile settings
   if (!profile) return null;
 
   return (
