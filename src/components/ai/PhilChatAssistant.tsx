@@ -3,9 +3,16 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Send, Bot, User, Lightbulb, TrendingUp, DollarSign, Loader2, Brain, Zap } from 'lucide-react';
+import { Send, Bot, User, Lightbulb, TrendingUp, DollarSign, Loader2, BookOpen } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import DOMPurify from 'dompurify';
+
+interface PhilResponse {
+  answer: string;
+  needs_web: boolean;
+  study_next: string[];
+  sources: string[];
+}
 
 interface Message {
   id: string;
@@ -13,7 +20,8 @@ interface Message {
   sender: 'user' | 'phil';
   timestamp: Date;
   suggestions?: string[];
-  aiProvider?: 'perplexity' | 'openai';
+  studyNext?: string[];
+  sources?: string[];
 }
 
 const PhilChatAssistant: React.FC = () => {
@@ -34,7 +42,6 @@ const PhilChatAssistant: React.FC = () => {
   
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [aiProvider, setAiProvider] = useState<'perplexity' | 'openai'>('perplexity');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -61,31 +68,32 @@ const PhilChatAssistant: React.FC = () => {
     setIsTyping(true);
 
     try {
-      const functionName = aiProvider === 'perplexity' ? 'phil-chat' : 'phil-chat-openai';
-      
-      const { data, error } = await supabase.functions.invoke(functionName, {
+      const { data, error } = await supabase.functions.invoke('AskPhil', {
         body: { message: currentInput }
       });
 
       if (error) {
-        throw new Error(error.message || `Failed to get response from Phil using ${aiProvider}`);
+        throw new Error(error.message || 'Failed to get response from Phil');
       }
 
       if (data?.error) {
         throw new Error(data.error);
       }
 
+      // Parse the structured JSON response
+      const response = data as PhilResponse;
+
       const philResponse: Message = {
         id: (Date.now() + 1).toString(),
-        text: data.response,
+        text: response.answer || 'I apologize, but I could not generate a response.',
         sender: 'phil',
         timestamp: new Date(),
-        aiProvider: aiProvider,
-        suggestions: [
+        studyNext: response.study_next || [],
+        sources: response.sources || [],
+        suggestions: response.study_next?.slice(0, 3) || [
           "Tell me more about this",
           "What should I do next?",
-          "Give me an example",
-          "How does this apply to me?"
+          "Give me an example"
         ]
       };
 
@@ -128,31 +136,6 @@ const PhilChatAssistant: React.FC = () => {
             Ask Phil - Your Finance Buddy
             <Badge variant="secondary" className="ml-auto">AI Assistant</Badge>
           </CardTitle>
-          
-          <div className="flex gap-2 items-center">
-            <span className="text-sm font-medium">AI Provider:</span>
-            <Button
-              variant={aiProvider === 'perplexity' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setAiProvider('perplexity')}
-              className="flex items-center gap-1"
-            >
-              <Brain className="h-4 w-4" />
-              Perplexity
-            </Button>
-            <Button
-              variant={aiProvider === 'openai' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setAiProvider('openai')}
-              className="flex items-center gap-1"
-            >
-              <Zap className="h-4 w-4" />
-              OpenAI
-            </Button>
-            <Badge variant="secondary">
-              {aiProvider === 'perplexity' ? 'Real-time Data' : 'Fast Response'}
-            </Badge>
-          </div>
         </CardHeader>
         
         <CardContent className="flex-1 flex flex-col min-h-0">
@@ -178,14 +161,41 @@ const PhilChatAssistant: React.FC = () => {
                           : DOMPurify.sanitize(message.text)
                       }}
                     />
-                    {message.sender === 'phil' && message.aiProvider && (
-                      <div className="text-xs opacity-70 mt-1">
-                        Powered by {message.aiProvider === 'perplexity' ? 'Perplexity' : 'OpenAI'}
-                      </div>
-                    )}
                   </div>
                   
-                  {message.suggestions && (
+                  {/* Study Next suggestions */}
+                  {message.studyNext && message.studyNext.length > 0 && (
+                    <div className="mt-2 p-2 bg-primary/5 rounded-lg">
+                      <div className="flex items-center gap-1 text-xs font-medium text-primary mb-1">
+                        <BookOpen className="h-3 w-3" />
+                        Study Next
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {message.studyNext.map((item, index) => (
+                          <Button
+                            key={index}
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleSuggestionClick(item)}
+                            className="text-xs"
+                          >
+                            {item}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Sources */}
+                  {message.sources && message.sources.length > 0 && (
+                    <div className="mt-2 text-xs text-muted-foreground">
+                      <span className="font-medium">Sources: </span>
+                      {message.sources.join(', ')}
+                    </div>
+                  )}
+
+                  {/* Quick suggestions for initial message */}
+                  {message.suggestions && !message.studyNext && (
                     <div className="flex flex-wrap gap-2 mt-2">
                       {message.suggestions.map((suggestion, index) => (
                         <Button
@@ -225,7 +235,7 @@ const PhilChatAssistant: React.FC = () => {
                   <div className="flex items-center space-x-2">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     <span className="text-sm text-muted-foreground">
-                      Phil is thinking using {aiProvider === 'perplexity' ? 'Perplexity' : 'OpenAI'}...
+                      Phil is thinking...
                     </span>
                   </div>
                 </div>

@@ -13,74 +13,127 @@ serve(async (req) => {
   }
 
   try {
-    const FOUNDRY_API_KEY = Deno.env.get('MICROSOFT_FOUNDRY_API_KEY');
-    const FOUNDRY_ENDPOINT = Deno.env.get('MICROSOFT_FOUNDRY_ENDPOINT');
-
-    if (!FOUNDRY_API_KEY || !FOUNDRY_ENDPOINT) {
-      console.error('Missing Foundry configuration');
-      throw new Error('Microsoft Foundry is not configured');
-    }
-
-    const { messages, stream = false } = await req.json();
-
-    if (!messages || !Array.isArray(messages)) {
-      throw new Error('Messages array is required');
-    }
-
-    console.log('Calling Microsoft Foundry with', messages.length, 'messages');
-
-    const response = await fetch(`${FOUNDRY_ENDPOINT}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${FOUNDRY_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        messages: [
-          { 
-            role: 'system', 
-            content: 'You are Phil, a friendly and knowledgeable financial education assistant. Help users learn about investing, trading, and personal finance in an approachable way.' 
-          },
-          ...messages
-        ],
-        stream,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Foundry API error:', response.status, errorText);
-      throw new Error(`Foundry API error: ${response.status}`);
-    }
-
-    // Handle streaming response
-    if (stream && response.body) {
-      return new Response(response.body, {
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'text/event-stream',
-          'Cache-Control': 'no-cache',
-        },
+    if (req.method !== "POST") {
+      return new Response(JSON.stringify({ error: "Use POST" }), {
+        status: 405,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Handle non-streaming response
-    const data = await response.json();
-    console.log('Foundry response received successfully');
+    const body = await req.json().catch(() => ({}));
+    const message = String(body?.message ?? "").trim();
 
-    return new Response(JSON.stringify(data), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    if (!message) {
+      return new Response(JSON.stringify({ error: "Missing message" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const apiKey = Deno.env.get("MICROSOFT_FOUNDRY_API_KEY");
+    const endpointBase = Deno.env.get("MICROSOFT_FOUNDRY_ENDPOINT");
+
+    if (!apiKey) {
+      console.error("Missing MICROSOFT_FOUNDRY_API_KEY");
+      return new Response(JSON.stringify({ error: "Missing MICROSOFT_FOUNDRY_API_KEY" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (!endpointBase) {
+      console.error("Missing MICROSOFT_FOUNDRY_ENDPOINT");
+      return new Response(JSON.stringify({ error: "Missing MICROSOFT_FOUNDRY_ENDPOINT" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Azure AI Foundry chat-completions path with API version
+    const url = `${endpointBase}/chat/completions?api-version=2024-05-01-preview`;
+
+    const system = `
+You are AskPhil. Follow this internal workflow every time.
+
+1) Router
+- Restate the user goal in one sentence.
+- Decide if live web info is needed.
+- Pick the best internal topic.
+
+2) Web plan
+- If the user asks for latest, today, news, prices, deadlines, or "who is", set needs_web=true.
+- If no sources are provided, keep sources empty and continue.
+
+3) Translator
+- Produce three versions: Middle School, High School, College.
+
+4) Writer
+- Return ONLY the High School version unless the user asks for another level.
+
+5) Internal Librarian
+- End with Study next and list 3 study items.
+
+Output rules
+- Bold headers.
+- Bullet points.
+- No HTML tags.
+- Return VALID JSON with keys:
+  answer, needs_web, study_next, sources
+`;
+
+    const payload = {
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: message },
+      ],
+      temperature: 0.2,
+      max_tokens: 700,
+      response_format: { type: "json_object" },
+    };
+
+    console.log("Calling Microsoft Foundry with message:", message.substring(0, 50) + "...");
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "api-key": apiKey,
+      },
+      body: JSON.stringify(payload),
     });
 
-  } catch (error: unknown) {
-    console.error('Error in AskPhil function:', error);
-    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-    return new Response(
-      JSON.stringify({ error: errorMessage }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      console.error("Foundry API error:", response.status, JSON.stringify(data));
+      return new Response(JSON.stringify({ error: "Foundry API error", details: data }), {
+        status: 502,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const content = data?.choices?.[0]?.message?.content;
+
+    if (!content) {
+      console.error("No model content returned:", JSON.stringify(data));
+      return new Response(JSON.stringify({ error: "No model content returned", raw: data }), {
+        status: 502,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    console.log("Foundry response received successfully");
+
+    // content should already be JSON text because of response_format
+    return new Response(content, {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+
+  } catch (e) {
+    console.error("Error in AskPhil function:", e);
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });

@@ -4,16 +4,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Wand2, Brain, Zap } from 'lucide-react';
+import { Loader2, Wand2, BookOpen } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import DOMPurify from 'dompurify';
 
+interface PhilResponse {
+    answer: string;
+    needs_web: boolean;
+    study_next: string[];
+    sources: string[];
+}
+
 const AskPhil = () => {
     const [question, setQuestion] = useState('');
-    const [answer, setAnswer] = useState('');
+    const [response, setResponse] = useState<PhilResponse | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
-    const [aiProvider, setAiProvider] = useState<'perplexity' | 'openai'>('perplexity');
 
     const handleAsk = async () => {
         if (!question.trim()) {
@@ -22,25 +28,23 @@ const AskPhil = () => {
         }
 
         setIsLoading(true);
-        setAnswer('');
+        setResponse(null);
         setError('');
 
         try {
-            const functionName = aiProvider === 'perplexity' ? 'phil-chat' : 'phil-chat-openai';
-            
-            const { data, error: functionError } = await supabase.functions.invoke(functionName, {
+            const { data, error: functionError } = await supabase.functions.invoke('AskPhil', {
                 body: { message: question }
             });
 
             if (functionError) {
-                throw new Error(functionError.message || `Failed to get response from Phil using ${aiProvider}`);
+                throw new Error(functionError.message || 'Failed to get response from Phil');
             }
 
             if (data?.error) {
                 throw new Error(data.error);
             }
 
-            setAnswer(data.response);
+            setResponse(data as PhilResponse);
 
         } catch (e: any) {
             console.error('Error asking Phil:', e);
@@ -48,6 +52,10 @@ const AskPhil = () => {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleStudyClick = (item: string) => {
+        setQuestion(item);
     };
 
     return (
@@ -61,31 +69,6 @@ const AskPhil = () => {
             </CardHeader>
             <CardContent>
                 <div className="flex flex-col gap-4">
-                    <div className="flex gap-2 items-center mb-2">
-                        <span className="text-sm font-medium">AI Provider:</span>
-                        <Button
-                            variant={aiProvider === 'perplexity' ? 'default' : 'outline'}
-                            size="sm"
-                            onClick={() => setAiProvider('perplexity')}
-                            className="flex items-center gap-1"
-                        >
-                            <Brain className="h-4 w-4" />
-                            Perplexity
-                        </Button>
-                        <Button
-                            variant={aiProvider === 'openai' ? 'default' : 'outline'}
-                            size="sm"
-                            onClick={() => setAiProvider('openai')}
-                            className="flex items-center gap-1"
-                        >
-                            <Zap className="h-4 w-4" />
-                            OpenAI
-                        </Button>
-                        <Badge variant="secondary" className="ml-auto">
-                            {aiProvider === 'perplexity' ? 'Real-time Data' : 'Fast Response'}
-                        </Badge>
-                    </div>
-                    
                     <div className="flex gap-2">
                         <Input
                             placeholder="e.g., How do I open a Roth IRA?"
@@ -100,17 +83,52 @@ const AskPhil = () => {
                     </div>
                     {error && <p className="text-destructive text-sm">{error}</p>}
                     
-                    {answer && (
-                         <div className="p-4 bg-muted/50 rounded-lg border space-y-2">
-                             <div className="flex items-center justify-between mb-2">
-                                 <span className="text-sm text-muted-foreground">
-                                     Powered by {aiProvider === 'perplexity' ? 'Perplexity' : 'OpenAI'}
-                                 </span>
+                    {response && (
+                         <div className="p-4 bg-muted/50 rounded-lg border space-y-4">
+                             {/* Answer */}
+                             <div>
+                                 <p 
+                                    className="text-muted-foreground whitespace-pre-wrap"
+                                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(response.answer.replace(/\n/g, '<br />')) }}
+                                 />
                              </div>
-                             <p 
-                                className="text-muted-foreground"
-                                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(answer.replace(/\n/g, '<br />')) }}
-                             />
+
+                             {/* Study Next */}
+                             {response.study_next && response.study_next.length > 0 && (
+                                 <div className="pt-3 border-t">
+                                     <div className="flex items-center gap-1 text-sm font-medium text-primary mb-2">
+                                         <BookOpen className="h-4 w-4" />
+                                         Study Next
+                                     </div>
+                                     <div className="flex flex-wrap gap-2">
+                                         {response.study_next.map((item, index) => (
+                                             <Badge 
+                                                 key={index} 
+                                                 variant="secondary" 
+                                                 className="cursor-pointer hover:bg-primary/20"
+                                                 onClick={() => handleStudyClick(item)}
+                                             >
+                                                 {item}
+                                             </Badge>
+                                         ))}
+                                     </div>
+                                 </div>
+                             )}
+
+                             {/* Sources */}
+                             {response.sources && response.sources.length > 0 && (
+                                 <div className="pt-3 border-t text-xs text-muted-foreground">
+                                     <span className="font-medium">Sources: </span>
+                                     {response.sources.join(', ')}
+                                 </div>
+                             )}
+
+                             {/* Web indicator */}
+                             {response.needs_web && (
+                                 <Badge variant="outline" className="text-xs">
+                                     🌐 Live data recommended
+                                 </Badge>
+                             )}
                          </div>
                     )}
                 </div>
