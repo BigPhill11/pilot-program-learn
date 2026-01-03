@@ -1,4 +1,3 @@
-
 project_id = "aqqbxivolegafwuurxxm"
 
 [functions.process-video-transcript]
@@ -23,4 +22,7 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.scheduled-market-refresh]
+verify_jwt = true
+
+[functions.AskPhil]
 verify_jwt = true
